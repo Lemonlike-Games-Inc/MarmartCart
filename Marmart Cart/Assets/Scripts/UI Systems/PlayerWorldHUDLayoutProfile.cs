@@ -446,28 +446,47 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
 
     #endregion
 
+
+    #region Runtime Mode Adaptation
+
+    // Runtime-only multiplier supplied by MatchSceneModeController.
+    // It never overwrites the tuned serialized masterScale value in this asset.
+    [System.NonSerialized] private float runtimeModeScaleMultiplier = 1f;
+
+    private float EffectiveMasterScale => masterScale * runtimeModeScaleMultiplier;
+
+    public float RuntimeModeScaleMultiplier => runtimeModeScaleMultiplier;
+    public float EffectiveHUDMasterScale => EffectiveMasterScale;
+
+    public void SetRuntimeModeScaleMultiplier(float multiplier)
+    {
+        runtimeModeScaleMultiplier = Mathf.Max(0.05f, multiplier);
+    }
+
+    #endregion
+
     #region Public API
 
     public float MasterScale => masterScale;
-    public float HorizontalSeparationPixels => horizontalSeparationPixels * masterScale;
-    public float VerticalOffsetPixels => verticalOffsetPixels * masterScale;
+    public float HorizontalSeparationPixels => horizontalSeparationPixels * EffectiveMasterScale;
+    public float VerticalOffsetPixels => verticalOffsetPixels * EffectiveMasterScale;
 
     public bool UseNearCameraRenderPlane => useNearCameraRenderPlane;
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
 
-    public float LoadRadiusPixels => loadRadiusPixels * masterScale;
-    public float LoadTrackThicknessPixels => loadTrackThicknessPixels * masterScale;
+    public float LoadRadiusPixels => loadRadiusPixels * EffectiveMasterScale;
+    public float LoadTrackThicknessPixels => loadTrackThicknessPixels * EffectiveMasterScale;
     public float LoadSpanDegrees => loadSpanDegrees;
     public float LoadCenterAngleDegrees => loadCenterAngleDegrees;
-    public float LoadCapsuleLengthPixels => loadCapsuleLengthPixels * masterScale;
+    public float LoadCapsuleLengthPixels => loadCapsuleLengthPixels * EffectiveMasterScale;
 
     public int MinimumVisualSlotCount => minimumVisualSlotCount;
     public int LoadWindowSize => loadWindowSize;
 
-    public float CapsuleThicknessAt10Slots => capsuleThicknessAt10Slots * masterScale;
-    public float CapsuleThicknessAt15Slots => capsuleThicknessAt15Slots * masterScale;
-    public float CapsuleThicknessAt20Slots => capsuleThicknessAt20Slots * masterScale;
+    public float CapsuleThicknessAt10Slots => capsuleThicknessAt10Slots * EffectiveMasterScale;
+    public float CapsuleThicknessAt15Slots => capsuleThicknessAt15Slots * EffectiveMasterScale;
+    public float CapsuleThicknessAt20Slots => capsuleThicknessAt20Slots * EffectiveMasterScale;
 
     public Color LoadTrackColor => loadTrackColor;
     public Color LoadPreSlotColor => loadPreSlotColor;
@@ -479,24 +498,24 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
 
     public bool ShowLoadMilestoneTicks => showLoadMilestoneTicks;
     public int LoadMilestoneInterval => loadMilestoneInterval;
-    public float LoadMilestoneTickLengthPixels => loadMilestoneTickLengthPixels * masterScale;
-    public float LoadMilestoneTickThicknessPixels => loadMilestoneTickThicknessPixels * masterScale;
+    public float LoadMilestoneTickLengthPixels => loadMilestoneTickLengthPixels * EffectiveMasterScale;
+    public float LoadMilestoneTickThicknessPixels => loadMilestoneTickThicknessPixels * EffectiveMasterScale;
     public Color LoadMilestoneTickColor => loadMilestoneTickColor;
     public Color LoadMilestoneTextColor => loadMilestoneTextColor;
-    public float LoadMilestoneFontSizePixels => loadMilestoneFontSizePixels * masterScale;
-    public float LoadMilestoneLabelOffsetPixels => loadMilestoneLabelOffsetPixels * masterScale;
+    public float LoadMilestoneFontSizePixels => loadMilestoneFontSizePixels * EffectiveMasterScale;
+    public float LoadMilestoneLabelOffsetPixels => loadMilestoneLabelOffsetPixels * EffectiveMasterScale;
 
     public bool ShowCurrentLoadTick => showCurrentLoadTick;
-    public float CurrentLoadTickLengthPixels => currentLoadTickLengthPixels * masterScale;
-    public float CurrentLoadTickThicknessPixels => currentLoadTickThicknessPixels * masterScale;
+    public float CurrentLoadTickLengthPixels => currentLoadTickLengthPixels * EffectiveMasterScale;
+    public float CurrentLoadTickThicknessPixels => currentLoadTickThicknessPixels * EffectiveMasterScale;
     public Color CurrentLoadTickColor => currentLoadTickColor;
     public Color CurrentLoadTextColor => currentLoadTextColor;
-    public float CurrentLoadFontSizePixels => currentLoadFontSizePixels * masterScale;
-    public float CurrentLoadLabelOffsetPixels => currentLoadLabelOffsetPixels * masterScale;
+    public float CurrentLoadFontSizePixels => currentLoadFontSizePixels * EffectiveMasterScale;
+    public float CurrentLoadLabelOffsetPixels => currentLoadLabelOffsetPixels * EffectiveMasterScale;
 
-    public float HypeRadiusPixels => hypeRadiusPixels * masterScale;
-    public float HypeTrackThicknessPixels => hypeTrackThicknessPixels * masterScale;
-    public float HypeFillThicknessPixels => hypeFillThicknessPixels * masterScale;
+    public float HypeRadiusPixels => hypeRadiusPixels * EffectiveMasterScale;
+    public float HypeTrackThicknessPixels => hypeTrackThicknessPixels * EffectiveMasterScale;
+    public float HypeFillThicknessPixels => hypeFillThicknessPixels * EffectiveMasterScale;
     public float HypeSpanDegrees => hypeSpanDegrees;
     public float HypeCenterAngleDegrees => hypeCenterAngleDegrees;
     public Color HypeTrackColor => hypeTrackColor;
@@ -504,77 +523,77 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     public bool AnimateHypeGainFill => animateHypeGainFill;
     public float HypeGainFillSpeedNormalizedPerSecond => hypeGainFillSpeedNormalizedPerSecond;
 
-    public float HypeRewardPreviewThicknessPixels => hypeRewardPreviewThicknessPixels * masterScale;
-    public float HypeRewardPreviewRadiusOffsetPixels => hypeRewardPreviewRadiusOffsetPixels * masterScale;
+    public float HypeRewardPreviewThicknessPixels => hypeRewardPreviewThicknessPixels * EffectiveMasterScale;
+    public float HypeRewardPreviewRadiusOffsetPixels => hypeRewardPreviewRadiusOffsetPixels * EffectiveMasterScale;
     public Color HypeRewardPreviewColor => hypeRewardPreviewColor;
 
-    public float HypePenaltyPreviewThicknessPixels => hypePenaltyPreviewThicknessPixels * masterScale;
-    public float HypePenaltyPreviewRadiusOffsetPixels => hypePenaltyPreviewRadiusOffsetPixels * masterScale;
+    public float HypePenaltyPreviewThicknessPixels => hypePenaltyPreviewThicknessPixels * EffectiveMasterScale;
+    public float HypePenaltyPreviewRadiusOffsetPixels => hypePenaltyPreviewRadiusOffsetPixels * EffectiveMasterScale;
     public Color HypePenaltyPreviewColor => hypePenaltyPreviewColor;
 
-    public Vector2 HypeBurnWarningOffsetPixels => hypeBurnWarningOffsetPixels * masterScale;
+    public Vector2 HypeBurnWarningOffsetPixels => hypeBurnWarningOffsetPixels * EffectiveMasterScale;
     public float HypeBurnWarningMasterScale => hypeBurnWarningMasterScale;
-    public Vector2 HypeBurnWarningBackgroundOffsetPixels => hypeBurnWarningBackgroundOffsetPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBackgroundRadiusPixels => hypeBurnWarningBackgroundRadiusPixels * masterScale * hypeBurnWarningMasterScale;
+    public Vector2 HypeBurnWarningBackgroundOffsetPixels => hypeBurnWarningBackgroundOffsetPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBackgroundRadiusPixels => hypeBurnWarningBackgroundRadiusPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
     public Color HypeBurnWarningBackgroundColor => hypeBurnWarningBackgroundColor;
     public Color HypeBurnWarningColor => hypeBurnWarningColor;
     public float HypeBurnWarningColorMinMultiplier => hypeBurnWarningColorMinMultiplier;
     public float HypeBurnWarningColorMaxMultiplier => hypeBurnWarningColorMaxMultiplier;
-    public float HypeBurnWarningRingRadiusPixels => hypeBurnWarningRingRadiusPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningRingThicknessPixels => hypeBurnWarningRingThicknessPixels * masterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningRingRadiusPixels => hypeBurnWarningRingRadiusPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningRingThicknessPixels => hypeBurnWarningRingThicknessPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
     public float HypeBurnWarningGapDegrees => hypeBurnWarningGapDegrees;
     public float HypeBurnWarningGapCenterDegrees => hypeBurnWarningGapCenterDegrees;
-    public Vector2 HypeBurnWarningArrowOffsetPixels => hypeBurnWarningArrowOffsetPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningArrowShaftLengthPixels => hypeBurnWarningArrowShaftLengthPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningArrowShaftThicknessPixels => hypeBurnWarningArrowShaftThicknessPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningArrowHeadWidthPixels => hypeBurnWarningArrowHeadWidthPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningArrowHeadHeightPixels => hypeBurnWarningArrowHeadHeightPixels * masterScale * hypeBurnWarningMasterScale;
-    public Vector2 HypeBurnWarningBoltOffsetPixels => hypeBurnWarningBoltOffsetPixels * masterScale * hypeBurnWarningMasterScale;
-    public Vector2 HypeBurnWarningBoltTriangleAOffsetPixels => hypeBurnWarningBoltTriangleAOffsetPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBoltTriangleAWidthPixels => hypeBurnWarningBoltTriangleAWidthPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBoltTriangleAHeightPixels => hypeBurnWarningBoltTriangleAHeightPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBoltTriangleASkewPixels => hypeBurnWarningBoltTriangleASkewPixels * masterScale * hypeBurnWarningMasterScale;
+    public Vector2 HypeBurnWarningArrowOffsetPixels => hypeBurnWarningArrowOffsetPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningArrowShaftLengthPixels => hypeBurnWarningArrowShaftLengthPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningArrowShaftThicknessPixels => hypeBurnWarningArrowShaftThicknessPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningArrowHeadWidthPixels => hypeBurnWarningArrowHeadWidthPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningArrowHeadHeightPixels => hypeBurnWarningArrowHeadHeightPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public Vector2 HypeBurnWarningBoltOffsetPixels => hypeBurnWarningBoltOffsetPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public Vector2 HypeBurnWarningBoltTriangleAOffsetPixels => hypeBurnWarningBoltTriangleAOffsetPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBoltTriangleAWidthPixels => hypeBurnWarningBoltTriangleAWidthPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBoltTriangleAHeightPixels => hypeBurnWarningBoltTriangleAHeightPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBoltTriangleASkewPixels => hypeBurnWarningBoltTriangleASkewPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
     public float HypeBurnWarningBoltTriangleARotationDegrees => hypeBurnWarningBoltTriangleARotationDegrees;
-    public Vector2 HypeBurnWarningBoltTriangleBOffsetPixels => hypeBurnWarningBoltTriangleBOffsetPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBoltTriangleBWidthPixels => hypeBurnWarningBoltTriangleBWidthPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBoltTriangleBHeightPixels => hypeBurnWarningBoltTriangleBHeightPixels * masterScale * hypeBurnWarningMasterScale;
-    public float HypeBurnWarningBoltTriangleBSkewPixels => hypeBurnWarningBoltTriangleBSkewPixels * masterScale * hypeBurnWarningMasterScale;
+    public Vector2 HypeBurnWarningBoltTriangleBOffsetPixels => hypeBurnWarningBoltTriangleBOffsetPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBoltTriangleBWidthPixels => hypeBurnWarningBoltTriangleBWidthPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBoltTriangleBHeightPixels => hypeBurnWarningBoltTriangleBHeightPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
+    public float HypeBurnWarningBoltTriangleBSkewPixels => hypeBurnWarningBoltTriangleBSkewPixels * EffectiveMasterScale * hypeBurnWarningMasterScale;
     public float HypeBurnWarningBoltTriangleBRotationDegrees => hypeBurnWarningBoltTriangleBRotationDegrees;
 
-    public Vector2 LowSpeedWarningOffsetPixels => lowSpeedWarningOffsetPixels * masterScale;
+    public Vector2 LowSpeedWarningOffsetPixels => lowSpeedWarningOffsetPixels * EffectiveMasterScale;
     public float LowSpeedWarningMasterScale => lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningBackgroundOffsetPixels => lowSpeedWarningBackgroundOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningBackgroundRadiusPixels => lowSpeedWarningBackgroundRadiusPixels * masterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningBackgroundOffsetPixels => lowSpeedWarningBackgroundOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningBackgroundRadiusPixels => lowSpeedWarningBackgroundRadiusPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
     public Color LowSpeedWarningBackgroundColor => lowSpeedWarningBackgroundColor;
     public Color LowSpeedWarningColor => lowSpeedWarningColor;
     public float LowSpeedWarningColorMinPenalty => lowSpeedWarningColorMinPenalty;
     public float LowSpeedWarningColorMaxPenalty => lowSpeedWarningColorMaxPenalty;
-    public Vector2 LowSpeedWarningCartOffsetPixels => lowSpeedWarningCartOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningWeightOffsetPixels => lowSpeedWarningWeightOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningArrowOffsetPixels => lowSpeedWarningArrowOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningCartStrokeThicknessPixels => lowSpeedWarningCartStrokeThicknessPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBasketTopLeftOffsetPixels => lowSpeedWarningCartBasketTopLeftOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBasketTopRightOffsetPixels => lowSpeedWarningCartBasketTopRightOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBasketBottomRightOffsetPixels => lowSpeedWarningCartBasketBottomRightOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBasketBottomLeftOffsetPixels => lowSpeedWarningCartBasketBottomLeftOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartHandleJointOffsetPixels => lowSpeedWarningCartHandleJointOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartHandleEndOffsetPixels => lowSpeedWarningCartHandleEndOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartLeftWheelOffsetPixels => lowSpeedWarningCartLeftWheelOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartRightWheelOffsetPixels => lowSpeedWarningCartRightWheelOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningCartWheelRadiusPixels => lowSpeedWarningCartWheelRadiusPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBaseLeftEndOffsetPixels => lowSpeedWarningCartBaseLeftEndOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBaseMidOffsetPixels => lowSpeedWarningCartBaseMidOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningCartBaseRightEndOffsetPixels => lowSpeedWarningCartBaseRightEndOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningWeightTopWidthPixels => lowSpeedWarningWeightTopWidthPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningWeightBottomWidthPixels => lowSpeedWarningWeightBottomWidthPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningWeightBodyHeightPixels => lowSpeedWarningWeightBodyHeightPixels * masterScale * lowSpeedWarningMasterScale;
-    public Vector2 LowSpeedWarningWeightRingOffsetPixels => lowSpeedWarningWeightRingOffsetPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningWeightRingRadiusPixels => lowSpeedWarningWeightRingRadiusPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningWeightRingThicknessPixels => lowSpeedWarningWeightRingThicknessPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningArrowShaftLengthPixels => lowSpeedWarningArrowShaftLengthPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningArrowShaftThicknessPixels => lowSpeedWarningArrowShaftThicknessPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningArrowHeadWidthPixels => lowSpeedWarningArrowHeadWidthPixels * masterScale * lowSpeedWarningMasterScale;
-    public float LowSpeedWarningArrowHeadHeightPixels => lowSpeedWarningArrowHeadHeightPixels * masterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartOffsetPixels => lowSpeedWarningCartOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningWeightOffsetPixels => lowSpeedWarningWeightOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningArrowOffsetPixels => lowSpeedWarningArrowOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningCartStrokeThicknessPixels => lowSpeedWarningCartStrokeThicknessPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBasketTopLeftOffsetPixels => lowSpeedWarningCartBasketTopLeftOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBasketTopRightOffsetPixels => lowSpeedWarningCartBasketTopRightOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBasketBottomRightOffsetPixels => lowSpeedWarningCartBasketBottomRightOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBasketBottomLeftOffsetPixels => lowSpeedWarningCartBasketBottomLeftOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartHandleJointOffsetPixels => lowSpeedWarningCartHandleJointOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartHandleEndOffsetPixels => lowSpeedWarningCartHandleEndOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartLeftWheelOffsetPixels => lowSpeedWarningCartLeftWheelOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartRightWheelOffsetPixels => lowSpeedWarningCartRightWheelOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningCartWheelRadiusPixels => lowSpeedWarningCartWheelRadiusPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBaseLeftEndOffsetPixels => lowSpeedWarningCartBaseLeftEndOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBaseMidOffsetPixels => lowSpeedWarningCartBaseMidOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningCartBaseRightEndOffsetPixels => lowSpeedWarningCartBaseRightEndOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningWeightTopWidthPixels => lowSpeedWarningWeightTopWidthPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningWeightBottomWidthPixels => lowSpeedWarningWeightBottomWidthPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningWeightBodyHeightPixels => lowSpeedWarningWeightBodyHeightPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public Vector2 LowSpeedWarningWeightRingOffsetPixels => lowSpeedWarningWeightRingOffsetPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningWeightRingRadiusPixels => lowSpeedWarningWeightRingRadiusPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningWeightRingThicknessPixels => lowSpeedWarningWeightRingThicknessPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningArrowShaftLengthPixels => lowSpeedWarningArrowShaftLengthPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningArrowShaftThicknessPixels => lowSpeedWarningArrowShaftThicknessPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningArrowHeadWidthPixels => lowSpeedWarningArrowHeadWidthPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
+    public float LowSpeedWarningArrowHeadHeightPixels => lowSpeedWarningArrowHeadHeightPixels * EffectiveMasterScale * lowSpeedWarningMasterScale;
 
     #endregion
 

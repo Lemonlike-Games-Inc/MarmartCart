@@ -74,19 +74,35 @@ public class OtherPlayerPointerProfile : ScriptableObject
 
     #endregion
 
+
+    #region Runtime Mode Adaptation
+
+    [System.NonSerialized] private float runtimeModeScaleMultiplier = 1f;
+
+    private float EffectivePointerBodyScale => pointerScale * runtimeModeScaleMultiplier;
+
+    public float RuntimeModeScaleMultiplier => runtimeModeScaleMultiplier;
+
+    public void SetRuntimeModeScaleMultiplier(float multiplier)
+    {
+        runtimeModeScaleMultiplier = Mathf.Max(0.05f, multiplier);
+    }
+
+    #endregion
+
     #region Public API
 
-    public float OrbitRadiusPixels => orbitRadiusPixels;
-    public Vector2 OrbitCenterOffsetPixels => orbitCenterOffsetPixels;
+    public float OrbitRadiusPixels => orbitRadiusPixels * runtimeModeScaleMultiplier;
+    public Vector2 OrbitCenterOffsetPixels => orbitCenterOffsetPixels * runtimeModeScaleMultiplier;
 
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
 
-    public Vector2 UpperCapsuleStartPixels => upperCapsuleStartPixels * pointerScale;
-    public Vector2 UpperCapsuleEndPixels => upperCapsuleEndPixels * pointerScale;
-    public Vector2 LowerCapsuleStartPixels => lowerCapsuleStartPixels * pointerScale;
-    public Vector2 LowerCapsuleEndPixels => lowerCapsuleEndPixels * pointerScale;
-    public float PointerCapsuleThicknessPixels => pointerCapsuleThicknessPixels * pointerScale;
+    public Vector2 UpperCapsuleStartPixels => upperCapsuleStartPixels * EffectivePointerBodyScale;
+    public Vector2 UpperCapsuleEndPixels => upperCapsuleEndPixels * EffectivePointerBodyScale;
+    public Vector2 LowerCapsuleStartPixels => lowerCapsuleStartPixels * EffectivePointerBodyScale;
+    public Vector2 LowerCapsuleEndPixels => lowerCapsuleEndPixels * EffectivePointerBodyScale;
+    public float PointerCapsuleThicknessPixels => pointerCapsuleThicknessPixels * EffectivePointerBodyScale;
     public float PointerScale => pointerScale;
 
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using Unity.Cinemachine;
 using UnityEngine;
 
 public enum GameSessionState
@@ -125,21 +124,14 @@ public class GameTimeManager : MonoBehaviour
 
     #endregion
 
-    #region Camera
+    #region Camera Integration
 
-    [Header("Camera Settings")]
-    [SerializeField] private CinemachineCamera cinemachineCameraP1;
-    [SerializeField] private CinemachineCamera cinemachineCameraP2;
-    [SerializeField] private CinemachineCamera cinemachineCameraP3;
-    [SerializeField] private CinemachineCamera cinemachineCameraP4;
-
-    [SerializeField] private float defaultOrthographicSize = 16f;
-    [SerializeField] private float orthographicSizeIncrement = 0.5f;
-
-    [Min(1)]
-    [SerializeField] private int cartsPerZoomIncrement = 5;
-
-    [SerializeField] private float maxOrthographicSize = 20f;
+    [Header("Camera Integration")]
+    [Tooltip(
+        "Camera lens settings and calculations now live in CameraManager + MatchSceneModeProfile. " +
+        "GameTimeManager only forwards cart-count changes."
+    )]
+    [SerializeField] private CameraManager cameraManager;
 
     #endregion
 
@@ -155,6 +147,7 @@ public class GameTimeManager : MonoBehaviour
     private void Awake()
     {
         if (matchFlowDirector == null) matchFlowDirector = FindFirstObjectByType<MatchFlowDirector>();
+        if (cameraManager == null) cameraManager = FindFirstObjectByType<CameraManager>();
     }
 
     private void OnEnable()
@@ -183,7 +176,6 @@ public class GameTimeManager : MonoBehaviour
     {
         ConfigurePlayerHudReferences();
         ResetCartHud();
-        ResetCameraZoom();
 
         EnterPreGame();
     }
@@ -193,7 +185,7 @@ public class GameTimeManager : MonoBehaviour
         if (sessionState != GameSessionState.Playing) return;
 
         UpdateTimerDisplay();
-        UpdateCartHudAndCameras();
+        UpdateCartHud();
     }
 
     #endregion
@@ -393,19 +385,19 @@ public class GameTimeManager : MonoBehaviour
         SetTextIfAssigned(currentItemCartCountP4Text, "0");
     }
 
-    private void UpdateCartHudAndCameras()
+    private void UpdateCartHud()
     {
-        UpdatePlayerCartState(snakeCartManagerP1, ref cartCountP1, activeTotalCartCountP1Text, cinemachineCameraP1);
-        UpdatePlayerCartState(snakeCartManagerP2, ref cartCountP2, activeTotalCartCountP2Text, cinemachineCameraP2);
-        UpdatePlayerCartState(snakeCartManagerP3, ref cartCountP3, currentTotalCartCountP3Text, cinemachineCameraP3);
-        UpdatePlayerCartState(snakeCartManagerP4, ref cartCountP4, currentTotalCartCountP4Text, cinemachineCameraP4);
+        UpdatePlayerCartState(snakeCartManagerP1, ref cartCountP1, activeTotalCartCountP1Text, 1);
+        UpdatePlayerCartState(snakeCartManagerP2, ref cartCountP2, activeTotalCartCountP2Text, 2);
+        UpdatePlayerCartState(snakeCartManagerP3, ref cartCountP3, currentTotalCartCountP3Text, 3);
+        UpdatePlayerCartState(snakeCartManagerP4, ref cartCountP4, currentTotalCartCountP4Text, 4);
     }
 
     private void UpdatePlayerCartState(
         SnakeCartManager manager,
         ref int cachedCartCount,
         TextMeshProUGUI cartCountText,
-        CinemachineCamera camera)
+        int playerIndex)
     {
         if (manager == null) return;
 
@@ -418,7 +410,7 @@ public class GameTimeManager : MonoBehaviour
 
         if (cartCountText != null) StartCoroutine(AnimateCartCountText(cartCountText));
 
-        UpdateCameraZoom(camera, cachedCartCount);
+        cameraManager?.SetPlayerCartCount(playerIndex, cachedCartCount);
     }
 
     private IEnumerator AnimateCartCountText(TextMeshProUGUI text)
@@ -465,31 +457,4 @@ public class GameTimeManager : MonoBehaviour
 
     #endregion
 
-    #region Camera Zoom
-
-    private void ResetCameraZoom()
-    {
-        SetCameraOrthographicSize(cinemachineCameraP1, defaultOrthographicSize);
-        SetCameraOrthographicSize(cinemachineCameraP2, defaultOrthographicSize);
-        SetCameraOrthographicSize(cinemachineCameraP3, defaultOrthographicSize);
-        SetCameraOrthographicSize(cinemachineCameraP4, defaultOrthographicSize);
-    }
-
-    private void UpdateCameraZoom(CinemachineCamera camera, int cartCount)
-    {
-        if (camera == null) return;
-
-        float zoomSteps = Mathf.Floor((float)cartCount / Mathf.Max(1, cartsPerZoomIncrement));
-        float newSize = defaultOrthographicSize + zoomSteps * orthographicSizeIncrement;
-        newSize = Mathf.Clamp(newSize, defaultOrthographicSize, maxOrthographicSize);
-
-        camera.Lens.OrthographicSize = newSize;
-    }
-
-    private void SetCameraOrthographicSize(CinemachineCamera camera, float size)
-    {
-        if (camera != null) camera.Lens.OrthographicSize = size;
-    }
-
-    #endregion
 }

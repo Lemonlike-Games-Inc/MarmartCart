@@ -41,6 +41,19 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
+
+    #region Mode Adaptation
+
+    public void SetModeScaleMultiplier(float multiplier)
+    {
+        if (markerProfile != null)
+        {
+            markerProfile.SetRuntimeModeScaleMultiplier(multiplier);
+        }
+    }
+
+    #endregion
+
     #region Unity
 
     private void Awake()

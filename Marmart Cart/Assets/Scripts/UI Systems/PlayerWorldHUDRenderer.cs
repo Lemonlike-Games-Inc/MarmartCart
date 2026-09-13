@@ -57,6 +57,19 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
+
+    #region Mode Adaptation
+
+    public void SetModeScaleMultiplier(float multiplier)
+    {
+        if (layoutProfile != null)
+        {
+            layoutProfile.SetRuntimeModeScaleMultiplier(multiplier);
+        }
+    }
+
+    #endregion
+
     #region Unity
 
     private void Awake()

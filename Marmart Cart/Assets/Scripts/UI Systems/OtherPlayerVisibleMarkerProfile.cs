@@ -104,18 +104,34 @@ public class OtherPlayerVisibleMarkerProfile : ScriptableObject
 
     #endregion
 
+
+    #region Runtime Mode Adaptation
+
+    [System.NonSerialized] private float runtimeModeScaleMultiplier = 1f;
+
+    private float EffectiveMarkerScale => markerMasterScale * runtimeModeScaleMultiplier;
+
+    public float RuntimeModeScaleMultiplier => runtimeModeScaleMultiplier;
+
+    public void SetRuntimeModeScaleMultiplier(float multiplier)
+    {
+        runtimeModeScaleMultiplier = Mathf.Max(0.05f, multiplier);
+    }
+
+    #endregion
+
     #region Public API
 
-    public Vector2 MarkerTipOffsetPixels => markerTipOffsetPixels * markerMasterScale;
+    public Vector2 MarkerTipOffsetPixels => markerTipOffsetPixels * EffectiveMarkerScale;
     public float MarkerMasterScale => markerMasterScale;
 
-    public float BodyRadiusPixels => bodyRadiusPixels * markerMasterScale;
-    public float TailWidthPixels => tailWidthPixels * markerMasterScale;
-    public float TailHeightPixels => tailHeightPixels * markerMasterScale;
-    public float TailBodyOverlapPixels => tailBodyOverlapPixels * markerMasterScale;
+    public float BodyRadiusPixels => bodyRadiusPixels * EffectiveMarkerScale;
+    public float TailWidthPixels => tailWidthPixels * EffectiveMarkerScale;
+    public float TailHeightPixels => tailHeightPixels * EffectiveMarkerScale;
+    public float TailBodyOverlapPixels => tailBodyOverlapPixels * EffectiveMarkerScale;
 
-    public Vector2 TextOffsetPixels => textOffsetPixels * markerMasterScale;
-    public float FontSizePixels => fontSizePixels * markerMasterScale;
+    public Vector2 TextOffsetPixels => textOffsetPixels * EffectiveMarkerScale;
+    public float FontSizePixels => fontSizePixels * EffectiveMarkerScale;
     public Color TextColor => textColor;
 
     public float ScreenVisibilityPaddingPixels => screenVisibilityPaddingPixels;

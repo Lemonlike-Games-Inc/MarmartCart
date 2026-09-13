@@ -36,6 +36,19 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
+
+    #region Mode Adaptation
+
+    public void SetModeScaleMultiplier(float multiplier)
+    {
+        if (profile != null)
+        {
+            profile.SetRuntimeModeScaleMultiplier(multiplier);
+        }
+    }
+
+    #endregion
+
     #region Unity
 
     private void Awake()
