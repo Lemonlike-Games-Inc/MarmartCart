@@ -138,12 +138,17 @@ public class CameraManager : MonoBehaviour
 
             if (outputCamera != null)
             {
-                outputCamera.enabled = active;
-
                 if (active)
                 {
                     outputCamera.rect = profile.GetViewportRect(playerCount, playerIndex);
                 }
+
+                SetCameraComponentAndObjectActive(
+                    outputCamera,
+                    active,
+                    playerIndex,
+                    "physical output Camera"
+                );
             }
             else if (active)
             {
@@ -155,11 +160,20 @@ public class CameraManager : MonoBehaviour
 
             if (cinemachineCamera != null)
             {
-                cinemachineCamera.enabled = active;
-
                 if (active)
                 {
                     ApplyPlayerLens(playerIndex);
+                }
+
+                SetCameraComponentAndObjectActive(
+                    cinemachineCamera,
+                    active,
+                    playerIndex,
+                    "CinemachineCamera"
+                );
+
+                if (active)
+                {
                     CameraSwitcher.Register(cinemachineCamera);
                     cameraSwitcherRegistered[playerIndex - 1] = true;
                 }
@@ -176,6 +190,53 @@ public class CameraManager : MonoBehaviour
         // Focus targets may not exist yet. Bind them independently as the
         // runtime leading carts are spawned.
         StartFocusBindingRoutine();
+    }
+
+    /// <summary>
+    /// Camera.enabled alone cannot reactivate a camera whose GameObject starts
+    /// inactive. Keep both layers synchronized so 2P and 4P work regardless of
+    /// how the scene was left in the Inspector before entering Play mode.
+    /// </summary>
+    private void SetCameraComponentAndObjectActive(
+        Behaviour cameraComponent,
+        bool active,
+        int playerIndex,
+        string cameraDescription)
+    {
+        if (cameraComponent == null) return;
+
+        GameObject cameraObject =
+            cameraComponent.gameObject;
+
+        // Set the Behaviour first. When activating an inactive GameObject, its
+        // OnEnable lifecycle then begins with the correct component state.
+        cameraComponent.enabled = active;
+
+        if (cameraObject == null ||
+            cameraObject.activeSelf == active)
+        {
+            return;
+        }
+
+        // Misconfigured references should never allow a player camera slot to
+        // deactivate CameraManager itself or one of its ancestors.
+        if (!active &&
+            (
+                cameraObject == gameObject ||
+                transform.IsChildOf(cameraObject.transform)
+            ))
+        {
+            Debug.LogWarning(
+                $"[CameraManager] Player {playerIndex} {cameraDescription} is on " +
+                "CameraManager's own GameObject hierarchy. Its component was " +
+                "disabled, but the GameObject was kept active to protect the manager.",
+                cameraObject
+            );
+
+            return;
+        }
+
+        cameraObject.SetActive(active);
     }
 
     #endregion
