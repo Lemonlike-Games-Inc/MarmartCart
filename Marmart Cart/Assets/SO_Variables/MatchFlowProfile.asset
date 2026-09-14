@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: MatchFlowProfile
   m_EditorClassIdentifier: Assembly-CSharp::MatchFlowProfile
   sessions:
+  - label: Checkout Cycle1
+    type: 3
+    duration: 2000
+    telegraphDuration: 1
+    resourceBudget: 0
+    batchSize: 1
+    zone: 0
+    checkoutStations: -1
   - label: Game Start Empty Period
     type: 0
     duration: 3000
@@ -37,14 +45,6 @@ MonoBehaviour:
     batchSize: 4
     zone: 0
     checkoutStations: 0
-  - label: Checkout Cycle1
-    type: 3
-    duration: 20
-    telegraphDuration: 5
-    resourceBudget: 0
-    batchSize: 1
-    zone: 0
-    checkoutStations: -1
   - label: End
     type: 4
     duration: 1

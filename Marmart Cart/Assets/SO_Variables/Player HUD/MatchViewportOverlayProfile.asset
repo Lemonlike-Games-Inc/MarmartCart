@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 750918b6e62b632408c0ce61a84a6e21, type: 3}
+  m_Name: MatchViewportOverlayProfile
+  m_EditorClassIdentifier: 
+  viewportAnchorNormalized: {x: 0.5, y: 1}
+  twoPlayerRootOffsetPixels: {x: 0, y: -180}
+  twoPlayerMasterScale: 1
+  fourPlayerRootOffsetPixels: {x: 0, y: -33}
+  fourPlayerMasterScale: 0.75
+  modeSpecificRootLayoutVersion: 1
+  nearCameraRenderDistance: 0.5
+  nearClipSafetyPadding: 0.03
+  timerOffsetPixels: {x: 0, y: 0}
+  timerBackgroundOffsetPixels: {x: 0, y: 0}
+  timerBackgroundWidthPixels: 166
+  timerBackgroundHeightPixels: 60
+  timerBackgroundColor: {r: 0.055, g: 0.065, b: 0.085, a: 0.88}
+  timerTextOffsetPixels: {x: 0, y: 0}
+  timerFontSizePixels: 550
+  timerTextColor: {r: 1, g: 1, b: 1, a: 1}
+  leaderboardMasterScale: 1.5
+  leaderboardOffsetPixels: {x: 0, y: 0}
+  timerToLeaderboardPaddingPixels: 5
+  leaderboardRowHeightPixels: 35
+  leaderboardRowSpacingPixels: 2
+  leaderboardBarOffsetPixels: {x: 0, y: 0}
+  leaderboardBarWidthPixels: 450
+  leaderboardBarBackgroundHeightPixels: 35
+  leaderboardBarFillHeightPixels: 30
+  leaderboardBarHorizontalPaddingPixels: 3
+  leaderboardBarCornerRadiusPixels: 5
+  leaderboardBarBackgroundColor: {r: 0.055, g: 0.065, b: 0.085, a: 0.78}
+  leaderboardBarFillOutlineColor: {r: 1, g: 1, b: 1, a: 0.56078434}
+  leaderboardBarFillOutlineThicknessPixels: 1.5
+  leaderboardPotentialFillColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+  leaderboardP1FillColor: {r: 0.2, g: 0.66, b: 1, a: 1}
+  leaderboardP2FillColor: {r: 1, g: 0.2, b: 0.03529412, a: 1}
+  leaderboardP3FillColor: {r: 0.3, g: 0.88, b: 0.48, a: 1}
+  leaderboardP4FillColor: {r: 0.9685534, g: 0.7861668, b: 0.25888988, a: 1}
+  leaderboardPotentialBackgroundColor: {r: 0, g: 0, b: 0, a: 0.88}
+  leaderboardP1PotentialPatternColorA: {r: 0.2, g: 0.66, b: 1, a: 1}
+  leaderboardP1PotentialPatternColorB: {r: 0.52, g: 0.82, b: 1, a: 1}
+  leaderboardP2PotentialPatternColorA: {r: 1, g: 0.20138946, b: 0.03459108, a: 1}
+  leaderboardP2PotentialPatternColorB: {r: 0.9496855, g: 0.53708124, b: 0.49873418, a: 1}
+  leaderboardP3PotentialPatternColorA: {r: 0.19042741, g: 0.8805031, b: 0.13013718, a: 1}
+  leaderboardP3PotentialPatternColorB: {r: 0.56, g: 1, b: 0.68, a: 1}
+  leaderboardP4PotentialPatternColorA: {r: 1, g: 0.41823584, b: 0, a: 1}
+  leaderboardP4PotentialPatternColorB: {r: 0.96862745, g: 0.78431374, b: 0.25882354, a: 1}
+  leaderboardStreakRewardPatternColorA: {r: 0.6967746, g: 0.3679244, b: 1, a: 1}
+  leaderboardStreakRewardPatternColorB: {r: 0.8577539, g: 0.7081404, b: 0.9748427, a: 1}
+  leaderboardPotentialPatternBaseOpacity: 0.4
+  leaderboardPotentialPatternLineThicknessPixels: 5.5
+  leaderboardPotentialPatternWidthPixels: 5
+  leaderboardPotentialPatternSpacingPixels: 9.8
+  leaderboardPotentialPatternVerticalPaddingPixels: 0
+  leaderboardPlayerLabelGroupScale: 1
+  leaderboardPlayerLabelGapPixels: 3.5
+  leaderboardPlayerLabelGroupOffsetPixels: {x: 0, y: 0}
+  leaderboardPlayerLabelBackgroundSizePixels: {x: 55, y: 35}
+  leaderboardPlayerLabelBackgroundCornerRadiusPixels: 5
+  leaderboardPlayerLabelBackgroundColor: {r: 0.055, g: 0.065, b: 0.085, a: 0.88}
+  leaderboardP1LabelBackgroundColor: {r: 0.2, g: 0.66, b: 1, a: 1}
+  leaderboardP2LabelBackgroundColor: {r: 1, g: 0.2, b: 0.03529412, a: 1}
+  leaderboardP3LabelBackgroundColor: {r: 0.3, g: 0.88, b: 0.48, a: 1}
+  leaderboardP4LabelBackgroundColor: {r: 0.96862745, g: 0.78431374, b: 0.25882354, a: 1}
+  leaderboardPlayerLabelFontSizePixels: 300
+  leaderboardRankGroupScale: 1
+  leaderboardRankTextGapPixels: 3.5
+  leaderboardRankGroupOffsetPixels: {x: 0, y: 0}
+  leaderboardRankBackgroundSizePixels: {x: 55, y: 35}
+  leaderboardRankBackgroundCornerRadiusPixels: 5
+  leaderboardRankBackgroundColor: {r: 0.055, g: 0.065, b: 0.085, a: 0.88}
+  leaderboardRankFontSizePixels: 300
+  leaderboardTextColor: {r: 1, g: 1, b: 1, a: 1}
+  leaderboardYouBarBackgroundColor: {r: 0, g: 0, b: 0, a: 0.90588236}
+  leaderboardYouPlayerLabelBackgroundColor: {r: 1, g: 1, b: 1, a: 0.96}
+  leaderboardYouRankBackgroundColor: {r: 1, g: 1, b: 1, a: 0.96}
+  leaderboardYouTextColor: {r: 0, g: 0, b: 0, a: 1}
+  leaderboardStartingGlobalMaximum: 20
+  leaderboardGlobalMaximumIncrement: 30
+  leaderboardBarAnimationEnabled: 1
+  leaderboardBarAnimationDurationSeconds: 0.35
+  leaderboardBarAnimationEasing:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3
+      outSlope: 3
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  leaderboardBarAnimationCurveVersion: 1
+  leaderboardEntryReorderAnimationEnabled: 1
+  leaderboardEntryReorderAnimationDurationSeconds: 0.75

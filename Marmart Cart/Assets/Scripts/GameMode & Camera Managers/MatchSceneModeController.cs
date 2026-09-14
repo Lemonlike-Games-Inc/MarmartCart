@@ -47,6 +47,11 @@ public class MatchSceneModeController : MonoBehaviour
     [Tooltip("Optional. Receives the 2P/4P runtime scale multiplier for visible-player raindrop markers.")]
     [SerializeField] private OtherPlayerVisibleMarkerRenderer otherPlayerVisibleMarkerRenderer;
 
+    [Tooltip(
+        "Optional. Selects the 2P/4P master scale and root offset authored " +
+        "inside MatchViewportOverlayProfile.")]
+    [SerializeField] private MatchViewportOverlayRenderer matchViewportOverlayRenderer;
+
     #endregion
 
     #region Runtime
@@ -262,6 +267,13 @@ public class MatchSceneModeController : MonoBehaviour
         {
             otherPlayerVisibleMarkerRenderer.SetModeScaleMultiplier(visibleMarkerScale);
         }
+
+        if (matchViewportOverlayRenderer != null)
+        {
+            matchViewportOverlayRenderer.SetModePlayerCount(
+                configuredPlayerCount
+            );
+        }
     }
 
     #endregion
@@ -298,6 +310,11 @@ public class MatchSceneModeController : MonoBehaviour
         if (otherPlayerVisibleMarkerRenderer == null)
         {
             otherPlayerVisibleMarkerRenderer = FindFirstObjectByType<OtherPlayerVisibleMarkerRenderer>();
+        }
+
+        if (matchViewportOverlayRenderer == null)
+        {
+            matchViewportOverlayRenderer = FindFirstObjectByType<MatchViewportOverlayRenderer>();
         }
     }
 
