@@ -251,6 +251,22 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     [SerializeField] private Color hypeTrackColor = new Color(0.20f, 0.24f, 0.30f, 0.60f);
     [SerializeField] private Color hypeFillColor = new Color(0.20f, 1f, 0.60f, 1f);
 
+    [Header("Hype Speed Up Flash")]
+    [Tooltip(
+        "Pulses the current Hype fill between its normal color and the flash " +
+        "color while the semantic Is Speeding Up state is true.")]
+    [SerializeField] private bool flashHypeFillWhileSpeedingUp = true;
+
+    [SerializeField]
+    private Color hypeSpeedupFlashColor =
+        new Color(1f, 0.92f, 0.25f, 1f);
+
+    [Tooltip(
+        "Complete normal -> flash -> normal color cycles per second while " +
+        "Speed Up is active.")]
+    [Min(0.01f)]
+    [SerializeField] private float hypeSpeedupFlashFrequencyHz = 3f;
+
     [Header("Hype Fill Animation")]
     [Tooltip(
         "Animate positive Hype changes so the active fill travels toward the new value instead of teleporting. " +
@@ -592,6 +608,10 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     public float HypeCenterAngleDegrees => hypeCenterAngleDegrees;
     public Color HypeTrackColor => hypeTrackColor;
     public Color HypeFillColor => hypeFillColor;
+    public bool FlashHypeFillWhileSpeedingUp => flashHypeFillWhileSpeedingUp;
+    public Color HypeSpeedupFlashColor => hypeSpeedupFlashColor;
+    public float HypeSpeedupFlashFrequencyHz =>
+        Mathf.Max(0.01f, hypeSpeedupFlashFrequencyHz);
     public bool AnimateHypeGainFill => animateHypeGainFill;
     public float HypeGainFillSpeedNormalizedPerSecond => hypeGainFillSpeedNormalizedPerSecond;
 
@@ -813,6 +833,8 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
             1f,
             hypeTrackThicknessPixels
         );
+        hypeSpeedupFlashFrequencyHz =
+            Mathf.Max(0.01f, hypeSpeedupFlashFrequencyHz);
         hypeGainFillSpeedNormalizedPerSecond = Mathf.Max(0.01f, hypeGainFillSpeedNormalizedPerSecond);
 
         hypeRewardPreviewThicknessPixels = Mathf.Max(1f, hypeRewardPreviewThicknessPixels);

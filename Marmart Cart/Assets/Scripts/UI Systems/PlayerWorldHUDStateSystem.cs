@@ -185,6 +185,11 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
             return;
         }
 
+        playerStates[index].SetDriftPenaltyPreview(
+            active,
+            potentialPenalty
+        );
+
         OnStateChanged?.Invoke(
             playerIndex,
             PlayerWorldHUDStateChange.DriftPenalty
@@ -199,6 +204,8 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
             return;
         }
 
+        playerStates[index].ClearDriftPenaltyPreview();
+
         OnStateChanged?.Invoke(
             playerIndex,
             PlayerWorldHUDStateChange.DriftPenalty
@@ -212,6 +219,8 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
         {
             return;
         }
+
+        playerStates[index].ClearAllDriftPreviews();
 
         OnStateChanged?.Invoke(
             playerIndex,

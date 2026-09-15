@@ -24,6 +24,7 @@ using UnityEngine;
 /// HYPE:
 /// - positive Hype gains animate the active fill toward the new value;
 /// - Hype decreases remain immediate for responsive spending/loss feedback.
+/// - the current fill pulses between two profile colors while Speed Up is active.
 ///
 /// CONTROL PROMPTS:
 /// - backward-movement availability draws a profile-authored rounded prompt;
@@ -1048,6 +1049,11 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         // 3. CURRENT HYPE OVER THE REWARD PREVIEW.
         if (currentValue > 0f)
         {
+            Color currentFillColor =
+                GetCurrentHypeFillColor(
+                    state
+                );
+
             DrawRoundedArcSection(
                 cam,
                 centerWorld,
@@ -1056,10 +1062,75 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 layoutProfile.HypeFillThicknessPixels,
                 bottomDegrees,
                 currentDegrees,
-                layoutProfile.HypeFillColor
+                currentFillColor
             );
         }
 
+        // 4. FAILURE PENALTY LAST.
+        //
+        // It overlays the portion of CURRENT Hype that would actually be
+        // lost if the drift fails.
+        if (showPenalty &&
+            state.DriftPenaltyPreviewActive)
+        {
+            float projectedFailure =
+                Mathf.Clamp01(
+                    state.ProjectedHypeAfterDriftPenaltyNormalized
+                );
+
+            if (projectedFailure < currentValue)
+            {
+                float penaltyStartDegrees =
+                    Mathf.Lerp(
+                        bottomDegrees,
+                        topDegrees,
+                        projectedFailure
+                    );
+
+                DrawRoundedArcSection(
+                    cam,
+                    centerWorld,
+                    rotation,
+                    layoutProfile.HypeRadiusPixels +
+                    layoutProfile.HypePenaltyPreviewRadiusOffsetPixels,
+                    layoutProfile.HypePenaltyPreviewThicknessPixels,
+                    penaltyStartDegrees,
+                    currentDegrees,
+                    layoutProfile.HypePenaltyPreviewColor
+                );
+            }
+        }
+    }
+
+    private Color GetCurrentHypeFillColor(
+        PlayerWorldHUDState state)
+    {
+        Color normalColor =
+            layoutProfile.HypeFillColor;
+
+        if (state == null ||
+            !state.IsSpeedingUp ||
+            !layoutProfile.FlashHypeFillWhileSpeedingUp)
+        {
+            return normalColor;
+        }
+
+        float phaseRadians =
+            Time.unscaledTime *
+            layoutProfile.HypeSpeedupFlashFrequencyHz *
+            Mathf.PI *
+            2f;
+
+        // Smooth cosine pulse: 0 = normal color, 1 = flash color.
+        float flashBlend =
+            0.5f -
+            0.5f * Mathf.Cos(phaseRadians);
+
+        return Color.Lerp(
+            normalColor,
+            layoutProfile.HypeSpeedupFlashColor,
+            flashBlend
+        );
     }
 
     private float GetDisplayedHypeNormalized(

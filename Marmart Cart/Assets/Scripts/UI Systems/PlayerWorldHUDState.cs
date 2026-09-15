@@ -36,6 +36,13 @@ public sealed class PlayerWorldHUDState
     [Tooltip("Potential Hype that would be awarded if the current drift succeeds.")]
     [SerializeField] private float potentialDriftHypeReward;
 
+    [Header("Drift Hype Penalty Preview - Runtime State")]
+    [Tooltip("Whether a potential failed-drift penalty currently exists and may be previewed.")]
+    [SerializeField] private bool driftPenaltyPreviewActive;
+
+    [Tooltip("Potential Hype that would be lost if the current drift fails.")]
+    [SerializeField] private float potentialDriftHypePenalty;
+
     #endregion
 
     #region Load
@@ -104,6 +111,36 @@ public sealed class PlayerWorldHUDState
 
     #endregion
 
+    #region Drift Penalty Read API
+
+    public bool DriftPenaltyPreviewActive =>
+        driftPenaltyPreviewActive &&
+        potentialDriftHypePenalty > 0f;
+
+    public float PotentialDriftHypePenalty =>
+        Mathf.Max(0f, potentialDriftHypePenalty);
+
+    public float PotentialDriftHypePenaltyNormalized =>
+        maxHype > 0.0001f
+            ? Mathf.Clamp01(PotentialDriftHypePenalty / maxHype)
+            : 0f;
+
+    public float ProjectedHypeAfterDriftPenalty =>
+        maxHype > 0f
+            ? Mathf.Clamp(
+                currentHype - PotentialDriftHypePenalty,
+                0f,
+                maxHype
+            )
+            : 0f;
+
+    public float ProjectedHypeAfterDriftPenaltyNormalized =>
+        maxHype > 0.0001f
+            ? Mathf.Clamp01(ProjectedHypeAfterDriftPenalty / maxHype)
+            : 0f;
+
+    #endregion
+
     #region Load Read API
 
     public float CurrentLoad => currentLoad;
@@ -161,6 +198,24 @@ public sealed class PlayerWorldHUDState
         potentialDriftHypeReward = 0f;
     }
 
+    public void SetDriftPenaltyPreview(bool active, float potentialPenalty)
+    {
+        driftPenaltyPreviewActive = active;
+        potentialDriftHypePenalty = Mathf.Max(0f, potentialPenalty);
+    }
+
+    public void ClearDriftPenaltyPreview()
+    {
+        driftPenaltyPreviewActive = false;
+        potentialDriftHypePenalty = 0f;
+    }
+
+    public void ClearAllDriftPreviews()
+    {
+        ClearDriftRewardPreview();
+        ClearDriftPenaltyPreview();
+    }
+
     public void SetLoad(float load, float capacity, float overload)
     {
         currentLoad = Mathf.Max(0f, load);
@@ -194,6 +249,8 @@ public sealed class PlayerWorldHUDState
         isSpeedingUp = false;
         driftRewardPreviewActive = false;
         potentialDriftHypeReward = 0f;
+        driftPenaltyPreviewActive = false;
+        potentialDriftHypePenalty = 0f;
         currentLoad = 0f;
         safeCapacity = 0f;
         overloadAmount = 0f;
