@@ -18,8 +18,13 @@ MonoBehaviour:
   fourPlayerRootOffsetPixels: {x: 0, y: -33}
   fourPlayerMasterScale: 0.75
   modeSpecificRootLayoutVersion: 1
-  nearCameraRenderDistance: 0.5
+  nearCameraRenderDistance: 0.001
   nearClipSafetyPadding: 0.03
+  splitScreenDividersEnabled: 1
+  verticalDividerWidthPixels: 6
+  verticalDividerColor: {r: 0.055, g: 0.065, b: 0.085, a: 1}
+  horizontalDividerHeightPixels: 6
+  horizontalDividerColor: {r: 0.055, g: 0.065, b: 0.085, a: 1}
   timerOffsetPixels: {x: 0, y: 0}
   timerBackgroundOffsetPixels: {x: 0, y: 0}
   timerBackgroundWidthPixels: 166
