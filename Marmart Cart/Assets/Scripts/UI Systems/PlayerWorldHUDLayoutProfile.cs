@@ -14,7 +14,6 @@ using UnityEngine;
 /// - overload severity gradient.
 ///
 /// HYPE remains the stable background + current fill from Step 5B.
-/// Checkout-only prompt and registered-score pulse styling are authored here.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Player HUD/World HUD Layout Profile",
@@ -155,29 +154,6 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     [SerializeField] private float checkoutPromptFontSizePixels = 18f;
 
     [SerializeField] private Color checkoutPromptTextColor = Color.white;
-
-    [Header("Checkout Prompt - Registered Score Pulse")]
-    [Tooltip(
-        "Shows the latest cumulative score successfully registered during " +
-        "checkout. Each newer registration immediately replaces the previous value.")]
-    [SerializeField] private bool showCheckoutRegisteredScore = true;
-
-    [Tooltip(
-        "Position relative to the Checkout Prompt group center in screen pixels.")]
-    [SerializeField]
-    private Vector2 checkoutRegisteredScoreOffsetPixels =
-        new Vector2(0f, 52f);
-
-    [Min(1f)]
-    [SerializeField] private float checkoutRegisteredScoreFontSizePixels = 32f;
-
-    [SerializeField] private Color checkoutRegisteredScoreColor = Color.white;
-
-    [Tooltip(
-        "Maximum visible lifetime for one registered-score value. " +
-        "A newer value replaces it immediately and begins its own lifetime.")]
-    [Range(0.01f, 0.4f)]
-    [SerializeField] private float checkoutRegisteredScoreLifetimeSeconds = 0.4f;
 
     #endregion
 
@@ -687,14 +663,6 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     public float CheckoutPromptFontSizePixels =>
         checkoutPromptFontSizePixels * EffectiveCheckoutPromptScale;
     public Color CheckoutPromptTextColor => checkoutPromptTextColor;
-    public bool ShowCheckoutRegisteredScore => showCheckoutRegisteredScore;
-    public Vector2 CheckoutRegisteredScoreOffsetPixels =>
-        checkoutRegisteredScoreOffsetPixels * EffectiveCheckoutPromptScale;
-    public float CheckoutRegisteredScoreFontSizePixels =>
-        checkoutRegisteredScoreFontSizePixels * EffectiveCheckoutPromptScale;
-    public Color CheckoutRegisteredScoreColor => checkoutRegisteredScoreColor;
-    public float CheckoutRegisteredScoreLifetimeSeconds =>
-        checkoutRegisteredScoreLifetimeSeconds;
 
     public bool UseNearCameraRenderPlane => useNearCameraRenderPlane;
     public float NearCameraRenderDistance => nearCameraRenderDistance;
@@ -962,16 +930,6 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
 
         checkoutPromptFontSizePixels =
             Mathf.Max(1f, checkoutPromptFontSizePixels);
-
-        checkoutRegisteredScoreFontSizePixels =
-            Mathf.Max(1f, checkoutRegisteredScoreFontSizePixels);
-
-        checkoutRegisteredScoreLifetimeSeconds =
-            Mathf.Clamp(
-                checkoutRegisteredScoreLifetimeSeconds,
-                0.01f,
-                0.4f
-            );
 
         nearCameraRenderDistance = Mathf.Max(0.01f, nearCameraRenderDistance);
         nearClipSafetyPadding = Mathf.Max(0.001f, nearClipSafetyPadding);

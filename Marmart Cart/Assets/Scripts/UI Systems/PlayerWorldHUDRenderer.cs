@@ -29,11 +29,6 @@ using UnityEngine;
 /// CONTROL PROMPTS:
 /// - backward-movement availability draws a profile-authored rounded prompt;
 /// - visibility comes only from the local player's semantic HUD state.
-///
-/// CHECKOUT HUD:
-/// - checkout suppression replaces the normal meters with the checkout prompt;
-/// - each successfully registered cart flashes the session's cumulative base score;
-/// - an earned streak bonus flashes once as the final cumulative checkout total.
 /// </summary>
 [DisallowMultipleComponent]
 public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
@@ -44,7 +39,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     [SerializeField] private PlayerWorldHUDSystem hudSystem;
     [SerializeField] private PlayerWorldHUDStateSystem stateSystem;
     [SerializeField] private PlayerWorldHUDLayoutProfile layoutProfile;
-    [SerializeField] private CashScoreManager cashScoreManager;
 
     [Tooltip(
         "Optional semantic feature toggles. If left unassigned, supported HUD channels default to visible."
@@ -87,7 +81,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         if (hudSystem == null) hudSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
         if (stateSystem == null) stateSystem = FindFirstObjectByType<PlayerWorldHUDStateSystem>();
-        if (cashScoreManager == null) cashScoreManager = FindFirstObjectByType<CashScoreManager>();
     }
 
     public override void DrawShapes(Camera cam)
@@ -148,12 +141,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 DrawCheckoutPrompt(
                     cam,
                     renderAnchorWorld
-                );
-
-                DrawCheckoutRegisteredScore(
-                    cam,
-                    renderAnchorWorld,
-                    playerIndex
                 );
             }
 
@@ -313,68 +300,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             layoutProfile.CheckoutPromptText,
             layoutProfile.CheckoutPromptFontSizePixels,
             layoutProfile.CheckoutPromptTextColor
-        );
-    }
-
-    private void DrawCheckoutRegisteredScore(
-        Camera cam,
-        Vector3 renderAnchorWorld,
-        int playerIndex)
-    {
-        if (!layoutProfile.ShowCheckoutRegisteredScore)
-        {
-            return;
-        }
-
-        if (cashScoreManager == null)
-        {
-            cashScoreManager =
-                FindFirstObjectByType<CashScoreManager>();
-        }
-
-        if (cashScoreManager == null ||
-            !cashScoreManager.TryGetCheckoutScorePulse(
-                playerIndex,
-                out int cumulativeScore,
-                out float registeredAtUnscaledTime
-            ))
-        {
-            return;
-        }
-
-        float pulseAge =
-            Mathf.Max(
-                0f,
-                Time.unscaledTime -
-                registeredAtUnscaledTime
-            );
-
-        if (pulseAge >=
-            layoutProfile.CheckoutRegisteredScoreLifetimeSeconds)
-        {
-            return;
-        }
-
-        Vector3 anchorScreen =
-            cam.WorldToScreenPoint(
-                renderAnchorWorld
-            );
-
-        Vector2 groupCenter =
-            new Vector2(
-                anchorScreen.x,
-                anchorScreen.y
-            ) +
-            layoutProfile.CheckoutPromptOffsetPixels;
-
-        DrawCenteredScreenText(
-            cam,
-            anchorScreen.z,
-            groupCenter +
-            layoutProfile.CheckoutRegisteredScoreOffsetPixels,
-            cumulativeScore.ToString(),
-            layoutProfile.CheckoutRegisteredScoreFontSizePixels,
-            layoutProfile.CheckoutRegisteredScoreColor
         );
     }
 

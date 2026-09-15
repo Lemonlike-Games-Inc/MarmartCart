@@ -126,14 +126,6 @@ public class CashScoreManager : MonoBehaviour
     private readonly CheckoutSessionData[] currentSession = new CheckoutSessionData[MaxPlayers];
     private readonly CheckoutSessionData[] lastSession = new CheckoutSessionData[MaxPlayers];
 
-    // Transient checkout-registration feedback. The timestamp is authored at
-    // the scoring boundary rather than at the input boundary, so manual and
-    // automatic checkout produce the exact same HUD pulse.
-    private readonly int[] checkoutScorePulseValues = new int[MaxPlayers];
-    private readonly float[] checkoutScorePulseTimes = new float[MaxPlayers];
-    private readonly int[] checkoutScorePulseVersions = new int[MaxPlayers];
-    private readonly bool[] checkoutBonusPulsePublished = new bool[MaxPlayers];
-
     #endregion
 
     #region Events
@@ -169,12 +161,9 @@ public class CashScoreManager : MonoBehaviour
     {
         if (!IsValidPlayer(playerIndex)) return;
 
-        int playerArrayIndex = playerIndex - 1;
-        CheckoutSessionData session = currentSession[playerArrayIndex];
+        CheckoutSessionData session = currentSession[playerIndex - 1];
         session.Reset();
         session.isActive = true;
-
-        ClearCheckoutScorePulse(playerArrayIndex);
     }
 
     /// <summary>
@@ -212,43 +201,7 @@ public class CashScoreManager : MonoBehaviour
         session.basePoints += scoreAdded;
         RefreshSessionReward(session);
 
-        PublishCheckoutScorePulse(
-            playerIndex,
-            Mathf.RoundToInt(session.basePoints)
-        );
-
         return scoreAdded;
-    }
-
-    /// <summary>
-    /// Marks the point where every physical cart has been registered, without
-    /// committing the checkout session to banked score yet. If this session
-    /// earned a streak/milestone bonus, presentation consumers receive one
-    /// final cumulative pulse: submitted base score + earned bonus.
-    /// </summary>
-    public void CompleteCheckoutRegistration(int playerIndex)
-    {
-        if (!IsValidPlayer(playerIndex)) return;
-
-        int playerArrayIndex = playerIndex - 1;
-        CheckoutSessionData session = currentSession[playerArrayIndex];
-
-        if (!session.isActive ||
-            session.cargoCount <= 0 ||
-            checkoutBonusPulsePublished[playerArrayIndex])
-        {
-            return;
-        }
-
-        checkoutBonusPulsePublished[playerArrayIndex] = true;
-
-        int bonusScore = Mathf.RoundToInt(session.bonusPoints);
-        if (bonusScore <= 0) return;
-
-        PublishCheckoutScorePulse(
-            playerIndex,
-            Mathf.RoundToInt(session.subtotal)
-        );
     }
 
     public void EndCheckoutSession(int playerIndex)
@@ -286,7 +239,6 @@ public class CashScoreManager : MonoBehaviour
         last.isActive = false;
 
         session.Reset();
-        ClearCheckoutScorePulse(playerIndex - 1);
     }
 
     public CheckoutSessionData GetCurrentSessionData(int playerIndex)
@@ -299,29 +251,6 @@ public class CashScoreManager : MonoBehaviour
     {
         if (!IsValidPlayer(playerIndex)) return null;
         return lastSession[playerIndex - 1];
-    }
-
-    /// <summary>
-    /// Returns the latest successful cart-registration total, or the final
-    /// base-plus-bonus total when the checkout reward was completed.
-    /// Consumers decide how long that pulse remains visible.
-    /// </summary>
-    public bool TryGetCheckoutScorePulse(
-        int playerIndex,
-        out int cumulativeScore,
-        out float registeredAtUnscaledTime)
-    {
-        cumulativeScore = 0;
-        registeredAtUnscaledTime = 0f;
-
-        if (!IsValidPlayer(playerIndex)) return false;
-
-        int playerArrayIndex = playerIndex - 1;
-        if (checkoutScorePulseVersions[playerArrayIndex] <= 0) return false;
-
-        cumulativeScore = checkoutScorePulseValues[playerArrayIndex];
-        registeredAtUnscaledTime = checkoutScorePulseTimes[playerArrayIndex];
-        return true;
     }
 
     #endregion
@@ -454,40 +383,15 @@ public class CashScoreManager : MonoBehaviour
 
     private CheckoutSessionData EnsureActiveSession(int playerIndex)
     {
-        int playerArrayIndex = playerIndex - 1;
-        CheckoutSessionData session = currentSession[playerArrayIndex];
+        CheckoutSessionData session = currentSession[playerIndex - 1];
 
         if (!session.isActive)
         {
             session.Reset();
             session.isActive = true;
-            ClearCheckoutScorePulse(playerArrayIndex);
         }
 
         return session;
-    }
-
-    private void PublishCheckoutScorePulse(
-        int playerIndex,
-        int cumulativeScore)
-    {
-        int playerArrayIndex = playerIndex - 1;
-
-        checkoutScorePulseValues[playerArrayIndex] =
-            Mathf.Max(0, cumulativeScore);
-
-        checkoutScorePulseTimes[playerArrayIndex] =
-            Time.unscaledTime;
-
-        checkoutScorePulseVersions[playerArrayIndex]++;
-    }
-
-    private void ClearCheckoutScorePulse(int playerArrayIndex)
-    {
-        checkoutScorePulseValues[playerArrayIndex] = 0;
-        checkoutScorePulseTimes[playerArrayIndex] = 0f;
-        checkoutScorePulseVersions[playerArrayIndex] = 0;
-        checkoutBonusPulsePublished[playerArrayIndex] = false;
     }
 
     private void RefreshSessionReward(CheckoutSessionData session)
@@ -522,7 +426,6 @@ public class CashScoreManager : MonoBehaviour
             playerTotalScore[i] = 0f;
             currentSession[i].Reset();
             lastSession[i].Reset();
-            ClearCheckoutScorePulse(i);
         }
     }
 
