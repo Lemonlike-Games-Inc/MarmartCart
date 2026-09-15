@@ -71,6 +71,34 @@ public class MatchViewportOverlayProfile : ScriptableObject
 
     #endregion
 
+    #region Split-Screen Dividers
+
+    [Header("Full-Screen Split Dividers")]
+    [Tooltip(
+        "Draws screen-centered split dividers through the same Shapes " +
+        "renderer as the timer and leaderboard.")]
+    [SerializeField] private bool splitScreenDividersEnabled = true;
+
+    [Header("Vertical Divider - 2P and 4P")]
+    [Tooltip("Thickness of the centered vertical divider in screen pixels.")]
+    [Min(0f)]
+    [SerializeField] private float verticalDividerWidthPixels = 6f;
+
+    [SerializeField]
+    private Color verticalDividerColor =
+        new Color(0.055f, 0.065f, 0.085f, 1f);
+
+    [Header("Horizontal Divider - 4P Only")]
+    [Tooltip("Thickness of the centered horizontal divider in screen pixels.")]
+    [Min(0f)]
+    [SerializeField] private float horizontalDividerHeightPixels = 6f;
+
+    [SerializeField]
+    private Color horizontalDividerColor =
+        new Color(0.055f, 0.065f, 0.085f, 1f);
+
+    #endregion
+
     #region Timer
 
     [Header("Timer - Position")]
@@ -523,6 +551,12 @@ public class MatchViewportOverlayProfile : ScriptableObject
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
 
+    public bool SplitScreenDividersEnabled => splitScreenDividersEnabled;
+    public float VerticalDividerWidthPixels => verticalDividerWidthPixels;
+    public Color VerticalDividerColor => verticalDividerColor;
+    public float HorizontalDividerHeightPixels => horizontalDividerHeightPixels;
+    public Color HorizontalDividerColor => horizontalDividerColor;
+
     public Vector2 TimerOffsetPixels =>
         timerOffsetPixels * MasterScale;
 
@@ -945,6 +979,12 @@ public class MatchViewportOverlayProfile : ScriptableObject
 
         nearClipSafetyPadding =
             Mathf.Max(0f, nearClipSafetyPadding);
+
+        verticalDividerWidthPixels =
+            Mathf.Max(0f, verticalDividerWidthPixels);
+
+        horizontalDividerHeightPixels =
+            Mathf.Max(0f, horizontalDividerHeightPixels);
 
         timerBackgroundWidthPixels =
             Mathf.Max(1f, timerBackgroundWidthPixels);

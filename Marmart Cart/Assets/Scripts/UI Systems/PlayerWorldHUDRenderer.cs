@@ -24,6 +24,10 @@ using UnityEngine;
 /// HYPE:
 /// - positive Hype gains animate the active fill toward the new value;
 /// - Hype decreases remain immediate for responsive spending/loss feedback.
+///
+/// CONTROL PROMPTS:
+/// - backward-movement availability draws a profile-authored rounded prompt;
+/// - visibility comes only from the local player's semantic HUD state.
 /// </summary>
 [DisallowMultipleComponent]
 public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
@@ -201,7 +205,170 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 renderAnchorWorld,
                 hudState
             );
+
+            DrawMoveBackwardPrompt(
+                cam,
+                renderAnchorWorld,
+                hudState
+            );
         }
+    }
+
+    #endregion
+
+    #region Move Backward Prompt
+
+    private void DrawMoveBackwardPrompt(
+        Camera cam,
+        Vector3 renderAnchorWorld,
+        PlayerWorldHUDState state)
+    {
+        if (state == null ||
+            !state.CanMoveBackward ||
+            !layoutProfile.ShowMoveBackwardPrompt)
+        {
+            return;
+        }
+
+        Vector3 anchorScreen =
+            cam.WorldToScreenPoint(
+                renderAnchorWorld
+            );
+
+        Vector2 groupCenter =
+            new Vector2(
+                anchorScreen.x,
+                anchorScreen.y
+            ) +
+            layoutProfile.MoveBackwardPromptOffsetPixels;
+
+        DrawRoundedScreenRectangle(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.MoveBackwardPromptBackgroundOffsetPixels,
+            layoutProfile.MoveBackwardPromptBackgroundSizePixels,
+            layoutProfile.MoveBackwardPromptCornerRadiusPixels,
+            layoutProfile.MoveBackwardPromptBackgroundColor
+        );
+
+        DrawCenteredScreenText(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.MoveBackwardPromptTextOffsetPixels,
+            layoutProfile.MoveBackwardPromptText,
+            layoutProfile.MoveBackwardPromptFontSizePixels,
+            layoutProfile.MoveBackwardPromptTextColor
+        );
+    }
+
+    private void DrawRoundedScreenRectangle(
+        Camera cam,
+        float screenDepth,
+        Vector2 centerScreen,
+        Vector2 sizePixels,
+        float cornerRadiusPixels,
+        Color color)
+    {
+        float widthPixels = Mathf.Max(0.001f, sizePixels.x);
+        float heightPixels = Mathf.Max(0.001f, sizePixels.y);
+
+        float safeCornerPixels =
+            Mathf.Clamp(
+                cornerRadiusPixels,
+                0f,
+                Mathf.Min(widthPixels, heightPixels) * 0.5f
+            );
+
+        Vector3 centerWorld =
+            ScreenPointToWorld(
+                cam,
+                centerScreen,
+                screenDepth
+            );
+
+        float widthWorld =
+            PixelsToWorldSizeAtDepth(
+                cam,
+                centerWorld,
+                widthPixels
+            );
+
+        float heightWorld =
+            PixelsToWorldSizeAtDepth(
+                cam,
+                centerWorld,
+                heightPixels
+            );
+
+        float cornerRadiusWorld =
+            PixelsToWorldSizeAtDepth(
+                cam,
+                centerWorld,
+                safeCornerPixels
+            );
+
+        Color previousColor = Draw.Color;
+
+        Draw.Matrix =
+            Matrix4x4.TRS(
+                centerWorld,
+                cam.transform.rotation,
+                Vector3.one
+            );
+
+        Draw.Color = color;
+
+        Draw.Rectangle(
+            Vector3.zero,
+            widthWorld,
+            heightWorld,
+            cornerRadiusWorld
+        );
+
+        Draw.Color = previousColor;
+        Draw.Matrix = Matrix4x4.identity;
+    }
+
+    private void DrawCenteredScreenText(
+        Camera cam,
+        float screenDepth,
+        Vector2 centerScreen,
+        string text,
+        float fontSizePixels,
+        Color color)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        Vector3 textWorld =
+            ScreenPointToWorld(
+                cam,
+                centerScreen,
+                screenDepth
+            );
+
+        Draw.FontSize =
+            PixelsToWorldSizeAtDepth(
+                cam,
+                textWorld,
+                fontSizePixels
+            );
+
+        Color previousColor = Draw.Color;
+        Draw.Color = color;
+
+        Draw.Text(
+            textWorld,
+            cam.transform.rotation,
+            text,
+            TextAlign.Center
+        );
+
+        Draw.Color = previousColor;
     }
 
     #endregion
@@ -893,40 +1060,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        // 4. FAILURE PENALTY LAST.
-        //
-        // It overlays the portion of CURRENT Hype that would actually be
-        // lost if the drift fails.
-        if (showPenalty &&
-            state.DriftPenaltyPreviewActive)
-        {
-            float projectedFailure =
-                Mathf.Clamp01(
-                    state.ProjectedHypeAfterDriftPenaltyNormalized
-                );
-
-            if (projectedFailure < currentValue)
-            {
-                float penaltyStartDegrees =
-                    Mathf.Lerp(
-                        bottomDegrees,
-                        topDegrees,
-                        projectedFailure
-                    );
-
-                DrawRoundedArcSection(
-                    cam,
-                    centerWorld,
-                    rotation,
-                    layoutProfile.HypeRadiusPixels +
-                    layoutProfile.HypePenaltyPreviewRadiusOffsetPixels,
-                    layoutProfile.HypePenaltyPreviewThicknessPixels,
-                    penaltyStartDegrees,
-                    currentDegrees,
-                    layoutProfile.HypePenaltyPreviewColor
-                );
-            }
-        }
     }
 
     private float GetDisplayedHypeNormalized(

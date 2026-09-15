@@ -20,6 +20,7 @@ using UnityEngine;
 /// - player/rank text each render as a movable, scalable background group;
 /// - rank changes animate complete entries between rows;
 /// - upward-moving entries render above overlapping entries;
+/// - mode-aware full-screen split dividers share this same Shapes pass;
 /// - no score numbers or crowns.
 /// </summary>
 [DisallowMultipleComponent]
@@ -212,6 +213,11 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             Draw.LineEndCaps =
                 LineEndCap.Round;
 
+            DrawSplitScreenDividers(
+                cam,
+                renderDepth
+            );
+
             DrawTimer(
                 cam,
                 renderDepth,
@@ -224,6 +230,71 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
                 rootScreen,
                 localPlayerIndex
             );
+        }
+    }
+
+    #endregion
+
+    #region Split-Screen Dividers
+
+    /// <summary>
+    /// Every gameplay camera draws the portion of the same screen-space
+    /// divider rectangles that falls inside its pixelRect. Camera viewport
+    /// clipping joins those pieces into one continuous full-screen cross.
+    /// </summary>
+    private void DrawSplitScreenDividers(
+        Camera cam,
+        float renderDepth)
+    {
+        if (!profile.SplitScreenDividersEnabled)
+        {
+            return;
+        }
+
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+
+        if (screenWidth <= 0f || screenHeight <= 0f)
+        {
+            return;
+        }
+
+        float centerX = screenWidth * 0.5f;
+        float centerY = screenHeight * 0.5f;
+        float verticalWidth = profile.VerticalDividerWidthPixels;
+
+        if (verticalWidth > 0f)
+        {
+            DrawRoundedScreenRectangle(
+                cam,
+                renderDepth,
+                centerX - verticalWidth * 0.5f,
+                centerX + verticalWidth * 0.5f,
+                centerY,
+                screenHeight,
+                0f,
+                profile.VerticalDividerColor
+            );
+        }
+
+        if (configuredPlayerCount >= 4)
+        {
+            float horizontalHeight =
+                profile.HorizontalDividerHeightPixels;
+
+            if (horizontalHeight > 0f)
+            {
+                DrawRoundedScreenRectangle(
+                    cam,
+                    renderDepth,
+                    0f,
+                    screenWidth,
+                    centerY,
+                    horizontalHeight,
+                    0f,
+                    profile.HorizontalDividerColor
+                );
+            }
         }
     }
 

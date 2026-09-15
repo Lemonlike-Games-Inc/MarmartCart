@@ -11,6 +11,7 @@ public enum PlayerWorldHUDStateChange
     Speed = 1 << 3,
     Streak = 1 << 4,
     DriftPenalty = 1 << 5,
+    MoveBackward = 1 << 6,
 
     All =
         Hype |
@@ -18,7 +19,8 @@ public enum PlayerWorldHUDStateChange
         DriftPenalty |
         Load |
         Speed |
-        Streak
+        Streak |
+        MoveBackward
 }
 
 /// <summary>
@@ -183,11 +185,6 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
             return;
         }
 
-        playerStates[index].SetDriftPenaltyPreview(
-            active,
-            potentialPenalty
-        );
-
         OnStateChanged?.Invoke(
             playerIndex,
             PlayerWorldHUDStateChange.DriftPenalty
@@ -202,8 +199,6 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
             return;
         }
 
-        playerStates[index].ClearDriftPenaltyPreview();
-
         OnStateChanged?.Invoke(
             playerIndex,
             PlayerWorldHUDStateChange.DriftPenalty
@@ -217,8 +212,6 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
         {
             return;
         }
-
-        playerStates[index].ClearAllDriftPreviews();
 
         OnStateChanged?.Invoke(
             playerIndex,
@@ -274,6 +267,34 @@ public class PlayerWorldHUDStateSystem : MonoBehaviour
         OnStateChanged?.Invoke(
             playerIndex,
             PlayerWorldHUDStateChange.Speed
+        );
+    }
+
+    #endregion
+
+    #region Control Prompts
+
+    public void SetCanMoveBackward(
+        int playerIndex,
+        bool canMoveBackward)
+    {
+        if (!TryGetStateIndex(playerIndex, out int index))
+        {
+            return;
+        }
+
+        PlayerWorldHUDState state = playerStates[index];
+
+        if (state.CanMoveBackward == canMoveBackward)
+        {
+            return;
+        }
+
+        state.SetCanMoveBackward(canMoveBackward);
+
+        OnStateChanged?.Invoke(
+            playerIndex,
+            PlayerWorldHUDStateChange.MoveBackward
         );
     }
 

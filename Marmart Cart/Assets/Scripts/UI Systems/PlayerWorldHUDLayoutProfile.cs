@@ -34,6 +34,56 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
 
     #endregion
 
+    #region Move Backward Prompt
+
+    [Header("Move Backward Prompt - Group")]
+    [Tooltip(
+        "Allows the renderer to show the prompt while the player's semantic " +
+        "Can Move Backward state is true.")]
+    [SerializeField] private bool showMoveBackwardPrompt = true;
+
+    [Tooltip(
+        "Group position relative to HUDWorldAnchor in screen pixels. " +
+        "Positive X = right, positive Y = up.")]
+    [SerializeField]
+    private Vector2 moveBackwardPromptOffsetPixels =
+        new Vector2(0f, -105f);
+
+    [Tooltip(
+        "Uniform scale for the complete prompt. Does not move the group position.")]
+    [Min(0.05f)]
+    [SerializeField] private float moveBackwardPromptMasterScale = 1f;
+
+    [Header("Move Backward Prompt - Background")]
+    [SerializeField]
+    private Vector2 moveBackwardPromptBackgroundOffsetPixels =
+        Vector2.zero;
+
+    [SerializeField]
+    private Vector2 moveBackwardPromptBackgroundSizePixels =
+        new Vector2(150f, 38f);
+
+    [Min(0f)]
+    [SerializeField] private float moveBackwardPromptCornerRadiusPixels = 10f;
+
+    [SerializeField]
+    private Color moveBackwardPromptBackgroundColor =
+        new Color(0.05f, 0.06f, 0.08f, 0.86f);
+
+    [Header("Move Backward Prompt - Text")]
+    [SerializeField] private string moveBackwardPromptText = "MOVE BACKWARD";
+
+    [SerializeField]
+    private Vector2 moveBackwardPromptTextOffsetPixels =
+        Vector2.zero;
+
+    [Min(1f)]
+    [SerializeField] private float moveBackwardPromptFontSizePixels = 18f;
+
+    [SerializeField] private Color moveBackwardPromptTextColor = Color.white;
+
+    #endregion
+
     #region Render Plane
 
     [Header("Near-Camera Render Plane")]
@@ -471,6 +521,28 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     public float HorizontalSeparationPixels => horizontalSeparationPixels * EffectiveMasterScale;
     public float VerticalOffsetPixels => verticalOffsetPixels * EffectiveMasterScale;
 
+    private float EffectiveMoveBackwardPromptScale =>
+        EffectiveMasterScale *
+        Mathf.Max(0.05f, moveBackwardPromptMasterScale);
+
+    public bool ShowMoveBackwardPrompt => showMoveBackwardPrompt;
+    public Vector2 MoveBackwardPromptOffsetPixels =>
+        moveBackwardPromptOffsetPixels * EffectiveMasterScale;
+    public float MoveBackwardPromptMasterScale => moveBackwardPromptMasterScale;
+    public Vector2 MoveBackwardPromptBackgroundOffsetPixels =>
+        moveBackwardPromptBackgroundOffsetPixels * EffectiveMoveBackwardPromptScale;
+    public Vector2 MoveBackwardPromptBackgroundSizePixels =>
+        moveBackwardPromptBackgroundSizePixels * EffectiveMoveBackwardPromptScale;
+    public float MoveBackwardPromptCornerRadiusPixels =>
+        moveBackwardPromptCornerRadiusPixels * EffectiveMoveBackwardPromptScale;
+    public Color MoveBackwardPromptBackgroundColor => moveBackwardPromptBackgroundColor;
+    public string MoveBackwardPromptText => moveBackwardPromptText;
+    public Vector2 MoveBackwardPromptTextOffsetPixels =>
+        moveBackwardPromptTextOffsetPixels * EffectiveMoveBackwardPromptScale;
+    public float MoveBackwardPromptFontSizePixels =>
+        moveBackwardPromptFontSizePixels * EffectiveMoveBackwardPromptScale;
+    public Color MoveBackwardPromptTextColor => moveBackwardPromptTextColor;
+
     public bool UseNearCameraRenderPlane => useNearCameraRenderPlane;
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
@@ -683,6 +755,28 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     {
         masterScale = Mathf.Max(0.01f, masterScale);
         horizontalSeparationPixels = Mathf.Max(0f, horizontalSeparationPixels);
+
+        moveBackwardPromptMasterScale =
+            Mathf.Max(0.05f, moveBackwardPromptMasterScale);
+
+        moveBackwardPromptBackgroundSizePixels.x =
+            Mathf.Max(1f, moveBackwardPromptBackgroundSizePixels.x);
+
+        moveBackwardPromptBackgroundSizePixels.y =
+            Mathf.Max(1f, moveBackwardPromptBackgroundSizePixels.y);
+
+        moveBackwardPromptCornerRadiusPixels =
+            Mathf.Clamp(
+                moveBackwardPromptCornerRadiusPixels,
+                0f,
+                Mathf.Min(
+                    moveBackwardPromptBackgroundSizePixels.x,
+                    moveBackwardPromptBackgroundSizePixels.y
+                ) * 0.5f
+            );
+
+        moveBackwardPromptFontSizePixels =
+            Mathf.Max(1f, moveBackwardPromptFontSizePixels);
 
         nearCameraRenderDistance = Mathf.Max(0.01f, nearCameraRenderDistance);
         nearClipSafetyPadding = Mathf.Max(0.001f, nearClipSafetyPadding);

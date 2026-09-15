@@ -15,6 +15,17 @@ MonoBehaviour:
   masterScale: 1.5
   horizontalSeparationPixels: 24
   verticalOffsetPixels: 0
+  showMoveBackwardPrompt: 1
+  moveBackwardPromptOffsetPixels: {x: 0, y: -140}
+  moveBackwardPromptMasterScale: 1
+  moveBackwardPromptBackgroundOffsetPixels: {x: 0, y: 0}
+  moveBackwardPromptBackgroundSizePixels: {x: 150, y: 38}
+  moveBackwardPromptCornerRadiusPixels: 10
+  moveBackwardPromptBackgroundColor: {r: 0.2, g: 0.23921569, b: 0.29803923, a: 0.84313726}
+  moveBackwardPromptText: B to Reverse
+  moveBackwardPromptTextOffsetPixels: {x: 3, y: 0}
+  moveBackwardPromptFontSizePixels: 200
+  moveBackwardPromptTextColor: {r: 1, g: 1, b: 1, a: 1}
   useNearCameraRenderPlane: 1
   nearCameraRenderDistance: 0.5
   nearClipSafetyPadding: 0.03

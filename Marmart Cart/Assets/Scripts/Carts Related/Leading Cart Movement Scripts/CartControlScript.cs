@@ -148,6 +148,9 @@ public class CartControlScript : MonoBehaviour
     [Header("Move Backward")]
     [SerializeField] private bool canMoveBackward = false;
 
+    public bool CanMoveBackward => canMoveBackward;
+    public event System.Action<bool> OnCanMoveBackwardChanged;
+
     #endregion
 
     #region Powerup / Checkout
@@ -264,7 +267,7 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == device && canMoveBackward)
             {
-                canMoveBackward = false;
+                SetCanMoveBackward(false);
                 OnMoveBackwardPressed?.Invoke();
             }
         };
@@ -357,7 +360,7 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == Keyboard.current && canMoveBackward)
             {
-                canMoveBackward = false;
+                SetCanMoveBackward(false);
                 OnMoveBackwardPressed?.Invoke();
             }
         };
@@ -544,17 +547,28 @@ public class CartControlScript : MonoBehaviour
 
     public void AllowMoveBackward()
     {
-        canMoveBackward = true;
+        SetCanMoveBackward(true);
     }
 
     public void DisallowMoveBackward()
     {
-        canMoveBackward = false;
+        SetCanMoveBackward(false);
     }
 
     public bool GetCanMoveBackward()
     {
         return canMoveBackward;
+    }
+
+    private void SetCanMoveBackward(bool canMove)
+    {
+        if (canMoveBackward == canMove)
+        {
+            return;
+        }
+
+        canMoveBackward = canMove;
+        OnCanMoveBackwardChanged?.Invoke(canMoveBackward);
     }
 
     #endregion

@@ -274,6 +274,7 @@ public class MatchSceneModeController : MonoBehaviour
                 configuredPlayerCount
             );
         }
+
     }
 
     #endregion
@@ -316,6 +317,7 @@ public class MatchSceneModeController : MonoBehaviour
         {
             matchViewportOverlayRenderer = FindFirstObjectByType<MatchViewportOverlayRenderer>();
         }
+
     }
 
     #endregion
