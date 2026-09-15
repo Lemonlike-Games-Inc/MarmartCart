@@ -37,6 +37,7 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         [NonSerialized] public bool invalidTagLogged;
         [NonSerialized] public bool ambiguousTagLogged;
         [NonSerialized] public bool missingAnchorLoggedForCurrentRoot;
+        [NonSerialized] public bool checkoutSuppressed;
 
         public SlotBindingStatus BindingStatus { get => bindingStatus; set => bindingStatus = value; }
         public GameObject BoundPlayerRoot { get => boundPlayerRoot; set => boundPlayerRoot = value; }
@@ -87,6 +88,7 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         for (int i = 0; i < MaxPlayerSlots; i++)
         {
             PlayerSlot slot = slots[i];
+            slot.checkoutSuppressed = false;
             slot.nextRetryTime = now;
             slot.BindingStatus = !slot.enabled
                 ? SlotBindingStatus.Disabled
@@ -250,6 +252,22 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         return TryGetSlotArrayIndex(playerIndex, out int slotIndex) && slots[slotIndex].enabled;
     }
 
+    /// <summary>
+    /// Temporarily hides every PlayerWorldHUDRenderer element for one player
+    /// without disabling the slot or disturbing its runtime player/anchor binding.
+    /// </summary>
+    public void SetCheckoutSuppressed(int playerIndex, bool suppressed)
+    {
+        if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return;
+        slots[slotIndex].checkoutSuppressed = suppressed;
+    }
+
+    public bool IsCheckoutSuppressed(int playerIndex)
+    {
+        return TryGetSlotArrayIndex(playerIndex, out int slotIndex) &&
+               slots[slotIndex].checkoutSuppressed;
+    }
+
     public bool IsPlayerHUDBound(int playerIndex)
     {
         return TryGetSlotArrayIndex(playerIndex, out int slotIndex) && slots[slotIndex].IsBound;
@@ -295,7 +313,45 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return false;
 
         PlayerSlot slot = slots[slotIndex];
+        if (!slot.enabled || slot.checkoutSuppressed || !slot.IsBound) return false;
+
+        hudAnchor = slot.HUDWorldAnchor;
+        return hudAnchor != null;
+    }
+    public bool TryGetRenderableSlotForCameraForOverlay(Camera gameplayCamera, out int playerIndex, out Transform hudAnchor)
+    {
+        playerIndex = 0;
+        hudAnchor = null;
+
+        if (!TryGetPlayerIndexForCamera(gameplayCamera, out playerIndex)) return false;
+        if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return false;
+
+        PlayerSlot slot = slots[slotIndex];
         if (!slot.enabled || !slot.IsBound) return false;
+
+        hudAnchor = slot.HUDWorldAnchor;
+        return hudAnchor != null;
+    }
+
+    /// <summary>
+    /// Resolves only a bound player slot whose normal world HUD is currently
+    /// checkout-suppressed. This lets PlayerWorldHUDRenderer replace the normal
+    /// meters with checkout-only presentation without affecting the dedicated
+    /// viewport-overlay lookup above.
+    /// </summary>
+    public bool TryGetCheckoutSuppressedSlotForCamera(
+        Camera gameplayCamera,
+        out int playerIndex,
+        out Transform hudAnchor)
+    {
+        playerIndex = 0;
+        hudAnchor = null;
+
+        if (!TryGetPlayerIndexForCamera(gameplayCamera, out playerIndex)) return false;
+        if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return false;
+
+        PlayerSlot slot = slots[slotIndex];
+        if (!slot.enabled || !slot.checkoutSuppressed || !slot.IsBound) return false;
 
         hudAnchor = slot.HUDWorldAnchor;
         return hudAnchor != null;

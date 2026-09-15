@@ -744,6 +744,7 @@ GameObject:
   - component: {fileID: 4013269518666928292}
   - component: {fileID: 6774036948073930583}
   - component: {fileID: 2698566768196724992}
+  - component: {fileID: 6769160294872558793}
   - component: {fileID: 8728568953346996743}
   - component: {fileID: 6500974166527200888}
   m_Layer: 0
@@ -787,8 +788,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.20066668, y: 0.3765241, z: 0.31766474}
-  m_Center: {x: -0.20009178, y: 0.065470695, z: 0.072401896}
+  m_Size: {x: 0.25923848, y: 0.3765241, z: 0.38564375}
+  m_Center: {x: -0.22937782, y: 0.065470695, z: 0.10848537}
 --- !u!65 &2698566768196724992
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -810,6 +811,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.053725094, y: 0.3765241, z: 0.3578071}
   m_Center: {x: -0.07251333, y: 0.065470695, z: -0.00077478704}
+--- !u!65 &6769160294872558793
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2691296414062401167}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.017115997, y: 0.3765241, z: 0.2573989}
+  m_Center: {x: -0.35052273, y: 0.065470695, z: -0.21100345}
 --- !u!114 &8728568953346996743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -841,9 +863,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  checkoutPrompt: {fileID: 4168468816753666206}
   cashScoreManager: {fileID: 0}
   checkOutManager: {fileID: 6500974166527200888}
+  playerWorldHUDSystem: {fileID: 0}
   laneState: 0
   stationOccupied: 0
   occupyingPlayerIndex: 0

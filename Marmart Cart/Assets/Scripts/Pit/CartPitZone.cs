@@ -79,7 +79,8 @@ public class CartPitZone : MonoBehaviour
     [Min(0f)]
     [SerializeField] private float ghostDurationAfterCheckout = 3f;
 
-    [Tooltip("1 or 2. Used by checkout UI/camera lane logic.")]
+    [Tooltip("Checkout lane number (1..4). Used by camera selection.")]
+    [Range(1, 4)]
     [SerializeField] private int myLaneNumber = 1;
 
     #endregion
@@ -89,10 +90,6 @@ public class CartPitZone : MonoBehaviour
     [Header("Per-Player Camera Managers (index 0..3 = P1..P4)")]
     [SerializeField] private PlayerCameraManager[] playerCameraManagers = new PlayerCameraManager[MaxSupportedPlayers];
 
-    [Header("Checkout Prompt (optional)")]
-    [Tooltip("Single shared world-space UI shown only while the leader is stopped and manual Checkout input is valid.")]
-    [SerializeField] private GameObject checkoutPrompt;
-
     #endregion
 
     #region References
@@ -100,6 +97,8 @@ public class CartPitZone : MonoBehaviour
     [Header("References")]
     [SerializeField] private CashScoreManager cashScoreManager;
     [SerializeField] private CheckOutManager checkOutManager;
+    [Tooltip("Optional scene reference. Automatically resolved when left empty.")]
+    [SerializeField] private PlayerWorldHUDSystem playerWorldHUDSystem;
 
     #endregion
 
@@ -134,7 +133,13 @@ public class CartPitZone : MonoBehaviour
 
     private void Awake()
     {
+        // Range is enforced here as well as in OnValidate so runtime-created or
+        // legacy instances can never pass a lane outside the supported 1..4 set.
+        myLaneNumber = Mathf.Clamp(myLaneNumber, 1, 4);
+
         if (checkOutManager == null) checkOutManager = GetComponent<CheckOutManager>();
+        if (playerWorldHUDSystem == null)
+            playerWorldHUDSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
 
         if (checkOutManager == null)
         {
@@ -168,7 +173,7 @@ public class CartPitZone : MonoBehaviour
     {
         if (!stationOccupied) return;
 
-        SetCheckoutPrompt(false);
+        SetOccupyingPlayerHUDSuppressed(false);
         RestorePlayerControl(false);
         ClearRuntimeCheckoutState();
     }
@@ -295,13 +300,14 @@ public class CartPitZone : MonoBehaviour
         currentWaypointIndex = 0;
         lastAutoDriveDirection = Vector3.zero;
 
+        SetOccupyingPlayerHUDSuppressed(true);
+
         PlayerCameraManager cameraManager = GetPlayerCameraManager(occupyingPlayerIndex);
         cameraManager?.EnterCheckoutLane(myLaneNumber);
 
         if (cashScoreManager != null)
         {
-            cashScoreManager.StartCheckoutSession(occupyingPlayerIndex, myLaneNumber - 1);
-            cashScoreManager.ShowCheckoutUI(occupyingPlayerIndex, myLaneNumber, true);
+            cashScoreManager.StartCheckoutSession(occupyingPlayerIndex);
         }
 
         enteredCartController.SetInPit();
@@ -344,9 +350,6 @@ public class CartPitZone : MonoBehaviour
 
         checkOutManager.SetSnakeCartManager(enteredSnakeCartManager);
         checkOutManager.SetIsCheckingOut();
-
-        // Same exact gameplay moment as manual checkout activation.
-        SetCheckoutPrompt(checkOutManager.IsManualCheckoutEnabled);
     }
 
     /// <summary>
@@ -363,8 +366,6 @@ public class CartPitZone : MonoBehaviour
         {
             enteredCartController.SetActiveCheckoutHandler(null);
         }
-
-        SetCheckoutPrompt(false);
 
         laneState = CheckoutLaneState.AutoExiting;
         currentWaypointIndex = 0;
@@ -502,15 +503,15 @@ public class CartPitZone : MonoBehaviour
         if (!stationOccupied) return;
 
         int exitingPlayerIndex = occupyingPlayerIndex;
-        SetCheckoutPrompt(false);
 
         PlayerCameraManager cameraManager = GetPlayerCameraManager(exitingPlayerIndex);
         cameraManager?.ExitCheckout();
 
+        SetOccupyingPlayerHUDSuppressed(false);
+
         if (cashScoreManager != null)
         {
             cashScoreManager.EndCheckoutSession(exitingPlayerIndex);
-            cashScoreManager.ShowCheckoutUI(exitingPlayerIndex, myLaneNumber, false);
         }
 
         if (checkOutManager != null)
@@ -622,12 +623,12 @@ public class CartPitZone : MonoBehaviour
         Debug.LogError("[CartPitZone] Checkout auto-drive aborted because its runtime path/state became invalid.", this);
 
         int playerIndex = occupyingPlayerIndex;
-        SetCheckoutPrompt(false);
+
+        SetOccupyingPlayerHUDSuppressed(false);
 
         if (cashScoreManager != null)
         {
             cashScoreManager.EndCheckoutSession(playerIndex);
-            cashScoreManager.ShowCheckoutUI(playerIndex, myLaneNumber, false);
         }
 
         if (checkOutManager != null)
@@ -705,11 +706,6 @@ public class CartPitZone : MonoBehaviour
         return false;
     }
 
-    private void SetCheckoutPrompt(bool visible)
-    {
-        if (checkoutPrompt != null) checkoutPrompt.SetActive(visible);
-    }
-
     private PlayerCameraManager GetPlayerCameraManager(int playerIndex)
     {
         int index = playerIndex - 1;
@@ -717,6 +713,21 @@ public class CartPitZone : MonoBehaviour
         if (playerCameraManagers == null || index < 0 || index >= playerCameraManagers.Length) return null;
 
         return playerCameraManagers[index];
+    }
+
+    private void SetOccupyingPlayerHUDSuppressed(bool suppressed)
+    {
+        if (occupyingPlayerIndex <= 0) return;
+
+        if (playerWorldHUDSystem == null)
+            playerWorldHUDSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
+
+        if (playerWorldHUDSystem == null) return;
+
+        playerWorldHUDSystem.SetCheckoutSuppressed(
+            occupyingPlayerIndex,
+            suppressed
+        );
     }
 
     #endregion
@@ -732,7 +743,7 @@ public class CartPitZone : MonoBehaviour
         autoDriveRotationSpeed = Mathf.Max(1f, autoDriveRotationSpeed);
         waypointReachDistance = Mathf.Max(0.01f, waypointReachDistance);
 
-        myLaneNumber = Mathf.Max(1, myLaneNumber);
+        myLaneNumber = Mathf.Clamp(myLaneNumber, 1, 4);
         ghostDurationAfterCheckout = Mathf.Max(0f, ghostDurationAfterCheckout);
     }
 

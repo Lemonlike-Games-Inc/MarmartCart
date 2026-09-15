@@ -172,7 +172,7 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         // This gives us both:
         // 1. a hard filter to active gameplay cameras;
         // 2. the local player index for the YOU label.
-        if (!hudSystem.TryGetRenderableSlotForCamera(
+        if (!hudSystem.TryGetRenderableSlotForCameraForOverlay(
                 cam,
                 out int localPlayerIndex,
                 out _))

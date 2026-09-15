@@ -349,6 +349,15 @@ public class CheckOutManager : MonoBehaviour
     {
         if (!isCheckingOut) return;
 
+        // Every manual and automatic cart has converged through
+        // RegisterCargoCheckout by this point. Reveal the final earned streak
+        // reward now, while checkout suppression still keeps the checkout HUD
+        // visible during auto-exit. Persistent score is still committed later
+        // by CartPitZone.EndCheckoutSession.
+        cashScoreManager?.CompleteCheckoutRegistration(
+            checkoutPlayerIndex
+        );
+
         isCheckingOut = false;
         manualCheckoutEnabled = false;
         autoFallbackActive = false;

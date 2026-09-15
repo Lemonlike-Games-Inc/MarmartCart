@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -11,15 +9,12 @@ using UnityEngine;
 /// - base score comes from CargoEntry.ScoreValue;
 /// - streak / milestone bonuses are based on total CargoEntry count submitted
 ///   during the current checkout session;
-/// - physical cart count is tracked for presentation only, not streak value.
+/// - physical cart count is tracked for diagnostics only, not streak value.
 ///
 /// </summary>
 public class CashScoreManager : MonoBehaviour
 {
     public const int MaxPlayers = 4;
-    public const int MaxLanes = 2;
-
-
     #region Cargo Streak Bonuses
 
     [Header("Cargo Checkout Milestone Bonuses")]
@@ -82,36 +77,12 @@ public class CashScoreManager : MonoBehaviour
 
     #endregion
 
-    #region Checkout UI
-
-    [Header("Checkout Session UI Roots (optional)")]
-    [Tooltip("Per player, per lane root. [playerIndex-1, laneIndex]")]
-    [SerializeField] private GameObject[] checkoutLaneUIRoots = new GameObject[MaxPlayers * MaxLanes];
-
-    [Header("Checkout Session UI Elements (optional)")]
-    [SerializeField] private CheckoutLaneUI[] laneUIs = new CheckoutLaneUI[MaxPlayers * MaxLanes];
-
-    [Serializable]
-    public class CheckoutLaneUI
-    {
-        public TextMeshPro itemsCountText;
-        public GameObject streakTextUI;
-        public TextMeshPro bonusPointText;
-        public GameObject bonusPointUI;
-        public TextMeshPro basePointText;
-    }
-
-    private Coroutine[,] subtotalPulseAnims = new Coroutine[MaxPlayers, MaxLanes];
-
-    #endregion
-
     #region Session Data
 
     [Serializable]
     public class CheckoutSessionData
     {
         public bool isActive;
-        public int laneIndex;
 
         [Header("Cargo Checkout")]
         public int cargoCount;
@@ -125,7 +96,6 @@ public class CashScoreManager : MonoBehaviour
         public void Reset()
         {
             isActive = false;
-            laneIndex = -1;
 
             cargoCount = 0;
             checkedOutCartCount = 0;
@@ -145,7 +115,6 @@ public class CashScoreManager : MonoBehaviour
             }
 
             isActive = other.isActive;
-            laneIndex = other.laneIndex;
             cargoCount = other.cargoCount;
             checkedOutCartCount = other.checkedOutCartCount;
             basePoints = other.basePoints;
@@ -157,17 +126,20 @@ public class CashScoreManager : MonoBehaviour
     private readonly CheckoutSessionData[] currentSession = new CheckoutSessionData[MaxPlayers];
     private readonly CheckoutSessionData[] lastSession = new CheckoutSessionData[MaxPlayers];
 
+    // Transient checkout-registration feedback. The timestamp is authored at
+    // the scoring boundary rather than at the input boundary, so manual and
+    // automatic checkout produce the exact same HUD pulse.
+    private readonly int[] checkoutScorePulseValues = new int[MaxPlayers];
+    private readonly float[] checkoutScorePulseTimes = new float[MaxPlayers];
+    private readonly int[] checkoutScorePulseVersions = new int[MaxPlayers];
+    private readonly bool[] checkoutBonusPulsePublished = new bool[MaxPlayers];
+
     #endregion
 
     #region Events
 
     public event Action<int, int, int> OnPlayerScoreGained;
     public event Action<int, int, int> OnTeamScoreGained;
-
-    /// <summary>
-    /// playerIndex, current cargo count, current subtotal
-    /// </summary>
-    public event Action<int, int, int> OnCheckoutSessionUpdated;
 
     #endregion
 
@@ -187,35 +159,22 @@ public class CashScoreManager : MonoBehaviour
     private void Start()
     {
         ResetAllScores();
-
-        for (int p = 1; p <= ActivePlayerCount; p++)
-        {
-            for (int lane = 1; lane <= MaxLanes; lane++)
-            {
-                ShowCheckoutUI(p, lane, false);
-            }
-
-            for (int laneIndex = 0; laneIndex < MaxLanes; laneIndex++)
-            {
-                ResetCheckoutSessionUI(p, laneIndex);
-            }
-        }
     }
 
     #endregion
 
     #region Checkout Session
 
-    public void StartCheckoutSession(int playerIndex, int laneIndex)
+    public void StartCheckoutSession(int playerIndex)
     {
         if (!IsValidPlayer(playerIndex)) return;
 
-        CheckoutSessionData session = currentSession[playerIndex - 1];
+        int playerArrayIndex = playerIndex - 1;
+        CheckoutSessionData session = currentSession[playerArrayIndex];
         session.Reset();
         session.isActive = true;
-        session.laneIndex = laneIndex;
 
-        UpdateCheckoutSessionUI(playerIndex, session);
+        ClearCheckoutScorePulse(playerArrayIndex);
     }
 
     /// <summary>
@@ -253,10 +212,43 @@ public class CashScoreManager : MonoBehaviour
         session.basePoints += scoreAdded;
         RefreshSessionReward(session);
 
-        UpdateCheckoutSessionUI(playerIndex, session);
-        OnCheckoutSessionUpdated?.Invoke(playerIndex, session.cargoCount, Mathf.RoundToInt(session.subtotal));
+        PublishCheckoutScorePulse(
+            playerIndex,
+            Mathf.RoundToInt(session.basePoints)
+        );
 
         return scoreAdded;
+    }
+
+    /// <summary>
+    /// Marks the point where every physical cart has been registered, without
+    /// committing the checkout session to banked score yet. If this session
+    /// earned a streak/milestone bonus, presentation consumers receive one
+    /// final cumulative pulse: submitted base score + earned bonus.
+    /// </summary>
+    public void CompleteCheckoutRegistration(int playerIndex)
+    {
+        if (!IsValidPlayer(playerIndex)) return;
+
+        int playerArrayIndex = playerIndex - 1;
+        CheckoutSessionData session = currentSession[playerArrayIndex];
+
+        if (!session.isActive ||
+            session.cargoCount <= 0 ||
+            checkoutBonusPulsePublished[playerArrayIndex])
+        {
+            return;
+        }
+
+        checkoutBonusPulsePublished[playerArrayIndex] = true;
+
+        int bonusScore = Mathf.RoundToInt(session.bonusPoints);
+        if (bonusScore <= 0) return;
+
+        PublishCheckoutScorePulse(
+            playerIndex,
+            Mathf.RoundToInt(session.subtotal)
+        );
     }
 
     public void EndCheckoutSession(int playerIndex)
@@ -268,10 +260,7 @@ public class CashScoreManager : MonoBehaviour
 
         if (!session.isActive || session.cargoCount <= 0)
         {
-            int laneIndex = session.laneIndex;
             session.Reset();
-
-            if (laneIndex >= 0) ResetCheckoutSessionUI(playerIndex, laneIndex);
             return;
         }
 
@@ -296,10 +285,8 @@ public class CashScoreManager : MonoBehaviour
         last.CopyFrom(session);
         last.isActive = false;
 
-        int completedLaneIndex = session.laneIndex;
         session.Reset();
-
-        if (completedLaneIndex >= 0) ResetCheckoutSessionUI(playerIndex, completedLaneIndex);
+        ClearCheckoutScorePulse(playerIndex - 1);
     }
 
     public CheckoutSessionData GetCurrentSessionData(int playerIndex)
@@ -312,6 +299,29 @@ public class CashScoreManager : MonoBehaviour
     {
         if (!IsValidPlayer(playerIndex)) return null;
         return lastSession[playerIndex - 1];
+    }
+
+    /// <summary>
+    /// Returns the latest successful cart-registration total, or the final
+    /// base-plus-bonus total when the checkout reward was completed.
+    /// Consumers decide how long that pulse remains visible.
+    /// </summary>
+    public bool TryGetCheckoutScorePulse(
+        int playerIndex,
+        out int cumulativeScore,
+        out float registeredAtUnscaledTime)
+    {
+        cumulativeScore = 0;
+        registeredAtUnscaledTime = 0f;
+
+        if (!IsValidPlayer(playerIndex)) return false;
+
+        int playerArrayIndex = playerIndex - 1;
+        if (checkoutScorePulseVersions[playerArrayIndex] <= 0) return false;
+
+        cumulativeScore = checkoutScorePulseValues[playerArrayIndex];
+        registeredAtUnscaledTime = checkoutScorePulseTimes[playerArrayIndex];
+        return true;
     }
 
     #endregion
@@ -438,38 +448,46 @@ public class CashScoreManager : MonoBehaviour
         return 0;
     }
 
-    public void ShowCheckoutUI(int playerIndex, int laneIndex, bool show)
-    {
-        if (!IsValidPlayer(playerIndex)) return;
-        if (laneIndex < 1 || laneIndex > MaxLanes) return;
-
-        int index = RootIndex(playerIndex, laneIndex - 1);
-
-        GameObject root =
-            checkoutLaneUIRoots != null &&
-            index >= 0 &&
-            index < checkoutLaneUIRoots.Length
-                ? checkoutLaneUIRoots[index]
-                : null;
-
-        if (root != null) root.SetActive(show);
-    }
-
     #endregion
 
     #region Internal Reward Calculation
 
     private CheckoutSessionData EnsureActiveSession(int playerIndex)
     {
-        CheckoutSessionData session = currentSession[playerIndex - 1];
+        int playerArrayIndex = playerIndex - 1;
+        CheckoutSessionData session = currentSession[playerArrayIndex];
 
         if (!session.isActive)
         {
             session.Reset();
             session.isActive = true;
+            ClearCheckoutScorePulse(playerArrayIndex);
         }
 
         return session;
+    }
+
+    private void PublishCheckoutScorePulse(
+        int playerIndex,
+        int cumulativeScore)
+    {
+        int playerArrayIndex = playerIndex - 1;
+
+        checkoutScorePulseValues[playerArrayIndex] =
+            Mathf.Max(0, cumulativeScore);
+
+        checkoutScorePulseTimes[playerArrayIndex] =
+            Time.unscaledTime;
+
+        checkoutScorePulseVersions[playerArrayIndex]++;
+    }
+
+    private void ClearCheckoutScorePulse(int playerArrayIndex)
+    {
+        checkoutScorePulseValues[playerArrayIndex] = 0;
+        checkoutScorePulseTimes[playerArrayIndex] = 0f;
+        checkoutScorePulseVersions[playerArrayIndex] = 0;
+        checkoutBonusPulsePublished[playerArrayIndex] = false;
     }
 
     private void RefreshSessionReward(CheckoutSessionData session)
@@ -504,114 +522,8 @@ public class CashScoreManager : MonoBehaviour
             playerTotalScore[i] = 0f;
             currentSession[i].Reset();
             lastSession[i].Reset();
+            ClearCheckoutScorePulse(i);
         }
-    }
-
-    #endregion
-
-    #region Checkout UI
-
-    private void UpdateCheckoutSessionUI(int playerIndex, CheckoutSessionData session)
-    {
-        if (session == null || session.laneIndex < 0) return;
-
-        int laneIndex = session.laneIndex;
-        CheckoutLaneUI ui = GetLaneUI(playerIndex, laneIndex);
-
-        if (ui == null) return;
-
-        if (ui.itemsCountText != null)
-        {
-            ui.itemsCountText.text = session.cargoCount.ToString();
-        }
-
-        bool hasStreak = IsCheckoutStreakAchievable(session.cargoCount);
-
-        if (ui.streakTextUI != null) ui.streakTextUI.SetActive(hasStreak);
-        if (ui.bonusPointUI != null) ui.bonusPointUI.SetActive(hasStreak);
-
-        if (ui.bonusPointText != null)
-        {
-            ui.bonusPointText.text = "+" + session.bonusPoints.ToString("F0");
-        }
-
-        if (ui.basePointText != null)
-        {
-            ui.basePointText.text = "+" + session.basePoints.ToString("F0");
-
-            int playerArrayIndex = playerIndex - 1;
-
-            if (subtotalPulseAnims[playerArrayIndex, laneIndex] != null)
-            {
-                StopCoroutine(subtotalPulseAnims[playerArrayIndex, laneIndex]);
-            }
-
-            subtotalPulseAnims[playerArrayIndex, laneIndex] = StartCoroutine(
-                AnimateTextPulse(ui.basePointText.transform, 1.4f)
-            );
-        }
-    }
-
-    private CheckoutLaneUI GetLaneUI(int playerIndex, int laneIndex)
-    {
-        int index = LaneIndex(playerIndex, laneIndex);
-
-        if (laneUIs == null || index < 0 || index >= laneUIs.Length) return null;
-
-        return laneUIs[index];
-    }
-
-    private void ResetCheckoutSessionUI(int playerIndex, int laneIndex)
-    {
-        CheckoutLaneUI ui = GetLaneUI(playerIndex, laneIndex);
-        if (ui == null) return;
-
-        if (ui.itemsCountText != null) ui.itemsCountText.text = "0";
-        if (ui.streakTextUI != null) ui.streakTextUI.SetActive(false);
-        if (ui.basePointText != null) ui.basePointText.text = "0";
-        if (ui.bonusPointUI != null) ui.bonusPointUI.SetActive(false);
-        if (ui.bonusPointText != null) ui.bonusPointText.text = "0";
-    }
-
-    private IEnumerator AnimateTextPulse(Transform target, float scaleMultiplier = 1.5f, float duration = 0.3f)
-    {
-        if (target == null) yield break;
-
-        Vector3 originalScale = Vector3.one;
-        target.localScale = originalScale;
-
-        float half = Mathf.Max(0.01f, duration * 0.5f);
-        float time = 0f;
-
-        while (time < half)
-        {
-            float t = time / half;
-            target.localScale = Vector3.Lerp(originalScale, originalScale * scaleMultiplier, t);
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        time = 0f;
-
-        while (time < half)
-        {
-            float t = time / half;
-            target.localScale = Vector3.Lerp(originalScale * scaleMultiplier, originalScale, t);
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        target.localScale = originalScale;
-    }
-
-    private static int LaneIndex(int playerIndex, int laneIndex)
-    {
-        return (playerIndex - 1) * MaxLanes + laneIndex;
-    }
-
-    private static int RootIndex(int playerIndex, int laneIndex)
-    {
-        return (playerIndex - 1) * MaxLanes + laneIndex;
     }
 
     #endregion

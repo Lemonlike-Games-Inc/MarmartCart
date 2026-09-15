@@ -29,6 +29,11 @@ using UnityEngine;
 /// CONTROL PROMPTS:
 /// - backward-movement availability draws a profile-authored rounded prompt;
 /// - visibility comes only from the local player's semantic HUD state.
+///
+/// CHECKOUT HUD:
+/// - checkout suppression replaces the normal meters with the checkout prompt;
+/// - each successfully registered cart flashes the session's cumulative base score;
+/// - an earned streak bonus flashes once as the final cumulative checkout total.
 /// </summary>
 [DisallowMultipleComponent]
 public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
@@ -39,6 +44,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     [SerializeField] private PlayerWorldHUDSystem hudSystem;
     [SerializeField] private PlayerWorldHUDStateSystem stateSystem;
     [SerializeField] private PlayerWorldHUDLayoutProfile layoutProfile;
+    [SerializeField] private CashScoreManager cashScoreManager;
 
     [Tooltip(
         "Optional semantic feature toggles. If left unassigned, supported HUD channels default to visible."
@@ -81,6 +87,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         if (hudSystem == null) hudSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
         if (stateSystem == null) stateSystem = FindFirstObjectByType<PlayerWorldHUDStateSystem>();
+        if (cashScoreManager == null) cashScoreManager = FindFirstObjectByType<CashScoreManager>();
     }
 
     public override void DrawShapes(Camera cam)
@@ -88,7 +95,23 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         if (!drawingEnabled) return;
         if (cam == null || hudSystem == null || layoutProfile == null) return;
 
-        if (!hudSystem.TryGetRenderableSlotForCamera(cam, out int playerIndex, out Transform hudAnchor)) return;
+        bool checkoutPromptOnly =
+            hudSystem.TryGetCheckoutSuppressedSlotForCamera(
+                cam,
+                out int playerIndex,
+                out Transform hudAnchor
+            );
+
+        if (!checkoutPromptOnly &&
+            !hudSystem.TryGetRenderableSlotForCamera(
+                cam,
+                out playerIndex,
+                out hudAnchor
+            ))
+        {
+            return;
+        }
+
         if (hudAnchor == null) return;
 
         // The REAL cart anchor determines only where the HUD belongs on-screen.
@@ -109,6 +132,32 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
             anchorScreen.z = renderDepth;
             renderAnchorWorld = cam.ScreenToWorldPoint(anchorScreen);
+        }
+
+        if (checkoutPromptOnly)
+        {
+            using (Draw.Command(cam))
+            {
+                Draw.ResetAllDrawStates();
+                Draw.BlendMode = ShapesBlendMode.Transparent;
+                Draw.RadiusSpace = ThicknessSpace.Pixels;
+                Draw.ThicknessSpace = ThicknessSpace.Pixels;
+                Draw.LineGeometry = LineGeometry.Billboard;
+                Draw.LineEndCaps = LineEndCap.Round;
+
+                DrawCheckoutPrompt(
+                    cam,
+                    renderAnchorWorld
+                );
+
+                DrawCheckoutRegisteredScore(
+                    cam,
+                    renderAnchorWorld,
+                    playerIndex
+                );
+            }
+
+            return;
         }
 
         PlayerWorldHUDState hudState = null;
@@ -217,6 +266,120 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
+    #region Checkout Prompt
+
+    private void DrawCheckoutPrompt(
+        Camera cam,
+        Vector3 renderAnchorWorld)
+    {
+        if (!layoutProfile.ShowCheckoutPrompt) return;
+
+        Vector3 anchorScreen =
+            cam.WorldToScreenPoint(
+                renderAnchorWorld
+            );
+
+        Vector2 groupCenter =
+            new Vector2(
+                anchorScreen.x,
+                anchorScreen.y
+            ) +
+            layoutProfile.CheckoutPromptOffsetPixels;
+
+        DrawRoundedScreenRectangle(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.CheckoutPromptBackgroundOffsetPixels,
+            layoutProfile.CheckoutPromptBackgroundSizePixels,
+            layoutProfile.CheckoutPromptCornerRadiusPixels,
+            layoutProfile.CheckoutPromptBackgroundColor
+        );
+
+        DrawPromptCircle(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.CheckoutPromptCircleOffsetPixels,
+            layoutProfile.CheckoutPromptCircleRadiusPixels,
+            layoutProfile.CheckoutPromptCircleColor
+        );
+
+        DrawCenteredScreenText(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.CheckoutPromptTextOffsetPixels,
+            layoutProfile.CheckoutPromptText,
+            layoutProfile.CheckoutPromptFontSizePixels,
+            layoutProfile.CheckoutPromptTextColor
+        );
+    }
+
+    private void DrawCheckoutRegisteredScore(
+        Camera cam,
+        Vector3 renderAnchorWorld,
+        int playerIndex)
+    {
+        if (!layoutProfile.ShowCheckoutRegisteredScore)
+        {
+            return;
+        }
+
+        if (cashScoreManager == null)
+        {
+            cashScoreManager =
+                FindFirstObjectByType<CashScoreManager>();
+        }
+
+        if (cashScoreManager == null ||
+            !cashScoreManager.TryGetCheckoutScorePulse(
+                playerIndex,
+                out int cumulativeScore,
+                out float registeredAtUnscaledTime
+            ))
+        {
+            return;
+        }
+
+        float pulseAge =
+            Mathf.Max(
+                0f,
+                Time.unscaledTime -
+                registeredAtUnscaledTime
+            );
+
+        if (pulseAge >=
+            layoutProfile.CheckoutRegisteredScoreLifetimeSeconds)
+        {
+            return;
+        }
+
+        Vector3 anchorScreen =
+            cam.WorldToScreenPoint(
+                renderAnchorWorld
+            );
+
+        Vector2 groupCenter =
+            new Vector2(
+                anchorScreen.x,
+                anchorScreen.y
+            ) +
+            layoutProfile.CheckoutPromptOffsetPixels;
+
+        DrawCenteredScreenText(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.CheckoutRegisteredScoreOffsetPixels,
+            cumulativeScore.ToString(),
+            layoutProfile.CheckoutRegisteredScoreFontSizePixels,
+            layoutProfile.CheckoutRegisteredScoreColor
+        );
+    }
+
+    #endregion
+
     #region Move Backward Prompt
 
     private void DrawMoveBackwardPrompt(
@@ -251,6 +414,15 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             layoutProfile.MoveBackwardPromptBackgroundSizePixels,
             layoutProfile.MoveBackwardPromptCornerRadiusPixels,
             layoutProfile.MoveBackwardPromptBackgroundColor
+        );
+
+        DrawPromptCircle(
+            cam,
+            anchorScreen.z,
+            groupCenter +
+            layoutProfile.MoveBackwardPromptCircleOffsetPixels,
+            layoutProfile.MoveBackwardPromptCircleRadiusPixels,
+            layoutProfile.MoveBackwardPromptCircleColor
         );
 
         DrawCenteredScreenText(
@@ -330,6 +502,27 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         Draw.Color = previousColor;
         Draw.Matrix = Matrix4x4.identity;
+    }
+
+    private void DrawPromptCircle(
+        Camera cam,
+        float screenDepth,
+        Vector2 centerScreen,
+        float radiusPixels,
+        Color color)
+    {
+        if (radiusPixels <= 0f) return;
+
+        Draw.Disc(
+            ScreenPointToWorld(
+                cam,
+                centerScreen,
+                screenDepth
+            ),
+            cam.transform.rotation,
+            radiusPixels,
+            color
+        );
     }
 
     private void DrawCenteredScreenText(

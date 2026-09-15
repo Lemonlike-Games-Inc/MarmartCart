@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_text
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 8728568953346996743, guid: 2fc6eb35d26f36843aed915386b1d9da, type: 3}
+      propertyPath: myLaneNumber
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

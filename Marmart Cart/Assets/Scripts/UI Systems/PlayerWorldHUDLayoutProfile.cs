@@ -14,6 +14,7 @@ using UnityEngine;
 /// - overload severity gradient.
 ///
 /// HYPE remains the stable background + current fill from Step 5B.
+/// Checkout-only prompt and registered-score pulse styling are authored here.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Player HUD/World HUD Layout Profile",
@@ -70,6 +71,19 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     private Color moveBackwardPromptBackgroundColor =
         new Color(0.05f, 0.06f, 0.08f, 0.86f);
 
+    [Header("Move Backward Prompt - Circle")]
+    [Tooltip("Circle position relative to the prompt group center in screen pixels.")]
+    [SerializeField]
+    private Vector2 moveBackwardPromptCircleOffsetPixels =
+        new Vector2(-55f, 0f);
+
+    [Min(0f)]
+    [SerializeField] private float moveBackwardPromptCircleRadiusPixels = 15f;
+
+    [SerializeField]
+    private Color moveBackwardPromptCircleColor =
+        new Color(0.20f, 0.72f, 1f, 1f);
+
     [Header("Move Backward Prompt - Text")]
     [SerializeField] private string moveBackwardPromptText = "MOVE BACKWARD";
 
@@ -81,6 +95,89 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     [SerializeField] private float moveBackwardPromptFontSizePixels = 18f;
 
     [SerializeField] private Color moveBackwardPromptTextColor = Color.white;
+
+    #endregion
+
+    #region Checkout Prompt
+
+    [Header("Checkout Prompt - Group")]
+    [Tooltip("Allows the checkout-only prompt to replace the normal player HUD while checkout suppression is active.")]
+    [SerializeField] private bool showCheckoutPrompt = true;
+
+    [Tooltip(
+        "Group position relative to HUDWorldAnchor in screen pixels. " +
+        "Positive X = right, positive Y = up.")]
+    [SerializeField]
+    private Vector2 checkoutPromptOffsetPixels =
+        new Vector2(0f, -105f);
+
+    [Tooltip("Uniform scale for the complete checkout prompt. Does not move the group position.")]
+    [Min(0.05f)]
+    [SerializeField] private float checkoutPromptMasterScale = 1f;
+
+    [Header("Checkout Prompt - Background")]
+    [SerializeField]
+    private Vector2 checkoutPromptBackgroundOffsetPixels =
+        Vector2.zero;
+
+    [SerializeField]
+    private Vector2 checkoutPromptBackgroundSizePixels =
+        new Vector2(180f, 42f);
+
+    [Min(0f)]
+    [SerializeField] private float checkoutPromptCornerRadiusPixels = 11f;
+
+    [SerializeField]
+    private Color checkoutPromptBackgroundColor =
+        new Color(0.05f, 0.06f, 0.08f, 0.90f);
+
+    [Header("Checkout Prompt - Circle")]
+    [Tooltip("Circle position relative to the checkout prompt group center in screen pixels.")]
+    [SerializeField]
+    private Vector2 checkoutPromptCircleOffsetPixels =
+        new Vector2(-68f, 0f);
+
+    [Min(0f)]
+    [SerializeField] private float checkoutPromptCircleRadiusPixels = 16f;
+
+    [SerializeField]
+    private Color checkoutPromptCircleColor =
+        new Color(1f, 0.72f, 0.10f, 1f);
+
+    [Header("Checkout Prompt - Text")]
+    [SerializeField] private string checkoutPromptText = "CHECKING OUT";
+
+    [SerializeField]
+    private Vector2 checkoutPromptTextOffsetPixels =
+        new Vector2(8f, 0f);
+
+    [Min(1f)]
+    [SerializeField] private float checkoutPromptFontSizePixels = 18f;
+
+    [SerializeField] private Color checkoutPromptTextColor = Color.white;
+
+    [Header("Checkout Prompt - Registered Score Pulse")]
+    [Tooltip(
+        "Shows the latest cumulative score successfully registered during " +
+        "checkout. Each newer registration immediately replaces the previous value.")]
+    [SerializeField] private bool showCheckoutRegisteredScore = true;
+
+    [Tooltip(
+        "Position relative to the Checkout Prompt group center in screen pixels.")]
+    [SerializeField]
+    private Vector2 checkoutRegisteredScoreOffsetPixels =
+        new Vector2(0f, 52f);
+
+    [Min(1f)]
+    [SerializeField] private float checkoutRegisteredScoreFontSizePixels = 32f;
+
+    [SerializeField] private Color checkoutRegisteredScoreColor = Color.white;
+
+    [Tooltip(
+        "Maximum visible lifetime for one registered-score value. " +
+        "A newer value replaces it immediately and begins its own lifetime.")]
+    [Range(0.01f, 0.4f)]
+    [SerializeField] private float checkoutRegisteredScoreLifetimeSeconds = 0.4f;
 
     #endregion
 
@@ -552,12 +649,52 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     public float MoveBackwardPromptCornerRadiusPixels =>
         moveBackwardPromptCornerRadiusPixels * EffectiveMoveBackwardPromptScale;
     public Color MoveBackwardPromptBackgroundColor => moveBackwardPromptBackgroundColor;
+    public Vector2 MoveBackwardPromptCircleOffsetPixels =>
+        moveBackwardPromptCircleOffsetPixels * EffectiveMoveBackwardPromptScale;
+    public float MoveBackwardPromptCircleRadiusPixels =>
+        moveBackwardPromptCircleRadiusPixels * EffectiveMoveBackwardPromptScale;
+    public Color MoveBackwardPromptCircleColor => moveBackwardPromptCircleColor;
     public string MoveBackwardPromptText => moveBackwardPromptText;
     public Vector2 MoveBackwardPromptTextOffsetPixels =>
         moveBackwardPromptTextOffsetPixels * EffectiveMoveBackwardPromptScale;
     public float MoveBackwardPromptFontSizePixels =>
         moveBackwardPromptFontSizePixels * EffectiveMoveBackwardPromptScale;
     public Color MoveBackwardPromptTextColor => moveBackwardPromptTextColor;
+
+    private float EffectiveCheckoutPromptScale =>
+        EffectiveMasterScale *
+        Mathf.Max(0.05f, checkoutPromptMasterScale);
+
+    public bool ShowCheckoutPrompt => showCheckoutPrompt;
+    public Vector2 CheckoutPromptOffsetPixels =>
+        checkoutPromptOffsetPixels * EffectiveMasterScale;
+    public float CheckoutPromptMasterScale => checkoutPromptMasterScale;
+    public Vector2 CheckoutPromptBackgroundOffsetPixels =>
+        checkoutPromptBackgroundOffsetPixels * EffectiveCheckoutPromptScale;
+    public Vector2 CheckoutPromptBackgroundSizePixels =>
+        checkoutPromptBackgroundSizePixels * EffectiveCheckoutPromptScale;
+    public float CheckoutPromptCornerRadiusPixels =>
+        checkoutPromptCornerRadiusPixels * EffectiveCheckoutPromptScale;
+    public Color CheckoutPromptBackgroundColor => checkoutPromptBackgroundColor;
+    public Vector2 CheckoutPromptCircleOffsetPixels =>
+        checkoutPromptCircleOffsetPixels * EffectiveCheckoutPromptScale;
+    public float CheckoutPromptCircleRadiusPixels =>
+        checkoutPromptCircleRadiusPixels * EffectiveCheckoutPromptScale;
+    public Color CheckoutPromptCircleColor => checkoutPromptCircleColor;
+    public string CheckoutPromptText => checkoutPromptText;
+    public Vector2 CheckoutPromptTextOffsetPixels =>
+        checkoutPromptTextOffsetPixels * EffectiveCheckoutPromptScale;
+    public float CheckoutPromptFontSizePixels =>
+        checkoutPromptFontSizePixels * EffectiveCheckoutPromptScale;
+    public Color CheckoutPromptTextColor => checkoutPromptTextColor;
+    public bool ShowCheckoutRegisteredScore => showCheckoutRegisteredScore;
+    public Vector2 CheckoutRegisteredScoreOffsetPixels =>
+        checkoutRegisteredScoreOffsetPixels * EffectiveCheckoutPromptScale;
+    public float CheckoutRegisteredScoreFontSizePixels =>
+        checkoutRegisteredScoreFontSizePixels * EffectiveCheckoutPromptScale;
+    public Color CheckoutRegisteredScoreColor => checkoutRegisteredScoreColor;
+    public float CheckoutRegisteredScoreLifetimeSeconds =>
+        checkoutRegisteredScoreLifetimeSeconds;
 
     public bool UseNearCameraRenderPlane => useNearCameraRenderPlane;
     public float NearCameraRenderDistance => nearCameraRenderDistance;
@@ -797,6 +934,44 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
 
         moveBackwardPromptFontSizePixels =
             Mathf.Max(1f, moveBackwardPromptFontSizePixels);
+
+        moveBackwardPromptCircleRadiusPixels =
+            Mathf.Max(0f, moveBackwardPromptCircleRadiusPixels);
+
+        checkoutPromptMasterScale =
+            Mathf.Max(0.05f, checkoutPromptMasterScale);
+
+        checkoutPromptBackgroundSizePixels.x =
+            Mathf.Max(1f, checkoutPromptBackgroundSizePixels.x);
+
+        checkoutPromptBackgroundSizePixels.y =
+            Mathf.Max(1f, checkoutPromptBackgroundSizePixels.y);
+
+        checkoutPromptCornerRadiusPixels =
+            Mathf.Clamp(
+                checkoutPromptCornerRadiusPixels,
+                0f,
+                Mathf.Min(
+                    checkoutPromptBackgroundSizePixels.x,
+                    checkoutPromptBackgroundSizePixels.y
+                ) * 0.5f
+            );
+
+        checkoutPromptCircleRadiusPixels =
+            Mathf.Max(0f, checkoutPromptCircleRadiusPixels);
+
+        checkoutPromptFontSizePixels =
+            Mathf.Max(1f, checkoutPromptFontSizePixels);
+
+        checkoutRegisteredScoreFontSizePixels =
+            Mathf.Max(1f, checkoutRegisteredScoreFontSizePixels);
+
+        checkoutRegisteredScoreLifetimeSeconds =
+            Mathf.Clamp(
+                checkoutRegisteredScoreLifetimeSeconds,
+                0.01f,
+                0.4f
+            );
 
         nearCameraRenderDistance = Mathf.Max(0.01f, nearCameraRenderDistance);
         nearClipSafetyPadding = Mathf.Max(0.001f, nearClipSafetyPadding);

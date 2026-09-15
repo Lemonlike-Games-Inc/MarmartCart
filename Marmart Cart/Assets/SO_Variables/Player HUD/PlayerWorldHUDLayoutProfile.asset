@@ -21,11 +21,28 @@ MonoBehaviour:
   moveBackwardPromptBackgroundOffsetPixels: {x: 0, y: 0}
   moveBackwardPromptBackgroundSizePixels: {x: 150, y: 38}
   moveBackwardPromptCornerRadiusPixels: 10
-  moveBackwardPromptBackgroundColor: {r: 0.2, g: 0.23921569, b: 0.29803923, a: 0.84313726}
+  moveBackwardPromptBackgroundColor: {r: 0, g: 0, b: 0, a: 0.87058824}
+  moveBackwardPromptCircleOffsetPixels: {x: -52.5, y: -0.55}
+  moveBackwardPromptCircleRadiusPixels: 13
+  moveBackwardPromptCircleColor: {r: 1, g: 0.35889024, b: 0.19999999, a: 1}
   moveBackwardPromptText: B to Reverse
   moveBackwardPromptTextOffsetPixels: {x: 3, y: 0}
   moveBackwardPromptFontSizePixels: 200
   moveBackwardPromptTextColor: {r: 1, g: 1, b: 1, a: 1}
+  showCheckoutPrompt: 1
+  checkoutPromptOffsetPixels: {x: 200, y: -3}
+  checkoutPromptMasterScale: 1
+  checkoutPromptBackgroundOffsetPixels: {x: 0, y: 0}
+  checkoutPromptBackgroundSizePixels: {x: 165, y: 42}
+  checkoutPromptCornerRadiusPixels: 11
+  checkoutPromptBackgroundColor: {r: 0, g: 0, b: 0, a: 0.87058824}
+  checkoutPromptCircleOffsetPixels: {x: -60.2, y: -0.3}
+  checkoutPromptCircleRadiusPixels: 13
+  checkoutPromptCircleColor: {r: 0.2, g: 0.72156864, b: 1, a: 1}
+  checkoutPromptText: X to Checkout
+  checkoutPromptTextOffsetPixels: {x: 0, y: 0}
+  checkoutPromptFontSizePixels: 200
+  checkoutPromptTextColor: {r: 1, g: 1, b: 1, a: 1}
   useNearCameraRenderPlane: 1
   nearCameraRenderDistance: 0.5
   nearClipSafetyPadding: 0.03
