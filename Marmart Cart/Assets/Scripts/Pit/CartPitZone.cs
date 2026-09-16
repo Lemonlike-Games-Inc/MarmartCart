@@ -116,6 +116,7 @@ public class CartPitZone : MonoBehaviour
     private GameObject enteredLeader;
     private Rigidbody enteredLeaderBody;
     private CartControlScript enteredCartController;
+    private PlayerPowerupController enteredPowerupController;
     private LeadingCartBehaviour[] enteredWheelBehaviours;
     private LeadingCartBattleController enteredBattleController;
     private SnakeMoveBackwardController enteredMoveBackwardController;
@@ -203,6 +204,8 @@ public class CartPitZone : MonoBehaviour
         if (!PassesEntryDirection(leader.transform, leaderBody)) return;
 
         CartControlScript cartControl = leader.GetComponentInChildren<CartControlScript>(true);
+        PlayerPowerupController powerupController =
+            snakeManager.GetComponentInChildren<PlayerPowerupController>(true);
         LeadingCartBehaviour[] wheelBehaviours = leader.GetComponentsInChildren<LeadingCartBehaviour>(true);
         LeadingCartBattleController battleController = leader.GetComponentInChildren<LeadingCartBattleController>(true);
         SnakeMoveBackwardController moveBackwardController = snakeManager.GetComponent<SnakeMoveBackwardController>();
@@ -234,6 +237,7 @@ public class CartPitZone : MonoBehaviour
         enteredLeader = leader;
         enteredLeaderBody = leaderBody;
         enteredCartController = cartControl;
+        enteredPowerupController = powerupController;
         enteredWheelBehaviours = wheelBehaviours;
         enteredBattleController = battleController;
         enteredMoveBackwardController = moveBackwardController;
@@ -313,7 +317,23 @@ public class CartPitZone : MonoBehaviour
         enteredCartController.SetInPit();
         enteredCartController.DisableControl();
         enteredCartController.DisallowSpeedingUp();
-        enteredCartController.DisallowActivatePowerUp();
+
+        // Checkout is one independent power-up blocker. Clearing it on exit
+        // must not accidentally clear Freeze, match lifecycle, or a future
+        // active-effect lock. Preserve the legacy input toggle only while old
+        // player prefabs are being migrated.
+        if (enteredPowerupController != null)
+        {
+            enteredPowerupController.SetUseBlocked(
+                PowerupUseBlockReason.Checkout,
+                true
+            );
+        }
+        else
+        {
+            enteredCartController.DisallowActivatePowerUp();
+        }
+
         enteredCartController.SetActiveCheckoutHandler(null);
 
         if (enteredBattleController != null)
@@ -556,7 +576,19 @@ public class CartPitZone : MonoBehaviour
             enteredCartController.SetOutPit();
             enteredCartController.EnableControl();
             enteredCartController.AllowSpeedingUp();
-            enteredCartController.AllowActivatePowerUp();
+
+            if (enteredPowerupController != null)
+            {
+                enteredPowerupController.SetUseBlocked(
+                    PowerupUseBlockReason.Checkout,
+                    false
+                );
+            }
+            else
+            {
+                enteredCartController.AllowActivatePowerUp();
+            }
+
             enteredCartController.SetActiveCheckoutHandler(null);
         }
 
@@ -653,6 +685,7 @@ public class CartPitZone : MonoBehaviour
         enteredLeader = null;
         enteredLeaderBody = null;
         enteredCartController = null;
+        enteredPowerupController = null;
         enteredWheelBehaviours = null;
         enteredBattleController = null;
         enteredMoveBackwardController = null;

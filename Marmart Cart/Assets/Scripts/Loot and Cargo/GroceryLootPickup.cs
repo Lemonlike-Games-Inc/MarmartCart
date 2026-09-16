@@ -195,10 +195,5 @@ public class GroceryLootPickup : MonoBehaviour
 
             return;
         }
-
-        if (!pickupCollider.isTrigger)
-        {
-            Debug.LogWarning("[GroceryLootPickup] Collider on this GameObject is not marked Is Trigger.", pickupCollider);
-        }
     }
 }

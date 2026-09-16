@@ -59,8 +59,27 @@ public class CartControlScript : MonoBehaviour
     private Vector2 _aimInputVector;
     private Vector3 _aimDirection;
 
+    [Header("Aim Input")]
     [SerializeField] private bool canAim = false;
 
+    [Tooltip(
+        "Keyboard/mouse test fallback only. Mouse distance from the current screen center " +
+        "reaches full analog magnitude at this many pixels. Controller aim already supplies 0..1 magnitude directly."
+    )]
+    [Min(1f)]
+    [SerializeField] private float keyboardAimFullMagnitudePixels = 300f;
+
+    /// <summary>
+    /// Unnormalized 2D aim input after device filtering and a unit-circle clamp.
+    /// Targeting code must use this value so stick magnitude can control range.
+    /// </summary>
+    public Vector2 RawAimInput => _aimInputVector;
+    public float AimInputMagnitude => Mathf.Clamp01(_aimInputVector.magnitude);
+
+    /// <summary>
+    /// Compatibility world-space aim vector. Its magnitude is intentionally
+    /// preserved; consumers that need only a direction must normalize locally.
+    /// </summary>
     public Vector3 AimDirection => _aimDirection;
 
     #endregion
@@ -157,6 +176,11 @@ public class CartControlScript : MonoBehaviour
 
     [Header("Powerup")]
     [SerializeField] private bool canActivatePowerUp = false;
+
+    [Tooltip(
+        "Temporary migration fallback for the legacy power-up system. " +
+        "The new PlayerPowerupController receives OnPowerupUsePressed instead."
+    )]
     [SerializeField] private PowerupsManager powerupsManager;
 
     private CheckOutManager activeCheckoutManager;
@@ -170,6 +194,19 @@ public class CartControlScript : MonoBehaviour
 
     public System.Action OnMoveBackwardPressed;
     public System.Action OnCheckoutReleased;
+
+    /// <summary>
+    /// Raised after the Activate Power-up action passes this input gateway.
+    /// PlayerPowerupController owns all inventory and blocker validation.
+    /// </summary>
+    public event System.Action OnPowerupUsePressed;
+
+    /// <summary>
+    /// Raised only when the stored raw aim value actually changes.
+    /// </summary>
+    public event System.Action<Vector2> OnAimInputChanged;
+
+    // Kept for existing feedback listeners during the migration.
     public System.Action OnShootPressed;
 
     public System.Action<bool> OnMoveHeld;
@@ -230,8 +267,7 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == device && canAim)
             {
-                _aimInputVector = ctx.ReadValue<Vector2>();
-                _aimDirection = new Vector3(_aimInputVector.x, 0f, _aimInputVector.y).ToIso();
+                SetAimInput(ctx.ReadValue<Vector2>());
             }
         };
 
@@ -239,8 +275,7 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == device)
             {
-                _aimInputVector = Vector2.zero;
-                _aimDirection = Vector3.zero;
+                SetAimInput(Vector2.zero);
             }
         };
 
@@ -259,7 +294,6 @@ public class CartControlScript : MonoBehaviour
             if (ctx.control.device == device && canActivatePowerUp)
             {
                 ActivatePowerUp();
-                OnShootPressed?.Invoke();
             }
         };
 
@@ -322,9 +356,15 @@ public class CartControlScript : MonoBehaviour
                 Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
                 Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
                 Vector2 offset = mouseScreenPos - screenCenter;
+                float magnitude = Mathf.Clamp01(
+                    offset.magnitude / Mathf.Max(1f, keyboardAimFullMagnitudePixels)
+                );
 
-                _aimInputVector = offset.normalized;
-                _aimDirection = new Vector3(_aimInputVector.x, 0f, _aimInputVector.y).ToIso();
+                Vector2 analogMouseAim = offset.sqrMagnitude > 0.0001f
+                    ? offset.normalized * magnitude
+                    : Vector2.zero;
+
+                SetAimInput(analogMouseAim);
             }
         };
 
@@ -332,8 +372,7 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == Keyboard.current)
             {
-                _aimInputVector = Vector2.zero;
-                _aimDirection = Vector3.zero;
+                SetAimInput(Vector2.zero);
             }
         };
 
@@ -352,7 +391,6 @@ public class CartControlScript : MonoBehaviour
             if (ctx.control.device == Keyboard.current && canActivatePowerUp)
             {
                 ActivatePowerUp();
-                OnShootPressed?.Invoke();
             }
         };
 
@@ -404,6 +442,7 @@ public class CartControlScript : MonoBehaviour
 
     private void OnValidate()
     {
+        keyboardAimFullMagnitudePixels = Mathf.Max(1f, keyboardAimFullMagnitudePixels);
         maxHype = Mathf.Max(0.01f, maxHype);
         startingHype = Mathf.Clamp(startingHype, 0f, maxHype);
         baseHypeBurnPerSecond = Mathf.Max(0f, baseHypeBurnPerSecond);
@@ -441,8 +480,34 @@ public class CartControlScript : MonoBehaviour
 
     public void CleanupInput()
     {
+        SetAimInput(Vector2.zero);
         _inputActions?.Disable();
         InputUser.PerformPairingWithDevice(null, user);
+    }
+
+    #endregion
+
+    #region Aim Runtime
+
+    private void SetAimInput(Vector2 aimInput)
+    {
+        Vector2 nextInput = canAim
+            ? Vector2.ClampMagnitude(aimInput, 1f)
+            : Vector2.zero;
+
+        if ((_aimInputVector - nextInput).sqrMagnitude <= 0.000001f)
+        {
+            return;
+        }
+
+        _aimInputVector = nextInput;
+        _aimDirection = new Vector3(
+            _aimInputVector.x,
+            0f,
+            _aimInputVector.y
+        ).ToIso();
+
+        OnAimInputChanged?.Invoke(_aimInputVector);
     }
 
     #endregion
@@ -538,6 +603,8 @@ public class CartControlScript : MonoBehaviour
 
     public void SetPowerupsManager(PowerupsManager manager)
     {
+        // Temporary legacy migration path. The replacement system subscribes
+        // to OnPowerupUsePressed and does not use this reference.
         powerupsManager = manager;
     }
 
@@ -607,18 +674,37 @@ public class CartControlScript : MonoBehaviour
 
     public void AllowActivatePowerUp()
     {
-        canActivatePowerUp = true;
+        SetPowerupInputEnabled(true);
     }
 
     public void DisallowActivatePowerUp()
     {
-        canActivatePowerUp = false;
+        SetPowerupInputEnabled(false);
+    }
+
+    public void SetPowerupInputEnabled(bool enabled)
+    {
+        canActivatePowerUp = enabled;
     }
 
     public void ActivatePowerUp()
     {
-        if (!canActivatePowerUp || powerupsManager == null) return;
-        powerupsManager.ActivateStoredPowerup();
+        if (!canActivatePowerUp) return;
+
+        // During migration, a subscribed PlayerPowerupController is always
+        // authoritative. The legacy manager is used only when no replacement
+        // listener exists yet, which keeps the project compile-safe while old
+        // prefab components are removed one step at a time.
+        if (OnPowerupUsePressed != null)
+        {
+            OnPowerupUsePressed.Invoke();
+        }
+        else if (powerupsManager != null)
+        {
+            powerupsManager.ActivateStoredPowerup();
+        }
+
+        OnShootPressed?.Invoke();
     }
 
     #endregion
@@ -659,12 +745,28 @@ public class CartControlScript : MonoBehaviour
 
     public void AllowAim()
     {
-        canAim = true;
+        SetAimInputEnabled(true);
     }
 
     public void DisallowAim()
     {
-        canAim = false;
+        SetAimInputEnabled(false);
+    }
+
+    public void SetAimInputEnabled(bool enabled)
+    {
+        if (canAim == enabled)
+        {
+            if (!enabled) SetAimInput(Vector2.zero);
+            return;
+        }
+
+        canAim = enabled;
+
+        if (!canAim)
+        {
+            SetAimInput(Vector2.zero);
+        }
     }
 
     // Legacy charging state used by the old powerup/combat code.

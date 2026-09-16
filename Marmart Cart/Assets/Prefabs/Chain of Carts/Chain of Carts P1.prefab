@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1083702410519722233, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 127
       objectReference: {fileID: 0}
     - target: {fileID: 1083702410519722233, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 13.3
       objectReference: {fileID: 0}
     - target: {fileID: 1083702410519722233, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -706.3
       objectReference: {fileID: 0}
     - target: {fileID: 1083702410519722233, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_LocalRotation.w
@@ -48,9 +48,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3114217767808218698, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
+      propertyPath: playerIndexOverride
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6172510833367344487, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_Name
       value: Chain of Carts P1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6172510833367344487, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6172510833367344487, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_TagString

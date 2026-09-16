@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 8147838864649264086}
   - component: {fileID: 8337426284634087441}
   - component: {fileID: 3114217767808218698}
+  - component: {fileID: 1721464837927437150}
+  - component: {fileID: 2247272871967667016}
   m_Layer: 0
   m_Name: Chain of Carts Base
   m_TagString: Untagged
@@ -321,3 +323,87 @@ MonoBehaviour:
   stateSystem: {fileID: 0}
   playerIndexOverride: 0
   resolvedPlayerIndex: 0
+--- !u!114 &1721464837927437150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f5a4548f2c7804498ba322767ee6880, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 1
+  cartControlInput: {fileID: 0}
+  snakeCartManager: {fileID: 6429415885519634099}
+  runtimeSystem: {fileID: 0}
+  initialCartBindingDelay: 0.1
+  cartBindingRetryInterval: 0.1
+  cartBindingWarningDelay: 3
+  logAcceptedUseRequests: 1
+  logRejectedUseRequests: 1
+  boundPlayerObject: {fileID: 0}
+  hasStoredPowerup: 0
+  storedPowerup: 0
+  activeBlockReasons: 0
+  canUseStoredPowerup: 0
+  acceptedUseRequestVersion: 0
+--- !u!114 &2247272871967667016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a38de5de60851c4b8c95664b44b07e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPowerupController: {fileID: 1721464837927437150}
+  aimStateSystem: {fileID: 0}
+  gameplayProfile: {fileID: 11400000, guid: 48a0702ed6192ee4da5ee8c8d9ee085e, type: 2}
+  logAcceptedAimSnapshots: 1
+  boundCartControl: {fileID: 0}
+  boundMounts: {fileID: 0}
+  currentAimState:
+    PlayerIndex: 0
+    Visible: 0
+    TargetValid: 0
+    PowerupId: 0
+    RawAimInput: {x: 0, y: 0}
+    RawAimMagnitude: 0
+    AdjustedAimMagnitude: 0
+    AimDirection: {x: 0, y: 0, z: 0}
+    RangeOrigin: {x: 0, y: 0, z: 0}
+    StartPosition: {x: 0, y: 0, z: 0}
+    LandingPosition: {x: 0, y: 0, z: 0}
+    LandingNormal: {x: 0, y: 0, z: 0}
+    RequestedRange: 0
+    ResolvedPlanarDistance: 0
+    FlightDuration: 0
+    ArcHeight: 0
+    ImpactPreviewRadius: 0
+    Revision: 0
+  lastAcceptedAimSnapshot:
+    PlayerIndex: 0
+    Visible: 0
+    TargetValid: 0
+    PowerupId: 0
+    RawAimInput: {x: 0, y: 0}
+    RawAimMagnitude: 0
+    AdjustedAimMagnitude: 0
+    AimDirection: {x: 0, y: 0, z: 0}
+    RangeOrigin: {x: 0, y: 0, z: 0}
+    StartPosition: {x: 0, y: 0, z: 0}
+    LandingPosition: {x: 0, y: 0, z: 0}
+    LandingNormal: {x: 0, y: 0, z: 0}
+    RequestedRange: 0
+    ResolvedPlanarDistance: 0
+    FlightDuration: 0
+    ArcHeight: 0
+    ImpactPreviewRadius: 0
+    Revision: 0
+  acceptedAimSnapshotVersion: 0

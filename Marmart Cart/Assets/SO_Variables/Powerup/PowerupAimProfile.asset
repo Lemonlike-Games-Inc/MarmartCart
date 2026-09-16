@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e9165b17b10a9b4c803413883be28c8, type: 3}
+  m_Name: PowerupAimProfile
+  m_EditorClassIdentifier: 
+  useNearCameraRenderPlane: 1
+  nearCameraRenderDistance: 1
+  nearClipSafetyPadding: 0.05
+  skipPointsBehindCamera: 1
+  trajectorySampleCount: 28
+  trajectoryThicknessPixels: 4
+  trajectoryUnderlayExtraPixels: 3
+  trajectoryUnderlayColor: {r: 0.035, g: 0.04, b: 0.06, a: 0.85}
+  landingCircleSampleCount: 48
+  landingOutlineThicknessPixels: 4
+  landingUnderlayExtraPixels: 3
+  landingFillAlpha: 0.14
+  centerCrossRadiusFraction: 0.25
+  centerCrossThicknessPixels: 3
+  centerDotRadiusPixels: 4
+  tomatoColor: {r: 1, g: 0.24, b: 0.12, a: 1}
+  iceCubeColor: {r: 0.2, g: 0.88, b: 1, a: 1}
+  invalidColor: {r: 1, g: 0.08, b: 0.12, a: 1}

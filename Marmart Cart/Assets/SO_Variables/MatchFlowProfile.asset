@@ -31,7 +31,7 @@ MonoBehaviour:
     checkoutStations: 0
   - label: Cart Restock Cycle1
     type: 1
-    duration: 10
+    duration: 12.04
     telegraphDuration: 2
     resourceBudget: 10
     batchSize: 2
