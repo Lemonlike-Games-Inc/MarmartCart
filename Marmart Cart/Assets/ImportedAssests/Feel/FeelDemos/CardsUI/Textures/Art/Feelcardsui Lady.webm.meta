@@ -5,7 +5,8 @@ AssetOrigin:
   productId: 183370
   packageName: Feel
   packageVersion: 5.9.1
-  assetPath: Assets/Feel/FeelDemos/CardsUI/Textures/Art/Feelcardsui Lady.webm
+  assetPath: Assets/ImportedAssests/Feel/FeelDemos/CardsUI/Textures/Art/Feelcardsui
+    Lady.webm
   uploadId: 830868
 VideoClipImporter:
   externalObjects: {}

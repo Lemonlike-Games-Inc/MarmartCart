@@ -23,5 +23,6 @@ AssetOrigin:
   productId: 183370
   packageName: Feel
   packageVersion: 5.9.1
-  assetPath: Assets/Feel/MMTools/Foundation/MMAchievements/Fonts/orange kid.ttf
+  assetPath: Assets/ImportedAssests/Feel/MMTools/Foundation/MMAchievements/Fonts/orange
+    kid.ttf
   uploadId: 830868

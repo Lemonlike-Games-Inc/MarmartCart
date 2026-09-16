@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 20fc8178216bc494d88051a9edaf1ed7
 timeCreated: 1523627570
-licenseType: Store
+licenseType: Free
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 2100000
@@ -13,5 +13,5 @@ AssetOrigin:
   productId: 183370
   packageName: Feel
   packageVersion: 5.9.1
-  assetPath: Assets/Feel/FeelDemos/Wheel/Materials/FeelWheelDustMaterial.mat
+  assetPath: Assets/ImportedAssests/Feel/FeelDemos/Wheel/Materials/FeelWheelDustMaterial.mat
   uploadId: 830868

@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: da3882387fa6d2d408298e1a82fbf9ed
 timeCreated: 1513611571
-licenseType: Store
+licenseType: Pro
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 2100000
@@ -13,5 +13,5 @@ AssetOrigin:
   productId: 183370
   packageName: Feel
   packageVersion: 5.9.1
-  assetPath: Assets/Feel/MMFeedbacks/Demos/MMFeedbacksDemo/Materials/FeedbacksDemoGround.mat
+  assetPath: Assets/ImportedAssests/Feel/MMFeedbacks/Demos/MMFeedbacksDemo/Materials/FeedbacksDemoGround.mat
   uploadId: 830868
