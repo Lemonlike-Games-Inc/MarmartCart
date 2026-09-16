@@ -11,11 +11,10 @@ using UnityEngine;
 /// - derives Aim/Activate input permissions;
 /// - combines independent blocker reasons;
 /// - validates targeted requests against the targeting layer;
-/// - publishes accepted use requests without consuming the item yet.
+/// - publishes accepted use requests without consuming the item itself.
 ///
-/// Effect executors are intentionally added in later steps. A use request is
-/// therefore diagnostic-only until an executor accepts it and explicitly
-/// consumes the stored item.
+/// Effect executors listen to accepted requests and explicitly consume the
+/// stored item only after they successfully reserve/create their runtime work.
 /// </summary>
 [DisallowMultipleComponent]
 public class PlayerPowerupController : MonoBehaviour
@@ -344,7 +343,7 @@ public class PlayerPowerupController : MonoBehaviour
             Debug.Log(
                 $"[PlayerPowerupController] P{playerIndex} accepted use request " +
                 $"#{acceptedUseRequestVersion} for {requestedPowerup}. " +
-                "No effect is launched or consumed in this targeting-preview step.",
+                "The responsible executor now owns launch and consumption.",
                 this
             );
         }

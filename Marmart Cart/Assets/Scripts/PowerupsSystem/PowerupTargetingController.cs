@@ -6,8 +6,8 @@ using UnityEngine;
 ///
 /// The left stick selects direction and analog range. The requested endpoint
 /// is resolved onto an explicit ground mask, then a semantic state is published
-/// for the shared Shapes renderer. This component does not spawn or consume a
-/// projectile in the targeting-preview milestone.
+/// for the shared Shapes renderer. This component captures accepted snapshots;
+/// a separate launcher owns spawning, pooling, and inventory consumption.
 /// </summary>
 [DisallowMultipleComponent]
 public class PowerupTargetingController : MonoBehaviour
@@ -45,6 +45,9 @@ public class PowerupTargetingController : MonoBehaviour
     public PowerupAimState CurrentAimState => currentAimState;
     public PowerupAimState LastAcceptedAimSnapshot => lastAcceptedAimSnapshot;
     public uint AcceptedAimSnapshotVersion => acceptedAimSnapshotVersion;
+    public PlayerPowerupController PlayerPowerupController =>
+        playerPowerupController;
+    public PowerupGameplayProfile GameplayProfile => gameplayProfile;
 
     /// <summary>
     /// Raised with the exact valid state captured on the accepted input frame.
@@ -436,8 +439,7 @@ public class PowerupTargetingController : MonoBehaviour
                 $"[PowerupTargetingController] P{controller.PlayerIndex} " +
                 $"captured {requestedPowerup} aim snapshot " +
                 $"#{acceptedAimSnapshotVersion} at " +
-                $"{lastAcceptedAimSnapshot.LandingPosition}. " +
-                "Projectile spawning and inventory consumption are intentionally deferred.",
+                $"{lastAcceptedAimSnapshot.LandingPosition}.",
                 this
             );
         }
