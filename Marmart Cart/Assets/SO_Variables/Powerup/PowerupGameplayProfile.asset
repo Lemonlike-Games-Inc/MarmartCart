@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: PowerupGameplayProfile
   m_EditorClassIdentifier: 
   aimDeadzone: 0.15
-  minimumThrowRange: 2.5
-  maximumThrowRange: 12
+  minimumThrowRange: 3
+  maximumThrowRange: 20
   powerupGroundMask:
     serializedVersion: 2
     m_Bits: 64
   groundProbeHeight: 8
   groundProbeDistance: 20
-  fallbackStepCount: 8
+  fallbackStepCount: 10
   landingClearance: 0.03
   minimumFlightTime: 0.5
   maximumFlightTime: 1
-  minimumArcHeight: 2.5
-  maximumArcHeight: 6
+  minimumArcHeight: 3
+  maximumArcHeight: 12
   fallbackThrowOriginOffset: {x: 0, y: 1.25, z: 0}
   tomatoPreviewRadius: 2.5
   iceCubePreviewRadius: 0.9

@@ -1,0 +1,194 @@
+{
+  "items": [
+    {
+      "name": "beverage_box",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/beverage_box.fbx",
+      "color": "Assets/ToyArea/Textures/beverage_box_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "beverage+box+3d+model.zip"
+    },
+    {
+      "name": "blue_cookie_box",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/blue_cookie_box.fbx",
+      "color": "Assets/ToyArea/Textures/blue_cookie_box_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "blue+cookie+box+3d+model.zip"
+    },
+    {
+      "name": "candy_wrapper",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/candy_wrapper.fbx",
+      "color": "Assets/ToyArea/Textures/candy_wrapper_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "candy+wrapper+3d+model.zip"
+    },
+    {
+      "name": "cute_robot",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/cute_robot.fbx",
+      "color": "Assets/ToyArea/Textures/cute_robot_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "cute+robot+3d+model.zip"
+    },
+    {
+      "name": "lemon_soda_bottle",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/lemon_soda_bottle.fbx",
+      "color": "Assets/ToyArea/Textures/lemon_soda_bottle_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "lemon+soda+bottle+3d+model.zip"
+    },
+    {
+      "name": "Purple_Industrial_She_0913012541",
+      "group": "Shelves",
+      "model": "Assets/ToyArea/Models/Purple_Industrial_She_0913012541.fbx",
+      "color": "Assets/ToyArea/Textures/Purple_Industrial_She_0913012541_BaseColor.png",
+      "normal": "Assets/ToyArea/Textures/Purple_Industrial_She_0913012541_Normal.png",
+      "metallic": "Assets/ToyArea/Textures/Purple_Industrial_She_0913012541_Metallic.png",
+      "roughness": "Assets/ToyArea/Textures/Purple_Industrial_She_0913012541_Roughness.png",
+      "archive": "Meshy_AI_Purple_Industrial_She_0913012541_texture_fbx.zip"
+    },
+    {
+      "name": "Purple_Utility_Shelf_0913012548",
+      "group": "Shelves",
+      "model": "Assets/ToyArea/Models/Purple_Utility_Shelf_0913012548.fbx",
+      "color": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012548_BaseColor.png",
+      "normal": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012548_Normal.png",
+      "metallic": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012548_Metallic.png",
+      "roughness": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012548_Roughness.png",
+      "archive": "Meshy_AI_Purple_Utility_Shelf_0913012548_texture_fbx.zip"
+    },
+    {
+      "name": "Purple_Utility_Shelf_0913012600",
+      "group": "Shelves",
+      "model": "Assets/ToyArea/Models/Purple_Utility_Shelf_0913012600.fbx",
+      "color": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012600_BaseColor.png",
+      "normal": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012600_Normal.png",
+      "metallic": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012600_Metallic.png",
+      "roughness": "Assets/ToyArea/Textures/Purple_Utility_Shelf_0913012600_Roughness.png",
+      "archive": "Meshy_AI_Purple_Utility_Shelf_0913012600_texture_fbx.zip"
+    },
+    {
+      "name": "orange_box",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/orange_box.fbx",
+      "color": "Assets/ToyArea/Textures/orange_box_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "orange+box+3d+model.zip"
+    },
+    {
+      "name": "orange_can",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/orange_can.fbx",
+      "color": "Assets/ToyArea/Textures/orange_can_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "orange+can+3d+model.zip"
+    },
+    {
+      "name": "orange_juice_bottle",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/orange_juice_bottle.fbx",
+      "color": "Assets/ToyArea/Textures/orange_juice_bottle_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "orange+juice+bottle+3d+model.zip"
+    },
+    {
+      "name": "pink_chocolate_box",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/pink_chocolate_box.fbx",
+      "color": "Assets/ToyArea/Textures/pink_chocolate_box_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "pink+chocolate+box+3d+model.zip"
+    },
+    {
+      "name": "potato_chip_bag",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/potato_chip_bag.fbx",
+      "color": "Assets/ToyArea/Textures/potato_chip_bag_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "potato+chip+bag+3d+model.zip"
+    },
+    {
+      "name": "snack_banner",
+      "group": "Shelves",
+      "model": "Assets/ToyArea/Models/snack_banner.fbx",
+      "color": "Assets/ToyArea/Textures/snack_banner_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "snack+banner+3d+model.zip"
+    },
+    {
+      "name": "soda_bottle",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/soda_bottle.fbx",
+      "color": "Assets/ToyArea/Textures/soda_bottle_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "soda+bottle+3d+model.zip"
+    },
+    {
+      "name": "teddy_bear",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/teddy_bear.fbx",
+      "color": "Assets/ToyArea/Textures/teddy_bear_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "teddy+bear+3d+model.zip"
+    },
+    {
+      "name": "three-step_wooden_shelf",
+      "group": "Shelves",
+      "model": "Assets/ToyArea/Models/three-step_wooden_shelf.fbx",
+      "color": "Assets/ToyArea/Textures/three-step_wooden_shelf_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "three-step+wooden+shelf+3d+model.zip"
+    },
+    {
+      "name": "toy_car",
+      "group": "Goods",
+      "model": "Assets/ToyArea/Models/toy_car.fbx",
+      "color": "Assets/ToyArea/Textures/toy_car_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "toy+car+3d+model.zip"
+    },
+    {
+      "name": "wooden_shelf",
+      "group": "Shelves",
+      "model": "Assets/ToyArea/Models/wooden_shelf.fbx",
+      "color": "Assets/ToyArea/Textures/wooden_shelf_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "wooden+shelf+3d+model_Clone1.zip"
+    }
+  ]
+}
