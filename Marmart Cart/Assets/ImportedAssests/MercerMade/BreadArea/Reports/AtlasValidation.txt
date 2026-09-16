@@ -1,0 +1,116 @@
+Unity 2022.3.48f1
+Source GUIDs and hashes validated. Positions/normals/pivots/winding copied unchanged by source vertex index.
+No source Collider mesh is replaced. UV2 and additional UV/color channels are copied through vertex splits.
+Atlas compression: Unity platform high-quality compression
+Draw calls: not measured. Shared atlases do not imply one draw call.
+Atlas BreadAppliances_4b5cc76932dc_0: 4096x4096, covered=57.1 %
+Atlas Shelves_4b5cc76932dc_0: 4096x4096, covered=55.1 %
+Mesh beige_microwave_-2670: 1220 -> 1230 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh bread_loaf_Variant2_-2776: 941 -> 941 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh bread_loaf_-2880: 905 -> 905 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh croissant_-2984: 1197 -> 1197 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh desk_fan_-3088: 1718 -> 1722 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh espresso_coffee_machine_-3192: 1382 -> 1382 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh storage_shelf_-3296: 3227 -> 3227 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh three-tier_shelf_01_-3400: 2202 -> 2208 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh three-tier_shelf_3_-3504: 3054 -> 3054 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh toaster_oven_-3774: 1244 -> 1258 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh tomato_-3878: 1286 -> 1286 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh wooden_shelf_-3982: 1141 -> 1141 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh wooden_stair_display_-4086: 2063 -> 2084 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh yellow_rice_cooker_-4190: 1437 -> 1437 vertices; triangle geometry and surface normals preserved; instances=1
+STATS beige_microwave: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE beige_microwave_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: beige_microwave
+SUCCESS Assets/BreadArea/_Work/beige_microwave.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/100a1706/beige_microwave.prefab
+STATS bread_loaf_Variant2: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE bread_loaf_Variant2_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: bread_loaf_Variant2
+SUCCESS Assets/BreadArea/_Work/bread_loaf_Variant2.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/d72c316d/bread_loaf_Variant2.prefab
+STATS bread_loaf: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE bread_loaf_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: bread_loaf
+SUCCESS Assets/BreadArea/_Work/bread_loaf.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/979a283b/bread_loaf.prefab
+STATS croissant: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE croissant_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: croissant
+SUCCESS Assets/BreadArea/_Work/croissant.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/ab6d98d7/croissant.prefab
+STATS desk_fan: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE desk_fan_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: desk_fan
+SUCCESS Assets/BreadArea/_Work/desk_fan.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/36a0515c/desk_fan.prefab
+STATS espresso_coffee_machine: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE espresso_coffee_machine_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: espresso_coffee_machine
+SUCCESS Assets/BreadArea/_Work/espresso_coffee_machine.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/13359a6d/espresso_coffee_machine.prefab
+STATS storage_shelf: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE storage_shelf_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: storage_shelf
+SUCCESS Assets/BreadArea/_Work/storage_shelf.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/a06e0420/storage_shelf.prefab
+STATS three-tier_shelf_01: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE three-tier_shelf_01_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: three-tier_shelf_01
+SUCCESS Assets/BreadArea/_Work/three-tier_shelf_01.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/e37bfd7b/three-tier_shelf_01.prefab
+STATS three-tier_shelf_3: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE three-tier_shelf_3_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: three-tier_shelf_3
+SUCCESS Assets/BreadArea/_Work/three-tier_shelf_3.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/5b50bde7/three-tier_shelf_3.prefab
+STATS toaster_oven: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE toaster_oven_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: toaster_oven
+SUCCESS Assets/BreadArea/_Work/toaster_oven.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/3487e7a6/toaster_oven.prefab
+STATS tomato: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE tomato_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: tomato
+SUCCESS Assets/BreadArea/_Work/tomato.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/b1a1450f/tomato.prefab
+STATS wooden_shelf: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE wooden_shelf_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: wooden_shelf
+SUCCESS Assets/BreadArea/_Work/wooden_shelf.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/3bb4be38/wooden_shelf.prefab
+STATS wooden_stair_display: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE wooden_stair_display_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: wooden_stair_display
+SUCCESS Assets/BreadArea/_Work/wooden_stair_display.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/2b1ad488/wooden_stair_display.prefab
+STATS yellow_rice_cooker: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE yellow_rice_cooker_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE BreadAppliances_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: yellow_rice_cooker
+SUCCESS Assets/BreadArea/_Work/yellow_rice_cooker.prefab -> Assets/Core/AtlasOptimized/Runs/20260915_210616_207_0b8e77/Optimized_20260915_210855_451/Prefabs/b56383e4/yellow_rice_cooker.prefab
+BAKE NOTE: b41213e0c645abf3bf3df531_0: isolated 6 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 94f7f5494c7ad72ea4ebf181_0: isolated 4 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 6d971e81d719556f1dc52400_0: isolated 3 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 6f430fd6c97ebc0c90f64b75_0: isolated 8 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: bd758c21c8cb7970e7fca85b_0: isolated 9 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: BreadAppliances: one 4096 page, 705 charts, fitted density 609.5600 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.
+BAKE NOTE: Shelves: one 4096 page, 632 charts, fitted density 552.8230 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.
+BAKE NOTE: e5e484575d10f5deb147b0da_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 6d971e81d719556f1dc52400_0: 22 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 4db1ea35263de565c287f787_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: bd758c21c8cb7970e7fca85b_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.

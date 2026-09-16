@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "id": "BreadAppliances_4b5cc76932dc_0",
+      "group": "BreadAppliances",
+      "compatibility": "4b5cc76932dc",
+      "template": "8ce796d75067d9244b3b1f7b32a89b23_2100000",
+      "size": 4096,
+      "baseColor": "Baked/BreadAppliances_4b5cc76932dc_0_BaseColor.png",
+      "normal": "",
+      "masks": "Baked/BreadAppliances_4b5cc76932dc_0_Masks.png",
+      "coverage": 0.5713854432106018
+    },
+    {
+      "id": "Shelves_4b5cc76932dc_0",
+      "group": "Shelves",
+      "compatibility": "4b5cc76932dc",
+      "template": "8aaacfd338a42114ba6378c19e1fa7c1_2100000",
+      "size": 4096,
+      "baseColor": "Baked/Shelves_4b5cc76932dc_0_BaseColor.png",
+      "normal": "",
+      "masks": "Baked/Shelves_4b5cc76932dc_0_Masks.png",
+      "coverage": 0.5510921478271484
+    }
+  ],
+  "variants": [
+    {
+      "key": "b41213e0c645abf3bf3df531",
+      "file": "Baked/b41213e0c645abf3bf3df531.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1230,
+      "triangles": 962,
+      "hasUV2": true
+    },
+    {
+      "key": "4ce5ebe45ba50bce0935a72f",
+      "file": "Baked/4ce5ebe45ba50bce0935a72f.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 941,
+      "triangles": 1080,
+      "hasUV2": true
+    },
+    {
+      "key": "df7e4729d6cf5559c36d0de8",
+      "file": "Baked/df7e4729d6cf5559c36d0de8.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 905,
+      "triangles": 1034,
+      "hasUV2": true
+    },
+    {
+      "key": "5652a912aafbefc5d97a7a71",
+      "file": "Baked/5652a912aafbefc5d97a7a71.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1197,
+      "triangles": 1064,
+      "hasUV2": true
+    },
+    {
+      "key": "94f7f5494c7ad72ea4ebf181",
+      "file": "Baked/94f7f5494c7ad72ea4ebf181.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1722,
+      "triangles": 1402,
+      "hasUV2": true
+    },
+    {
+      "key": "eb22a3b458608a4ddc9e40e3",
+      "file": "Baked/eb22a3b458608a4ddc9e40e3.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1382,
+      "triangles": 1210,
+      "hasUV2": true
+    },
+    {
+      "key": "e5e484575d10f5deb147b0da",
+      "file": "Baked/e5e484575d10f5deb147b0da.atlasmesh",
+      "pages": [
+        "Shelves_4b5cc76932dc_0"
+      ],
+      "vertices": 3227,
+      "triangles": 2498,
+      "hasUV2": true
+    },
+    {
+      "key": "6d971e81d719556f1dc52400",
+      "file": "Baked/6d971e81d719556f1dc52400.atlasmesh",
+      "pages": [
+        "Shelves_4b5cc76932dc_0"
+      ],
+      "vertices": 2208,
+      "triangles": 2065,
+      "hasUV2": true
+    },
+    {
+      "key": "4db1ea35263de565c287f787",
+      "file": "Baked/4db1ea35263de565c287f787.atlasmesh",
+      "pages": [
+        "Shelves_4b5cc76932dc_0"
+      ],
+      "vertices": 3054,
+      "triangles": 3176,
+      "hasUV2": true
+    },
+    {
+      "key": "6f430fd6c97ebc0c90f64b75",
+      "file": "Baked/6f430fd6c97ebc0c90f64b75.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1258,
+      "triangles": 1144,
+      "hasUV2": true
+    },
+    {
+      "key": "8716075bb727c808664ffcc5",
+      "file": "Baked/8716075bb727c808664ffcc5.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1286,
+      "triangles": 1127,
+      "hasUV2": true
+    },
+    {
+      "key": "4dd27baad113865f317d2d26",
+      "file": "Baked/4dd27baad113865f317d2d26.atlasmesh",
+      "pages": [
+        "Shelves_4b5cc76932dc_0"
+      ],
+      "vertices": 1141,
+      "triangles": 1176,
+      "hasUV2": true
+    },
+    {
+      "key": "bd758c21c8cb7970e7fca85b",
+      "file": "Baked/bd758c21c8cb7970e7fca85b.atlasmesh",
+      "pages": [
+        "Shelves_4b5cc76932dc_0"
+      ],
+      "vertices": 2084,
+      "triangles": 1868,
+      "hasUV2": true
+    },
+    {
+      "key": "51b07965f6ca38d0da9f44bf",
+      "file": "Baked/51b07965f6ca38d0da9f44bf.atlasmesh",
+      "pages": [
+        "BreadAppliances_4b5cc76932dc_0"
+      ],
+      "vertices": 1437,
+      "triangles": 1204,
+      "hasUV2": true
+    }
+  ],
+  "warnings": [
+    "b41213e0c645abf3bf3df531_0: isolated 6 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "94f7f5494c7ad72ea4ebf181_0: isolated 4 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "6d971e81d719556f1dc52400_0: isolated 3 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "6f430fd6c97ebc0c90f64b75_0: isolated 8 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "bd758c21c8cb7970e7fca85b_0: isolated 9 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "BreadAppliances: one 4096 page, 705 charts, fitted density 609.5600 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.",
+    "Shelves: one 4096 page, 632 charts, fitted density 552.8230 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.",
+    "e5e484575d10f5deb147b0da_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "6d971e81d719556f1dc52400_0: 22 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "4db1ea35263de565c287f787_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "bd758c21c8cb7970e7fca85b_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded."
+  ]
+}

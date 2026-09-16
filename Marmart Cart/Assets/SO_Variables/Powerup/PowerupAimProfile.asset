@@ -23,10 +23,9 @@ MonoBehaviour:
   landingCircleSampleCount: 48
   landingOutlineThicknessPixels: 4
   landingUnderlayExtraPixels: 3
-  landingFillAlpha: 0.705
-  centerCrossRadiusFraction: 0.25
+  landingFillAlpha: 0.3
+  centerCrossSizePixels: 13
   centerCrossThicknessPixels: 3
-  centerDotRadiusPixels: 4
-  tomatoColor: {r: 1, g: 0.24, b: 0.12, a: 1}
-  iceCubeColor: {r: 0.2, g: 0.88, b: 1, a: 1}
-  invalidColor: {r: 0, g: 0, b: 0, a: 1}
+  centerDotRadiusPixels: 3
+  previewColor: {r: 0, g: 0.9308176, b: 0.202888, a: 1}
+  obstructedPreviewColor: {r: 1, g: 0.08, b: 0.04, a: 1}
