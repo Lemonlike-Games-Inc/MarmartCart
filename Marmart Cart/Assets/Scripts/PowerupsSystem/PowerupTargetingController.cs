@@ -231,11 +231,15 @@ public class PowerupTargetingController : MonoBehaviour
             resolvedDistance
         );
 
+        PowerupTrajectoryTiming trajectoryTiming =
+            gameplayProfile.TrajectoryTiming;
+
         ResolvePreviewEndpoint(
             startPosition,
             landingPosition,
             landingNormal,
             arcHeight,
+            trajectoryTiming,
             out bool trajectoryObstructed,
             out float previewEndNormalizedTime,
             out Vector3 previewEndPosition,
@@ -263,6 +267,7 @@ public class PowerupTargetingController : MonoBehaviour
             ResolvedPlanarDistance = resolvedDistance,
             FlightDuration = flightDuration,
             ArcHeight = arcHeight,
+            TrajectoryTiming = trajectoryTiming,
             ImpactPreviewRadius = gameplayProfile.GetImpactPreviewRadius(
                 playerPowerupController.StoredPowerup
             )
@@ -329,6 +334,7 @@ public class PowerupTargetingController : MonoBehaviour
         Vector3 landingPosition,
         Vector3 landingNormal,
         float arcHeight,
+        PowerupTrajectoryTiming trajectoryTiming,
         out bool trajectoryObstructed,
         out float previewEndNormalizedTime,
         out Vector3 previewEndPosition,
@@ -350,17 +356,26 @@ public class PowerupTargetingController : MonoBehaviour
             gameplayProfile.ProjectileBlockingSampleCount
         );
 
-        float previousTime = 0f;
+        float apexPathProgress =
+            PowerupTrajectory.CalculateApexPathProgress(
+                startPosition,
+                landingPosition,
+                arcHeight
+            );
+
+        float previousPathProgress = 0f;
         Vector3 previousPoint = startPosition;
 
         for (int sampleIndex = 1; sampleIndex < sampleCount; sampleIndex++)
         {
-            float currentTime = sampleIndex / (float)(sampleCount - 1);
-            Vector3 currentPoint = PowerupTrajectory.Evaluate(
+            float currentPathProgress =
+                sampleIndex / (float)(sampleCount - 1);
+
+            Vector3 currentPoint = PowerupTrajectory.EvaluatePathProgress(
                 startPosition,
                 landingPosition,
                 arcHeight,
-                currentTime
+                currentPathProgress
             );
 
             if (Physics.Linecast(
@@ -379,11 +394,17 @@ public class PowerupTargetingController : MonoBehaviour
                     : 0f;
 
                 trajectoryObstructed = true;
-                previewEndNormalizedTime = Mathf.Lerp(
-                    previousTime,
-                    currentTime,
+                float hitPathProgress = Mathf.Lerp(
+                    previousPathProgress,
+                    currentPathProgress,
                     segmentProgress
                 );
+
+                previewEndNormalizedTime =
+                    trajectoryTiming.InverseRemapTime(
+                        hitPathProgress,
+                        apexPathProgress
+                    );
                 previewEndPosition = hit.point;
                 previewEndNormal = hit.normal.sqrMagnitude > 0.000001f
                     ? hit.normal.normalized
@@ -391,7 +412,7 @@ public class PowerupTargetingController : MonoBehaviour
                 return;
             }
 
-            previousTime = currentTime;
+            previousPathProgress = currentPathProgress;
             previousPoint = currentPoint;
         }
     }

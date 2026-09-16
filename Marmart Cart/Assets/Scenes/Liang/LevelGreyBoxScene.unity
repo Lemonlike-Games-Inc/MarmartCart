@@ -17350,6 +17350,68 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &61975744
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 26.072556
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -135.03004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &61975745 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 61975744}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &63608317
 GameObject:
   m_ObjectHideFlags: 0
@@ -20513,6 +20575,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1528088646}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &87570272
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 26.072556
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -141.89003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (3)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &87570273 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 87570272}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &89095985
 Mesh:
   m_ObjectHideFlags: 0
@@ -62397,6 +62521,68 @@ Transform:
   - {fileID: 1729646458}
   m_Father: {fileID: 909966753}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &311483407
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.169998
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -160.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (8)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &311483408 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 311483407}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &313141428
 Mesh:
   m_ObjectHideFlags: 0
@@ -111307,7 +111493,21 @@ Transform:
   - {fileID: 2108935660}
   - {fileID: 565583692}
   - {fileID: 1266041752}
+  - {fileID: 841717666}
   - {fileID: 466051440}
+  - {fileID: 831417504}
+  - {fileID: 1181333692}
+  - {fileID: 61975745}
+  - {fileID: 87570273}
+  - {fileID: 1479931062}
+  - {fileID: 1280391573}
+  - {fileID: 2121210884}
+  - {fileID: 1339183196}
+  - {fileID: 311483408}
+  - {fileID: 1757103869}
+  - {fileID: 755204604}
+  - {fileID: 1087617416}
+  - {fileID: 1482970787}
   m_Father: {fileID: 316655400}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &595275120
@@ -141009,6 +141209,68 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!1001 &755204603
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6.550003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -160.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (10)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &755204604 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 755204603}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &756158475
 GameObject:
   m_ObjectHideFlags: 0
@@ -158169,6 +158431,68 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &831417503
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 26.072556
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -121.33003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &831417504 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 831417503}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &832620690
 GameObject:
   m_ObjectHideFlags: 0
@@ -159040,6 +159364,68 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1001 &841717665
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2187788608575279456, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_Name
+      value: FlatFridgePlatformMini_Dairy01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.130005
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.774999
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -130.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+--- !u!4 &841717666 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2221602657925895916, guid: e77497ffc7b869848a0a5f5067e093bd, type: 3}
+  m_PrefabInstance: {fileID: 841717665}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &842140096
 Mesh:
   m_ObjectHideFlags: 0
@@ -198217,6 +198603,68 @@ Transform:
   - {fileID: 1171009774}
   m_Father: {fileID: 1731969983}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1001 &1087617415
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.390015
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -160.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (11)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &1087617416 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 1087617415}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1088614781
 GameObject:
   m_ObjectHideFlags: 0
@@ -224489,6 +224937,68 @@ Transform:
   - {fileID: 999951129}
   m_Father: {fileID: 1446118869}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1181333691
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 26.072556
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -128.17
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &1181333692 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 1181333691}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1181582778
 GameObject:
   m_ObjectHideFlags: 0
@@ -352322,6 +352832,68 @@ Transform:
   - {fileID: 1124598500}
   m_Father: {fileID: 718396188}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1280391572
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 26.072556
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -155.59999
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (5)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &1280391573 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 1280391572}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1281410909
 Mesh:
   m_ObjectHideFlags: 0
@@ -372225,6 +372797,68 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7689148556561879390, guid: 5ab2dd6a40a9de444865b29eb43285de, type: 3}
   m_PrefabInstance: {fileID: 1338472438}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1339183195
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 14.019989
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -160.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (7)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &1339183196 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 1339183195}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1339642588
 GameObject:
@@ -394063,6 +394697,68 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &1479931061
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 26.072556
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -148.75002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (4)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &1479931062 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 1479931061}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1480665105
 Mesh:
   m_ObjectHideFlags: 0
@@ -394644,6 +395340,80 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1482240644}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1482970786
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 19.555172
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 19.555172
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 19.555172
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 25.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -139.79
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.44535628
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5304964
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.4637563
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5524143
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -80.028
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 87.681
+      objectReference: {fileID: 0}
+    - target: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5420138516317569629, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+      propertyPath: m_Name
+      value: Sign_FrozenDairy
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+--- !u!4 &1482970787 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4894584483118161259, guid: c35b972cfa3027d48b70cf583f25fba1, type: 3}
+  m_PrefabInstance: {fileID: 1482970786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1483112210
 Mesh:
   m_ObjectHideFlags: 0
@@ -418987,6 +419757,11 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
+    TrajectoryTiming:
+      useAsymmetricTiming: 0
+      apexNormalizedTime: 0
+      ascentEaseOutPower: 0
+      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
   - PlayerIndex: 0
@@ -419008,6 +419783,11 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
+    TrajectoryTiming:
+      useAsymmetricTiming: 0
+      apexNormalizedTime: 0
+      ascentEaseOutPower: 0
+      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
   - PlayerIndex: 0
@@ -419029,6 +419809,11 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
+    TrajectoryTiming:
+      useAsymmetricTiming: 0
+      apexNormalizedTime: 0
+      ascentEaseOutPower: 0
+      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
   - PlayerIndex: 0
@@ -419050,6 +419835,11 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
+    TrajectoryTiming:
+      useAsymmetricTiming: 0
+      apexNormalizedTime: 0
+      ascentEaseOutPower: 0
+      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
 --- !u!1 &1646745414
@@ -440749,6 +441539,68 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &1757103868
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.2999878
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -160.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (9)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &1757103869 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 1757103868}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1757505047
 GameObject:
   m_ObjectHideFlags: 0
@@ -454045,7 +454897,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7538510800395431723, guid: d9732405f5571ee458770eb213df8e75, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -119.12001
+      value: -120.74
       objectReference: {fileID: 0}
     - target: {fileID: 7538510800395431723, guid: d9732405f5571ee458770eb213df8e75, type: 3}
       propertyPath: m_LocalRotation.w
@@ -519520,6 +520372,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 817344602}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2121210883
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 595263548}
+    m_Modifications:
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 20.87999
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.775001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -160.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5143663422403338385, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+      propertyPath: m_Name
+      value: FridgeWithDoor_Frozen_Foods01 (6)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+--- !u!4 &2121210884 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2391817354639072154, guid: 754c52e6db729194ca26ff2fc58b8ef9, type: 3}
+  m_PrefabInstance: {fileID: 2121210883}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &2123355952
 Mesh:
   m_ObjectHideFlags: 0
@@ -525270,6 +526184,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f20fdccbaef3fde4b9d6215f8ea2aa95, type: 3}
+--- !u!1001 &3840231892334353081
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6542398599915684010, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_Name
+      value: CV_Dairy01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 84.904
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1163
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -718.147
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074935922406491282, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e98749f8ac06ac242860eefce129886f, type: 3}
 --- !u!1001 &3922951876018062262
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -526835,12 +527806,13 @@ SceneRoots:
   - {fileID: 3922951876018062262}
   - {fileID: 4095459126702115157}
   - {fileID: 1264652934}
-  - {fileID: 349120684}
-  - {fileID: 3601587902391575004}
-  - {fileID: 5766973133410862838}
-  - {fileID: 3402059244467971584}
-  - {fileID: 151360105921586606}
   - {fileID: 1246035040}
   - {fileID: 1065706393}
   - {fileID: 1450403309}
   - {fileID: 1603112610}
+  - {fileID: 3601587902391575004}
+  - {fileID: 5766973133410862838}
+  - {fileID: 3402059244467971584}
+  - {fileID: 151360105921586606}
+  - {fileID: 349120684}
+  - {fileID: 3840231892334353081}

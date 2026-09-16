@@ -110,7 +110,8 @@ public class FakeArcProjectile : MonoBehaviour
             launch.StartPosition,
             launch.LandingPosition,
             launch.ArcHeight,
-            nextNormalizedTime
+            nextNormalizedTime,
+            launch.TrajectoryTiming
         );
 
         if (TrySweepSegment(

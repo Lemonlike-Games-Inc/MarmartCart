@@ -35,6 +35,7 @@ public struct PowerupAimState
     public float ResolvedPlanarDistance;
     public float FlightDuration;
     public float ArcHeight;
+    public PowerupTrajectoryTiming TrajectoryTiming;
     public float ImpactPreviewRadius;
 
     public uint Revision;

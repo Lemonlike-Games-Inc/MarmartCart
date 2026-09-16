@@ -491,6 +491,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
                         projectileProfile.MinimumProjectileArcHeight,
                         snapshot.ArcHeight + entry.ArcHeightOffset
                     ),
+                    TrajectoryTiming = snapshot.TrajectoryTiming,
                     CollisionRotation = collisionRotation,
                     CartTargetMask =
                         projectileProfile.CartTargetMask,

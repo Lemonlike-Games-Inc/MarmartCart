@@ -120,24 +120,38 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
             ? Mathf.Clamp01(aimState.PreviewEndNormalizedTime)
             : 1f;
 
+        float apexPathProgress =
+            PowerupTrajectory.CalculateApexPathProgress(
+                aimState.StartPosition,
+                aimState.LandingPosition,
+                aimState.ArcHeight
+            );
+
+        float previewEndPathProgress =
+            aimState.TrajectoryTiming.RemapTime(
+                previewEndTime,
+                apexPathProgress
+            );
+
         bool hasPreviousPoint = false;
         Vector3 previousPoint = default;
 
         for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++)
         {
             float sampleFraction = sampleIndex / (float)(sampleCount - 1);
-            float normalizedTime = sampleFraction * previewEndTime;
+            float pathProgress =
+                sampleFraction * previewEndPathProgress;
 
             // End at the exact blocking-collider contact returned by the
             // semantic sweep. All earlier points remain on the original arc
             // toward the unchanged ground destination.
             Vector3 worldPoint = sampleIndex == sampleCount - 1
                 ? aimState.PreviewEndPosition
-                : PowerupTrajectory.Evaluate(
+                : PowerupTrajectory.EvaluatePathProgress(
                     aimState.StartPosition,
                     aimState.LandingPosition,
                     aimState.ArcHeight,
-                    normalizedTime
+                    pathProgress
                 );
 
             if (!TryProjectPoint(cam, worldPoint, out Vector3 renderPoint))

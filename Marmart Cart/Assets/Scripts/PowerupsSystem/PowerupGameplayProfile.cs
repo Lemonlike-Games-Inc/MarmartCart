@@ -64,6 +64,25 @@ public class PowerupGameplayProfile : ScriptableObject
     [Min(0f)]
     [SerializeField] private float maximumArcHeight = 6f;
 
+    [Header("Shared Flight Motion")]
+    [Tooltip(
+        "Remaps travel along the unchanged arc for a snappier launch, slower " +
+        "approach to a late apex, and faster fall. Disable for the old linear timing."
+    )]
+    [SerializeField] private bool useAsymmetricFlightTiming = true;
+
+    [Tooltip("Normalized lifetime at which the projectile reaches the arc apex.")]
+    [Range(0.05f, 0.95f)]
+    [SerializeField] private float flightApexNormalizedTime = 0.58f;
+
+    [Tooltip("Higher values launch faster and slow more strongly into the apex.")]
+    [Range(1.01f, 4f)]
+    [SerializeField] private float ascentEaseOutPower = 1.6f;
+
+    [Tooltip("Higher values create more hang near the apex and a faster final drop.")]
+    [Range(1.01f, 4f)]
+    [SerializeField] private float descentEaseInPower = 2f;
+
     [Tooltip("Local-space fallback used only when the leading-cart prefab has no assigned PowerupMounts Throw Origin.")]
     [SerializeField] private Vector3 fallbackThrowOriginOffset = new Vector3(0f, 1.25f, 0f);
 
@@ -117,6 +136,13 @@ public class PowerupGameplayProfile : ScriptableObject
     public float MaximumFlightTime => maximumFlightTime;
     public float MinimumArcHeight => minimumArcHeight;
     public float MaximumArcHeight => maximumArcHeight;
+    public PowerupTrajectoryTiming TrajectoryTiming =>
+        new PowerupTrajectoryTiming(
+            useAsymmetricFlightTiming,
+            flightApexNormalizedTime,
+            ascentEaseOutPower,
+            descentEaseInPower
+        );
     public Vector3 FallbackThrowOriginOffset => fallbackThrowOriginOffset;
     public LayerMask ProjectileBlockingMask => projectileBlockingMask;
     public int ProjectileBlockingSampleCount => projectileBlockingSampleCount;
@@ -211,6 +237,13 @@ public class PowerupGameplayProfile : ScriptableObject
         maximumFlightTime = Mathf.Max(minimumFlightTime, maximumFlightTime);
         minimumArcHeight = Mathf.Max(0f, minimumArcHeight);
         maximumArcHeight = Mathf.Max(minimumArcHeight, maximumArcHeight);
+        flightApexNormalizedTime = Mathf.Clamp(
+            flightApexNormalizedTime,
+            0.05f,
+            0.95f
+        );
+        ascentEaseOutPower = Mathf.Clamp(ascentEaseOutPower, 1.01f, 4f);
+        descentEaseInPower = Mathf.Clamp(descentEaseInPower, 1.01f, 4f);
         projectileBlockingSampleCount = Mathf.Clamp(projectileBlockingSampleCount, 4, 128);
 
         tomatoPreviewRadius = Mathf.Max(0.01f, tomatoPreviewRadius);
