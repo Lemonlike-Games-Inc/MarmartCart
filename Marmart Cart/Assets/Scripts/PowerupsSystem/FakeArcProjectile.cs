@@ -8,7 +8,10 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class FakeArcProjectile : MonoBehaviour
 {
-    private const int HitBufferCapacity = 16;
+    // A volley may pass through many ignored owner/follower colliders because
+    // all carts intentionally share one layer. Keep this fixed buffer generous
+    // enough that ignored carts do not hide a valid farther hit.
+    private const int HitBufferCapacity = 64;
 
     [Header("Swappable Presentation")]
     [Tooltip("Assign the mesh/model child that may spin and scale. The actor root remains the deterministic path owner.")]
@@ -66,7 +69,7 @@ public class FakeArcProjectile : MonoBehaviour
             previousPosition,
             nextPosition,
             out RaycastHit acceptedHit,
-            out LeadingCartPowerupTarget hitTarget,
+            out PowerupCartTargetSnapshot hitCart,
             out PowerupProjectileCompletionReason completionReason,
             out Vector3 projectileCenterAtHit
         ))
@@ -80,7 +83,8 @@ public class FakeArcProjectile : MonoBehaviour
                 completionReason,
                 acceptedHit.point,
                 acceptedHit.normal,
-                hitTarget
+                hitCart,
+                acceptedHit.collider
             );
             return;
         }
@@ -96,6 +100,7 @@ public class FakeArcProjectile : MonoBehaviour
                 PowerupProjectileCompletionReason.Landed,
                 launch.LandingPosition,
                 launch.LandingNormal,
+                default,
                 null
             );
         }
@@ -158,6 +163,7 @@ public class FakeArcProjectile : MonoBehaviour
                 PowerupProjectileCompletionReason.Cancelled,
                 transform.position,
                 Vector3.up,
+                default,
                 null
             );
         }
@@ -191,12 +197,12 @@ public class FakeArcProjectile : MonoBehaviour
         Vector3 start,
         Vector3 end,
         out RaycastHit acceptedHit,
-        out LeadingCartPowerupTarget hitTarget,
+        out PowerupCartTargetSnapshot hitCart,
         out PowerupProjectileCompletionReason completionReason,
         out Vector3 projectileCenterAtHit)
     {
         acceptedHit = default;
-        hitTarget = null;
+        hitCart = default;
         completionReason = default;
         projectileCenterAtHit = end;
 
@@ -206,7 +212,7 @@ public class FakeArcProjectile : MonoBehaviour
         if (distance <= 0.000001f) return false;
 
         int combinedMask =
-            launch.LeadingCartTargetMask.value |
+            launch.CartTargetMask.value |
             launch.EnvironmentBlockingMask.value;
 
         if (combinedMask == 0) return false;
@@ -242,6 +248,7 @@ public class FakeArcProjectile : MonoBehaviour
 
         float nearestDistance = float.PositiveInfinity;
         bool foundAcceptedHit = false;
+        PowerupCartTargetSnapshot nearestHitCart = default;
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -249,14 +256,39 @@ public class FakeArcProjectile : MonoBehaviour
             Collider candidateCollider = candidateHit.collider;
             if (candidateCollider == null) continue;
 
-            LeadingCartPowerupTarget candidateTarget =
-                candidateCollider.GetComponentInParent<LeadingCartPowerupTarget>();
-
             PowerupProjectileCompletionReason candidateReason;
+            PowerupCartTargetSnapshot candidateHitCart = default;
 
-            if (candidateTarget != null)
+            if (LayerIsInMask(
+                candidateCollider.gameObject.layer,
+                launch.CartTargetMask
+            ))
             {
-                int targetPlayerIndex = candidateTarget.PlayerIndex;
+                PowerupCartTarget candidateTarget =
+                    candidateCollider.GetComponentInParent<PowerupCartTarget>();
+
+                // Cart-layer colliders are classified only by their semantic
+                // marker. Markerless carts and loose carts are intentionally
+                // ignored rather than treated as environment blockers.
+                if (candidateTarget == null ||
+                    !candidateTarget.TryGetGameplayTarget(
+                        out candidateHitCart
+                    ))
+                {
+                    continue;
+                }
+
+                bool targetTypeAllowed =
+                    (candidateHitCart.Kind ==
+                        PowerupCartTargetKind.LeadingCart &&
+                     launch.HasEffectOnLeadingCart) ||
+                    (candidateHitCart.Kind ==
+                        PowerupCartTargetKind.ChainedCart &&
+                     launch.HasEffectOnChainedCarts);
+
+                if (!targetTypeAllowed) continue;
+
+                int targetPlayerIndex = candidateHitCart.PlayerIndex;
 
                 if (targetPlayerIndex < 1 ||
                     targetPlayerIndex > PowerupRuntimeSystem.MaxPlayerSlots)
@@ -271,13 +303,15 @@ public class FakeArcProjectile : MonoBehaviour
                 }
 
                 if (launch.IgnoreCheckoutTargets &&
-                    candidateTarget.IsInCheckout)
+                    candidateHitCart.IsInCheckout)
                 {
                     continue;
                 }
 
-                candidateReason =
-                    PowerupProjectileCompletionReason.LeadingCartHit;
+                candidateReason = candidateHitCart.Kind ==
+                    PowerupCartTargetKind.LeadingCart
+                    ? PowerupProjectileCompletionReason.LeadingCartHit
+                    : PowerupProjectileCompletionReason.ChainedCartHit;
             }
             else if (LayerIsInMask(
                 candidateCollider.gameObject.layer,
@@ -298,7 +332,7 @@ public class FakeArcProjectile : MonoBehaviour
 
             nearestDistance = candidateHit.distance;
             acceptedHit = candidateHit;
-            hitTarget = candidateTarget;
+            nearestHitCart = candidateHitCart;
             completionReason = candidateReason;
             foundAcceptedHit = true;
         }
@@ -307,6 +341,7 @@ public class FakeArcProjectile : MonoBehaviour
 
         projectileCenterAtHit =
             start + direction * Mathf.Clamp(nearestDistance, 0f, distance);
+        hitCart = nearestHitCart;
         return true;
     }
 
@@ -330,7 +365,8 @@ public class FakeArcProjectile : MonoBehaviour
         PowerupProjectileCompletionReason reason,
         Vector3 position,
         Vector3 surfaceNormal,
-        LeadingCartPowerupTarget hitTarget)
+        PowerupCartTargetSnapshot hitCart,
+        Collider hitCollider)
     {
         if (!activeFlight) return;
 
@@ -348,7 +384,13 @@ public class FakeArcProjectile : MonoBehaviour
                 SurfaceNormal = surfaceNormal.sqrMagnitude > 0.000001f
                     ? surfaceNormal.normalized
                     : Vector3.up,
-                HitTarget = hitTarget
+                HitTarget = hitCart.Target,
+                HitCartKind = hitCart.Kind,
+                HitPlayerIndex = hitCart.PlayerIndex,
+                HitCollider = hitCollider,
+                HitOwnerController = hitCart.OwnerController,
+                HitLeadingCartControl = hitCart.LeadingCartControl,
+                HitChainedCartManager = hitCart.ChainedCartManager
             };
 
         if (owningPool != null)

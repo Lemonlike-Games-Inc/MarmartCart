@@ -1631,6 +1631,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8460748639278677192}
   - component: {fileID: 8010286860008907063}
+  - component: {fileID: 7190724076814045640}
   m_Layer: 7
   m_Name: Powerup System Setups
   m_TagString: Untagged
@@ -1671,6 +1672,25 @@ MonoBehaviour:
   throwOrigin: {fileID: 8586985701550738017}
   heldItemMount: {fileID: 0}
   fanMount: {fileID: 0}
+--- !u!114 &7190724076814045640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2124143889757510336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d390f1f881eadcb41bc604f65652d3b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leadingCartControl: {fileID: 5901886544005484465}
+  chainedCartManager: {fileID: 0}
+  runtimeSystem: {fileID: 0}
+  currentKind: 0
+  playerIndex: 0
+  inCheckout: 0
+  ownerController: {fileID: 0}
 --- !u!1 &2151743552285325894
 GameObject:
   m_ObjectHideFlags: 0

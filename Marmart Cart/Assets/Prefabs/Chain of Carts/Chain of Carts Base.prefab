@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3114217767808218698}
   - component: {fileID: 1721464837927437150}
   - component: {fileID: 2247272871967667016}
+  - component: {fileID: 1830793791781320991}
   m_Layer: 0
   m_Name: Chain of Carts Base
   m_TagString: Untagged
@@ -371,7 +372,6 @@ MonoBehaviour:
   currentAimState:
     PlayerIndex: 0
     Visible: 0
-    TargetValid: 0
     PowerupId: 0
     RawAimInput: {x: 0, y: 0}
     RawAimMagnitude: 0
@@ -381,6 +381,10 @@ MonoBehaviour:
     StartPosition: {x: 0, y: 0, z: 0}
     LandingPosition: {x: 0, y: 0, z: 0}
     LandingNormal: {x: 0, y: 0, z: 0}
+    TrajectoryObstructed: 0
+    PreviewEndNormalizedTime: 0
+    PreviewEndPosition: {x: 0, y: 0, z: 0}
+    PreviewEndNormal: {x: 0, y: 0, z: 0}
     RequestedRange: 0
     ResolvedPlanarDistance: 0
     FlightDuration: 0
@@ -390,7 +394,6 @@ MonoBehaviour:
   lastAcceptedAimSnapshot:
     PlayerIndex: 0
     Visible: 0
-    TargetValid: 0
     PowerupId: 0
     RawAimInput: {x: 0, y: 0}
     RawAimMagnitude: 0
@@ -400,6 +403,10 @@ MonoBehaviour:
     StartPosition: {x: 0, y: 0, z: 0}
     LandingPosition: {x: 0, y: 0, z: 0}
     LandingNormal: {x: 0, y: 0, z: 0}
+    TrajectoryObstructed: 0
+    PreviewEndNormalizedTime: 0
+    PreviewEndPosition: {x: 0, y: 0, z: 0}
+    PreviewEndNormal: {x: 0, y: 0, z: 0}
     RequestedRange: 0
     ResolvedPlanarDistance: 0
     FlightDuration: 0
@@ -407,3 +414,25 @@ MonoBehaviour:
     ImpactPreviewRadius: 0
     Revision: 0
   acceptedAimSnapshotVersion: 0
+--- !u!114 &1830793791781320991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25af8238726d08345b444b7da46bf9fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPowerupController: {fileID: 1721464837927437150}
+  targetingController: {fileID: 2247272871967667016}
+  projectilePool: {fileID: 0}
+  logSuccessfulLaunches: 1
+  logLaunchFailures: 1
+  warnWhenPatternExceedsPreview: 1
+  launchedShotVersion: 0
+  lastLaunchedPowerup: 0
+  lastLaunchedActorCount: 0
+  lastFailureReason: 0

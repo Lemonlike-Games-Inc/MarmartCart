@@ -105,8 +105,9 @@ public class PowerupProjectilePool : MonoBehaviour
     {
         if (logNeutralCompletions)
         {
-            string targetText = completion.HitTarget != null
-                ? $" P{completion.HitTarget.PlayerIndex}"
+            string targetText = completion.HitCartKind !=
+                PowerupCartTargetKind.None
+                ? $" P{completion.HitPlayerIndex}/{completion.HitCartKind}"
                 : string.Empty;
 
             Debug.Log(

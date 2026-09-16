@@ -9749,6 +9749,7 @@ GameObject:
   - component: {fileID: 4352900759099298663}
   - component: {fileID: 2029535004146302134}
   - component: {fileID: 814993126530778047}
+  - component: {fileID: 1240603488509534518}
   m_Layer: 7
   m_Name: FollowingCart
   m_TagString: Item
@@ -9786,7 +9787,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6914780558269192623}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ca002da428252441b92f28d83c8a65f, type: 3}
   m_Name: 
@@ -9818,7 +9819,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6914780558269192623}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8233d90336aea43098adf6dbabd606a2, type: 3}
   m_Name: 
@@ -10228,6 +10229,25 @@ MonoBehaviour:
   - {r: 1, g: 0.87943953, b: 0.25471687, a: 1}
   currentPlayerId: 0
   outlineActive: 0
+--- !u!114 &1240603488509534518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6914780558269192623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d390f1f881eadcb41bc604f65652d3b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leadingCartControl: {fileID: 0}
+  chainedCartManager: {fileID: 6471618177495573124}
+  runtimeSystem: {fileID: 0}
+  currentKind: 0
+  playerIndex: 0
+  inCheckout: 0
+  ownerController: {fileID: 0}
 --- !u!1 &7168617494978913835
 GameObject:
   m_ObjectHideFlags: 0

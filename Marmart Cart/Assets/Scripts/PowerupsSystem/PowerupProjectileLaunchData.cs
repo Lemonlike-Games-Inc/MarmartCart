@@ -5,6 +5,7 @@ public enum PowerupProjectileCompletionReason
 {
     Landed,
     LeadingCartHit,
+    ChainedCartHit,
     EnvironmentBlocked,
     Cancelled
 }
@@ -27,8 +28,10 @@ public struct ResolvedPowerupProjectileLaunch
     public float SphereRadius;
     public Vector3 BoxHalfExtents;
     public Quaternion CollisionRotation;
-    public LayerMask LeadingCartTargetMask;
+    public LayerMask CartTargetMask;
     public LayerMask EnvironmentBlockingMask;
+    public bool HasEffectOnLeadingCart;
+    public bool HasEffectOnChainedCarts;
     public bool IgnoreOwnerInFlight;
     public bool IgnoreCheckoutTargets;
 
@@ -47,5 +50,11 @@ public struct PowerupProjectileCompletion
     public PowerupProjectileCompletionReason Reason;
     public Vector3 Position;
     public Vector3 SurfaceNormal;
-    public LeadingCartPowerupTarget HitTarget;
+    public PowerupCartTarget HitTarget;
+    public PowerupCartTargetKind HitCartKind;
+    public int HitPlayerIndex;
+    public Collider HitCollider;
+    public PlayerPowerupController HitOwnerController;
+    public CartControlScript HitLeadingCartControl;
+    public ChainedCartManager HitChainedCartManager;
 }

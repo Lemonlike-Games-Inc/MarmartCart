@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum PowerupProjectileSweepShape
 {
@@ -98,6 +99,13 @@ public sealed class ProjectileShotPattern
     [SerializeField] private bool ignoreOwnerInFlight = true;
     [SerializeField] private bool ignoreCheckoutTargets = true;
 
+    [Header("Cart Hit Policy")]
+    [Tooltip("Whether this projectile completes and applies its future effect when it hits a leading cart.")]
+    [SerializeField] private bool hasEffectOnLeadingCart = true;
+
+    [Tooltip("Whether this projectile completes and applies its future effect when it hits an owned follower cart. Loose carts remain ignored.")]
+    [SerializeField] private bool hasEffectOnChainedCarts;
+
     [SerializeField]
     private ProjectilePatternEntry[] entries =
         Array.Empty<ProjectilePatternEntry>();
@@ -109,6 +117,8 @@ public sealed class ProjectileShotPattern
     public Vector3 CastEulerAngles => castEulerAngles;
     public bool IgnoreOwnerInFlight => ignoreOwnerInFlight;
     public bool IgnoreCheckoutTargets => ignoreCheckoutTargets;
+    public bool HasEffectOnLeadingCart => hasEffectOnLeadingCart;
+    public bool HasEffectOnChainedCarts => hasEffectOnChainedCarts;
     public int EntryCount => entries != null ? entries.Length : 0;
 
     public ProjectilePatternEntry GetEntry(int index)
@@ -186,6 +196,8 @@ public sealed class ProjectileShotPattern
             castEulerAngles = Vector3.zero,
             ignoreOwnerInFlight = true,
             ignoreCheckoutTargets = true,
+            hasEffectOnLeadingCart = true,
+            hasEffectOnChainedCarts = false,
             entries = defaultEntries
         };
     }
@@ -201,6 +213,8 @@ public sealed class ProjectileShotPattern
             castEulerAngles = Vector3.zero,
             ignoreOwnerInFlight = true,
             ignoreCheckoutTargets = true,
+            hasEffectOnLeadingCart = true,
+            hasEffectOnChainedCarts = false,
             entries = new[]
             {
                 new ProjectilePatternEntry(
@@ -226,12 +240,16 @@ public sealed class ProjectileShotPattern
 public class PowerupProjectileProfile : ScriptableObject
 {
     [Header("Swappable Projectile Prefabs")]
-    [SerializeField] private FakeArcProjectile tomatoProjectilePrefab;
-    [SerializeField] private FakeArcProjectile iceCubeProjectilePrefab;
+    [SerializeField] private GameObject tomatoProjectilePrefab;
+    [SerializeField] private GameObject iceCubeProjectilePrefab;
 
-    [Header("Leading-Cart Target Query")]
-    [Tooltip("Assign only the layer used by colliders under LeadingCartPowerupTarget. Never include follower-cart layers.")]
-    [SerializeField] private LayerMask leadingCartTargetMask;
+    [Header("Cart Target Query")]
+    [Tooltip(
+        "Assign the game's existing Cart layer. PowerupCartTarget and " +
+        "ChainedCartManager state distinguish leading, chained, and loose carts in code."
+    )]
+    [FormerlySerializedAs("leadingCartTargetMask")]
+    [SerializeField] private LayerMask cartTargetMask;
 
     [Header("Pool")]
     [Min(0)]
@@ -258,8 +276,8 @@ public class PowerupProjectileProfile : ScriptableObject
     private ProjectileShotPattern iceCubePattern =
         ProjectileShotPattern.CreateRecommendedIceCube();
 
-    public LayerMask LeadingCartTargetMask => leadingCartTargetMask;
-    public bool HasLeadingCartTargetMask => leadingCartTargetMask.value != 0;
+    public LayerMask CartTargetMask => cartTargetMask;
+    public bool HasCartTargetMask => cartTargetMask.value != 0;
     public bool AllowPoolGrowth => allowPoolGrowth;
     public float MinimumProjectileDuration => minimumProjectileDuration;
     public float MinimumProjectileArcHeight => minimumProjectileArcHeight;
@@ -269,10 +287,10 @@ public class PowerupProjectileProfile : ScriptableObject
         switch (powerupId)
         {
             case PowerupId.Tomato:
-                return tomatoProjectilePrefab;
+                return tomatoProjectilePrefab.GetComponent<FakeArcProjectile>();
 
             case PowerupId.IceCube:
-                return iceCubeProjectilePrefab;
+                return iceCubeProjectilePrefab.GetComponent<FakeArcProjectile>();
 
             default:
                 return null;

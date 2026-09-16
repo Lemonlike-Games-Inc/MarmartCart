@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fb5f3e3c8df7404ab8bbed571459d81, type: 3}
+  m_Name: PowerupProjectileProfile
+  m_EditorClassIdentifier: 
+  tomatoProjectilePrefab: {fileID: 6549189977630224461, guid: 2e5a21f5b61109f4b85238cf3f2f856d, type: 3}
+  iceCubeProjectilePrefab: {fileID: 5317294129688744614, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+  cartTargetMask:
+    serializedVersion: 2
+    m_Bits: 128
+  tomatoPrewarmCount: 12
+  iceCubePrewarmCount: 4
+  allowPoolGrowth: 1
+  minimumProjectileDuration: 0.05
+  minimumProjectileArcHeight: 0
+  tomatoPattern:
+    spreadRadius: 2.5
+    sweepShape: 0
+    sphereRadius: 0.22
+    boxHalfExtents: {x: 0.22, y: 0.22, z: 0.22}
+    castEulerAngles: {x: 0, y: 0, z: 0}
+    ignoreOwnerInFlight: 0
+    ignoreCheckoutTargets: 1
+    hasEffectOnLeadingCart: 1
+    hasEffectOnChainedCarts: 0
+    entries:
+    - normalizedLandingOffset: {x: 0, y: 0}
+      arrivalTimeOffsetSeconds: 0
+      arcHeightOffset: 0
+      visualSpinAxis: {x: 1, y: 1, z: 0.2}
+      visualSpinDegreesPerSecond: 420
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.78, y: 0}
+      arrivalTimeOffsetSeconds: -0.12
+      arcHeightOffset: -0.15
+      visualSpinAxis: {x: 0.4, y: 1, z: 0.8}
+      visualSpinDegreesPerSecond: 330
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.24103323, y: 0.7418241}
+      arrivalTimeOffsetSeconds: -0.06
+      arcHeightOffset: 0.1
+      visualSpinAxis: {x: 0.5, y: 1, z: 0.72}
+      visualSpinDegreesPerSecond: 365
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.6310333, y: 0.45847243}
+      arrivalTimeOffsetSeconds: 0
+      arcHeightOffset: 0.2
+      visualSpinAxis: {x: 0.6, y: 1, z: 0.64}
+      visualSpinDegreesPerSecond: 400
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.6310332, y: -0.45847258}
+      arrivalTimeOffsetSeconds: 0.06
+      arcHeightOffset: 0.05
+      visualSpinAxis: {x: 0.7, y: 1, z: 0.56}
+      visualSpinDegreesPerSecond: 435
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.24103335, y: -0.74182403}
+      arrivalTimeOffsetSeconds: 0.12
+      arcHeightOffset: -0.1
+      visualSpinAxis: {x: 0.8, y: 1, z: 0.48000002}
+      visualSpinDegreesPerSecond: 470
+      visualScaleMultiplier: 1
+  iceCubePattern:
+    spreadRadius: 0
+    sweepShape: 1
+    sphereRadius: 0.35
+    boxHalfExtents: {x: 0.35, y: 0.35, z: 0.35}
+    castEulerAngles: {x: 0, y: 0, z: 0}
+    ignoreOwnerInFlight: 0
+    ignoreCheckoutTargets: 1
+    hasEffectOnLeadingCart: 1
+    hasEffectOnChainedCarts: 0
+    entries:
+    - normalizedLandingOffset: {x: 0, y: 0}
+      arrivalTimeOffsetSeconds: 0
+      arcHeightOffset: 0
+      visualSpinAxis: {x: 0.3, y: 1, z: 0.2}
+      visualSpinDegreesPerSecond: 150
+      visualScaleMultiplier: 1

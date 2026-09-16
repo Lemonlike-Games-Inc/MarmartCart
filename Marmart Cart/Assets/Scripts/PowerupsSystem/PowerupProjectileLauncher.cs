@@ -143,7 +143,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         }
 
         if (projectileProfile.GetPrefab(requestedPowerup) == null ||
-            !projectileProfile.HasLeadingCartTargetMask ||
+            !projectileProfile.HasCartTargetMask ||
             !projectilePool.CanProvide(
                 requestedPowerup,
                 pattern.EntryCount
@@ -221,7 +221,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         PowerupGameplayProfile gameplayProfile =
             targetingController.GameplayProfile;
 
-        if (!projectileProfile.HasLeadingCartTargetMask)
+        if (!projectileProfile.HasCartTargetMask)
         {
             RecordFailure(
                 snapshot.PowerupId,
@@ -410,10 +410,14 @@ public class PowerupProjectileLauncher : MonoBehaviour
                     SphereRadius = pattern.SphereRadius,
                     BoxHalfExtents = pattern.BoxHalfExtents,
                     CollisionRotation = collisionRotation,
-                    LeadingCartTargetMask =
-                        projectileProfile.LeadingCartTargetMask,
+                    CartTargetMask =
+                        projectileProfile.CartTargetMask,
                     EnvironmentBlockingMask =
                         gameplayProfile.ProjectileBlockingMask,
+                    HasEffectOnLeadingCart =
+                        pattern.HasEffectOnLeadingCart,
+                    HasEffectOnChainedCarts =
+                        pattern.HasEffectOnChainedCarts,
                     IgnoreOwnerInFlight = pattern.IgnoreOwnerInFlight,
                     IgnoreCheckoutTargets = pattern.IgnoreCheckoutTargets,
                     VisualSpinAxis = entry.VisualSpinAxis,
