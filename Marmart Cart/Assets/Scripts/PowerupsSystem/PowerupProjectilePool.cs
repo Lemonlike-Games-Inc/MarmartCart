@@ -56,7 +56,12 @@ public class PowerupProjectilePool : MonoBehaviour
         if (requiredCount <= 0 || projectileProfile == null) return false;
 
         PoolBucket bucket = GetOrCreateBucket(powerupId);
-        if (bucket == null || bucket.Prefab == null) return false;
+        if (bucket == null ||
+            bucket.Prefab == null ||
+            !bucket.Prefab.HasValidAuthoredHitbox)
+        {
+            return false;
+        }
 
         return projectileProfile.AllowPoolGrowth ||
                bucket.Available.Count >= requiredCount;
@@ -69,7 +74,12 @@ public class PowerupProjectilePool : MonoBehaviour
         projectile = null;
 
         PoolBucket bucket = GetOrCreateBucket(powerupId);
-        if (bucket == null || bucket.Prefab == null) return false;
+        if (bucket == null ||
+            bucket.Prefab == null ||
+            !bucket.Prefab.HasValidAuthoredHitbox)
+        {
+            return false;
+        }
 
         while (bucket.Available.Count > 0 && projectile == null)
         {
@@ -127,7 +137,12 @@ public class PowerupProjectilePool : MonoBehaviour
         if (projectileProfile == null) return;
 
         PoolBucket bucket = GetOrCreateBucket(powerupId);
-        if (bucket == null || bucket.Prefab == null) return;
+        if (bucket == null ||
+            bucket.Prefab == null ||
+            !bucket.Prefab.HasValidAuthoredHitbox)
+        {
+            return;
+        }
 
         int desiredCount = projectileProfile.GetPrewarmCount(powerupId);
 

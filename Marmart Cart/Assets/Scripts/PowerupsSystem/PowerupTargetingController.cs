@@ -19,6 +19,12 @@ public class PowerupTargetingController : MonoBehaviour
     [SerializeField] private PowerupAimStateSystem aimStateSystem;
     [SerializeField] private PowerupGameplayProfile gameplayProfile;
 
+    [Tooltip(
+        "Shared projectile asset that owns Tomato/Ice flight-time tuning. " +
+        "When left empty, the scene projectile pool is used to resolve it."
+    )]
+    [SerializeField] private PowerupProjectileProfile projectileProfile;
+
     #endregion
 
     #region Diagnostics
@@ -37,6 +43,7 @@ public class PowerupTargetingController : MonoBehaviour
     private bool missingControllerLogged;
     private bool missingStateSystemLogged;
     private bool missingGameplayProfileLogged;
+    private bool missingProjectileProfileLogged;
 
     #endregion
 
@@ -48,6 +55,7 @@ public class PowerupTargetingController : MonoBehaviour
     public PlayerPowerupController PlayerPowerupController =>
         playerPowerupController;
     public PowerupGameplayProfile GameplayProfile => gameplayProfile;
+    public PowerupProjectileProfile ProjectileProfile => projectileProfile;
 
     /// <summary>
     /// Raised with the exact valid state captured on the accepted input frame.
@@ -123,6 +131,25 @@ public class PowerupTargetingController : MonoBehaviour
 
         missingGameplayProfileLogged = false;
 
+        if (projectileProfile == null)
+        {
+            if (!missingProjectileProfileLogged)
+            {
+                missingProjectileProfileLogged = true;
+                Debug.LogError(
+                    "[PowerupTargetingController] Assign the shared " +
+                    "PowerupProjectileProfile. Projectile-specific flight " +
+                    "time cannot be calculated without it.",
+                    this
+                );
+            }
+
+            ClearAimState();
+            return false;
+        }
+
+        missingProjectileProfileLogged = false;
+
         if (!playerPowerupController.CanUseStoredPowerup ||
             !PowerupIdRules.RequiresProjectileAim(
                 playerPowerupController.StoredPowerup
@@ -193,8 +220,11 @@ public class PowerupTargetingController : MonoBehaviour
         float resolvedDistance =
             PowerupTrajectory.PlanarDistance(rangeOrigin, landingPosition);
 
-        float flightDuration = gameplayProfile.EvaluateFlightTime(
-            resolvedDistance
+        float flightDuration = projectileProfile.EvaluateFlightTime(
+            playerPowerupController.StoredPowerup,
+            resolvedDistance,
+            gameplayProfile.MinimumThrowRange,
+            gameplayProfile.MaximumThrowRange
         );
 
         float arcHeight = gameplayProfile.EvaluateArcHeight(
@@ -469,12 +499,25 @@ public class PowerupTargetingController : MonoBehaviour
             aimStateSystem = FindFirstObjectByType<PowerupAimStateSystem>();
         }
 
+        if (projectileProfile == null)
+        {
+            PowerupProjectilePool projectilePool =
+                FindFirstObjectByType<PowerupProjectilePool>();
+
+            if (projectilePool != null)
+            {
+                projectileProfile = projectilePool.ProjectileProfile;
+            }
+        }
+
         ResolveRuntimeCartReferences();
     }
 
     private void ResolveMissingReferences()
     {
-        if (playerPowerupController == null || aimStateSystem == null)
+        if (playerPowerupController == null ||
+            aimStateSystem == null ||
+            projectileProfile == null)
         {
             ResolveReferences();
         }

@@ -42,6 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8384488221545935917}
   - component: {fileID: 1531009345729156817}
+  - component: {fileID: 8092911651433004980}
   m_Layer: 0
   m_Name: PowerUp_Tomato
   m_TagString: Untagged
@@ -78,13 +79,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualRoot: {fileID: 9190318498743327493}
+  hitboxSource: {fileID: 8092911651433004980}
+  drawHitboxGizmo: 1
+  drawHitboxOnlyWhenSelected: 0
+  hitboxGizmoColor: {r: 1, g: 1, b: 1, a: 0.9}
   rentedFromPool: 0
+  preparedLaunch: 0
   activeFlight: 0
   activePowerupId: 0
   activeShotVersion: 0
   activePatternEntryIndex: -1
   elapsedSeconds: 0
   normalizedFlightTime: 0
+  runtimeSweepShape: 0
+  runtimeSphereRadius: 0
+  runtimeBoxHalfExtents: {x: 0, y: 0, z: 0}
+--- !u!135 &8092911651433004980
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6549189977630224461}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.35
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &8357195655973235323
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -94,12 +124,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 9190318498743327493}
     m_Modifications:
     - target: {fileID: 3212382365765016020, guid: 5f44c8d644e61184c9388425b43e6fa0, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.6205015
+      objectReference: {fileID: 0}
+    - target: {fileID: 3212382365765016020, guid: 5f44c8d644e61184c9388425b43e6fa0, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.6205015
+      objectReference: {fileID: 0}
+    - target: {fileID: 3212382365765016020, guid: 5f44c8d644e61184c9388425b43e6fa0, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6205015
+      objectReference: {fileID: 0}
+    - target: {fileID: 3212382365765016020, guid: 5f44c8d644e61184c9388425b43e6fa0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3212382365765016020, guid: 5f44c8d644e61184c9388425b43e6fa0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.246
       objectReference: {fileID: 0}
     - target: {fileID: 3212382365765016020, guid: 5f44c8d644e61184c9388425b43e6fa0, type: 3}
       propertyPath: m_LocalPosition.z

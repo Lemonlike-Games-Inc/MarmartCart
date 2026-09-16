@@ -11,7 +11,10 @@ public enum PowerupProjectileLaunchFailureReason
     SnapshotMismatch,
     InventoryChanged,
     PoolRentFailed,
-    InventoryConsumeFailed
+    InventoryConsumeFailed,
+    ProjectileProfileMismatch,
+    InvalidProjectileHitbox,
+    ProjectilePreparationFailed
 }
 
 /// <summary>
@@ -121,11 +124,21 @@ public class PowerupProjectileLauncher : MonoBehaviour
         PowerupProjectileProfile projectileProfile =
             projectilePool.ProjectileProfile;
 
-        if (projectileProfile == null)
+        if (projectileProfile == null ||
+            targetingController.ProjectileProfile == null)
         {
             RecordFailure(
                 requestedPowerup,
                 PowerupProjectileLaunchFailureReason.MissingReference
+            );
+            return false;
+        }
+
+        if (targetingController.ProjectileProfile != projectileProfile)
+        {
+            RecordFailure(
+                requestedPowerup,
+                PowerupProjectileLaunchFailureReason.ProjectileProfileMismatch
             );
             return false;
         }
@@ -142,8 +155,19 @@ public class PowerupProjectileLauncher : MonoBehaviour
             return false;
         }
 
-        if (projectileProfile.GetPrefab(requestedPowerup) == null ||
-            !projectileProfile.HasCartTargetMask ||
+        FakeArcProjectile prefabActor =
+            projectileProfile.GetPrefab(requestedPowerup);
+
+        if (prefabActor == null || !prefabActor.HasValidAuthoredHitbox)
+        {
+            RecordFailure(
+                requestedPowerup,
+                PowerupProjectileLaunchFailureReason.InvalidProjectileHitbox
+            );
+            return false;
+        }
+
+        if (!projectileProfile.HasCartTargetMask ||
             !projectilePool.CanProvide(
                 requestedPowerup,
                 pattern.EntryCount
@@ -159,6 +183,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         WarnIfPatternExceedsAdvertisedPreview(
             requestedPowerup,
             pattern,
+            projectileProfile,
             targetingController.GameplayProfile
         );
 
@@ -207,7 +232,8 @@ public class PowerupProjectileLauncher : MonoBehaviour
         if (projectilePool == null ||
             projectilePool.ProjectileProfile == null ||
             targetingController == null ||
-            targetingController.GameplayProfile == null)
+            targetingController.GameplayProfile == null ||
+            targetingController.ProjectileProfile == null)
         {
             RecordFailure(
                 snapshot.PowerupId,
@@ -220,6 +246,15 @@ public class PowerupProjectileLauncher : MonoBehaviour
             projectilePool.ProjectileProfile;
         PowerupGameplayProfile gameplayProfile =
             targetingController.GameplayProfile;
+
+        if (targetingController.ProjectileProfile != projectileProfile)
+        {
+            RecordFailure(
+                snapshot.PowerupId,
+                PowerupProjectileLaunchFailureReason.ProjectileProfileMismatch
+            );
+            return false;
+        }
 
         if (!projectileProfile.HasCartTargetMask)
         {
@@ -238,6 +273,18 @@ public class PowerupProjectileLauncher : MonoBehaviour
             RecordFailure(
                 snapshot.PowerupId,
                 PowerupProjectileLaunchFailureReason.InvalidShotPattern
+            );
+            return false;
+        }
+
+        FakeArcProjectile prefabActor =
+            projectileProfile.GetPrefab(snapshot.PowerupId);
+
+        if (prefabActor == null || !prefabActor.HasValidAuthoredHitbox)
+        {
+            RecordFailure(
+                snapshot.PowerupId,
+                PowerupProjectileLaunchFailureReason.InvalidProjectileHitbox
             );
             return false;
         }
@@ -268,8 +315,32 @@ public class PowerupProjectileLauncher : MonoBehaviour
             rentedProjectiles.Add(projectile);
         }
 
-        // Nothing capable of failing the launch remains after this point.
-        // Consume only after the complete volley has been resolved and rented.
+        // Prepare every inactive actor before consuming inventory. This also
+        // validates that every pooled copy can derive its runtime sweep from
+        // the collider authored on the prefab.
+        uint nextShotVersion = unchecked(launchedShotVersion + 1u);
+
+        for (int i = 0; i < rentedProjectiles.Count; i++)
+        {
+            ResolvedPowerupProjectileLaunch launch = resolvedLaunches[i];
+            launch.ShotVersion = nextShotVersion;
+            resolvedLaunches[i] = launch;
+
+            if (!rentedProjectiles[i].TryPrepareLaunch(launch))
+            {
+                RollBackRentedProjectiles();
+                resolvedLaunches.Clear();
+                RecordFailure(
+                    snapshot.PowerupId,
+                    PowerupProjectileLaunchFailureReason.ProjectilePreparationFailed
+                );
+                return false;
+            }
+        }
+
+        // Nothing capable of invalidating the volley remains after this point.
+        // Consume only after the complete volley has been resolved, rented,
+        // and prepared.
         if (!playerPowerupController.TryConsumeStoredPowerup(
             out PowerupId consumedPowerup
         ) || consumedPowerup != snapshot.PowerupId)
@@ -283,18 +354,32 @@ public class PowerupProjectileLauncher : MonoBehaviour
             return false;
         }
 
-        launchedShotVersion++;
+        launchedShotVersion = nextShotVersion;
         lastLaunchedPowerup = snapshot.PowerupId;
-        lastLaunchedActorCount = rentedProjectiles.Count;
+        lastLaunchedActorCount = 0;
 
         for (int i = 0; i < rentedProjectiles.Count; i++)
         {
-            ResolvedPowerupProjectileLaunch launch = resolvedLaunches[i];
-            launch.ShotVersion = launchedShotVersion;
-            rentedProjectiles[i].Launch(launch);
+            FakeArcProjectile projectile = rentedProjectiles[i];
+
+            if (projectile.BeginPreparedLaunch())
+            {
+                lastLaunchedActorCount++;
+            }
+            else
+            {
+                Debug.LogError(
+                    "[PowerupProjectileLauncher] A fully prepared projectile " +
+                    "could not begin flight after inventory was consumed. " +
+                    "Check for external changes to pooled actors.",
+                    projectile
+                );
+
+                projectilePool.ReturnUnlaunched(projectile);
+            }
         }
 
-        int launchedActorCount = rentedProjectiles.Count;
+        int launchedActorCount = lastLaunchedActorCount;
         rentedProjectiles.Clear();
         resolvedLaunches.Clear();
 
@@ -406,9 +491,6 @@ public class PowerupProjectileLauncher : MonoBehaviour
                         projectileProfile.MinimumProjectileArcHeight,
                         snapshot.ArcHeight + entry.ArcHeightOffset
                     ),
-                    SweepShape = pattern.SweepShape,
-                    SphereRadius = pattern.SphereRadius,
-                    BoxHalfExtents = pattern.BoxHalfExtents,
                     CollisionRotation = collisionRotation,
                     CartTargetMask =
                         projectileProfile.CartTargetMask,
@@ -486,22 +568,24 @@ public class PowerupProjectileLauncher : MonoBehaviour
     private void WarnIfPatternExceedsAdvertisedPreview(
         PowerupId powerupId,
         ProjectileShotPattern pattern,
+        PowerupProjectileProfile projectileProfile,
         PowerupGameplayProfile gameplayProfile)
     {
         if (!warnWhenPatternExceedsPreview ||
             patternPreviewWarningLogged ||
+            projectileProfile == null ||
             gameplayProfile == null)
         {
             return;
         }
 
-        float projectileFootprint = pattern.SweepShape ==
-            PowerupProjectileSweepShape.Sphere
-            ? pattern.SphereRadius
-            : new Vector2(
-                pattern.BoxHalfExtents.x,
-                pattern.BoxHalfExtents.z
-            ).magnitude;
+        if (!projectileProfile.TryGetAuthoredHitboxPlanarRadius(
+            powerupId,
+            out float authoredFootprint
+        ))
+        {
+            return;
+        }
 
         float maximumPatternRadius = 0f;
 
@@ -512,7 +596,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
                 maximumPatternRadius,
                 entry.NormalizedLandingOffset.magnitude *
                 pattern.SpreadRadius +
-                projectileFootprint
+                authoredFootprint * entry.VisualScaleMultiplier
             );
         }
 

@@ -46,13 +46,18 @@ public class PowerupGameplayProfile : ScriptableObject
 
     #region Deterministic Arc
 
-    [Header("Deterministic Arc")]
+    // Preserved invisibly so existing assets and any older callers keep their
+    // serialized/API compatibility. Active Tomato/Ice flight times now live in
+    // their ProjectileShotPattern inside PowerupProjectileProfile.
+    [HideInInspector]
     [Min(0.01f)]
     [SerializeField] private float minimumFlightTime = 0.5f;
 
+    [HideInInspector]
     [Min(0.01f)]
     [SerializeField] private float maximumFlightTime = 1f;
 
+    [Header("Deterministic Arc Height")]
     [Min(0f)]
     [SerializeField] private float minimumArcHeight = 2.5f;
 

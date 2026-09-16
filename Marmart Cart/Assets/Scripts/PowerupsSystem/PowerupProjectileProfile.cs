@@ -23,6 +23,7 @@ public sealed class ProjectilePatternEntry
     [SerializeField] private Vector3 visualSpinAxis = Vector3.up;
     [SerializeField] private float visualSpinDegreesPerSecond = 360f;
 
+    [Tooltip("Uniformly scales both the visual and the prefab-authored sweep hitbox for this copy.")]
     [Min(0.01f)]
     [SerializeField] private float visualScaleMultiplier = 1f;
 
@@ -79,19 +80,18 @@ public sealed class ProjectilePatternEntry
 [Serializable]
 public sealed class ProjectileShotPattern
 {
+    [Header("Flight Time By Throw Distance")]
+    [Tooltip("Flight time used at the shared minimum throw range.")]
+    [Min(0.01f)]
+    [SerializeField] private float minimumFlightTime = 0.5f;
+
+    [Tooltip("Flight time used at the shared maximum throw range.")]
+    [Min(0.01f)]
+    [SerializeField] private float maximumFlightTime = 1f;
+
+    [Header("Volley Spread")]
     [Min(0f)]
     [SerializeField] private float spreadRadius = 2f;
-
-    [SerializeField]
-    private PowerupProjectileSweepShape sweepShape =
-        PowerupProjectileSweepShape.Sphere;
-
-    [Min(0.01f)]
-    [SerializeField] private float sphereRadius = 0.22f;
-
-    [SerializeField]
-    private Vector3 boxHalfExtents =
-        new Vector3(0.35f, 0.35f, 0.35f);
 
     [Tooltip("Fixed cast orientation offset after aligning the actor with the aim direction.")]
     [SerializeField] private Vector3 castEulerAngles;
@@ -110,10 +110,9 @@ public sealed class ProjectileShotPattern
     private ProjectilePatternEntry[] entries =
         Array.Empty<ProjectilePatternEntry>();
 
+    public float MinimumFlightTime => minimumFlightTime;
+    public float MaximumFlightTime => maximumFlightTime;
     public float SpreadRadius => spreadRadius;
-    public PowerupProjectileSweepShape SweepShape => sweepShape;
-    public float SphereRadius => sphereRadius;
-    public Vector3 BoxHalfExtents => boxHalfExtents;
     public Vector3 CastEulerAngles => castEulerAngles;
     public bool IgnoreOwnerInFlight => ignoreOwnerInFlight;
     public bool IgnoreCheckoutTargets => ignoreCheckoutTargets;
@@ -131,15 +130,32 @@ public sealed class ProjectileShotPattern
         return entries[index];
     }
 
+    public float EvaluateFlightTime(
+        float planarDistance,
+        float minimumThrowRange,
+        float maximumThrowRange)
+    {
+        float distance01 = Mathf.InverseLerp(
+            minimumThrowRange,
+            maximumThrowRange,
+            Mathf.Max(0f, planarDistance)
+        );
+
+        return Mathf.Lerp(
+            minimumFlightTime,
+            maximumFlightTime,
+            distance01
+        );
+    }
+
     public void Sanitize()
     {
-        spreadRadius = Mathf.Max(0f, spreadRadius);
-        sphereRadius = Mathf.Max(0.01f, sphereRadius);
-        boxHalfExtents = new Vector3(
-            Mathf.Max(0.01f, boxHalfExtents.x),
-            Mathf.Max(0.01f, boxHalfExtents.y),
-            Mathf.Max(0.01f, boxHalfExtents.z)
+        minimumFlightTime = Mathf.Max(0.01f, minimumFlightTime);
+        maximumFlightTime = Mathf.Max(
+            minimumFlightTime,
+            maximumFlightTime
         );
+        spreadRadius = Mathf.Max(0f, spreadRadius);
 
         if (entries == null)
         {
@@ -189,10 +205,9 @@ public sealed class ProjectileShotPattern
 
         return new ProjectileShotPattern
         {
+            minimumFlightTime = 0.5f,
+            maximumFlightTime = 1f,
             spreadRadius = 2.5f,
-            sweepShape = PowerupProjectileSweepShape.Sphere,
-            sphereRadius = 0.22f,
-            boxHalfExtents = Vector3.one * 0.22f,
             castEulerAngles = Vector3.zero,
             ignoreOwnerInFlight = true,
             ignoreCheckoutTargets = true,
@@ -206,10 +221,9 @@ public sealed class ProjectileShotPattern
     {
         return new ProjectileShotPattern
         {
+            minimumFlightTime = 0.5f,
+            maximumFlightTime = 1f,
             spreadRadius = 0f,
-            sweepShape = PowerupProjectileSweepShape.Box,
-            sphereRadius = 0.35f,
-            boxHalfExtents = new Vector3(0.35f, 0.35f, 0.35f),
             castEulerAngles = Vector3.zero,
             ignoreOwnerInFlight = true,
             ignoreCheckoutTargets = true,
@@ -282,19 +296,27 @@ public class PowerupProjectileProfile : ScriptableObject
     public float MinimumProjectileDuration => minimumProjectileDuration;
     public float MinimumProjectileArcHeight => minimumProjectileArcHeight;
 
-    public FakeArcProjectile GetPrefab(PowerupId powerupId)
+    public GameObject GetPrefabGameObject(PowerupId powerupId)
     {
         switch (powerupId)
         {
             case PowerupId.Tomato:
-                return tomatoProjectilePrefab.GetComponent<FakeArcProjectile>();
+                return tomatoProjectilePrefab;
 
             case PowerupId.IceCube:
-                return iceCubeProjectilePrefab.GetComponent<FakeArcProjectile>();
+                return iceCubeProjectilePrefab;
 
             default:
                 return null;
         }
+    }
+
+    public FakeArcProjectile GetPrefab(PowerupId powerupId)
+    {
+        GameObject prefab = GetPrefabGameObject(powerupId);
+        return prefab != null
+            ? prefab.GetComponent<FakeArcProjectile>()
+            : null;
     }
 
     public int GetPrewarmCount(PowerupId powerupId)
@@ -325,6 +347,43 @@ public class PowerupProjectileProfile : ScriptableObject
             default:
                 return null;
         }
+    }
+
+    public float EvaluateFlightTime(
+        PowerupId powerupId,
+        float planarDistance,
+        float minimumThrowRange,
+        float maximumThrowRange)
+    {
+        ProjectileShotPattern pattern = GetPattern(powerupId);
+
+        float evaluatedTime = pattern != null
+            ? pattern.EvaluateFlightTime(
+                planarDistance,
+                minimumThrowRange,
+                maximumThrowRange
+            )
+            : minimumProjectileDuration;
+
+        return Mathf.Max(minimumProjectileDuration, evaluatedTime);
+    }
+
+    public bool TryGetAuthoredHitboxPlanarRadius(
+        PowerupId powerupId,
+        out float planarRadius)
+    {
+        FakeArcProjectile prefabActor = GetPrefab(powerupId);
+
+        if (prefabActor != null &&
+            prefabActor.TryGetAuthoredHitboxPlanarRadius(
+                out planarRadius
+            ))
+        {
+            return true;
+        }
+
+        planarRadius = 0f;
+        return false;
     }
 
     [ContextMenu("Reset Recommended Projectile Patterns")]

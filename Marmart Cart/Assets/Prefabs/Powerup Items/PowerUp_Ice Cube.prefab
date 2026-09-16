@@ -42,6 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4309521330298547434}
   - component: {fileID: 3723025347326191650}
+  - component: {fileID: 57192620755484967}
   m_Layer: 0
   m_Name: PowerUp_Ice Cube
   m_TagString: Untagged
@@ -78,13 +79,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualRoot: {fileID: 4272540585109312629}
+  hitboxSource: {fileID: 57192620755484967}
+  drawHitboxGizmo: 1
+  drawHitboxOnlyWhenSelected: 0
+  hitboxGizmoColor: {r: 1, g: 1, b: 1, a: 0.9}
   rentedFromPool: 0
+  preparedLaunch: 0
   activeFlight: 0
   activePowerupId: 1
   activeShotVersion: 0
   activePatternEntryIndex: -1
   elapsedSeconds: 0
   normalizedFlightTime: 0
+  runtimeSweepShape: 0
+  runtimeSphereRadius: 0
+  runtimeBoxHalfExtents: {x: 0, y: 0, z: 0}
+--- !u!65 &57192620755484967
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5317294129688744614}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.57488537, z: 0.5878369}
+  m_Center: {x: 0, y: 0.2760447, z: -0.030664913}
 --- !u!1001 &9106787826162572402
 PrefabInstance:
   m_ObjectHideFlags: 0

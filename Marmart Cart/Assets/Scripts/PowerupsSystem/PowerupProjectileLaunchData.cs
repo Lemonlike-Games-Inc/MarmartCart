@@ -24,9 +24,6 @@ public struct ResolvedPowerupProjectileLaunch
     public float FlightDuration;
     public float ArcHeight;
 
-    public PowerupProjectileSweepShape SweepShape;
-    public float SphereRadius;
-    public Vector3 BoxHalfExtents;
     public Quaternion CollisionRotation;
     public LayerMask CartTargetMask;
     public LayerMask EnvironmentBlockingMask;
