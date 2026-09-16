@@ -73,13 +73,12 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
             Draw.LineEndCaps = LineEndCap.Round;
 
             Color mainColor = aimProfile.GetMainColor(
-                aimState.PowerupId,
-                aimState.TargetValid
+                aimState.TrajectoryObstructed
             );
 
             DrawLandingEnvelope(cam, aimState, mainColor);
-            DrawTrajectory(cam, aimState, mainColor);
             DrawLandingCenter(cam, aimState, mainColor);
+            DrawTrajectory(cam, aimState, mainColor);
         }
     }
 
@@ -117,18 +116,29 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
         Color color)
     {
         int sampleCount = Mathf.Max(2, aimProfile.TrajectorySampleCount);
+        float previewEndTime = aimState.TrajectoryObstructed
+            ? Mathf.Clamp01(aimState.PreviewEndNormalizedTime)
+            : 1f;
+
         bool hasPreviousPoint = false;
         Vector3 previousPoint = default;
 
         for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++)
         {
-            float normalizedTime = sampleIndex / (float)(sampleCount - 1);
-            Vector3 worldPoint = PowerupTrajectory.Evaluate(
-                aimState.StartPosition,
-                aimState.LandingPosition,
-                aimState.ArcHeight,
-                normalizedTime
-            );
+            float sampleFraction = sampleIndex / (float)(sampleCount - 1);
+            float normalizedTime = sampleFraction * previewEndTime;
+
+            // End at the exact blocking-collider contact returned by the
+            // semantic sweep. All earlier points remain on the original arc
+            // toward the unchanged ground destination.
+            Vector3 worldPoint = sampleIndex == sampleCount - 1
+                ? aimState.PreviewEndPosition
+                : PowerupTrajectory.Evaluate(
+                    aimState.StartPosition,
+                    aimState.LandingPosition,
+                    aimState.ArcHeight,
+                    normalizedTime
+                );
 
             if (!TryProjectPoint(cam, worldPoint, out Vector3 renderPoint))
             {
@@ -167,7 +177,7 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
 
         if (!TryProjectPoint(
             cam,
-            aimState.LandingPosition,
+            aimState.PreviewEndPosition,
             out Vector3 renderCenter
         ))
         {
@@ -176,8 +186,7 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
 
         int sampleCount = Mathf.Max(12, aimProfile.LandingCircleSampleCount);
         Color fillColor = aimProfile.GetFillColor(
-            aimState.PowerupId,
-            aimState.TargetValid
+            aimState.TrajectoryObstructed
         );
 
         // Fill is triangulated from the same world-space circle used by the
@@ -280,42 +289,46 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
         PowerupAimState aimState,
         Color mainColor)
     {
-        if (!TryBuildSurfaceBasis(
-            aimState,
-            out Vector3 basisRight,
-            out Vector3 basisForward
-        ) ||
-            !TryProjectPoint(
+        if (!TryProjectPoint(
                 cam,
-                aimState.LandingPosition,
+                aimState.PreviewEndPosition,
                 out Vector3 renderCenter
             ))
         {
             return;
         }
 
-        float crossRadius =
-            aimState.ImpactPreviewRadius *
-            aimProfile.CenterCrossRadiusFraction;
+        Vector3 centerScreen = cam.WorldToScreenPoint(renderCenter);
+        float halfSize = aimProfile.CenterCrossSizePixels * 0.5f;
 
-        Vector3 rightA = aimState.LandingPosition - basisRight * crossRadius;
-        Vector3 rightB = aimState.LandingPosition + basisRight * crossRadius;
-        Vector3 forwardA =
-            aimState.LandingPosition - basisForward * crossRadius;
-        Vector3 forwardB =
-            aimState.LandingPosition + basisForward * crossRadius;
+        Vector3 lowerLeft = ScreenOffsetToWorld(
+            cam,
+            centerScreen,
+            new Vector2(-halfSize, -halfSize)
+        );
 
-        if (TryProjectPoint(cam, rightA, out Vector3 renderRightA) &&
-            TryProjectPoint(cam, rightB, out Vector3 renderRightB))
-        {
-            DrawCrossLine(renderRightA, renderRightB, mainColor);
-        }
+        Vector3 upperRight = ScreenOffsetToWorld(
+            cam,
+            centerScreen,
+            new Vector2(halfSize, halfSize)
+        );
 
-        if (TryProjectPoint(cam, forwardA, out Vector3 renderForwardA) &&
-            TryProjectPoint(cam, forwardB, out Vector3 renderForwardB))
-        {
-            DrawCrossLine(renderForwardA, renderForwardB, mainColor);
-        }
+        Vector3 upperLeft = ScreenOffsetToWorld(
+            cam,
+            centerScreen,
+            new Vector2(-halfSize, halfSize)
+        );
+
+        Vector3 lowerRight = ScreenOffsetToWorld(
+            cam,
+            centerScreen,
+            new Vector2(halfSize, -halfSize)
+        );
+
+        // A true screen-space X keeps both strokes exactly equal and prevents
+        // Tomato/Ice impact-radius differences from resizing the marker.
+        DrawCrossLine(lowerLeft, upperRight, mainColor);
+        DrawCrossLine(upperLeft, lowerRight, mainColor);
 
         Draw.Disc(
             renderCenter,
@@ -354,8 +367,22 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
             basisRight * Mathf.Cos(radians) +
             basisForward * Mathf.Sin(radians);
 
-        return aimState.LandingPosition +
+        return aimState.PreviewEndPosition +
                radialDirection * aimState.ImpactPreviewRadius;
+    }
+
+    private static Vector3 ScreenOffsetToWorld(
+        Camera cam,
+        Vector3 centerScreen,
+        Vector2 offsetPixels)
+    {
+        return cam.ScreenToWorldPoint(
+            new Vector3(
+                centerScreen.x + offsetPixels.x,
+                centerScreen.y + offsetPixels.y,
+                centerScreen.z
+            )
+        );
     }
 
     private static bool TryBuildSurfaceBasis(
@@ -363,8 +390,8 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
         out Vector3 basisRight,
         out Vector3 basisForward)
     {
-        Vector3 normal = aimState.LandingNormal.sqrMagnitude > 0.000001f
-            ? aimState.LandingNormal.normalized
+        Vector3 normal = aimState.PreviewEndNormal.sqrMagnitude > 0.000001f
+            ? aimState.PreviewEndNormal.normalized
             : Vector3.up;
 
         basisForward = Vector3.ProjectOnPlane(

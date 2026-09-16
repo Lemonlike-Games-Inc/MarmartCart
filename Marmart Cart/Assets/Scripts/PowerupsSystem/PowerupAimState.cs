@@ -11,7 +11,6 @@ public struct PowerupAimState
 {
     public int PlayerIndex;
     public bool Visible;
-    public bool TargetValid;
     public PowerupId PowerupId;
 
     public Vector2 RawAimInput;
@@ -23,6 +22,14 @@ public struct PowerupAimState
     public Vector3 StartPosition;
     public Vector3 LandingPosition;
     public Vector3 LandingNormal;
+
+    // Presentation follows the unchanged ground-target trajectory only until
+    // its first configured shelf/wall hit. When unobstructed these equal the
+    // authoritative landing values and normalized time is 1.
+    public bool TrajectoryObstructed;
+    public float PreviewEndNormalizedTime;
+    public Vector3 PreviewEndPosition;
+    public Vector3 PreviewEndNormal;
 
     public float RequestedRange;
     public float ResolvedPlanarDistance;

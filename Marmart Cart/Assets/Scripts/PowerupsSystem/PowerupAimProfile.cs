@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Shapes-only presentation settings for the local player's static aim preview.
@@ -58,8 +59,9 @@ public class PowerupAimProfile : ScriptableObject
     [Range(0f, 1f)]
     [SerializeField] private float landingFillAlpha = 0.14f;
 
-    [Range(0.05f, 0.9f)]
-    [SerializeField] private float centerCrossRadiusFraction = 0.25f;
+    [Tooltip("Total screen-space width and height of the endpoint X. It stays identical for every power-up and impact radius.")]
+    [Min(1f)]
+    [SerializeField] private float centerCrossSizePixels = 22f;
 
     [Min(0.1f)]
     [SerializeField] private float centerCrossThicknessPixels = 3f;
@@ -71,10 +73,12 @@ public class PowerupAimProfile : ScriptableObject
 
     #region Colors
 
-    [Header("Power-up Colors")]
-    [SerializeField] private Color tomatoColor = new Color(1f, 0.24f, 0.12f, 1f);
-    [SerializeField] private Color iceCubeColor = new Color(0.2f, 0.88f, 1f, 1f);
-    [SerializeField] private Color invalidColor = new Color(1f, 0.08f, 0.12f, 1f);
+    [Header("Shared Preview Color")]
+    [FormerlySerializedAs("tomatoColor")]
+    [SerializeField] private Color previewColor = new Color(1f, 0.24f, 0.12f, 1f);
+
+    [Tooltip("Shared warning color used whenever the trajectory first hits a configured blocking layer.")]
+    [SerializeField] private Color obstructedPreviewColor = new Color(1f, 0.08f, 0.04f, 1f);
 
     #endregion
 
@@ -91,28 +95,20 @@ public class PowerupAimProfile : ScriptableObject
     public int LandingCircleSampleCount => landingCircleSampleCount;
     public float LandingOutlineThicknessPixels => landingOutlineThicknessPixels;
     public float LandingUnderlayExtraPixels => landingUnderlayExtraPixels;
-    public float CenterCrossRadiusFraction => centerCrossRadiusFraction;
+    public float CenterCrossSizePixels => centerCrossSizePixels;
     public float CenterCrossThicknessPixels => centerCrossThicknessPixels;
     public float CenterDotRadiusPixels => centerDotRadiusPixels;
 
-    public Color GetMainColor(PowerupId powerupId, bool targetValid)
+    public Color GetMainColor(bool trajectoryObstructed)
     {
-        if (!targetValid) return invalidColor;
-
-        switch (powerupId)
-        {
-            case PowerupId.IceCube:
-                return iceCubeColor;
-
-            case PowerupId.Tomato:
-            default:
-                return tomatoColor;
-        }
+        return trajectoryObstructed
+            ? obstructedPreviewColor
+            : previewColor;
     }
 
-    public Color GetFillColor(PowerupId powerupId, bool targetValid)
+    public Color GetFillColor(bool trajectoryObstructed)
     {
-        Color color = GetMainColor(powerupId, targetValid);
+        Color color = GetMainColor(trajectoryObstructed);
         color.a *= landingFillAlpha;
         return color;
     }
@@ -134,7 +130,7 @@ public class PowerupAimProfile : ScriptableObject
         landingOutlineThicknessPixels = Mathf.Max(0.1f, landingOutlineThicknessPixels);
         landingUnderlayExtraPixels = Mathf.Max(0f, landingUnderlayExtraPixels);
         landingFillAlpha = Mathf.Clamp01(landingFillAlpha);
-        centerCrossRadiusFraction = Mathf.Clamp(centerCrossRadiusFraction, 0.05f, 0.9f);
+        centerCrossSizePixels = Mathf.Max(1f, centerCrossSizePixels);
         centerCrossThicknessPixels = Mathf.Max(0.1f, centerCrossThicknessPixels);
         centerDotRadiusPixels = Mathf.Max(0.1f, centerDotRadiusPixels);
     }

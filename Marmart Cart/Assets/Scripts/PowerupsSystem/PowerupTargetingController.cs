@@ -37,7 +37,6 @@ public class PowerupTargetingController : MonoBehaviour
     private bool missingControllerLogged;
     private bool missingStateSystemLogged;
     private bool missingGameplayProfileLogged;
-    private bool missingGroundMaskLogged;
 
     #endregion
 
@@ -138,23 +137,6 @@ public class PowerupTargetingController : MonoBehaviour
             return false;
         }
 
-        if (!gameplayProfile.HasGroundMask)
-        {
-            if (!missingGroundMaskLogged)
-            {
-                missingGroundMaskLogged = true;
-                Debug.LogError(
-                    "[PowerupTargetingController] Powerup Ground Mask is empty. " +
-                    "Assign only the explicit walkable PowerupGround layer(s).",
-                    gameplayProfile
-                );
-            }
-        }
-        else
-        {
-            missingGroundMaskLogged = false;
-        }
-
         Vector2 rawAimInput = boundCartControl.RawAimInput;
         float rawMagnitude = Mathf.Clamp01(rawAimInput.magnitude);
         float adjustedMagnitude =
@@ -197,7 +179,7 @@ public class PowerupTargetingController : MonoBehaviour
         float requestedRange =
             gameplayProfile.EvaluateThrowRange(adjustedMagnitude);
 
-        bool targetValid = TryResolveLandingPoint(
+        ResolveGroundLandingPoint(
             rangeOrigin,
             aimDirection,
             requestedRange,
@@ -205,22 +187,32 @@ public class PowerupTargetingController : MonoBehaviour
             out Vector3 landingNormal
         );
 
-        if (!targetValid)
-        {
-            // Keep a visible invalid endpoint at the requested X/Z so setup
-            // errors and off-map aim are immediately understandable.
-            landingPosition = rangeOrigin + aimDirection * requestedRange;
-            landingNormal = Vector3.up;
-        }
-
         float resolvedDistance =
             PowerupTrajectory.PlanarDistance(rangeOrigin, landingPosition);
+
+        float flightDuration = gameplayProfile.EvaluateFlightTime(
+            resolvedDistance
+        );
+
+        float arcHeight = gameplayProfile.EvaluateArcHeight(
+            resolvedDistance
+        );
+
+        ResolvePreviewEndpoint(
+            startPosition,
+            landingPosition,
+            landingNormal,
+            arcHeight,
+            out bool trajectoryObstructed,
+            out float previewEndNormalizedTime,
+            out Vector3 previewEndPosition,
+            out Vector3 previewEndNormal
+        );
 
         currentAimState = new PowerupAimState
         {
             PlayerIndex = playerPowerupController.PlayerIndex,
             Visible = true,
-            TargetValid = targetValid,
             PowerupId = playerPowerupController.StoredPowerup,
             RawAimInput = rawAimInput,
             RawAimMagnitude = rawMagnitude,
@@ -230,14 +222,14 @@ public class PowerupTargetingController : MonoBehaviour
             StartPosition = startPosition,
             LandingPosition = landingPosition,
             LandingNormal = landingNormal,
+            TrajectoryObstructed = trajectoryObstructed,
+            PreviewEndNormalizedTime = previewEndNormalizedTime,
+            PreviewEndPosition = previewEndPosition,
+            PreviewEndNormal = previewEndNormal,
             RequestedRange = requestedRange,
             ResolvedPlanarDistance = resolvedDistance,
-            FlightDuration = gameplayProfile.EvaluateFlightTime(
-                resolvedDistance
-            ),
-            ArcHeight = gameplayProfile.EvaluateArcHeight(
-                resolvedDistance
-            ),
+            FlightDuration = flightDuration,
+            ArcHeight = arcHeight,
             ImpactPreviewRadius = gameplayProfile.GetImpactPreviewRadius(
                 playerPowerupController.StoredPowerup
             )
@@ -251,63 +243,124 @@ public class PowerupTargetingController : MonoBehaviour
             );
         }
 
-        return targetValid;
+        return true;
     }
 
-    private bool TryResolveLandingPoint(
+    private void ResolveGroundLandingPoint(
         Vector3 rangeOrigin,
         Vector3 aimDirection,
         float requestedRange,
         out Vector3 landingPosition,
         out Vector3 landingNormal)
     {
-        landingPosition = default;
+        Vector3 requestedPoint =
+            rangeOrigin + aimDirection * requestedRange;
+
+        // Ground is expected throughout the authored map. Missing mask/hit is
+        // therefore a simple height fallback, never an invalid target and
+        // never a reason to alter the player's requested range.
+        landingPosition = requestedPoint;
         landingNormal = Vector3.up;
 
         if (gameplayProfile == null || !gameplayProfile.HasGroundMask)
         {
-            return false;
+            return;
         }
 
-        int fallbackSteps = gameplayProfile.FallbackStepCount;
-        int sampleCount = Mathf.Max(1, fallbackSteps + 1);
+        Vector3 rayOrigin =
+            requestedPoint + Vector3.up * gameplayProfile.GroundProbeHeight;
 
-        for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++)
+        if (!Physics.Raycast(
+            rayOrigin,
+            Vector3.down,
+            out RaycastHit hit,
+            gameplayProfile.GroundProbeDistance,
+            gameplayProfile.PowerupGroundMask,
+            QueryTriggerInteraction.Ignore
+        ))
         {
-            float rangeFraction = fallbackSteps <= 0
-                ? 1f
-                : 1f - sampleIndex / (float)fallbackSteps;
+            return;
+        }
 
-            float sampleRange = Mathf.Max(0f, requestedRange * rangeFraction);
-            Vector3 requestedPoint =
-                rangeOrigin + aimDirection * sampleRange;
+        Vector3 normal = hit.normal.sqrMagnitude > 0.000001f
+            ? hit.normal.normalized
+            : Vector3.up;
 
-            Vector3 rayOrigin =
-                requestedPoint + Vector3.up * gameplayProfile.GroundProbeHeight;
+        landingPosition =
+            hit.point + normal * gameplayProfile.LandingClearance;
+        landingNormal = normal;
+    }
 
-            if (!Physics.Raycast(
-                rayOrigin,
-                Vector3.down,
+    private void ResolvePreviewEndpoint(
+        Vector3 startPosition,
+        Vector3 landingPosition,
+        Vector3 landingNormal,
+        float arcHeight,
+        out bool trajectoryObstructed,
+        out float previewEndNormalizedTime,
+        out Vector3 previewEndPosition,
+        out Vector3 previewEndNormal)
+    {
+        trajectoryObstructed = false;
+        previewEndNormalizedTime = 1f;
+        previewEndPosition = landingPosition;
+        previewEndNormal = landingNormal;
+
+        if (gameplayProfile == null ||
+            !gameplayProfile.HasProjectileBlockingMask)
+        {
+            return;
+        }
+
+        int sampleCount = Mathf.Max(
+            4,
+            gameplayProfile.ProjectileBlockingSampleCount
+        );
+
+        float previousTime = 0f;
+        Vector3 previousPoint = startPosition;
+
+        for (int sampleIndex = 1; sampleIndex < sampleCount; sampleIndex++)
+        {
+            float currentTime = sampleIndex / (float)(sampleCount - 1);
+            Vector3 currentPoint = PowerupTrajectory.Evaluate(
+                startPosition,
+                landingPosition,
+                arcHeight,
+                currentTime
+            );
+
+            if (Physics.Linecast(
+                previousPoint,
+                currentPoint,
                 out RaycastHit hit,
-                gameplayProfile.GroundProbeDistance,
-                gameplayProfile.PowerupGroundMask,
+                gameplayProfile.ProjectileBlockingMask,
                 QueryTriggerInteraction.Ignore
             ))
             {
-                continue;
+                float segmentLength =
+                    Vector3.Distance(previousPoint, currentPoint);
+
+                float segmentProgress = segmentLength > 0.000001f
+                    ? Mathf.Clamp01(hit.distance / segmentLength)
+                    : 0f;
+
+                trajectoryObstructed = true;
+                previewEndNormalizedTime = Mathf.Lerp(
+                    previousTime,
+                    currentTime,
+                    segmentProgress
+                );
+                previewEndPosition = hit.point;
+                previewEndNormal = hit.normal.sqrMagnitude > 0.000001f
+                    ? hit.normal.normalized
+                    : Vector3.up;
+                return;
             }
 
-            Vector3 normal = hit.normal.sqrMagnitude > 0.000001f
-                ? hit.normal.normalized
-                : Vector3.up;
-
-            landingPosition =
-                hit.point + normal * gameplayProfile.LandingClearance;
-            landingNormal = normal;
-            return true;
+            previousTime = currentTime;
+            previousPoint = currentPoint;
         }
-
-        return false;
     }
 
     private void ClearAimState()
@@ -316,8 +369,7 @@ public class PowerupTargetingController : MonoBehaviour
             ? playerPowerupController.PlayerIndex
             : currentAimState.PlayerIndex;
 
-        bool stateWasVisible =
-            currentAimState.Visible || currentAimState.TargetValid;
+        bool stateWasVisible = currentAimState.Visible;
 
         currentAimState = new PowerupAimState
         {
@@ -347,10 +399,20 @@ public class PowerupTargetingController : MonoBehaviour
 
         bool valid = RebuildAimState(true);
 
-        return valid &&
-               currentAimState.Visible &&
-               currentAimState.TargetValid &&
-               currentAimState.PowerupId == requestedPowerup;
+        if (!valid ||
+            !currentAimState.Visible ||
+            currentAimState.PowerupId != requestedPowerup)
+        {
+            return false;
+        }
+
+        if (gameplayProfile.BlockActivationWhenTrajectoryObstructed &&
+            currentAimState.TrajectoryObstructed)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private void HandleAcceptedUse(
@@ -360,7 +422,6 @@ public class PowerupTargetingController : MonoBehaviour
         if (controller != playerPowerupController ||
             !PowerupIdRules.RequiresProjectileAim(requestedPowerup) ||
             !currentAimState.Visible ||
-            !currentAimState.TargetValid ||
             currentAimState.PowerupId != requestedPowerup)
         {
             return;

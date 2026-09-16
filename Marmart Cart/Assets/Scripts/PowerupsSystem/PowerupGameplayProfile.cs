@@ -3,9 +3,9 @@ using UnityEngine;
 /// <summary>
 /// Shared gameplay tuning for deterministic power-up targeting.
 ///
-/// This milestone uses only the targeting, ground-resolution, trajectory, and
-/// impact-envelope sections. Projectile shot patterns/effects can extend this
-/// same profile later without moving authoritative targeting values.
+/// The requested landing point always remains ground-based. A separate
+/// projectile-blocking mask lets presentation show the first shelf/wall hit
+/// along that unchanged arc, and can be reused by future projectile actors.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Powerups/Gameplay Profile",
@@ -39,10 +39,6 @@ public class PowerupGameplayProfile : ScriptableObject
     [Min(0.01f)]
     [SerializeField] private float groundProbeDistance = 20f;
 
-    [Tooltip("If the requested endpoint is off the map, walk back toward the player through this many samples.")]
-    [Range(0, 32)]
-    [SerializeField] private int fallbackStepCount = 8;
-
     [Min(0f)]
     [SerializeField] private float landingClearance = 0.03f;
 
@@ -68,6 +64,28 @@ public class PowerupGameplayProfile : ScriptableObject
 
     #endregion
 
+    #region Projectile Blocking
+
+    [Header("Projectile Blocking / Visual Lifting")]
+    [Tooltip(
+        "Shelves, walls, map-edge blockers, and other solid layers that stop a flying power-up. " +
+        "Do not include PowerupGround or carts. The aim preview truncates at the first hit while " +
+        "the authoritative ground destination remains unchanged."
+    )]
+    [SerializeField] private LayerMask projectileBlockingMask;
+
+    [Tooltip("Segment count used to sweep the curved preview for its first blocking-layer hit.")]
+    [Range(4, 128)]
+    [SerializeField] private int projectileBlockingSampleCount = 40;
+
+    [Tooltip(
+        "When enabled, a shelf/wall/map-edge hit keeps the preview visible but rejects Activate. " +
+        "The stored power-up is retained. Disable this to allow firing into blockers."
+    )]
+    [SerializeField] private bool blockActivationWhenTrajectoryObstructed = true;
+
+    #endregion
+
     #region Impact Envelopes
 
     [Header("Impact Preview Envelopes")]
@@ -89,15 +107,19 @@ public class PowerupGameplayProfile : ScriptableObject
     public LayerMask PowerupGroundMask => powerupGroundMask;
     public float GroundProbeHeight => groundProbeHeight;
     public float GroundProbeDistance => groundProbeDistance;
-    public int FallbackStepCount => fallbackStepCount;
     public float LandingClearance => landingClearance;
     public float MinimumFlightTime => minimumFlightTime;
     public float MaximumFlightTime => maximumFlightTime;
     public float MinimumArcHeight => minimumArcHeight;
     public float MaximumArcHeight => maximumArcHeight;
     public Vector3 FallbackThrowOriginOffset => fallbackThrowOriginOffset;
+    public LayerMask ProjectileBlockingMask => projectileBlockingMask;
+    public int ProjectileBlockingSampleCount => projectileBlockingSampleCount;
+    public bool BlockActivationWhenTrajectoryObstructed =>
+        blockActivationWhenTrajectoryObstructed;
 
     public bool HasGroundMask => powerupGroundMask.value != 0;
+    public bool HasProjectileBlockingMask => projectileBlockingMask.value != 0;
 
     public float RemapAimMagnitude(float rawMagnitude)
     {
@@ -178,13 +200,13 @@ public class PowerupGameplayProfile : ScriptableObject
 
         groundProbeHeight = Mathf.Max(0.01f, groundProbeHeight);
         groundProbeDistance = Mathf.Max(groundProbeHeight + 0.01f, groundProbeDistance);
-        fallbackStepCount = Mathf.Clamp(fallbackStepCount, 0, 32);
         landingClearance = Mathf.Max(0f, landingClearance);
 
         minimumFlightTime = Mathf.Max(0.01f, minimumFlightTime);
         maximumFlightTime = Mathf.Max(minimumFlightTime, maximumFlightTime);
         minimumArcHeight = Mathf.Max(0f, minimumArcHeight);
         maximumArcHeight = Mathf.Max(minimumArcHeight, maximumArcHeight);
+        projectileBlockingSampleCount = Mathf.Clamp(projectileBlockingSampleCount, 4, 128);
 
         tomatoPreviewRadius = Mathf.Max(0.01f, tomatoPreviewRadius);
         iceCubePreviewRadius = Mathf.Max(0.01f, iceCubePreviewRadius);

@@ -45,9 +45,7 @@ public class PowerupAimStateSystem : MonoBehaviour
         EnsureFourStates();
         PowerupAimState previous = states[stateIndex];
 
-        if (!previous.Visible &&
-            !previous.TargetValid &&
-            previous.PlayerIndex == playerIndex)
+        if (!previous.Visible && previous.PlayerIndex == playerIndex)
         {
             return;
         }
