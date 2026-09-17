@@ -24,8 +24,9 @@ public struct PowerupAimState
     public Vector3 LandingNormal;
 
     // Presentation follows the unchanged ground-target trajectory only until
-    // its first configured shelf/wall hit. When unobstructed these equal the
-    // authoritative landing values and normalized time is 1.
+    // its first configured shelf/wall hit on the descending side of the arc.
+    // When unobstructed these equal the authoritative landing values and
+    // normalized time is 1.
     public bool TrajectoryObstructed;
     public float PreviewEndNormalizedTime;
     public Vector3 PreviewEndPosition;
@@ -35,7 +36,6 @@ public struct PowerupAimState
     public float ResolvedPlanarDistance;
     public float FlightDuration;
     public float ArcHeight;
-    public PowerupTrajectoryTiming TrajectoryTiming;
     public float ImpactPreviewRadius;
 
     public uint Revision;

@@ -43,6 +43,7 @@ public class FakeArcProjectile : MonoBehaviour
     [SerializeField] private int activePatternEntryIndex = -1;
     [SerializeField] private float elapsedSeconds;
     [SerializeField] private float normalizedFlightTime;
+    [SerializeField] private float runtimeApexNormalizedTime;
     [SerializeField] private PowerupProjectileSweepShape runtimeSweepShape;
     [SerializeField] private float runtimeSphereRadius;
     [SerializeField] private Vector3 runtimeBoxHalfExtents;
@@ -110,13 +111,14 @@ public class FakeArcProjectile : MonoBehaviour
             launch.StartPosition,
             launch.LandingPosition,
             launch.ArcHeight,
-            nextNormalizedTime,
-            launch.TrajectoryTiming
+            nextNormalizedTime
         );
 
         if (TrySweepSegment(
             previousPosition,
             nextPosition,
+            normalizedFlightTime,
+            nextNormalizedTime,
             out RaycastHit acceptedHit,
             out PowerupCartTargetSnapshot hitCart,
             out PowerupProjectileCompletionReason completionReason,
@@ -188,6 +190,12 @@ public class FakeArcProjectile : MonoBehaviour
         activePatternEntryIndex = launch.PatternEntryIndex;
         elapsedSeconds = 0f;
         normalizedFlightTime = 0f;
+        runtimeApexNormalizedTime =
+            PowerupTrajectory.CalculateApexNormalizedTime(
+                launch.StartPosition,
+                launch.LandingPosition,
+                launch.ArcHeight
+            );
         activeFlight = false;
         preparedLaunch = false;
 
@@ -251,6 +259,7 @@ public class FakeArcProjectile : MonoBehaviour
         activePatternEntryIndex = -1;
         elapsedSeconds = 0f;
         normalizedFlightTime = 0f;
+        runtimeApexNormalizedTime = 0f;
         runtimeHitboxValid = false;
         runtimeSphereRadius = 0f;
         runtimeBoxHalfExtents = Vector3.zero;
@@ -311,6 +320,8 @@ public class FakeArcProjectile : MonoBehaviour
     private bool TrySweepSegment(
         Vector3 start,
         Vector3 end,
+        float segmentStartNormalizedTime,
+        float segmentEndNormalizedTime,
         out RaycastHit acceptedHit,
         out PowerupCartTargetSnapshot hitCart,
         out PowerupProjectileCompletionReason completionReason,
@@ -323,68 +334,32 @@ public class FakeArcProjectile : MonoBehaviour
 
         if (!runtimeHitboxValid) return false;
 
-        Vector3 hitboxStart = start + runtimeHitboxCenterOffsetWorld;
-        Vector3 hitboxEnd = end + runtimeHitboxCenterOffsetWorld;
-        Vector3 segment = hitboxEnd - hitboxStart;
-        float distance = segment.magnitude;
-
-        if (distance <= 0.000001f) return false;
-
-        int combinedMask =
-            launch.CartTargetMask.value |
-            launch.EnvironmentBlockingMask.value;
-
-        if (combinedMask == 0) return false;
-
-        Vector3 direction = segment / distance;
-        int hitCount;
-
-        if (runtimeSweepShape == PowerupProjectileSweepShape.Box)
-        {
-            hitCount = Physics.BoxCastNonAlloc(
-                hitboxStart,
-                runtimeBoxHalfExtents,
-                direction,
-                hitBuffer,
-                runtimeHitboxRotation,
-                distance,
-                combinedMask,
-                QueryTriggerInteraction.Collide
-            );
-        }
-        else
-        {
-            hitCount = Physics.SphereCastNonAlloc(
-                hitboxStart,
-                Mathf.Max(0.0001f, runtimeSphereRadius),
-                direction,
-                hitBuffer,
-                distance,
-                combinedMask,
-                QueryTriggerInteraction.Collide
-            );
-        }
-
-        float nearestDistance = float.PositiveInfinity;
+        float nearestHitNormalizedTime = float.PositiveInfinity;
         bool foundAcceptedHit = false;
         PowerupCartTargetSnapshot nearestHitCart = default;
+        Vector3 nearestProjectileCenter = end;
 
-        for (int i = 0; i < hitCount; i++)
-        {
-            RaycastHit candidateHit = hitBuffer[i];
-            Collider candidateCollider = candidateHit.collider;
-            if (candidateCollider == null) continue;
-
-            PowerupProjectileCompletionReason candidateReason;
-            PowerupCartTargetSnapshot candidateHitCart = default;
-
-            if (LayerIsInMask(
-                candidateCollider.gameObject.layer,
-                launch.CartTargetMask
+        // Cart targets remain hittable for the complete flight, including the
+        // ascent. Only environmental blockers are gated by the arc apex.
+        if (launch.CartTargetMask.value != 0 &&
+            TrySweepHitbox(
+                start,
+                end,
+                launch.CartTargetMask,
+                out int cartHitCount,
+                out float cartSweepDistance
             ))
+        {
+            for (int i = 0; i < cartHitCount; i++)
             {
+                RaycastHit candidateHit = hitBuffer[i];
+                Collider candidateCollider = candidateHit.collider;
+                if (candidateCollider == null) continue;
+
                 PowerupCartTarget candidateTarget =
                     candidateCollider.GetComponentInParent<PowerupCartTarget>();
+
+                PowerupCartTargetSnapshot candidateHitCart;
 
                 if (candidateTarget == null ||
                     !candidateTarget.TryGetGameplayTarget(
@@ -424,45 +399,160 @@ public class FakeArcProjectile : MonoBehaviour
                     continue;
                 }
 
-                candidateReason = candidateHitCart.Kind ==
+                PowerupProjectileCompletionReason candidateReason =
+                    candidateHitCart.Kind ==
                     PowerupCartTargetKind.LeadingCart
                     ? PowerupProjectileCompletionReason.LeadingCartHit
                     : PowerupProjectileCompletionReason.ChainedCartHit;
-            }
-            else if (LayerIsInMask(
-                candidateCollider.gameObject.layer,
-                launch.EnvironmentBlockingMask
-            ) && !candidateCollider.isTrigger)
-            {
-                candidateReason =
-                    PowerupProjectileCompletionReason.EnvironmentBlocked;
-            }
-            else
-            {
-                continue;
-            }
 
-            if (candidateHit.distance >= nearestDistance) continue;
+                float segmentProgress = Mathf.Clamp01(
+                    candidateHit.distance / cartSweepDistance
+                );
 
-            nearestDistance = candidateHit.distance;
-            acceptedHit = candidateHit;
-            nearestHitCart = candidateHitCart;
-            completionReason = candidateReason;
-            foundAcceptedHit = true;
+                float candidateHitTime = Mathf.Lerp(
+                    segmentStartNormalizedTime,
+                    segmentEndNormalizedTime,
+                    segmentProgress
+                );
+
+                if (candidateHitTime >= nearestHitNormalizedTime) continue;
+
+                nearestHitNormalizedTime = candidateHitTime;
+                acceptedHit = candidateHit;
+                nearestHitCart = candidateHitCart;
+                completionReason = candidateReason;
+                nearestProjectileCenter = Vector3.Lerp(
+                    start,
+                    end,
+                    segmentProgress
+                );
+                foundAcceptedHit = true;
+            }
+        }
+
+        // If this frame crosses the apex, begin the environment sweep at the
+        // exact apex rather than skipping the entire frame. This prevents a
+        // thin post-peak obstacle from being tunneled through while still
+        // guaranteeing that ascent-side walls never block the projectile.
+        if (launch.EnvironmentBlockingMask.value != 0 &&
+            segmentEndNormalizedTime > runtimeApexNormalizedTime)
+        {
+            float environmentStartTime = Mathf.Max(
+                segmentStartNormalizedTime,
+                runtimeApexNormalizedTime
+            );
+
+            Vector3 environmentStart =
+                environmentStartTime <= segmentStartNormalizedTime
+                    ? start
+                    : PowerupTrajectory.Evaluate(
+                        launch.StartPosition,
+                        launch.LandingPosition,
+                        launch.ArcHeight,
+                        environmentStartTime
+                    );
+
+            if (TrySweepHitbox(
+                environmentStart,
+                end,
+                launch.EnvironmentBlockingMask,
+                out int environmentHitCount,
+                out float environmentSweepDistance
+            ))
+            {
+                for (int i = 0; i < environmentHitCount; i++)
+                {
+                    RaycastHit candidateHit = hitBuffer[i];
+                    Collider candidateCollider = candidateHit.collider;
+
+                    if (candidateCollider == null ||
+                        candidateCollider.isTrigger)
+                    {
+                        continue;
+                    }
+
+                    float segmentProgress = Mathf.Clamp01(
+                        candidateHit.distance / environmentSweepDistance
+                    );
+
+                    float candidateHitTime = Mathf.Lerp(
+                        environmentStartTime,
+                        segmentEndNormalizedTime,
+                        segmentProgress
+                    );
+
+                    if (candidateHitTime >= nearestHitNormalizedTime) continue;
+
+                    nearestHitNormalizedTime = candidateHitTime;
+                    acceptedHit = candidateHit;
+                    nearestHitCart = default;
+                    completionReason =
+                        PowerupProjectileCompletionReason.EnvironmentBlocked;
+                    nearestProjectileCenter = Vector3.Lerp(
+                        environmentStart,
+                        end,
+                        segmentProgress
+                    );
+                    foundAcceptedHit = true;
+                }
+            }
         }
 
         if (!foundAcceptedHit) return false;
 
-        Vector3 rootSegment = end - start;
-        Vector3 rootDirection = rootSegment.sqrMagnitude > 0.000001f
-            ? rootSegment.normalized
-            : direction;
-
-        projectileCenterAtHit =
-            start +
-            rootDirection * Mathf.Clamp(nearestDistance, 0f, distance);
+        projectileCenterAtHit = nearestProjectileCenter;
         hitCart = nearestHitCart;
         return true;
+    }
+
+    private bool TrySweepHitbox(
+        Vector3 rootStart,
+        Vector3 rootEnd,
+        LayerMask collisionMask,
+        out int hitCount,
+        out float sweepDistance)
+    {
+        hitCount = 0;
+        sweepDistance = 0f;
+
+        if (collisionMask.value == 0) return false;
+
+        Vector3 hitboxStart = rootStart + runtimeHitboxCenterOffsetWorld;
+        Vector3 hitboxEnd = rootEnd + runtimeHitboxCenterOffsetWorld;
+        Vector3 segment = hitboxEnd - hitboxStart;
+        sweepDistance = segment.magnitude;
+
+        if (sweepDistance <= 0.000001f) return false;
+
+        Vector3 direction = segment / sweepDistance;
+
+        if (runtimeSweepShape == PowerupProjectileSweepShape.Box)
+        {
+            hitCount = Physics.BoxCastNonAlloc(
+                hitboxStart,
+                runtimeBoxHalfExtents,
+                direction,
+                hitBuffer,
+                runtimeHitboxRotation,
+                sweepDistance,
+                collisionMask,
+                QueryTriggerInteraction.Collide
+            );
+        }
+        else
+        {
+            hitCount = Physics.SphereCastNonAlloc(
+                hitboxStart,
+                Mathf.Max(0.0001f, runtimeSphereRadius),
+                direction,
+                hitBuffer,
+                sweepDistance,
+                collisionMask,
+                QueryTriggerInteraction.Collide
+            );
+        }
+
+        return hitCount > 0;
     }
 
     private bool ConfigureRuntimeHitbox(float visualScaleMultiplier)
@@ -758,8 +848,4 @@ public class FakeArcProjectile : MonoBehaviour
         return Mathf.Max(value.x, Mathf.Max(value.y, value.z));
     }
 
-    private static bool LayerIsInMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
-    }
 }

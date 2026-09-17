@@ -4,8 +4,8 @@ using UnityEngine;
 /// Shared gameplay tuning for deterministic power-up targeting.
 ///
 /// The requested landing point always remains ground-based. A separate
-/// projectile-blocking mask lets presentation show the first shelf/wall hit
-/// along that unchanged arc, and can be reused by future projectile actors.
+/// projectile-blocking mask lets presentation show the first descending-side
+/// shelf/wall hit along that unchanged arc, and is reused by projectile actors.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Powerups/Gameplay Profile",
@@ -64,25 +64,6 @@ public class PowerupGameplayProfile : ScriptableObject
     [Min(0f)]
     [SerializeField] private float maximumArcHeight = 6f;
 
-    [Header("Shared Flight Motion")]
-    [Tooltip(
-        "Remaps travel along the unchanged arc for a snappier launch, slower " +
-        "approach to a late apex, and faster fall. Disable for the old linear timing."
-    )]
-    [SerializeField] private bool useAsymmetricFlightTiming = true;
-
-    [Tooltip("Normalized lifetime at which the projectile reaches the arc apex.")]
-    [Range(0.05f, 0.95f)]
-    [SerializeField] private float flightApexNormalizedTime = 0.58f;
-
-    [Tooltip("Higher values launch faster and slow more strongly into the apex.")]
-    [Range(1.01f, 4f)]
-    [SerializeField] private float ascentEaseOutPower = 1.6f;
-
-    [Tooltip("Higher values create more hang near the apex and a faster final drop.")]
-    [Range(1.01f, 4f)]
-    [SerializeField] private float descentEaseInPower = 2f;
-
     [Tooltip("Local-space fallback used only when the leading-cart prefab has no assigned PowerupMounts Throw Origin.")]
     [SerializeField] private Vector3 fallbackThrowOriginOffset = new Vector3(0f, 1.25f, 0f);
 
@@ -92,19 +73,19 @@ public class PowerupGameplayProfile : ScriptableObject
 
     [Header("Projectile Blocking / Visual Lifting")]
     [Tooltip(
-        "Shelves, walls, map-edge blockers, and other solid layers that stop a flying power-up. " +
-        "Do not include PowerupGround or carts. The aim preview truncates at the first hit while " +
-        "the authoritative ground destination remains unchanged."
+        "Shelves, walls, map-edge blockers, and other solid layers that stop a flying power-up " +
+        "only after it passes its true arc apex. Ascending projectiles intentionally ignore this " +
+        "mask. Do not include PowerupGround or carts."
     )]
     [SerializeField] private LayerMask projectileBlockingMask;
 
-    [Tooltip("Segment count used to sweep the curved preview for its first blocking-layer hit.")]
+    [Tooltip("Segment count used to sweep the descending preview arc for its first blocking-layer hit.")]
     [Range(4, 128)]
     [SerializeField] private int projectileBlockingSampleCount = 40;
 
     [Tooltip(
-        "When enabled, a shelf/wall/map-edge hit keeps the preview visible but rejects Activate. " +
-        "The stored power-up is retained. Disable this to allow firing into blockers."
+        "When enabled, a descending shelf/wall/map-edge hit keeps the preview visible but " +
+        "rejects Activate. Ascending contacts are ignored. The stored power-up is retained."
     )]
     [SerializeField] private bool blockActivationWhenTrajectoryObstructed = true;
 
@@ -136,13 +117,6 @@ public class PowerupGameplayProfile : ScriptableObject
     public float MaximumFlightTime => maximumFlightTime;
     public float MinimumArcHeight => minimumArcHeight;
     public float MaximumArcHeight => maximumArcHeight;
-    public PowerupTrajectoryTiming TrajectoryTiming =>
-        new PowerupTrajectoryTiming(
-            useAsymmetricFlightTiming,
-            flightApexNormalizedTime,
-            ascentEaseOutPower,
-            descentEaseInPower
-        );
     public Vector3 FallbackThrowOriginOffset => fallbackThrowOriginOffset;
     public LayerMask ProjectileBlockingMask => projectileBlockingMask;
     public int ProjectileBlockingSampleCount => projectileBlockingSampleCount;
@@ -237,13 +211,6 @@ public class PowerupGameplayProfile : ScriptableObject
         maximumFlightTime = Mathf.Max(minimumFlightTime, maximumFlightTime);
         minimumArcHeight = Mathf.Max(0f, minimumArcHeight);
         maximumArcHeight = Mathf.Max(minimumArcHeight, maximumArcHeight);
-        flightApexNormalizedTime = Mathf.Clamp(
-            flightApexNormalizedTime,
-            0.05f,
-            0.95f
-        );
-        ascentEaseOutPower = Mathf.Clamp(ascentEaseOutPower, 1.01f, 4f);
-        descentEaseInPower = Mathf.Clamp(descentEaseInPower, 1.01f, 4f);
         projectileBlockingSampleCount = Mathf.Clamp(projectileBlockingSampleCount, 4, 128);
 
         tomatoPreviewRadius = Mathf.Max(0.01f, tomatoPreviewRadius);

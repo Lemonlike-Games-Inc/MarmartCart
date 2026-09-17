@@ -231,15 +231,11 @@ public class PowerupTargetingController : MonoBehaviour
             resolvedDistance
         );
 
-        PowerupTrajectoryTiming trajectoryTiming =
-            gameplayProfile.TrajectoryTiming;
-
         ResolvePreviewEndpoint(
             startPosition,
             landingPosition,
             landingNormal,
             arcHeight,
-            trajectoryTiming,
             out bool trajectoryObstructed,
             out float previewEndNormalizedTime,
             out Vector3 previewEndPosition,
@@ -267,7 +263,6 @@ public class PowerupTargetingController : MonoBehaviour
             ResolvedPlanarDistance = resolvedDistance,
             FlightDuration = flightDuration,
             ArcHeight = arcHeight,
-            TrajectoryTiming = trajectoryTiming,
             ImpactPreviewRadius = gameplayProfile.GetImpactPreviewRadius(
                 playerPowerupController.StoredPowerup
             )
@@ -334,7 +329,6 @@ public class PowerupTargetingController : MonoBehaviour
         Vector3 landingPosition,
         Vector3 landingNormal,
         float arcHeight,
-        PowerupTrajectoryTiming trajectoryTiming,
         out bool trajectoryObstructed,
         out float previewEndNormalizedTime,
         out Vector3 previewEndPosition,
@@ -356,26 +350,42 @@ public class PowerupTargetingController : MonoBehaviour
             gameplayProfile.ProjectileBlockingSampleCount
         );
 
-        float apexPathProgress =
-            PowerupTrajectory.CalculateApexPathProgress(
+        float apexTime =
+            PowerupTrajectory.CalculateApexNormalizedTime(
                 startPosition,
                 landingPosition,
                 arcHeight
             );
 
-        float previousPathProgress = 0f;
-        Vector3 previousPoint = startPosition;
+        if (apexTime >= 1f) return;
+
+        // Environment/lifting layers are intentionally ignored while the
+        // projectile is rising. Begin the preview blocker query at the true
+        // world-space apex and sample only the descending portion.
+        float previousTime = apexTime;
+        Vector3 previousPoint = PowerupTrajectory.Evaluate(
+            startPosition,
+            landingPosition,
+            arcHeight,
+            previousTime
+        );
 
         for (int sampleIndex = 1; sampleIndex < sampleCount; sampleIndex++)
         {
-            float currentPathProgress =
+            float sampleFraction =
                 sampleIndex / (float)(sampleCount - 1);
 
-            Vector3 currentPoint = PowerupTrajectory.EvaluatePathProgress(
+            float currentTime = Mathf.Lerp(
+                apexTime,
+                1f,
+                sampleFraction
+            );
+
+            Vector3 currentPoint = PowerupTrajectory.Evaluate(
                 startPosition,
                 landingPosition,
                 arcHeight,
-                currentPathProgress
+                currentTime
             );
 
             if (Physics.Linecast(
@@ -394,17 +404,11 @@ public class PowerupTargetingController : MonoBehaviour
                     : 0f;
 
                 trajectoryObstructed = true;
-                float hitPathProgress = Mathf.Lerp(
-                    previousPathProgress,
-                    currentPathProgress,
+                previewEndNormalizedTime = Mathf.Lerp(
+                    previousTime,
+                    currentTime,
                     segmentProgress
                 );
-
-                previewEndNormalizedTime =
-                    trajectoryTiming.InverseRemapTime(
-                        hitPathProgress,
-                        apexPathProgress
-                    );
                 previewEndPosition = hit.point;
                 previewEndNormal = hit.normal.sqrMagnitude > 0.000001f
                     ? hit.normal.normalized
@@ -412,7 +416,7 @@ public class PowerupTargetingController : MonoBehaviour
                 return;
             }
 
-            previousPathProgress = currentPathProgress;
+            previousTime = currentTime;
             previousPoint = currentPoint;
         }
     }

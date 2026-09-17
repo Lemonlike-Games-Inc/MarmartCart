@@ -20320,6 +20320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileProfile: {fileID: 11400000, guid: f490e1af1b3a4e448a400215d467984d, type: 2}
+  lifecycleEventSystem: {fileID: 0}
   poolRoot: {fileID: 79608705}
   logNeutralCompletions: 1
   totalCreatedActorCount: 0
@@ -123175,6 +123176,105 @@ Transform:
   - {fileID: 1894776500}
   m_Father: {fileID: 1731969983}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &674537952
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 674537953}
+  - component: {fileID: 674537954}
+  m_Layer: 0
+  m_Name: Powerup Lifecycle Event System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &674537953
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674537952}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 874786257}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &674537954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674537952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66e947edd5b21e945b11576d14914959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logPublishedEvents: 0
+  activationEventCount: 0
+  projectileImpactEventCount: 0
+  projectileCancellationEventCount: 0
+  effectEventCount: 0
+  lastReservedEffectInstanceId: 0
+  lastActivation:
+    PowerupId: 0
+    Mode: 0
+    ActivationVersion: 0
+    OwnerPlayerIndex: 0
+    OwnerController: {fileID: 0}
+    Position: {x: 0, y: 0, z: 0}
+    Direction: {x: 0, y: 0, z: 0}
+    ProjectileCount: 0
+    OccurredAtTime: 0
+    OccurredAtUnscaledTime: 0
+  lastProjectileEvent:
+    Completion:
+      ShotVersion: 0
+      PatternEntryIndex: 0
+      PowerupId: 0
+      OwnerPlayerIndex: 0
+      Reason: 0
+      Position: {x: 0, y: 0, z: 0}
+      SurfaceNormal: {x: 0, y: 0, z: 0}
+      HitTarget: {fileID: 0}
+      HitCartKind: 0
+      HitPlayerIndex: 0
+      HitCollider: {fileID: 0}
+      HitOwnerController: {fileID: 0}
+      HitLeadingCartControl: {fileID: 0}
+      HitChainedCartManager: {fileID: 0}
+    OccurredAtTime: 0
+    OccurredAtUnscaledTime: 0
+  lastEffectEvent:
+    EffectId: 0
+    SourcePowerupId: 0
+    Phase: 0
+    EndReason: 0
+    ActivationVersion: 0
+    EffectInstanceId: 0
+    EffectVersion: 0
+    SourcePatternEntryIndex: 0
+    OwnerPlayerIndex: 0
+    TargetPlayerIndex: 0
+    OwnerController: {fileID: 0}
+    TargetController: {fileID: 0}
+    Position: {x: 0, y: 0, z: 0}
+    DurationSeconds: 0
+    StartedAtTime: 0
+    EndsAtTime: 0
+    OccurredAtTime: 0
+    OccurredAtUnscaledTime: 0
+    StackCount: 0
 --- !u!43 &675589204
 Mesh:
   m_ObjectHideFlags: 0
@@ -162275,6 +162375,8 @@ Transform:
   m_Children:
   - {fileID: 1645347200}
   - {fileID: 79608705}
+  - {fileID: 2112205810}
+  - {fileID: 674537953}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &874786258
@@ -419757,11 +419859,6 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
-    TrajectoryTiming:
-      useAsymmetricTiming: 0
-      apexNormalizedTime: 0
-      ascentEaseOutPower: 0
-      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
   - PlayerIndex: 0
@@ -419783,11 +419880,6 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
-    TrajectoryTiming:
-      useAsymmetricTiming: 0
-      apexNormalizedTime: 0
-      ascentEaseOutPower: 0
-      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
   - PlayerIndex: 0
@@ -419809,11 +419901,6 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
-    TrajectoryTiming:
-      useAsymmetricTiming: 0
-      apexNormalizedTime: 0
-      ascentEaseOutPower: 0
-      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
   - PlayerIndex: 0
@@ -419835,11 +419922,6 @@ MonoBehaviour:
     ResolvedPlanarDistance: 0
     FlightDuration: 0
     ArcHeight: 0
-    TrajectoryTiming:
-      useAsymmetricTiming: 0
-      apexNormalizedTime: 0
-      ascentEaseOutPower: 0
-      descentEaseInPower: 0
     ImpactPreviewRadius: 0
     Revision: 0
 --- !u!1 &1646745414
@@ -518763,6 +518845,111 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2111739412}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2112205809
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2112205810}
+  - component: {fileID: 2112205811}
+  m_Layer: 0
+  m_Name: Tomato Blind Effect System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2112205810
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112205809}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 874786257}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2112205811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112205809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad720693ddb4ba4eb8f8330ae2ff750, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifecycleEventSystem: {fileID: 674537954}
+  runtimeSystem: {fileID: 874786258}
+  tomatoProfile: {fileID: 11400000, guid: 8dc036d4cf1971f4a8941e47a41dae03, type: 2}
+  logStateChanges: 1
+  playerStates:
+  - TargetPlayerIndex: 0
+    Active: 0
+    Revision: 0
+    EffectInstanceId: 0
+    SourceActivationVersion: 0
+    SourcePatternEntryIndex: 0
+    SourcePlayerIndex: 0
+    SourceController: {fileID: 0}
+    TargetController: {fileID: 0}
+    SplashCount: 0
+    DurationSeconds: 0
+    StartedAtTime: 0
+    EndsAtTime: 0
+    LastImpactPosition: {x: 0, y: 0, z: 0}
+  - TargetPlayerIndex: 0
+    Active: 0
+    Revision: 0
+    EffectInstanceId: 0
+    SourceActivationVersion: 0
+    SourcePatternEntryIndex: 0
+    SourcePlayerIndex: 0
+    SourceController: {fileID: 0}
+    TargetController: {fileID: 0}
+    SplashCount: 0
+    DurationSeconds: 0
+    StartedAtTime: 0
+    EndsAtTime: 0
+    LastImpactPosition: {x: 0, y: 0, z: 0}
+  - TargetPlayerIndex: 0
+    Active: 0
+    Revision: 0
+    EffectInstanceId: 0
+    SourceActivationVersion: 0
+    SourcePatternEntryIndex: 0
+    SourcePlayerIndex: 0
+    SourceController: {fileID: 0}
+    TargetController: {fileID: 0}
+    SplashCount: 0
+    DurationSeconds: 0
+    StartedAtTime: 0
+    EndsAtTime: 0
+    LastImpactPosition: {x: 0, y: 0, z: 0}
+  - TargetPlayerIndex: 0
+    Active: 0
+    Revision: 0
+    EffectInstanceId: 0
+    SourceActivationVersion: 0
+    SourcePatternEntryIndex: 0
+    SourcePlayerIndex: 0
+    SourceController: {fileID: 0}
+    TargetController: {fileID: 0}
+    SplashCount: 0
+    DurationSeconds: 0
+    StartedAtTime: 0
+    EndsAtTime: 0
+    LastImpactPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &2112323612
 GameObject:
   m_ObjectHideFlags: 0
@@ -527607,6 +527794,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 04789f4307709594d8edd53f62835749, type: 3}
+--- !u!1001 &8472969277908003713
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4976847387916365378, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_Name
+      value: CV_Frozen01
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 85.214
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.114
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -718.128
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8575825602361525168, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
 --- !u!4 &8723572453270513855 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2890827502963996808, guid: 2fc6eb35d26f36843aed915386b1d9da, type: 3}
@@ -527814,5 +528058,6 @@ SceneRoots:
   - {fileID: 5766973133410862838}
   - {fileID: 3402059244467971584}
   - {fileID: 151360105921586606}
-  - {fileID: 349120684}
   - {fileID: 3840231892334353081}
+  - {fileID: 8472969277908003713}
+  - {fileID: 349120684}

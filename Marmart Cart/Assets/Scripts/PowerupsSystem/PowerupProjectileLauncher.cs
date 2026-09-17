@@ -32,6 +32,11 @@ public class PowerupProjectileLauncher : MonoBehaviour
     [Tooltip("Optional explicit scene reference. Automatically resolved when left empty.")]
     [SerializeField] private PowerupProjectilePool projectilePool;
 
+    [Tooltip(
+        "Optional explicit reference. Automatically resolved when left empty."
+    )]
+    [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
+
     [Header("Diagnostics")]
     [SerializeField] private bool logSuccessfulLaunches = true;
     [SerializeField] private bool logLaunchFailures = true;
@@ -393,6 +398,22 @@ public class PowerupProjectileLauncher : MonoBehaviour
             );
         }
 
+        ResolveLifecycleEventSystem();
+
+        lifecycleEventSystem?.PublishActivated(
+            new PowerupActivationEvent
+            {
+                PowerupId = snapshot.PowerupId,
+                Mode = PowerupActivationMode.ProjectileVolley,
+                ActivationVersion = launchedShotVersion,
+                OwnerPlayerIndex = snapshot.PlayerIndex,
+                OwnerController = playerPowerupController,
+                Position = snapshot.StartPosition,
+                Direction = snapshot.AimDirection,
+                ProjectileCount = launchedActorCount
+            }
+        );
+
         OnShotLaunched?.Invoke(
             this,
             snapshot.PowerupId,
@@ -491,7 +512,6 @@ public class PowerupProjectileLauncher : MonoBehaviour
                         projectileProfile.MinimumProjectileArcHeight,
                         snapshot.ArcHeight + entry.ArcHeightOffset
                     ),
-                    TrajectoryTiming = snapshot.TrajectoryTiming,
                     CollisionRotation = collisionRotation,
                     CartTargetMask =
                         projectileProfile.CartTargetMask,
@@ -637,6 +657,17 @@ public class PowerupProjectileLauncher : MonoBehaviour
         if (projectilePool == null)
         {
             projectilePool = FindFirstObjectByType<PowerupProjectilePool>();
+        }
+
+        ResolveLifecycleEventSystem();
+    }
+
+    private void ResolveLifecycleEventSystem()
+    {
+        if (lifecycleEventSystem == null)
+        {
+            lifecycleEventSystem =
+                FindFirstObjectByType<PowerupLifecycleEventSystem>();
         }
     }
 

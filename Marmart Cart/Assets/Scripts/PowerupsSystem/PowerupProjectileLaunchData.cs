@@ -23,7 +23,6 @@ public struct ResolvedPowerupProjectileLaunch
     public Vector3 LandingNormal;
     public float FlightDuration;
     public float ArcHeight;
-    public PowerupTrajectoryTiming TrajectoryTiming;
 
     public Quaternion CollisionRotation;
     public LayerMask CartTargetMask;

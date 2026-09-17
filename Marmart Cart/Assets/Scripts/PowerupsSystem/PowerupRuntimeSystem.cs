@@ -48,6 +48,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
     public event Action<int, PlayerPowerupController> OnPlayerRegistered;
     public event Action<int> OnPlayerUnregistered;
+    public event Action<bool> OnMatchPlayingChanged;
 
     #endregion
 
@@ -247,6 +248,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
     private void SetMatchPlaying(bool playing)
     {
+        bool stateChanged = matchPlaying != playing;
         matchPlaying = playing;
 
         for (int i = 0; i < registeredPlayers.Length; i++)
@@ -258,6 +260,11 @@ public class PowerupRuntimeSystem : MonoBehaviour
                 PowerupUseBlockReason.MatchInactive,
                 !matchPlaying
             );
+        }
+
+        if (stateChanged)
+        {
+            OnMatchPlayingChanged?.Invoke(matchPlaying);
         }
     }
 

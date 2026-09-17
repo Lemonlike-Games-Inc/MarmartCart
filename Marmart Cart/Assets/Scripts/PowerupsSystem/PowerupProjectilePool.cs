@@ -21,6 +21,11 @@ public class PowerupProjectilePool : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupProjectileProfile projectileProfile;
 
+    [Tooltip(
+        "Optional explicit reference. Automatically resolved when left empty."
+    )]
+    [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
+
     [Tooltip("Optional hierarchy parent for pooled actors. Defaults to this object.")]
     [SerializeField] private Transform poolRoot;
 
@@ -45,6 +50,8 @@ public class PowerupProjectilePool : MonoBehaviour
 
     private void Awake()
     {
+        ResolveLifecycleEventSystem();
+
         if (poolRoot == null) poolRoot = transform;
 
         Prewarm(PowerupId.Tomato);
@@ -128,8 +135,27 @@ public class PowerupProjectilePool : MonoBehaviour
             );
         }
 
-        OnProjectileCompleted?.Invoke(completion);
-        ReturnToBucket(projectile);
+        try
+        {
+            ResolveLifecycleEventSystem();
+            lifecycleEventSystem?.PublishProjectileCompletion(completion);
+            OnProjectileCompleted?.Invoke(completion);
+        }
+        finally
+        {
+            // Feedback/behavior subscriber failures must never strand an actor
+            // outside its pool.
+            ReturnToBucket(projectile);
+        }
+    }
+
+    private void ResolveLifecycleEventSystem()
+    {
+        if (lifecycleEventSystem == null)
+        {
+            lifecycleEventSystem =
+                FindFirstObjectByType<PowerupLifecycleEventSystem>();
+        }
     }
 
     private void Prewarm(PowerupId powerupId)
