@@ -1,0 +1,146 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &4163857563379395133
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 234597072106758555, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 914017589258759718, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5.9261026
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5.9261026
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5.9261026
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092053768432132647, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309521330298547434, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4440213936716015837, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5317294129688744614, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      propertyPath: m_Name
+      value: PowerUp_Ice Cube_OnGroundHarzard
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3723025347326191650, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: 4440213936716015837, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5317294129688744614, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6156915359894978947}
+  m_SourcePrefab: {fileID: 100100000, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+--- !u!65 &4108353810851359514 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 57192620755484967, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+  m_PrefabInstance: {fileID: 4163857563379395133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8071062625868544155 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5317294129688744614, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+  m_PrefabInstance: {fileID: 4163857563379395133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6156915359894978947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8071062625868544155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ae528dd79979db49b5358b23b6770e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  authoredHitbox: {fileID: 4108353810851359514}
+  drawRuntimeHitbox: 1
+  runtimeHitboxColor: {r: 0.2, g: 0.85, b: 1, a: 0.75}
+  activeHazard: 0
+  activationVersion: 0
+  effectInstanceId: 0
+  effectVersion: 0
+  sourcePatternEntryIndex: 0
+  ownerPlayerIndex: 0
+  durationSeconds: 0
+  startedAtTime: 0
+  endsAtTime: 0

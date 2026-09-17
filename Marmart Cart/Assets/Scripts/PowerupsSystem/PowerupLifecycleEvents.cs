@@ -40,7 +40,13 @@ public enum PowerupEffectEndReason
     TargetUnavailable,
     Replaced,
     Cancelled,
-    SystemDisabled
+    SystemDisabled,
+
+    /// <summary>
+    /// A persistent world effect ended because it successfully triggered its
+    /// intended gameplay result, rather than because its lifetime expired.
+    /// </summary>
+    Triggered
 }
 
 /// <summary>

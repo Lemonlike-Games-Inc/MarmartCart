@@ -19,7 +19,7 @@ public class CartControlScript : MonoBehaviour
     private Vector3 _input;
 
     public Vector3 desiredDirection { get; private set; }
-    public Vector2 MoveInput => _inputVector;
+    public Vector2 MoveInput => powerupFrozen ? Vector2.zero : _inputVector;
 
     #endregion
 
@@ -28,6 +28,12 @@ public class CartControlScript : MonoBehaviour
     [Header("Control State")]
     [SerializeField] private bool controllable = true;
     [SerializeField] private bool isInPit = false;
+
+    [Header("Power-up Freeze - Runtime Read Only")]
+    [SerializeField] private bool powerupFrozen;
+
+    public bool IsPowerupFrozen => powerupFrozen;
+    public event System.Action<bool> OnPowerupFrozenChanged;
 
     #endregion
 
@@ -48,6 +54,7 @@ public class CartControlScript : MonoBehaviour
 
     public float GetSteerInput()
     {
+        if (powerupFrozen) return 0f;
         if (Mathf.Abs(_inputVector.x) < steerDeadzone) return 0f;
         return Mathf.Clamp(_inputVector.x, -1f, 1f);
     }
@@ -167,7 +174,7 @@ public class CartControlScript : MonoBehaviour
     [Header("Move Backward")]
     [SerializeField] private bool canMoveBackward = false;
 
-    public bool CanMoveBackward => canMoveBackward;
+    public bool CanMoveBackward => canMoveBackward && !powerupFrozen;
     public event System.Action<bool> OnCanMoveBackwardChanged;
 
     #endregion
@@ -255,7 +262,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.Drift.performed += ctx =>
         {
-            if (ctx.control.device == device && allowDrift) HandleDriftPressed();
+            if (ctx.control.device == device && CanDrift()) HandleDriftPressed();
         };
 
         _inputActions.Player.Drift.canceled += ctx =>
@@ -265,7 +272,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.Aim.performed += ctx =>
         {
-            if (ctx.control.device == device && canAim)
+            if (ctx.control.device == device && GetCanAim())
             {
                 SetAimInput(ctx.ReadValue<Vector2>());
             }
@@ -291,7 +298,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.ActivatePowerUp.performed += ctx =>
         {
-            if (ctx.control.device == device && canActivatePowerUp)
+            if (ctx.control.device == device && GetCanActivatePowerUp())
             {
                 ActivatePowerUp();
             }
@@ -299,7 +306,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.MoveBackward.performed += ctx =>
         {
-            if (ctx.control.device == device && canMoveBackward)
+            if (ctx.control.device == device && CanMoveBackward)
             {
                 SetCanMoveBackward(false);
                 OnMoveBackwardPressed?.Invoke();
@@ -341,7 +348,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.Drift.performed += ctx =>
         {
-            if (ctx.control.device == Keyboard.current && allowDrift) HandleDriftPressed();
+            if (ctx.control.device == Keyboard.current && CanDrift()) HandleDriftPressed();
         };
 
         _inputActions.Player.Drift.canceled += ctx =>
@@ -351,7 +358,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.Aim.performed += ctx =>
         {
-            if (ctx.control.device == Keyboard.current && canAim)
+            if (ctx.control.device == Keyboard.current && GetCanAim())
             {
                 Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
                 Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
@@ -388,7 +395,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.ActivatePowerUp.performed += ctx =>
         {
-            if (ctx.control.device == Keyboard.current && canActivatePowerUp)
+            if (ctx.control.device == Keyboard.current && GetCanActivatePowerUp())
             {
                 ActivatePowerUp();
             }
@@ -396,7 +403,7 @@ public class CartControlScript : MonoBehaviour
 
         _inputActions.Player.MoveBackward.performed += ctx =>
         {
-            if (ctx.control.device == Keyboard.current && canMoveBackward)
+            if (ctx.control.device == Keyboard.current && CanMoveBackward)
             {
                 SetCanMoveBackward(false);
                 OnMoveBackwardPressed?.Invoke();
@@ -459,10 +466,22 @@ public class CartControlScript : MonoBehaviour
 
     private void Update()
     {
-        if (controllable && !isInPit) GatherInput();
+        if (controllable && !isInPit && !powerupFrozen)
+        {
+            GatherInput();
+        }
+        else
+        {
+            desiredDirection = Vector3.zero;
+        }
 
-        if (!controllable || isInPit || !allowDrift) isDriftHeld = false;
-        if (!controllable || isInPit || !canSpeedup) StopSpeedupInput();
+        if (!controllable || isInPit || !CanDrift()) isDriftHeld = false;
+        if (!controllable || isInPit || !CanSpeedingUp()) StopSpeedupInput();
+
+        if (powerupFrozen && _aimInputVector.sqrMagnitude > 0f)
+        {
+            SetAimInput(Vector2.zero);
+        }
 
         UpdateSpeedup();
         UpdateHeldEvents();
@@ -491,7 +510,7 @@ public class CartControlScript : MonoBehaviour
 
     private void SetAimInput(Vector2 aimInput)
     {
-        Vector2 nextInput = canAim
+        Vector2 nextInput = GetCanAim()
             ? Vector2.ClampMagnitude(aimInput, 1f)
             : Vector2.zero;
 
@@ -516,7 +535,7 @@ public class CartControlScript : MonoBehaviour
 
     private void HandleDriftPressed()
     {
-        if (!allowDrift) return;
+        if (!CanDrift()) return;
 
         if (enableDriftSpeedupOverride) StopSpeedupInput();
         isDriftHeld = true;
@@ -537,7 +556,7 @@ public class CartControlScript : MonoBehaviour
 
     private bool CanBeginSpeedup()
     {
-        return canSpeedup && currentHype > 0.01f;
+        return CanSpeedingUp() && currentHype > 0.01f;
     }
 
     private void HandleSpeedupReleased()
@@ -588,7 +607,7 @@ public class CartControlScript : MonoBehaviour
 
     private void UpdateHeldEvents()
     {
-        OnMoveHeld?.Invoke(_inputVector.sqrMagnitude > 0.05f);
+        OnMoveHeld?.Invoke(MoveInput.sqrMagnitude > 0.05f);
         OnAimHeld?.Invoke(_aimInputVector.sqrMagnitude > 0.05f);
     }
 
@@ -624,7 +643,7 @@ public class CartControlScript : MonoBehaviour
 
     public bool GetCanMoveBackward()
     {
-        return canMoveBackward;
+        return CanMoveBackward;
     }
 
     private void SetCanMoveBackward(bool canMove)
@@ -634,8 +653,14 @@ public class CartControlScript : MonoBehaviour
             return;
         }
 
+        bool wasAvailable = CanMoveBackward;
         canMoveBackward = canMove;
-        OnCanMoveBackwardChanged?.Invoke(canMoveBackward);
+        bool isAvailable = CanMoveBackward;
+
+        if (wasAvailable != isAvailable)
+        {
+            OnCanMoveBackwardChanged?.Invoke(isAvailable);
+        }
     }
 
     #endregion
@@ -649,7 +674,7 @@ public class CartControlScript : MonoBehaviour
 
     public bool CanDrift()
     {
-        return allowDrift;
+        return allowDrift && !powerupFrozen;
     }
 
     public void AllowDrift()
@@ -669,7 +694,7 @@ public class CartControlScript : MonoBehaviour
 
     public bool GetCanActivatePowerUp()
     {
-        return canActivatePowerUp;
+        return canActivatePowerUp && !powerupFrozen;
     }
 
     public void AllowActivatePowerUp()
@@ -689,7 +714,7 @@ public class CartControlScript : MonoBehaviour
 
     public void ActivatePowerUp()
     {
-        if (!canActivatePowerUp) return;
+        if (!GetCanActivatePowerUp()) return;
 
         // During migration, a subscribed PlayerPowerupController is always
         // authoritative. The legacy manager is used only when no replacement
@@ -740,7 +765,7 @@ public class CartControlScript : MonoBehaviour
 
     public bool GetCanAim()
     {
-        return canAim;
+        return canAim && !powerupFrozen;
     }
 
     public void AllowAim()
@@ -786,7 +811,7 @@ public class CartControlScript : MonoBehaviour
 
     public bool CanSpeedingUp()
     {
-        return canSpeedup;
+        return canSpeedup && !powerupFrozen;
     }
 
     public void AllowSpeedingUp()
@@ -798,6 +823,40 @@ public class CartControlScript : MonoBehaviour
     {
         canSpeedup = false;
         StopSpeedupInput();
+    }
+
+    #endregion
+
+    #region Power-up Freeze State
+
+    /// <summary>
+    /// Independent runtime gate owned by the Ice effect. It never rewrites
+    /// the authored/temporary Drift, Speedup, Aim, Activate, or general
+    /// control permissions owned by Stall, Checkout, and other systems.
+    /// </summary>
+    public void SetPowerupFrozen(bool frozen)
+    {
+        if (powerupFrozen == frozen) return;
+
+        bool moveBackwardWasAvailable = CanMoveBackward;
+        powerupFrozen = frozen;
+
+        if (powerupFrozen)
+        {
+            desiredDirection = Vector3.zero;
+            isDriftHeld = false;
+            StopSpeedupInput();
+            SetAimInput(Vector2.zero);
+        }
+
+        bool moveBackwardIsAvailable = CanMoveBackward;
+
+        if (moveBackwardWasAvailable != moveBackwardIsAvailable)
+        {
+            OnCanMoveBackwardChanged?.Invoke(moveBackwardIsAvailable);
+        }
+
+        OnPowerupFrozenChanged?.Invoke(powerupFrozen);
     }
 
     #endregion

@@ -30,7 +30,7 @@ MonoBehaviour:
     ignoreOwnerInFlight: 1
     ignoreCheckoutTargets: 1
     hasEffectOnLeadingCart: 1
-    hasEffectOnChainedCarts: 1
+    hasEffectOnChainedCarts: 0
     entries:
     - normalizedLandingOffset: {x: 0, y: 0}
       arrivalTimeOffsetSeconds: 0

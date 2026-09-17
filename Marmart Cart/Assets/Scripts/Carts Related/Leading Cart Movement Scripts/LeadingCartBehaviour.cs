@@ -21,6 +21,7 @@ public class LeadingCartBehaviour : MonoBehaviour
     [Header("References")]
     [Tooltip("Reads movement, Hype-funded Speedup, pit, and control state.")]
     [SerializeField] private CartControlScript cartControlInput;
+    public CartControlScript CartControlInput => cartControlInput;
 
     [Tooltip("Main Rigidbody of the leading cart.")]
     [SerializeField] private Rigidbody cartBody;
@@ -31,6 +32,7 @@ public class LeadingCartBehaviour : MonoBehaviour
 
     [Tooltip("Current drift state and tightness.")]
     [SerializeField] private CartDriftController driftController;
+    public CartDriftController DriftController => driftController;
 
     [Tooltip("Player cargo controller used to read the current GLOBAL overload movement multiplier.")]
     [SerializeField] private CargoCapacityController cargoCapacityController;
@@ -107,6 +109,11 @@ public class LeadingCartBehaviour : MonoBehaviour
 
     private bool isStopping;
 
+    [Header("Power-up Freeze - Runtime Read Only")]
+    [SerializeField] private bool powerupFreezeSuppressed;
+
+    public bool IsPowerupFreezeSuppressed => powerupFreezeSuppressed;
+
     #endregion
 
     #region Drift Runtime State
@@ -145,7 +152,7 @@ public class LeadingCartBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (cartBody == null) return;
+        if (cartBody == null || powerupFreezeSuppressed) return;
 
         bool didHitGround = Physics.Raycast(
             transform.position,
@@ -175,7 +182,15 @@ public class LeadingCartBehaviour : MonoBehaviour
     private void UpdateDriveModeAndTargetSpeed(float deltaTime)
     {
         if (cartControlInput == null) return;
-        if (cartControlInput.GetIsInPit() || isStopping) return;
+
+        if (cartControlInput.GetIsInPit() ||
+            isStopping ||
+            powerupFreezeSuppressed)
+        {
+            targetSpeed = 0f;
+            ResetDriftRuntimeState();
+            return;
+        }
 
         bool isDrifting = driftController != null && driftController.IsDrifting;
 
@@ -405,7 +420,7 @@ public class LeadingCartBehaviour : MonoBehaviour
 
     public void Brake()
     {
-        if (!isGrounded) return;
+        if (!isGrounded || powerupFreezeSuppressed) return;
 
         Vector3 accelerationDirection = transform.forward;
         float cartSpeed = Vector3.Dot(cartBody.transform.forward, cartBody.linearVelocity);
@@ -441,6 +456,24 @@ public class LeadingCartBehaviour : MonoBehaviour
     public void ResetSpeed()
     {
         isStopping = false;
+    }
+
+    /// <summary>
+    /// Independent force gate owned by the Ice effect. This does not modify
+    /// the crash/Checkout stop flag, so either system may finish first without
+    /// resuming movement owned by the other one.
+    /// </summary>
+    public void SetPowerupFreezeSuppressed(bool suppressed)
+    {
+        if (powerupFreezeSuppressed == suppressed) return;
+
+        powerupFreezeSuppressed = suppressed;
+
+        if (powerupFreezeSuppressed)
+        {
+            targetSpeed = 0f;
+            ResetDriftRuntimeState();
+        }
     }
 
     private void InterruptDriftFromCrash(string reason)

@@ -91,6 +91,7 @@ MonoBehaviour:
   activePatternEntryIndex: -1
   elapsedSeconds: 0
   normalizedFlightTime: 0
+  runtimeApexNormalizedTime: 0
   runtimeSweepShape: 0
   runtimeSphereRadius: 0
   runtimeBoxHalfExtents: {x: 0, y: 0, z: 0}
@@ -113,7 +114,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.35
+  m_Radius: 0.45
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &8357195655973235323
 PrefabInstance:
