@@ -52,6 +52,13 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
     public bool isAvailable => !isCollectedByPlayer && !collectionCommitted;
 
+    /// <summary>
+    /// Raised after this cart completes an owned/loose state transition.
+    /// Semantic consumers such as PowerupCartTarget can refresh immediately
+    /// without polling every cart in Update.
+    /// </summary>
+    public event System.Action<ChainedCartManager> OnCollectionStateChanged;
+
     #endregion
 
     #region References
@@ -303,6 +310,8 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
             if (playerId >= 1 && playerId <= MaxSupportedPlayers) teamOutlineController.SetTeam(playerId);
             else teamOutlineController.ClearTeam();
         }
+
+        PublishCollectionStateChanged();
     }
 
     /// <summary>
@@ -323,6 +332,7 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
         SetCartTeamColor();
         RestartDisappearCountdown();
+        PublishCollectionStateChanged();
     }
 
     public void ResetDisappearCountDown()
@@ -371,6 +381,7 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
         SetCartTeamColor();
         RestartDisappearCountdown();
+        PublishCollectionStateChanged();
 
         Vector3 forceDirection = baseDirection;
 
@@ -627,6 +638,15 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
         collectVFX.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         collectVFX.Play();
+    }
+
+    #endregion
+
+    #region Ownership Notifications
+
+    private void PublishCollectionStateChanged()
+    {
+        OnCollectionStateChanged?.Invoke(this);
     }
 
     #endregion

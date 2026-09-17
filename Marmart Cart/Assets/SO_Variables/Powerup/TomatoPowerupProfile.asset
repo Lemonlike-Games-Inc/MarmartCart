@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303ae7d74725e804fa55ad8a195b0e9e, type: 3}
   m_Name: TomatoPowerupProfile
   m_EditorClassIdentifier: 
-  blindDurationSeconds: 3
+  blindDurationSeconds: 4
   maximumVisualSplashCount: 3
   refreshDurationOnAdditionalHit: 1

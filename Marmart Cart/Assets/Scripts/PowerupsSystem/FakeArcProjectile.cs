@@ -356,12 +356,11 @@ public class FakeArcProjectile : MonoBehaviour
                 Collider candidateCollider = candidateHit.collider;
                 if (candidateCollider == null) continue;
 
-                PowerupCartTarget candidateTarget =
-                    candidateCollider.GetComponentInParent<PowerupCartTarget>();
-
                 PowerupCartTargetSnapshot candidateHitCart;
 
-                if (candidateTarget == null ||
+                if (!PowerupCartTarget.TryResolveFromCollider(
+                        candidateCollider,
+                        out PowerupCartTarget candidateTarget) ||
                     !candidateTarget.TryGetGameplayTarget(
                         out candidateHitCart
                     ))

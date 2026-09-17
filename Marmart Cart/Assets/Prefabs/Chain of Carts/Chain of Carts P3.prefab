@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: playerIndex
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2247272871967667016, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
+      propertyPath: projectileProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: f490e1af1b3a4e448a400215d467984d, type: 2}
     - target: {fileID: 3114217767808218698, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: playerIndexOverride
       value: 3

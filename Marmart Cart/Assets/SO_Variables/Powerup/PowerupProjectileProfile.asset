@@ -27,10 +27,10 @@ MonoBehaviour:
     maximumFlightTime: 0.9
     spreadRadius: 2.5
     castEulerAngles: {x: 0, y: 0, z: 0}
-    ignoreOwnerInFlight: 0
+    ignoreOwnerInFlight: 1
     ignoreCheckoutTargets: 1
     hasEffectOnLeadingCart: 1
-    hasEffectOnChainedCarts: 0
+    hasEffectOnChainedCarts: 1
     entries:
     - normalizedLandingOffset: {x: 0, y: 0}
       arrivalTimeOffsetSeconds: 0
@@ -73,7 +73,7 @@ MonoBehaviour:
     maximumFlightTime: 1
     spreadRadius: 0
     castEulerAngles: {x: 0, y: 0, z: 0}
-    ignoreOwnerInFlight: 0
+    ignoreOwnerInFlight: 1
     ignoreCheckoutTargets: 1
     hasEffectOnLeadingCart: 1
     hasEffectOnChainedCarts: 0
