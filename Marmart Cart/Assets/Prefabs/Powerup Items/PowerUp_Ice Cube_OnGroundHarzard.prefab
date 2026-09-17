@@ -109,10 +109,23 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5317294129688744614, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6156915359894978947}
+    - targetCorrespondingSourceObject: {fileID: 5317294129688744614, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8329263367126630612}
   m_SourcePrefab: {fileID: 100100000, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+--- !u!4 &181238423953882696 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4272540585109312629, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+  m_PrefabInstance: {fileID: 4163857563379395133}
+  m_PrefabAsset: {fileID: 0}
 --- !u!65 &4108353810851359514 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 57192620755484967, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
+  m_PrefabInstance: {fileID: 4163857563379395133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7384562807282728882 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6896069700642968975, guid: 3b7a0349f6609af4a9a66a12586be9bc, type: 3}
   m_PrefabInstance: {fileID: 4163857563379395133}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8071062625868544155 stripped
@@ -136,6 +149,7 @@ MonoBehaviour:
   drawRuntimeHitbox: 1
   runtimeHitboxColor: {r: 0.2, g: 0.85, b: 1, a: 0.75}
   activeHazard: 0
+  presentationFading: 0
   activationVersion: 0
   effectInstanceId: 0
   effectVersion: 0
@@ -144,3 +158,20 @@ MonoBehaviour:
   durationSeconds: 0
   startedAtTime: 0
   endsAtTime: 0
+--- !u!114 &8329263367126630612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8071062625868544155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d861530354e0eb849b6a8d5a6e9dc7ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualRoot: {fileID: 181238423953882696}
+  targetRenderer: {fileID: 7384562807282728882}
+  materialResolved: 0
+  fading: 0
+  currentAlpha: 0

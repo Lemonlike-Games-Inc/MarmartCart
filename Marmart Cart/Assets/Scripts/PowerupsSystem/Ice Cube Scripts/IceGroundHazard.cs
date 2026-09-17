@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ public class IceGroundHazard : MonoBehaviour
 
     [Header("Runtime - Read Only")]
     [SerializeField] private bool activeHazard;
+    [SerializeField] private bool presentationFading;
     [SerializeField] private uint activationVersion;
     [SerializeField] private uint effectInstanceId;
     [SerializeField] private uint effectVersion;
@@ -40,14 +42,17 @@ public class IceGroundHazard : MonoBehaviour
 
     private IceGroundHazardPool owningPool;
     private IceFreezeEffectSystem freezeEffectSystem;
+    private IceVisualFadeController visualFadeController;
     private PlayerPowerupController ownerController;
     private LayerMask cartTargetMask;
     private Vector3 authoredLocalScale = Vector3.one;
     private bool authoredScaleCaptured;
     private bool canAffectLeadingCarts;
     private bool overlapOverflowLogged;
+    private int visualStartAlphaByte = 175;
 
     public bool IsActiveHazard => activeHazard;
+    public bool IsPresentationFading => presentationFading;
     public bool HasValidAuthoredHitbox
     {
         get
@@ -71,6 +76,7 @@ public class IceGroundHazard : MonoBehaviour
     {
         CaptureAuthoredScale();
         ResolveAuthoredHitbox();
+        ResolveVisualFadeController();
         DisablePhysicalHitbox();
     }
 
@@ -102,6 +108,7 @@ public class IceGroundHazard : MonoBehaviour
         owningPool = pool;
         CaptureAuthoredScale();
         ResolveAuthoredHitbox();
+        ResolveVisualFadeController();
         DisablePhysicalHitbox();
         ResetForPool();
     }
@@ -118,9 +125,11 @@ public class IceGroundHazard : MonoBehaviour
         Vector3 position,
         Quaternion rotation,
         Vector3 scaleMultiplier,
-        float lifetimeSeconds)
+        float lifetimeSeconds,
+        int startAlphaByte)
     {
         ResolveAuthoredHitbox();
+        ResolveVisualFadeController();
 
         if (owningPool == null ||
             freezeSystem == null ||
@@ -143,6 +152,8 @@ public class IceGroundHazard : MonoBehaviour
         startedAtTime = Time.time;
         endsAtTime = startedAtTime + durationSeconds;
         overlapOverflowLogged = false;
+        presentationFading = false;
+        visualStartAlphaByte = Mathf.Clamp(startAlphaByte, 0, 255);
 
         transform.SetPositionAndRotation(position, rotation);
         transform.localScale = Vector3.Scale(
@@ -157,6 +168,7 @@ public class IceGroundHazard : MonoBehaviour
         DisablePhysicalHitbox();
         activeHazard = true;
         gameObject.SetActive(true);
+        visualFadeController?.PrepareForUse(visualStartAlphaByte);
         return true;
     }
 
@@ -165,14 +177,40 @@ public class IceGroundHazard : MonoBehaviour
         effectVersion = NextRevision(effectVersion);
     }
 
-    internal void MarkEndingNow()
+    internal void MarkGameplayEndingNow()
     {
+        activeHazard = false;
         endsAtTime = Mathf.Min(endsAtTime, Time.time);
+    }
+
+    internal void BeginPresentationFade(
+        float durationSeconds,
+        Action<IceGroundHazard> onCompleted)
+    {
+        presentationFading = true;
+        ResolveVisualFadeController();
+
+        if (visualFadeController == null)
+        {
+            presentationFading = false;
+            onCompleted?.Invoke(this);
+            return;
+        }
+
+        visualFadeController.BeginFade(
+            durationSeconds,
+            () =>
+            {
+                presentationFading = false;
+                onCompleted?.Invoke(this);
+            }
+        );
     }
 
     internal void ResetForPool()
     {
         activeHazard = false;
+        presentationFading = false;
         freezeEffectSystem = null;
         ownerController = null;
         cartTargetMask = default;
@@ -189,6 +227,8 @@ public class IceGroundHazard : MonoBehaviour
         evaluatedTargets.Clear();
 
         transform.localScale = authoredLocalScale;
+        visualFadeController?.ResetForPool(visualStartAlphaByte);
+        visualStartAlphaByte = 175;
         DisablePhysicalHitbox();
         gameObject.SetActive(false);
     }
@@ -272,6 +312,19 @@ public class IceGroundHazard : MonoBehaviour
         authoredHitbox =
             GetComponent<BoxCollider>() ??
             GetComponentInChildren<BoxCollider>(true);
+    }
+
+    private void ResolveVisualFadeController()
+    {
+        if (visualFadeController != null) return;
+
+        visualFadeController = GetComponent<IceVisualFadeController>();
+
+        if (visualFadeController == null)
+        {
+            visualFadeController =
+                gameObject.AddComponent<IceVisualFadeController>();
+        }
     }
 
     private void CaptureAuthoredScale()

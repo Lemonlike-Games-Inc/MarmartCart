@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc4034315414ef49936d1e70725a5f2, type: 3}
+  m_Name: IcePresentationProfile
+  m_EditorClassIdentifier: 
+  impactVfxPrefab: {fileID: 1515129896191798818, guid: a50375946e246ac4195979db3b7d7897, type: 3}
+  impactVfxPrewarmCount: 4
+  allowImpactVfxPoolGrowth: 1
+  maximumImpactVfxInstances: 16
+  maximumImpactVfxLifetimeSeconds: 8
+  impactVfxPositionOffset: {x: 0, y: 0, z: 0}
+  orientImpactVfxToVictim: 1
+  impactVfxEulerOffset: {x: 0, y: 0, z: 0}
+  frozenVictimVisualPrefab: {fileID: 566070471637273572, guid: c7c6d8cc90df969449e3bda3fc449afe, type: 3}
+  frozenVictimLocalPosition: {x: 0, y: 0, z: 0}
+  frozenVictimLocalEulerAngles: {x: 0, y: 0, z: 0}
+  frozenVictimScaleMultiplier: {x: 1, y: 1, z: 1}
+  inheritVictimWorldScale: 1
+  frozenVisualPrewarmCount: 4
+  allowFrozenVisualPoolGrowth: 1
+  maximumFrozenVisualInstances: 8
+  visualFadeOutSeconds: 1
+  visualStartAlphaByte: 175

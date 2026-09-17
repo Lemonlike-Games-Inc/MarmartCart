@@ -12,6 +12,7 @@ public class IceGroundHazardPool : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private IcePowerupProfile iceProfile;
+    [SerializeField] private IcePresentationProfile icePresentationProfile;
     [SerializeField] private IceFreezeEffectSystem freezeEffectSystem;
     [SerializeField] private PowerupProjectilePool projectilePool;
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
@@ -26,10 +27,13 @@ public class IceGroundHazardPool : MonoBehaviour
     [Header("Runtime - Read Only")]
     [SerializeField] private int totalCreatedHazardCount;
     [SerializeField] private int activeHazardCount;
+    [SerializeField] private int fadingHazardCount;
 
     private readonly Stack<IceGroundHazard> available =
         new Stack<IceGroundHazard>();
     private readonly HashSet<IceGroundHazard> active =
+        new HashSet<IceGroundHazard>();
+    private readonly HashSet<IceGroundHazard> fading =
         new HashSet<IceGroundHazard>();
     private readonly List<IceGroundHazard> activeScratch =
         new List<IceGroundHazard>();
@@ -40,6 +44,7 @@ public class IceGroundHazardPool : MonoBehaviour
 
     public int TotalCreatedHazardCount => totalCreatedHazardCount;
     public int ActiveHazardCount => activeHazardCount;
+    public int FadingHazardCount => fadingHazardCount;
 
     public event Action<IceGroundHazard> OnHazardStarted;
     public event Action<
@@ -73,7 +78,11 @@ public class IceGroundHazardPool : MonoBehaviour
 
     private void OnDisable()
     {
-        ClearAllActiveHazards(PowerupEffectEndReason.SystemDisabled);
+        ClearAllActiveHazards(
+            PowerupEffectEndReason.SystemDisabled,
+            false
+        );
+        ForceReturnAllFadingHazards();
         Unsubscribe();
     }
 
@@ -187,7 +196,8 @@ public class IceGroundHazardPool : MonoBehaviour
             finalPosition,
             finalRotation,
             iceProfile.GroundHazardScaleMultiplier,
-            iceProfile.GroundHazardLifetimeSeconds
+            iceProfile.GroundHazardLifetimeSeconds,
+            GetVisualStartAlphaByte()
         );
 
         if (!activated)
@@ -333,7 +343,8 @@ public class IceGroundHazardPool : MonoBehaviour
         PowerupEffectEndReason endReason,
         PowerupCartTargetSnapshot target,
         Collider hitCollider,
-        Vector3 endPosition)
+        Vector3 endPosition,
+        bool allowPresentationFade = true)
     {
         if (hazard == null ||
             !hazard.IsActiveHazard ||
@@ -342,7 +353,7 @@ public class IceGroundHazardPool : MonoBehaviour
             return;
         }
 
-        hazard.MarkEndingNow();
+        hazard.MarkGameplayEndingNow();
         hazard.IncrementEffectVersion();
         activeHazardCount = active.Count;
 
@@ -372,8 +383,52 @@ public class IceGroundHazardPool : MonoBehaviour
             );
         }
 
+        float fadeDuration = allowPresentationFade
+            ? GetVisualFadeDuration()
+            : 0f;
+
+        if (fadeDuration <= 0.0001f)
+        {
+            CompleteHazardReturn(hazard);
+            return;
+        }
+
+        fading.Add(hazard);
+        fadingHazardCount = fading.Count;
+        hazard.BeginPresentationFade(
+            fadeDuration,
+            CompleteHazardFade
+        );
+    }
+
+    private void CompleteHazardFade(IceGroundHazard hazard)
+    {
+        if (hazard == null || !fading.Remove(hazard)) return;
+
+        fadingHazardCount = fading.Count;
+        CompleteHazardReturn(hazard);
+    }
+
+    private void CompleteHazardReturn(IceGroundHazard hazard)
+    {
+        if (hazard == null) return;
+
         hazard.ResetForPool();
         available.Push(hazard);
+    }
+
+    private float GetVisualFadeDuration()
+    {
+        return icePresentationProfile != null
+            ? icePresentationProfile.VisualFadeOutSeconds
+            : 1f;
+    }
+
+    private int GetVisualStartAlphaByte()
+    {
+        return icePresentationProfile != null
+            ? icePresentationProfile.VisualStartAlphaByte
+            : 175;
     }
 
     private PowerupEffectEvent BuildHazardEffectEvent(
@@ -405,11 +460,15 @@ public class IceGroundHazardPool : MonoBehaviour
     private void HandleMatchPlayingChanged(bool matchPlaying)
     {
         if (matchPlaying) return;
-        ClearAllActiveHazards(PowerupEffectEndReason.MatchEnded);
+        ClearAllActiveHazards(
+            PowerupEffectEndReason.MatchEnded,
+            true
+        );
     }
 
     private void ClearAllActiveHazards(
-        PowerupEffectEndReason endReason)
+        PowerupEffectEndReason endReason,
+        bool allowPresentationFade)
     {
         activeScratch.Clear();
 
@@ -427,8 +486,29 @@ public class IceGroundHazardPool : MonoBehaviour
                 endReason,
                 default,
                 null,
-                hazard.transform.position
+                hazard.transform.position,
+                allowPresentationFade
             );
+        }
+
+        activeScratch.Clear();
+    }
+
+    private void ForceReturnAllFadingHazards()
+    {
+        activeScratch.Clear();
+
+        foreach (IceGroundHazard hazard in fading)
+        {
+            if (hazard != null) activeScratch.Add(hazard);
+        }
+
+        fading.Clear();
+        fadingHazardCount = 0;
+
+        for (int i = 0; i < activeScratch.Count; i++)
+        {
+            CompleteHazardReturn(activeScratch[i]);
         }
 
         activeScratch.Clear();
