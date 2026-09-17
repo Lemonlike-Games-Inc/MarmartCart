@@ -1,5 +1,77 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+
+/// <summary>
+/// Semantic prompt graphics available to every power-up recipe. The trigger
+/// entry deliberately describes the action instead of a physical LT/RT side,
+/// so its assigned Sprite can follow the project's current input binding.
+/// </summary>
+public enum PowerupHudPromptIcon
+{
+    None = 0,
+    RightJoystick = 1,
+    ActivateTrigger = 2,
+    Plus = 3
+}
+
+[Serializable]
+public struct PowerupHudPromptRecipe
+{
+    [SerializeField] private PowerupHudPromptIcon slot1;
+    [SerializeField] private PowerupHudPromptIcon slot2;
+    [SerializeField] private PowerupHudPromptIcon slot3;
+
+    public PowerupHudPromptRecipe(
+        PowerupHudPromptIcon slot1,
+        PowerupHudPromptIcon slot2,
+        PowerupHudPromptIcon slot3)
+    {
+        this.slot1 = slot1;
+        this.slot2 = slot2;
+        this.slot3 = slot3;
+    }
+
+    public PowerupHudPromptIcon GetSlot(int slotIndex)
+    {
+        return slotIndex switch
+        {
+            0 => slot1,
+            1 => slot2,
+            2 => slot3,
+            _ => PowerupHudPromptIcon.None
+        };
+    }
+}
+
+[Serializable]
+public struct PowerupHudPromptSlotLayout
+{
+    [Tooltip("Absolute pixel offset from the selected viewport anchor.")]
+    [SerializeField] private Vector2 positionPixels;
+
+    [Tooltip("Rendered width and height for whichever prompt uses this slot.")]
+    [SerializeField] private Vector2 sizePixels;
+
+    public Vector2 PositionPixels => positionPixels;
+    public Vector2 SizePixels => sizePixels;
+
+    public PowerupHudPromptSlotLayout(
+        Vector2 positionPixels,
+        Vector2 sizePixels)
+    {
+        this.positionPixels = positionPixels;
+        this.sizePixels = sizePixels;
+    }
+
+    public void ClampSize()
+    {
+        sizePixels = new Vector2(
+            Mathf.Max(1f, sizePixels.x),
+            Mathf.Max(1f, sizePixels.y)
+        );
+    }
+}
 
 /// <summary>
 /// Designer-authored icon assets and per-viewport layout for the held power-up
@@ -11,11 +83,58 @@ using UnityEngine.Serialization;
 )]
 public class PowerupHudProfile : ScriptableObject
 {
+    public const int PromptSlotCount = 3;
+
     [Header("Power-up Icons")]
     [SerializeField] private Sprite tomatoIcon;
     [SerializeField] private Sprite iceCubeIcon;
     [SerializeField] private Sprite colaMentosIcon;
     [SerializeField] private Sprite strongFanIcon;
+
+    [Header("Input Prompt Sprites")]
+    [SerializeField] private Sprite rightJoystickPromptIcon;
+
+    [Tooltip(
+        "Prompt for the Activate Power-up action. Assign the LT or RT Sprite " +
+        "that matches the project's current binding."
+    )]
+    [SerializeField] private Sprite activateTriggerPromptIcon;
+
+    [SerializeField] private Sprite plusPromptIcon;
+
+    [Header("Power-up Prompt Recipes")]
+    [Tooltip("Slot order is 1, 2, 3. None leaves that slot hidden.")]
+    [SerializeField]
+    private PowerupHudPromptRecipe tomatoPromptRecipe =
+        new PowerupHudPromptRecipe(
+            PowerupHudPromptIcon.RightJoystick,
+            PowerupHudPromptIcon.Plus,
+            PowerupHudPromptIcon.ActivateTrigger
+        );
+
+    [SerializeField]
+    private PowerupHudPromptRecipe iceCubePromptRecipe =
+        new PowerupHudPromptRecipe(
+            PowerupHudPromptIcon.RightJoystick,
+            PowerupHudPromptIcon.Plus,
+            PowerupHudPromptIcon.ActivateTrigger
+        );
+
+    [SerializeField]
+    private PowerupHudPromptRecipe colaMentosPromptRecipe =
+        new PowerupHudPromptRecipe(
+            PowerupHudPromptIcon.None,
+            PowerupHudPromptIcon.ActivateTrigger,
+            PowerupHudPromptIcon.None
+        );
+
+    [SerializeField]
+    private PowerupHudPromptRecipe strongFanPromptRecipe =
+        new PowerupHudPromptRecipe(
+            PowerupHudPromptIcon.ActivateTrigger,
+            PowerupHudPromptIcon.Plus,
+            PowerupHudPromptIcon.RightJoystick
+        );
 
     [Header("Empty Slot")]
     [Tooltip(
@@ -67,6 +186,26 @@ public class PowerupHudProfile : ScriptableObject
     private Vector2 twoPlayerIconSizePixels =
         new Vector2(88f, 88f);
 
+    [Space]
+    [SerializeField]
+    private PowerupHudPromptSlotLayout twoPlayerPromptSlot1 =
+        new PowerupHudPromptSlotLayout(
+            new Vector2(-58f, -18f),
+            new Vector2(32f, 32f)
+        );
+    [SerializeField]
+    private PowerupHudPromptSlotLayout twoPlayerPromptSlot2 =
+        new PowerupHudPromptSlotLayout(
+            new Vector2(0f, -18f),
+            new Vector2(32f, 32f)
+        );
+    [SerializeField]
+    private PowerupHudPromptSlotLayout twoPlayerPromptSlot3 =
+        new PowerupHudPromptSlotLayout(
+            new Vector2(58f, -18f),
+            new Vector2(32f, 32f)
+        );
+
     [Header("4 Player Layout")]
     [Tooltip("Normalized anchor inside each player's own viewport.")]
     [SerializeField]
@@ -88,6 +227,26 @@ public class PowerupHudProfile : ScriptableObject
     [SerializeField]
     private Vector2 fourPlayerIconSizePixels =
         new Vector2(64f, 64f);
+
+    [Space]
+    [SerializeField]
+    private PowerupHudPromptSlotLayout fourPlayerPromptSlot1 =
+        new PowerupHudPromptSlotLayout(
+            new Vector2(-42f, -14f),
+            new Vector2(24f, 24f)
+        );
+    [SerializeField]
+    private PowerupHudPromptSlotLayout fourPlayerPromptSlot2 =
+        new PowerupHudPromptSlotLayout(
+            new Vector2(0f, -14f),
+            new Vector2(24f, 24f)
+        );
+    [SerializeField]
+    private PowerupHudPromptSlotLayout fourPlayerPromptSlot3 =
+        new PowerupHudPromptSlotLayout(
+            new Vector2(42f, -14f),
+            new Vector2(24f, 24f)
+        );
 
     public bool ShowSlotWhenEmpty => showSlotWhenEmpty;
     public Sprite EmptySlotIcon => emptySlotIcon;
@@ -119,6 +278,34 @@ public class PowerupHudProfile : ScriptableObject
         };
     }
 
+    public Sprite GetPromptSprite(PowerupHudPromptIcon promptIcon)
+    {
+        return promptIcon switch
+        {
+            PowerupHudPromptIcon.RightJoystick => rightJoystickPromptIcon,
+            PowerupHudPromptIcon.ActivateTrigger =>
+                activateTriggerPromptIcon,
+            PowerupHudPromptIcon.Plus => plusPromptIcon,
+            _ => null
+        };
+    }
+
+    public PowerupHudPromptIcon GetPromptForSlot(
+        PowerupId powerupId,
+        int slotIndex)
+    {
+        PowerupHudPromptRecipe recipe = powerupId switch
+        {
+            PowerupId.Tomato => tomatoPromptRecipe,
+            PowerupId.IceCube => iceCubePromptRecipe,
+            PowerupId.ColaMentos => colaMentosPromptRecipe,
+            PowerupId.StrongFan => strongFanPromptRecipe,
+            _ => default
+        };
+
+        return recipe.GetSlot(slotIndex);
+    }
+
     public void GetLayout(
         int activePlayerCount,
         out Vector2 anchor,
@@ -146,6 +333,21 @@ public class PowerupHudProfile : ScriptableObject
             : twoPlayerIconSizePixels;
     }
 
+    public void GetPromptSlotLayout(
+        int activePlayerCount,
+        int slotIndex,
+        out Vector2 positionPixels,
+        out Vector2 sizePixels)
+    {
+        bool fourPlayerLayout = activePlayerCount > 2;
+        PowerupHudPromptSlotLayout layout = fourPlayerLayout
+            ? GetFourPlayerPromptSlot(slotIndex)
+            : GetTwoPlayerPromptSlot(slotIndex);
+
+        positionPixels = layout.PositionPixels;
+        sizePixels = layout.SizePixels;
+    }
+
     private void OnValidate()
     {
         twoPlayerAnchor = Clamp01(twoPlayerAnchor);
@@ -156,6 +358,35 @@ public class PowerupHudProfile : ScriptableObject
         fourPlayerBackgroundSizePixels =
             ClampSize(fourPlayerBackgroundSizePixels);
         fourPlayerIconSizePixels = ClampSize(fourPlayerIconSizePixels);
+
+        twoPlayerPromptSlot1.ClampSize();
+        twoPlayerPromptSlot2.ClampSize();
+        twoPlayerPromptSlot3.ClampSize();
+        fourPlayerPromptSlot1.ClampSize();
+        fourPlayerPromptSlot2.ClampSize();
+        fourPlayerPromptSlot3.ClampSize();
+    }
+
+    private PowerupHudPromptSlotLayout GetTwoPlayerPromptSlot(int slotIndex)
+    {
+        return slotIndex switch
+        {
+            0 => twoPlayerPromptSlot1,
+            1 => twoPlayerPromptSlot2,
+            2 => twoPlayerPromptSlot3,
+            _ => default
+        };
+    }
+
+    private PowerupHudPromptSlotLayout GetFourPlayerPromptSlot(int slotIndex)
+    {
+        return slotIndex switch
+        {
+            0 => fourPlayerPromptSlot1,
+            1 => fourPlayerPromptSlot2,
+            2 => fourPlayerPromptSlot3,
+            _ => default
+        };
     }
 
     private static Vector2 Clamp01(Vector2 value)

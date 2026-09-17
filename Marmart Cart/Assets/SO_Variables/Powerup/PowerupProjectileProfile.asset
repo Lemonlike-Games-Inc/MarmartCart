@@ -39,20 +39,20 @@ MonoBehaviour:
       visualSpinDegreesPerSecond: 420
       visualScaleMultiplier: 1
     - normalizedLandingOffset: {x: 0.78, y: 0}
-      arrivalTimeOffsetSeconds: -0.12
-      arcHeightOffset: -0.15
+      arrivalTimeOffsetSeconds: -0.06
+      arcHeightOffset: -0.12
       visualSpinAxis: {x: 0.4, y: 1, z: 0.8}
       visualSpinDegreesPerSecond: 330
       visualScaleMultiplier: 1
     - normalizedLandingOffset: {x: 0.24103323, y: 0.7418241}
-      arrivalTimeOffsetSeconds: -0.06
+      arrivalTimeOffsetSeconds: -0.03
       arcHeightOffset: 0.1
       visualSpinAxis: {x: 0.5, y: 1, z: 0.72}
       visualSpinDegreesPerSecond: 365
       visualScaleMultiplier: 1
     - normalizedLandingOffset: {x: -0.6310333, y: 0.45847243}
-      arrivalTimeOffsetSeconds: 0
-      arcHeightOffset: 0.2
+      arrivalTimeOffsetSeconds: 0.08
+      arcHeightOffset: 0.14
       visualSpinAxis: {x: 0.6, y: 1, z: 0.64}
       visualSpinDegreesPerSecond: 400
       visualScaleMultiplier: 1
@@ -63,7 +63,7 @@ MonoBehaviour:
       visualSpinDegreesPerSecond: 435
       visualScaleMultiplier: 1
     - normalizedLandingOffset: {x: 0.24103335, y: -0.74182403}
-      arrivalTimeOffsetSeconds: 0.12
+      arrivalTimeOffsetSeconds: 0.03
       arcHeightOffset: -0.1
       visualSpinAxis: {x: 0.8, y: 1, z: 0.48000002}
       visualSpinDegreesPerSecond: 470

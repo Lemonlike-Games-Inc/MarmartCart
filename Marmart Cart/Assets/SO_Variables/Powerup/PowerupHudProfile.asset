@@ -16,6 +16,25 @@ MonoBehaviour:
   iceCubeIcon: {fileID: 21300000, guid: 407293487fd9ece4487b28cf8f18dbd1, type: 3}
   colaMentosIcon: {fileID: 21300000, guid: 3c18126a487af7342861041e7e7d2e11, type: 3}
   strongFanIcon: {fileID: 21300000, guid: 937a6378f03f4f24e9f788363d663207, type: 3}
+  rightJoystickPromptIcon: {fileID: 21300000, guid: 590341f1df8ef8e4ba8cfc8a682dfd48, type: 3}
+  activateTriggerPromptIcon: {fileID: 21300000, guid: dfac01fbef47d1943ad5fee810fa6fd3, type: 3}
+  plusPromptIcon: {fileID: 21300000, guid: 3a2296c7f0adec04fa11d14a453b7cdc, type: 3}
+  tomatoPromptRecipe:
+    slot1: 1
+    slot2: 3
+    slot3: 2
+  iceCubePromptRecipe:
+    slot1: 1
+    slot2: 3
+    slot3: 2
+  colaMentosPromptRecipe:
+    slot1: 0
+    slot2: 2
+    slot3: 0
+  strongFanPromptRecipe:
+    slot1: 2
+    slot2: 3
+    slot3: 1
   showSlotWhenEmpty: 0
   emptySlotIcon: {fileID: 0}
   player1BackgroundSprite: {fileID: 21300000, guid: 221b52abfe5b92e4a9ffb32a559d6f0a, type: 3}
@@ -26,12 +45,30 @@ MonoBehaviour:
   iconTint: {r: 1, g: 1, b: 1, a: 1}
   preserveIconAspect: 1
   twoPlayerAnchor: {x: 0.5, y: 0}
-  twoPlayerBackgroundPositionPixels: {x: 0, y: 48}
-  twoPlayerIconPositionPixels: {x: 0, y: 48}
-  twoPlayerBackgroundSizePixels: {x: 112, y: 112}
-  twoPlayerIconSizePixels: {x: 88, y: 88}
+  twoPlayerBackgroundPositionPixels: {x: 0, y: 300}
+  twoPlayerIconPositionPixels: {x: 0, y: 300}
+  twoPlayerBackgroundSizePixels: {x: 225, y: 225}
+  twoPlayerIconSizePixels: {x: 125, y: 125}
+  twoPlayerPromptSlot1:
+    positionPixels: {x: -50, y: 415}
+    sizePixels: {x: 70, y: 70}
+  twoPlayerPromptSlot2:
+    positionPixels: {x: 0, y: 415}
+    sizePixels: {x: 50, y: 50}
+  twoPlayerPromptSlot3:
+    positionPixels: {x: 50, y: 415}
+    sizePixels: {x: 70, y: 70}
   fourPlayerAnchor: {x: 0.5, y: 0}
-  fourPlayerBackgroundPositionPixels: {x: 0, y: 40}
-  fourPlayerIconPositionPixels: {x: 0, y: 40}
+  fourPlayerBackgroundPositionPixels: {x: 0, y: 90}
+  fourPlayerIconPositionPixels: {x: 0, y: 90}
   fourPlayerBackgroundSizePixels: {x: 225, y: 225}
   fourPlayerIconSizePixels: {x: 125, y: 125}
+  fourPlayerPromptSlot1:
+    positionPixels: {x: -50, y: 205}
+    sizePixels: {x: 70, y: 70}
+  fourPlayerPromptSlot2:
+    positionPixels: {x: 0, y: 205}
+    sizePixels: {x: 50, y: 50}
+  fourPlayerPromptSlot3:
+    positionPixels: {x: 50, y: 205}
+    sizePixels: {x: 70, y: 70}

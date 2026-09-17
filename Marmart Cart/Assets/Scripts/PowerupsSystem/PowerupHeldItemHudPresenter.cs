@@ -50,6 +50,16 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         new Image[MaxPlayerSlots];
     private readonly Image[] iconImages =
         new Image[MaxPlayerSlots];
+    private readonly RectTransform[,] promptRects =
+        new RectTransform[
+            MaxPlayerSlots,
+            PowerupHudProfile.PromptSlotCount
+        ];
+    private readonly Image[,] promptImages =
+        new Image[
+            MaxPlayerSlots,
+            PowerupHudProfile.PromptSlotCount
+        ];
     private readonly bool[] hasStoredPowerup = new bool[MaxPlayerSlots];
     private readonly PowerupId[] storedPowerups =
         new PowerupId[MaxPlayerSlots];
@@ -306,6 +316,32 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         icon.raycastTarget = false;
         icon.type = Image.Type.Simple;
 
+        for (int promptSlot = 0;
+             promptSlot < PowerupHudProfile.PromptSlotCount;
+             promptSlot++)
+        {
+            GameObject promptObject = new GameObject(
+                $"Prompt Slot {promptSlot + 1}",
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image)
+            );
+
+            RectTransform promptRect =
+                promptObject.GetComponent<RectTransform>();
+            promptRect.SetParent(widgetRoot, false);
+            promptRect.anchorMin = new Vector2(0.5f, 0.5f);
+            promptRect.anchorMax = new Vector2(0.5f, 0.5f);
+            promptRect.pivot = new Vector2(0.5f, 0.5f);
+
+            Image promptImage = promptObject.GetComponent<Image>();
+            promptImage.raycastTarget = false;
+            promptImage.type = Image.Type.Simple;
+
+            promptRects[slotIndex, promptSlot] = promptRect;
+            promptImages[slotIndex, promptSlot] = promptImage;
+        }
+
         widgetRoots[slotIndex] = widgetRoot;
         backgroundRects[slotIndex] = backgroundRect;
         backgroundImages[slotIndex] = background;
@@ -388,9 +424,40 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
             icon.enabled = shouldShow && iconSprite != null;
         }
 
+        bool hasVisiblePrompt = false;
+
+        for (int promptSlot = 0;
+             promptSlot < PowerupHudProfile.PromptSlotCount;
+             promptSlot++)
+        {
+            Image promptImage = promptImages[slotIndex, promptSlot];
+            if (promptImage == null) continue;
+
+            PowerupHudPromptIcon promptIcon =
+                hasStoredPowerup[slotIndex]
+                    ? hudProfile.GetPromptForSlot(
+                        storedPowerups[slotIndex],
+                        promptSlot
+                    )
+                    : PowerupHudPromptIcon.None;
+
+            Sprite promptSprite = hudProfile.GetPromptSprite(promptIcon);
+            promptImage.sprite = promptSprite;
+            promptImage.color = hudProfile.IconTint;
+            promptImage.preserveAspect = hudProfile.PreserveIconAspect;
+            promptImage.enabled =
+                shouldShow &&
+                hasStoredPowerup[slotIndex] &&
+                promptIcon != PowerupHudPromptIcon.None &&
+                promptSprite != null;
+
+            hasVisiblePrompt |= promptImage.enabled;
+        }
+
         bool hasVisibleGraphic =
             background != null && background.enabled ||
-            icon != null && icon.enabled;
+            icon != null && icon.enabled ||
+            hasVisiblePrompt;
 
         widgetRoot.gameObject.SetActive(shouldShow && hasVisibleGraphic);
         diagnostics.Visible = shouldShow && hasVisibleGraphic;
@@ -446,6 +513,28 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         iconRect.anchoredPosition = iconPositionPixels;
         iconRect.sizeDelta = iconSizePixels;
         iconRect.localScale = Vector3.one;
+
+        for (int promptSlot = 0;
+             promptSlot < PowerupHudProfile.PromptSlotCount;
+             promptSlot++)
+        {
+            RectTransform promptRect = promptRects[slotIndex, promptSlot];
+            if (promptRect == null) continue;
+
+            hudProfile.GetPromptSlotLayout(
+                viewportCanvasSystem.ActivePlayerCount,
+                promptSlot,
+                out Vector2 promptPositionPixels,
+                out Vector2 promptSizePixels
+            );
+
+            promptRect.anchorMin = new Vector2(0.5f, 0.5f);
+            promptRect.anchorMax = new Vector2(0.5f, 0.5f);
+            promptRect.pivot = new Vector2(0.5f, 0.5f);
+            promptRect.anchoredPosition = promptPositionPixels;
+            promptRect.sizeDelta = promptSizePixels;
+            promptRect.localScale = Vector3.one;
+        }
     }
 
     private void SetAllWidgetsActive(bool active)
