@@ -2,10 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Builds one non-interactive full-screen Canvas with four camera-aligned
-/// Tomato overlay slots. Only the viewport belonging to the struck player is
-/// shown. Camera.rect is read continuously so 2P/4P layout changes remain
-/// aligned without manually wiring four Canvases.
+/// Renders authoritative TomatoBlindState inside the struck player's shared
+/// fullscreen-effect layer. Viewport ownership and 2P/4P camera alignment live
+/// in PowerupViewportCanvasSystem, so this presenter creates no Canvas.
 /// </summary>
 [DisallowMultipleComponent]
 public class TomatoBlindCanvasPresenter : MonoBehaviour
@@ -14,38 +13,25 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private TomatoBlindEffectSystem blindEffectSystem;
-    [SerializeField] private CameraManager cameraManager;
+    [SerializeField] private PowerupViewportCanvasSystem viewportCanvasSystem;
     [SerializeField] private TomatoPresentationProfile presentationProfile;
-
-    [Tooltip(
-        "Optional existing full-screen Screen Space - Overlay Canvas. When " +
-        "empty, the presenter creates and owns a dedicated runtime Canvas."
-    )]
-    [SerializeField] private Canvas fullScreenCanvas;
-
-    [Header("Auto-created Canvas")]
-    [SerializeField] private int autoCreatedCanvasSortingOrder = 500;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logMissingReferences = true;
 
     [Header("Runtime - Read Only")]
-    [SerializeField] private bool usingAutoCreatedCanvas;
     [SerializeField] private int visibleViewportCount;
 
     private readonly Image[] viewportImages = new Image[MaxPlayerSlots];
-    private readonly RectTransform[] viewportRects =
-        new RectTransform[MaxPlayerSlots];
     private readonly TomatoBlindState[] displayedStates =
         new TomatoBlindState[MaxPlayerSlots];
     private readonly bool[] hasDisplayedState = new bool[MaxPlayerSlots];
     private readonly float[] visualStartedAtTime = new float[MaxPlayerSlots];
 
     private TomatoBlindEffectSystem subscribedBlindEffectSystem;
-    private RectTransform generatedRoot;
-    private Canvas ownedCanvas;
+    private PowerupViewportCanvasSystem subscribedViewportCanvasSystem;
     private bool missingBlindSystemLogged;
-    private bool missingCameraManagerLogged;
+    private bool missingCanvasSystemLogged;
     private bool missingProfileLogged;
     private bool missingSpriteLogged;
 
@@ -59,7 +45,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
     private void Awake()
     {
         ResolveReferences();
-        EnsureCanvasAndSlots();
+        EnsureImages();
         HideAllViewports();
     }
 
@@ -67,13 +53,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
     {
         ResolveReferences();
         EnsureSubscriptions();
-        EnsureCanvasAndSlots();
-
-        if (generatedRoot != null)
-        {
-            generatedRoot.gameObject.SetActive(true);
-        }
-
+        EnsureImages();
         SynchronizeAllStates();
     }
 
@@ -81,19 +61,19 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
     {
         ResolveReferences();
         EnsureSubscriptions();
-        EnsureCanvasAndSlots();
+        EnsureImages();
         SynchronizeAllStates();
     }
 
     private void Update()
     {
-        if (blindEffectSystem == null || cameraManager == null)
+        if (blindEffectSystem == null || viewportCanvasSystem == null)
         {
             ResolveReferences();
             EnsureSubscriptions();
+            EnsureImages();
         }
 
-        EnsureCanvasAndSlots();
         UpdateViewports();
     }
 
@@ -101,26 +81,17 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
     {
         Unsubscribe();
         HideAllViewports();
-
-        if (generatedRoot != null)
-        {
-            generatedRoot.gameObject.SetActive(false);
-        }
     }
 
     private void OnDestroy()
     {
-        if (ownedCanvas != null)
+        for (int i = 0; i < viewportImages.Length; i++)
         {
-            Destroy(ownedCanvas.gameObject);
+            if (viewportImages[i] != null)
+            {
+                Destroy(viewportImages[i].gameObject);
+            }
         }
-        else if (generatedRoot != null)
-        {
-            Destroy(generatedRoot.gameObject);
-        }
-
-        generatedRoot = null;
-        ownedCanvas = null;
     }
 
     private void HandleBlindStateChanged(
@@ -160,6 +131,12 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
         SetImageVisible(slotIndex, false, 0f);
     }
 
+    private void HandleViewportLayoutRefreshed()
+    {
+        EnsureImages();
+        UpdateViewports();
+    }
+
     private void UpdateViewports()
     {
         visibleViewportCount = 0;
@@ -191,35 +168,20 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
 
         missingSpriteLogged = false;
 
-        if (cameraManager == null)
+        if (viewportCanvasSystem == null)
         {
-            if (logMissingReferences && !missingCameraManagerLogged)
-            {
-                missingCameraManagerLogged = true;
-                Debug.LogWarning(
-                    "[TomatoBlindCanvasPresenter] CameraManager was not found; " +
-                    "viewport overlays cannot be aligned yet.",
-                    this
-                );
-            }
-
             HideAllViewports();
             return;
         }
 
-        missingCameraManagerLogged = false;
+        EnsureImages();
 
         for (int i = 0; i < MaxPlayerSlots; i++)
         {
-            Camera gameplayCamera = cameraManager.GetOutputCamera(i + 1);
-            UpdateViewportRect(i, gameplayCamera);
+            bool viewportCanRender =
+                viewportCanvasSystem.IsViewportActive(i + 1);
 
-            bool cameraCanRender =
-                gameplayCamera != null &&
-                gameplayCamera.enabled &&
-                gameplayCamera.gameObject.activeInHierarchy;
-
-            if (!cameraCanRender ||
+            if (!viewportCanRender ||
                 !hasDisplayedState[i] ||
                 !displayedStates[i].Active)
             {
@@ -299,99 +261,44 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
         image.enabled = visible;
     }
 
-    private void UpdateViewportRect(int slotIndex, Camera gameplayCamera)
+    private void EnsureImages()
     {
-        RectTransform viewportRect = viewportRects[slotIndex];
-        if (viewportRect == null || gameplayCamera == null) return;
-
-        Rect cameraRect = gameplayCamera.rect;
-
-        viewportRect.anchorMin = new Vector2(
-            cameraRect.xMin,
-            cameraRect.yMin
-        );
-        viewportRect.anchorMax = new Vector2(
-            cameraRect.xMax,
-            cameraRect.yMax
-        );
-        viewportRect.offsetMin = Vector2.zero;
-        viewportRect.offsetMax = Vector2.zero;
-    }
-
-    private void EnsureCanvasAndSlots()
-    {
-        if (generatedRoot != null) return;
-
-        Canvas hostCanvas = fullScreenCanvas;
-
-        if (hostCanvas == null)
-        {
-            GameObject canvasObject = new GameObject(
-                "Tomato Blind Canvas (Runtime)",
-                typeof(RectTransform),
-                typeof(Canvas),
-                typeof(CanvasScaler)
-            );
-
-            canvasObject.transform.SetParent(transform, false);
-            ownedCanvas = canvasObject.GetComponent<Canvas>();
-            ownedCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            ownedCanvas.sortingOrder = autoCreatedCanvasSortingOrder;
-            hostCanvas = ownedCanvas;
-            usingAutoCreatedCanvas = true;
-        }
-        else
-        {
-            usingAutoCreatedCanvas = false;
-
-            if (hostCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
-            {
-                Debug.LogWarning(
-                    "[TomatoBlindCanvasPresenter] The assigned Canvas is not " +
-                    "Screen Space - Overlay. Camera viewport anchors assume a " +
-                    "full-screen overlay Canvas.",
-                    hostCanvas
-                );
-            }
-        }
-
-        GameObject rootObject = new GameObject(
-            "Tomato Blind Viewports",
-            typeof(RectTransform)
-        );
-
-        generatedRoot = rootObject.GetComponent<RectTransform>();
-        generatedRoot.SetParent(hostCanvas.transform, false);
-        generatedRoot.anchorMin = Vector2.zero;
-        generatedRoot.anchorMax = Vector2.one;
-        generatedRoot.offsetMin = Vector2.zero;
-        generatedRoot.offsetMax = Vector2.zero;
-        generatedRoot.SetAsLastSibling();
+        if (viewportCanvasSystem == null) return;
 
         for (int i = 0; i < MaxPlayerSlots; i++)
         {
-            GameObject viewportObject = new GameObject(
+            if (viewportImages[i] != null) continue;
+
+            if (!viewportCanvasSystem.TryGetLayerRoot(
+                    i + 1,
+                    PowerupViewportCanvasSystem.ViewportLayer.FullscreenEffect,
+                    out RectTransform effectRoot
+                ))
+            {
+                continue;
+            }
+
+            GameObject imageObject = new GameObject(
                 $"P{i + 1} Tomato Blind",
                 typeof(RectTransform),
                 typeof(CanvasRenderer),
                 typeof(Image)
             );
 
-            RectTransform viewportRect =
-                viewportObject.GetComponent<RectTransform>();
-            viewportRect.SetParent(generatedRoot, false);
-            viewportRect.anchorMin = Vector2.zero;
-            viewportRect.anchorMax = Vector2.one;
-            viewportRect.offsetMin = Vector2.zero;
-            viewportRect.offsetMax = Vector2.zero;
+            RectTransform imageRect =
+                imageObject.GetComponent<RectTransform>();
+            imageRect.SetParent(effectRoot, false);
+            imageRect.anchorMin = Vector2.zero;
+            imageRect.anchorMax = Vector2.one;
+            imageRect.offsetMin = Vector2.zero;
+            imageRect.offsetMax = Vector2.zero;
+            imageRect.localScale = Vector3.one;
 
-            Image image = viewportObject.GetComponent<Image>();
+            Image image = imageObject.GetComponent<Image>();
             image.raycastTarget = false;
             image.type = Image.Type.Simple;
             image.enabled = false;
             ApplyProfileToImage(image);
-
-            viewportRects[i] = viewportRect;
             viewportImages[i] = image;
         }
     }
@@ -445,9 +352,10 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
                 FindFirstObjectByType<TomatoBlindEffectSystem>();
         }
 
-        if (cameraManager == null)
+        if (viewportCanvasSystem == null)
         {
-            cameraManager = FindFirstObjectByType<CameraManager>();
+            viewportCanvasSystem =
+                FindFirstObjectByType<PowerupViewportCanvasSystem>();
         }
 
         if (logMissingReferences &&
@@ -462,22 +370,60 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
             );
         }
 
+        if (logMissingReferences &&
+            viewportCanvasSystem == null &&
+            !missingCanvasSystemLogged)
+        {
+            missingCanvasSystemLogged = true;
+            Debug.LogWarning(
+                "[TomatoBlindCanvasPresenter] Add one " +
+                "PowerupViewportCanvasSystem to the scene.",
+                this
+            );
+        }
+
         if (blindEffectSystem != null) missingBlindSystemLogged = false;
+        if (viewportCanvasSystem != null) missingCanvasSystemLogged = false;
     }
 
     private void EnsureSubscriptions()
     {
-        if (subscribedBlindEffectSystem == blindEffectSystem) return;
-
-        Unsubscribe();
-        subscribedBlindEffectSystem = blindEffectSystem;
-
-        if (subscribedBlindEffectSystem != null)
+        if (subscribedBlindEffectSystem != blindEffectSystem)
         {
-            subscribedBlindEffectSystem.OnBlindStateChanged +=
-                HandleBlindStateChanged;
-            subscribedBlindEffectSystem.OnBlindStateEnded +=
-                HandleBlindStateEnded;
+            if (subscribedBlindEffectSystem != null)
+            {
+                subscribedBlindEffectSystem.OnBlindStateChanged -=
+                    HandleBlindStateChanged;
+                subscribedBlindEffectSystem.OnBlindStateEnded -=
+                    HandleBlindStateEnded;
+            }
+
+            subscribedBlindEffectSystem = blindEffectSystem;
+
+            if (subscribedBlindEffectSystem != null)
+            {
+                subscribedBlindEffectSystem.OnBlindStateChanged +=
+                    HandleBlindStateChanged;
+                subscribedBlindEffectSystem.OnBlindStateEnded +=
+                    HandleBlindStateEnded;
+            }
+        }
+
+        if (subscribedViewportCanvasSystem != viewportCanvasSystem)
+        {
+            if (subscribedViewportCanvasSystem != null)
+            {
+                subscribedViewportCanvasSystem.OnViewportLayoutRefreshed -=
+                    HandleViewportLayoutRefreshed;
+            }
+
+            subscribedViewportCanvasSystem = viewportCanvasSystem;
+
+            if (subscribedViewportCanvasSystem != null)
+            {
+                subscribedViewportCanvasSystem.OnViewportLayoutRefreshed +=
+                    HandleViewportLayoutRefreshed;
+            }
         }
     }
 
@@ -491,7 +437,14 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
                 HandleBlindStateEnded;
         }
 
+        if (subscribedViewportCanvasSystem != null)
+        {
+            subscribedViewportCanvasSystem.OnViewportLayoutRefreshed -=
+                HandleViewportLayoutRefreshed;
+        }
+
         subscribedBlindEffectSystem = null;
+        subscribedViewportCanvasSystem = null;
     }
 
     private void LogMissingProfileOnce()

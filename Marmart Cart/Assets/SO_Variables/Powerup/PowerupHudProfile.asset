@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c862415857e2eb41a8efe80eae0273f, type: 3}
+  m_Name: PowerupHudProfile
+  m_EditorClassIdentifier: 
+  tomatoIcon: {fileID: 21300000, guid: cd9483e32e335d740b164b82ec4b34ab, type: 3}
+  iceCubeIcon: {fileID: 21300000, guid: 407293487fd9ece4487b28cf8f18dbd1, type: 3}
+  colaMentosIcon: {fileID: 21300000, guid: 3c18126a487af7342861041e7e7d2e11, type: 3}
+  strongFanIcon: {fileID: 21300000, guid: 937a6378f03f4f24e9f788363d663207, type: 3}
+  showSlotWhenEmpty: 0
+  emptySlotIcon: {fileID: 0}
+  player1BackgroundSprite: {fileID: 21300000, guid: 221b52abfe5b92e4a9ffb32a559d6f0a, type: 3}
+  player2BackgroundSprite: {fileID: 21300000, guid: 49b71029ef7588f4db3302bc93c2ca49, type: 3}
+  player3BackgroundSprite: {fileID: 21300000, guid: 58b7dfdcbe75e7f49830a29cd5f8b300, type: 3}
+  player4BackgroundSprite: {fileID: 21300000, guid: 89b068d0e3e7f5f489d31c5681167a22, type: 3}
+  slotBackgroundTint: {r: 1, g: 1, b: 1, a: 1}
+  iconTint: {r: 1, g: 1, b: 1, a: 1}
+  preserveIconAspect: 1
+  twoPlayerAnchor: {x: 0.5, y: 0}
+  twoPlayerBackgroundPositionPixels: {x: 0, y: 48}
+  twoPlayerIconPositionPixels: {x: 0, y: 48}
+  twoPlayerBackgroundSizePixels: {x: 112, y: 112}
+  twoPlayerIconSizePixels: {x: 88, y: 88}
+  fourPlayerAnchor: {x: 0.5, y: 0}
+  fourPlayerBackgroundPositionPixels: {x: 0, y: 40}
+  fourPlayerIconPositionPixels: {x: 0, y: 40}
+  fourPlayerBackgroundSizePixels: {x: 225, y: 225}
+  fourPlayerIconSizePixels: {x: 125, y: 125}
