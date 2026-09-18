@@ -23,6 +23,15 @@ public class CheckoutStationFlowController : MonoBehaviour
     [Header("Checkout")]
     [SerializeField] private CheckOutManager checkOutManager;
 
+    [Header("Pit Availability Visual")]
+    [Tooltip(
+        "Root containing the checkout pit's open-state mesh, lights, and VFX. " +
+        "It is enabled only while this station is open; telegraph and closed " +
+        "states keep it disabled. Assign a child object, not this controller's " +
+        "own GameObject."
+    )]
+    [SerializeField] private GameObject onOffVisuals;
+
     [Header("Optional Prototype State Visuals")]
     [SerializeField] private GameObject telegraphIndicator;
     [SerializeField] private GameObject openIndicator;
@@ -38,6 +47,13 @@ public class CheckoutStationFlowController : MonoBehaviour
     private void Awake()
     {
         if (checkOutManager == null) checkOutManager = GetComponent<CheckOutManager>();
+
+        RefreshPitAvailabilityVisual();
+    }
+
+    private void OnEnable()
+    {
+        RefreshPitAvailabilityVisual();
     }
 
     public void SetTelegraphing(bool telegraphing)
@@ -68,5 +84,25 @@ public class CheckoutStationFlowController : MonoBehaviour
         if (telegraphIndicator != null) telegraphIndicator.SetActive(false);
         if (openIndicator != null) openIndicator.SetActive(open);
         if (closedIndicator != null) closedIndicator.SetActive(!open);
+
+        RefreshPitAvailabilityVisual();
+    }
+
+    private void RefreshPitAvailabilityVisual()
+    {
+        if (onOffVisuals == null) return;
+
+        if (onOffVisuals == gameObject)
+        {
+            Debug.LogError(
+                "[CheckoutStationFlowController] On Off Visuals must reference " +
+                "a child visual root, not the CheckoutStationFlowController's " +
+                "own GameObject.",
+                this
+            );
+            return;
+        }
+
+        onOffVisuals.SetActive(isOpen);
     }
 }

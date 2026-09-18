@@ -31,6 +31,15 @@ MonoBehaviour:
     batchSize: 2
     zone: 0
     checkoutStations: 0
+  - label: Checkout Cycle1
+    type: 3
+    duration: 10
+    telegraphDuration: 1
+    closingDuration: 0
+    resourceBudget: 0
+    batchSize: 1
+    zone: 0
+    checkoutStations: 11
   - label: Loot Cycle1
     type: 2
     duration: 10
@@ -66,15 +75,6 @@ MonoBehaviour:
     resourceBudget: 0
     batchSize: 1
     zone: 3
-    checkoutStations: -1
-  - label: Checkout Cycle1
-    type: 3
-    duration: 10
-    telegraphDuration: 1
-    closingDuration: 0
-    resourceBudget: 0
-    batchSize: 1
-    zone: 0
     checkoutStations: -1
   - label: End
     type: 4
