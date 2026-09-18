@@ -10,6 +10,7 @@ using UnityEngine;
 /// - Normal Drive uses cargo-overload-adjusted base speed.
 /// - Drift uses cargo-overload-adjusted base speed with tight-drift dip and recoverable fatigue.
 /// - Speedup is the Hype-funded speedup mode from CartControlScript.
+/// - Cola Mentos may temporarily replace all three with one fixed target speed.
 /// - Turn assist changes engine authority only; lateral grip remains independent.
 /// - Battle/crash systems may temporarily stop and resume wheel drive through
 ///   SetSpeedToZero() and ResetSpeed().
@@ -188,6 +189,18 @@ public class LeadingCartBehaviour : MonoBehaviour
             powerupFreezeSuppressed)
         {
             targetSpeed = 0f;
+            ResetDriftRuntimeState();
+            return;
+        }
+
+        // Checkout/crash/Freeze remain authoritative because they are handled
+        // above. Cola owns only the otherwise-normal drive target and bypasses
+        // cargo overload, Drift shaping, and Hype Speed Up for its duration.
+        if (cartControlInput.TryGetColaMentosTargetSpeed(
+                out float colaTargetSpeed))
+        {
+            currentDriveMode = CartDriveMode.NormalDrive;
+            targetSpeed = Mathf.Max(0f, colaTargetSpeed);
             ResetDriftRuntimeState();
             return;
         }

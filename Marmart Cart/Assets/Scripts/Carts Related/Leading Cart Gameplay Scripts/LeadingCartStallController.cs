@@ -356,8 +356,14 @@ public class LeadingCartStallController : MonoBehaviour
     {
         if (stallRestrictionsActive) return;
 
-        restoreDriftAfterStall = cartControlInput.CanDrift();
-        restoreSpeedupAfterStall = cartControlInput.CanSpeedingUp();
+        // Save the raw permissions owned by Stall's neighboring systems, not
+        // the derived result after temporary Cola/Freeze gates. Otherwise a
+        // Stall that begins during Cola could permanently leave Drift and
+        // normal Hype Speed Up disabled after both effects end.
+        restoreDriftAfterStall =
+            cartControlInput.IsDriftPermissionEnabled;
+        restoreSpeedupAfterStall =
+            cartControlInput.IsSpeedupPermissionEnabled;
 
         if (driftController != null) driftController.CancelDrift("Cart stalled");
 

@@ -34,6 +34,20 @@ public class ArenaZone : MonoBehaviour
     [Tooltip("All section-level ZoneLootSpawners belonging to this zone. Empty = auto-find children.")]
     [SerializeField] private ZoneLootSpawner[] sectionLootSpawners;
 
+    [Header("Power-up Spawners")]
+    [Tooltip(
+        "When enabled, this zone enables each PowerupSpawner GameObject and " +
+        "starts it only while the zone is Active. Warning and Idle fully " +
+        "deactivate and disable the complete spawner GameObjects."
+    )]
+    [SerializeField] private bool activatePowerupsHere;
+
+    [Tooltip(
+        "PowerupSpawners controlled by this zone. Empty = auto-find all " +
+        "children, including inactive children."
+    )]
+    [SerializeField] private PowerupSpawner[] powerupSpawners;
+
     #endregion
 
     #region Presentation
@@ -52,6 +66,8 @@ public class ArenaZone : MonoBehaviour
     [SerializeField] private int lastRequestedBudget;
     [SerializeField] private int lastSpawnedCount;
     [SerializeField] private int lastUnreleasedBudget;
+    [SerializeField] private int powerupSpawnerCount;
+    [SerializeField] private bool powerupSpawnersActivated;
 
     private readonly List<ZoneLootSpawner> sectionAttemptBuffer = new List<ZoneLootSpawner>();
 
@@ -62,6 +78,9 @@ public class ArenaZone : MonoBehaviour
     public int LastRequestedBudget => lastRequestedBudget;
     public int LastSpawnedCount => lastSpawnedCount;
     public int LastUnreleasedBudget => lastUnreleasedBudget;
+    public bool ActivatesPowerupsHere => activatePowerupsHere;
+    public bool PowerupSpawnersActivated => powerupSpawnersActivated;
+    public int PowerupSpawnerCount => powerupSpawnerCount;
 
     #endregion
 
@@ -74,7 +93,14 @@ public class ArenaZone : MonoBehaviour
             sectionLootSpawners = GetComponentsInChildren<ZoneLootSpawner>(true);
         }
 
+        ResolvePowerupSpawners();
+
         SetIdle();
+    }
+
+    private void OnDisable()
+    {
+        SetPowerupSpawnersActive(false);
     }
 
     #endregion
@@ -87,6 +113,8 @@ public class ArenaZone : MonoBehaviour
 
         if (warningIndicator != null) warningIndicator.SetActive(false);
         if (activeIndicator != null) activeIndicator.SetActive(false);
+
+        SetPowerupSpawnersActive(false);
     }
 
     public void SetWarning()
@@ -95,6 +123,8 @@ public class ArenaZone : MonoBehaviour
 
         if (warningIndicator != null) warningIndicator.SetActive(true);
         if (activeIndicator != null) activeIndicator.SetActive(false);
+
+        SetPowerupSpawnersActive(false);
     }
 
     public void SetActive()
@@ -103,6 +133,92 @@ public class ArenaZone : MonoBehaviour
 
         if (warningIndicator != null) warningIndicator.SetActive(false);
         if (activeIndicator != null) activeIndicator.SetActive(true);
+
+        SetPowerupSpawnersActive(activatePowerupsHere);
+    }
+
+    #endregion
+
+    #region Zone Power-up Spawners
+
+    private void ResolvePowerupSpawners()
+    {
+        if (powerupSpawners != null && powerupSpawners.Length > 0)
+        {
+            powerupSpawnerCount = CountUsablePowerupSpawners();
+            return;
+        }
+
+        powerupSpawners = GetComponentsInChildren<PowerupSpawner>(true);
+        powerupSpawnerCount = CountUsablePowerupSpawners();
+    }
+
+    private int CountUsablePowerupSpawners()
+    {
+        if (powerupSpawners == null) return 0;
+
+        int count = 0;
+
+        for (int i = 0; i < powerupSpawners.Length; i++)
+        {
+            if (powerupSpawners[i] != null) count++;
+        }
+
+        return count;
+    }
+
+    private void SetPowerupSpawnersActive(bool active)
+    {
+        ResolvePowerupSpawners();
+
+        powerupSpawnersActivated = false;
+
+        if (powerupSpawners == null) return;
+
+        for (int i = 0; i < powerupSpawners.Length; i++)
+        {
+            PowerupSpawner spawner = powerupSpawners[i];
+            if (spawner == null) continue;
+
+            if (spawner.gameObject == gameObject)
+            {
+                spawner.SetSpawnerActive(active);
+
+                if (active)
+                {
+                    Debug.LogError(
+                        $"[ArenaZone] {DisplayName} cannot toggle the whole " +
+                        "PowerupSpawner GameObject because it is on the same " +
+                        "GameObject as ArenaZone. Move the spawner to a child.",
+                        this
+                    );
+                }
+
+                continue;
+            }
+
+            if (active)
+            {
+                // Arm the spawner before enabling its root. Its OnEnable then
+                // consumes the request and begins a fresh countdown.
+                spawner.SetSpawnerActive(true);
+                spawner.gameObject.SetActive(true);
+            }
+            else
+            {
+                // Clear all runtime state before disabling the complete root,
+                // including VFX that may live outside Spawner Visual Root.
+                spawner.SetSpawnerActive(false);
+                spawner.gameObject.SetActive(false);
+            }
+
+            if (active &&
+                spawner.gameObject.activeInHierarchy &&
+                spawner.IsActivated)
+            {
+                powerupSpawnersActivated = true;
+            }
+        }
     }
 
     #endregion

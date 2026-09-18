@@ -6,14 +6,12 @@ Texture2D:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: z_ColorRampTexGradientTex{"mode":0,"colorKeys":[{"color":{"r":0.23529411852359773,"g":0.04313725605607033,"b":0.06115764379501343,"a":1.0},"time":0.0},{"color":{"r":0.5176470875740051,"g":0.10196078568696976,"b":0.17918840050697328,"a":1.0},"time":0.45433738827705386},{"color":{"r":0.8313725590705872,"g":0.3176470398902893,"b":0.4023311138153076,"a":1.0},"time":0.9612573385238648},{"color":{"r":0.8313725590705872,"g":0.40986666083335879,"b":0.4870629608631134,"a":1.0},"time":1.0}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":1.0,"time":1.0}]}
+  m_Name: z_ColorRampTexGradientTex{"mode":0,"colorKeys":[{"color":{"r":0.9622641801834106,"g":0.15996281802654267,"b":0.0,"a":1.0},"time":0.0},{"color":{"r":0.5176470875740051,"g":0.10196078568696976,"b":0.17918840050697328,"a":1.0},"time":0.45433738827705386},{"color":{"r":0.8313725590705872,"g":0.3176470398902893,"b":0.4023311138153076,"a":1.0},"time":0.9612573385238648},{"color":{"r":0.8313725590705872,"g":0.40986666083335879,"b":0.4870629608631134,"a":1.0},"time":1.0}],"alphaKeys":[{"alpha":1.0,"time":0.0},{"alpha":1.0,"time":1.0}]}
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
-  serializedVersion: 2
+  serializedVersion: 3
   m_Width: 64
   m_Height: 1
   m_CompleteImageSize: 256
@@ -42,7 +40,7 @@ Texture2D:
   m_ColorSpace: 0
   m_PlatformBlob: 
   image data: 256
-  _typelessdata: 3c0b10ff3f0c11ff410c12ff440d13ff460d14ff490e15ff4b0e16ff4e0f17ff500f18ff531019ff55101aff58111bff5a111cff5d121dff5f121eff62131fff641320ff671421ff691423ff6c1524ff6e1525ff711626ff731727ff761728ff781829ff7b182aff7d192bff80192cff821a2dff851b2eff871c30ff8a1e32ff8c2034ff8f2235ff912337ff942539ff96273bff99283dff9b2a3eff9e2c40ffa02e42ffa32f44ffa63146ffa83347ffab3449ffad364bffb0384dffb23a4effb53b50ffb73d52ffba3f54ffbc4156ffbf4257ffc14459ffc4465bffc6475dffc9495effcb4b60ffce4d62ffd04e64ffd35066ffd4556affd45f73ffd4697cff
+  _typelessdata: f52900fff12802ffed2803ffe92705ffe62706ffe22608ffde260affda250bffd6250dffd2240effce2410ffca2312ffc62313ffc22215ffbe2216ffba2118ffb6211affb2201bffae1f1dffaa1f1effa61e20ffa21e22ff9e1d23ff9a1d25ff961c26ff921c28ff8e1b2aff8a1b2bff861a2dff851b2eff871c30ff8a1e32ff8c2034ff8f2235ff912337ff942539ff96273bff99283dff9b2a3eff9e2c40ffa02e42ffa32f44ffa63146ffa83347ffab3449ffad364bffb0384dffb23a4effb53b50ffb73d52ffba3f54ffbc4156ffbf4257ffc14459ffc4465bffc6475dffc9495effcb4b60ffce4d62ffd04e64ffd35066ffd4556affd45f73ffd4697cff
   m_StreamData:
     serializedVersion: 2
     offset: 0
@@ -306,3 +304,4 @@ Material:
     - _Shape3Color: {r: 1, g: 1, b: 1, a: 1}
     - _ShapeColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

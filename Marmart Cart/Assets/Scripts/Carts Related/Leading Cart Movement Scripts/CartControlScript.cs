@@ -167,6 +167,14 @@ public class CartControlScript : MonoBehaviour
     public event System.Action<float, float> OnHypeChanged;
     public event System.Action<float> OnHypeBurnRateChanged;
 
+    [Header("Cola Mentos Boost - Runtime Read Only")]
+    [SerializeField] private bool colaMentosBoostActive;
+    [SerializeField] private float colaMentosTargetSpeed;
+
+    public bool IsColaMentosBoostActive => colaMentosBoostActive;
+    public float ColaMentosTargetSpeed => colaMentosTargetSpeed;
+    public event System.Action<bool, float> OnColaMentosBoostChanged;
+
     #endregion
 
     #region Move Backward
@@ -674,8 +682,17 @@ public class CartControlScript : MonoBehaviour
 
     public bool CanDrift()
     {
-        return allowDrift && !powerupFrozen;
+        return allowDrift &&
+               !powerupFrozen &&
+               !colaMentosBoostActive;
     }
+
+    /// <summary>
+    /// Raw permission owned by systems such as Stall/Checkout. Duration
+    /// power-up gates are intentionally excluded so another system can save
+    /// and restore only the permission it actually owns.
+    /// </summary>
+    public bool IsDriftPermissionEnabled => allowDrift;
 
     public void AllowDrift()
     {
@@ -811,8 +828,15 @@ public class CartControlScript : MonoBehaviour
 
     public bool CanSpeedingUp()
     {
-        return canSpeedup && !powerupFrozen;
+        return canSpeedup &&
+               !powerupFrozen &&
+               !colaMentosBoostActive;
     }
+
+    /// <summary>
+    /// Raw Hype-Speed-Up permission before Freeze or duration-effect gates.
+    /// </summary>
+    public bool IsSpeedupPermissionEnabled => canSpeedup;
 
     public void AllowSpeedingUp()
     {
@@ -823,6 +847,55 @@ public class CartControlScript : MonoBehaviour
     {
         canSpeedup = false;
         StopSpeedupInput();
+    }
+
+    #endregion
+
+    #region Cola Mentos Boost State
+
+    /// <summary>
+    /// Independent duration-effect gate owned by ColaMentosEffectSystem.
+    /// It never rewrites the base Drift/Speedup permissions used by Stall or
+    /// Checkout, and it does not interfere with Freeze or pit state.
+    /// </summary>
+    public void SetColaMentosBoost(
+        bool active,
+        float fixedTargetSpeed)
+    {
+        float resolvedTargetSpeed = active
+            ? Mathf.Max(0f, fixedTargetSpeed)
+            : 0f;
+
+        bool changed =
+            colaMentosBoostActive != active ||
+            !Mathf.Approximately(
+                colaMentosTargetSpeed,
+                resolvedTargetSpeed
+            );
+
+        colaMentosBoostActive = active;
+        colaMentosTargetSpeed = resolvedTargetSpeed;
+
+        if (colaMentosBoostActive)
+        {
+            isDriftHeld = false;
+            StopSpeedupInput();
+            driftController?.CancelDrift("Cola Mentos boost activated");
+        }
+
+        if (changed)
+        {
+            OnColaMentosBoostChanged?.Invoke(
+                colaMentosBoostActive,
+                colaMentosTargetSpeed
+            );
+        }
+    }
+
+    public bool TryGetColaMentosTargetSpeed(out float fixedTargetSpeed)
+    {
+        fixedTargetSpeed = colaMentosTargetSpeed;
+        return colaMentosBoostActive;
     }
 
     #endregion

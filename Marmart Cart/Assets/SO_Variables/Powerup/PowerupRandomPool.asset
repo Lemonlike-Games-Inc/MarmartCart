@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - powerup: 0
-    weight: 0
+    weight: 1
   - powerup: 1
-    weight: 0
+    weight: 1
   - powerup: 2
     weight: 1
