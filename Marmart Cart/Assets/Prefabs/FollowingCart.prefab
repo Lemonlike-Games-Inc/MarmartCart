@@ -10158,7 +10158,7 @@ MonoBehaviour:
   disappearWarningDuration: 3
   disappearWarningStarted: 0
   heldBySpawner: 0
-  defaultColor: {r: 0.3200426, g: 0.3386831, b: 0.36477977, a: 1}
+  defaultColor: {r: 0.25157225, g: 0.25157225, b: 0.25157225, a: 1}
   playerTeamColors:
   - {r: 0, g: 0.7521682, b: 1, a: 1}
   - {r: 1, g: 0.13840674, b: 0, a: 1}
@@ -10244,10 +10244,12 @@ MonoBehaviour:
   leadingCartControl: {fileID: 0}
   chainedCartManager: {fileID: 6471618177495573124}
   runtimeSystem: {fileID: 0}
+  leadingCartCollisionRoot: {fileID: 0}
   currentKind: 0
   playerIndex: 0
   inCheckout: 0
   ownerController: {fileID: 0}
+  registeredColliderCount: 0
 --- !u!1 &7168617494978913835
 GameObject:
   m_ObjectHideFlags: 0
