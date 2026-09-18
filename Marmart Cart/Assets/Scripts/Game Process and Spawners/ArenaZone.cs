@@ -50,14 +50,6 @@ public class ArenaZone : MonoBehaviour
 
     #endregion
 
-    #region Presentation
-
-    [Header("Optional Prototype State Visuals")]
-    [SerializeField] private GameObject warningIndicator;
-    [SerializeField] private GameObject activeIndicator;
-
-    #endregion
-
     #region Runtime
 
     [Header("Runtime - Read Only")]
@@ -111,9 +103,6 @@ public class ArenaZone : MonoBehaviour
     {
         state = ArenaZoneState.Idle;
 
-        if (warningIndicator != null) warningIndicator.SetActive(false);
-        if (activeIndicator != null) activeIndicator.SetActive(false);
-
         SetPowerupSpawnersActive(false);
     }
 
@@ -121,18 +110,12 @@ public class ArenaZone : MonoBehaviour
     {
         state = ArenaZoneState.Warning;
 
-        if (warningIndicator != null) warningIndicator.SetActive(true);
-        if (activeIndicator != null) activeIndicator.SetActive(false);
-
         SetPowerupSpawnersActive(false);
     }
 
     public void SetActive()
     {
         state = ArenaZoneState.Active;
-
-        if (warningIndicator != null) warningIndicator.SetActive(false);
-        if (activeIndicator != null) activeIndicator.SetActive(true);
 
         SetPowerupSpawnersActive(activatePowerupsHere);
     }

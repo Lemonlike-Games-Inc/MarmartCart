@@ -2,6 +2,14 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+public enum MatchFlowSessionPhase
+{
+    None = 0,
+    Warning = 1,
+    Active = 2,
+    Closing = 3
+}
+
 /// <summary>
 /// Authoritative playable-match timeline.
 ///
@@ -27,6 +35,10 @@ public class MatchFlowDirector : MonoBehaviour
     [SerializeField] private ArenaZone[] zones;
     [SerializeField] private CheckoutStationFlowController[] checkoutStations;
 
+    [Header("Area Indicator Presentation")]
+    [SerializeField]
+    private MatchFlowAreaIndicatorController areaIndicatorController;
+
     [Header("Debug")]
     [SerializeField] private bool logSessions = true;
 
@@ -38,25 +50,41 @@ public class MatchFlowDirector : MonoBehaviour
     [SerializeField] private bool isRunning;
     [SerializeField] private int currentSessionIndex = -1;
     [SerializeField] private MatchFlowSessionType currentSessionType;
+    [SerializeField] private MatchFlowSessionPhase currentSessionPhase;
     [SerializeField] private string currentSessionLabel;
     [SerializeField] private float plannedProfileDuration;
     [SerializeField] private float elapsedFlowTime;
+    [SerializeField] private int phaseChangeCount;
+    [SerializeField] private int lastPhaseChangeFrame = -1;
 
     private Coroutine flowRoutine;
+    private MatchFlowSession currentSession;
 
     public MatchFlowProfile Profile => profile;
     public bool IsRunning => isRunning;
     public int CurrentSessionIndex => currentSessionIndex;
     public MatchFlowSessionType CurrentSessionType => currentSessionType;
+    public MatchFlowSessionPhase CurrentSessionPhase => currentSessionPhase;
+    public MatchFlowSession CurrentSession => currentSession;
     public string CurrentSessionLabel => currentSessionLabel;
 
     public float PlannedProfileDuration => plannedProfileDuration;
     public float ElapsedFlowTime => elapsedFlowTime;
     public float RemainingFlowTime => Mathf.Max(0f, plannedProfileDuration - elapsedFlowTime);
     public float NormalizedFlowTime => plannedProfileDuration > 0.01f ? Mathf.Clamp01(elapsedFlowTime / plannedProfileDuration) : 0f;
+    public int PhaseChangeCount => phaseChangeCount;
+    public int LastPhaseChangeFrame => lastPhaseChangeFrame;
 
     public event Action<int, MatchFlowSession> OnSessionStarted;
     public event Action<int, MatchFlowSession> OnSessionEnded;
+
+    /// <summary>
+    /// Raised at the exact semantic boundary between Warning, Active,
+    /// Closing, and None. Presentation systems should use this instead of
+    /// reconstructing session timing or polling ArenaZone state.
+    /// </summary>
+    public event Action<int, MatchFlowSession, MatchFlowSessionPhase>
+        OnSessionPhaseChanged;
 
     /// <summary>
     /// Raised only when the authored FINAL EndGameWrap finishes.
@@ -76,13 +104,18 @@ public class MatchFlowDirector : MonoBehaviour
 
     private void Awake()
     {
+        currentSession = null;
+        currentSessionPhase = MatchFlowSessionPhase.None;
+
         if (zones == null || zones.Length == 0) zones = FindObjectsByType<ArenaZone>(FindObjectsSortMode.None);
         if (checkoutStations == null || checkoutStations.Length == 0) checkoutStations = FindObjectsByType<CheckoutStationFlowController>(FindObjectsSortMode.None);
         if (cartRestockSpawner == null) cartRestockSpawner = FindFirstObjectByType<CartRestockSpawner>();
+        if (areaIndicatorController == null) areaIndicatorController = FindFirstObjectByType<MatchFlowAreaIndicatorController>();
 
         plannedProfileDuration = profile != null ? profile.GetPlannedDuration() : 0f;
 
         ResetArenaMacroState();
+        areaIndicatorController?.ShowPreGame();
     }
 
     private void Update()
@@ -108,10 +141,16 @@ public class MatchFlowDirector : MonoBehaviour
 
         if (!ValidateProfileForPlayableMatch()) return;
 
+        SetSessionPhase(currentSession, MatchFlowSessionPhase.None);
+        currentSession = null;
+
         ResetArenaMacroState();
+        areaIndicatorController?.ShowPreGame();
 
         plannedProfileDuration = profile.GetPlannedDuration();
         elapsedFlowTime = 0f;
+        phaseChangeCount = 0;
+        lastPhaseChangeFrame = -1;
         currentSessionIndex = -1;
         currentSessionLabel = string.Empty;
 
@@ -126,6 +165,9 @@ public class MatchFlowDirector : MonoBehaviour
             StopCoroutine(flowRoutine);
             flowRoutine = null;
         }
+
+        SetSessionPhase(currentSession, MatchFlowSessionPhase.None);
+        currentSession = null;
 
         isRunning = false;
         currentSessionIndex = -1;
@@ -142,6 +184,7 @@ public class MatchFlowDirector : MonoBehaviour
         }
 
         ResetArenaMacroState();
+        areaIndicatorController?.ShowPreGame();
     }
 
     [ContextMenu("RESTART Match Flow")]
@@ -186,9 +229,12 @@ public class MatchFlowDirector : MonoBehaviour
             MatchFlowSession session = profile.Sessions[i];
             if (session == null) continue;
 
+            currentSession = session;
             currentSessionIndex = i;
             currentSessionType = session.type;
             currentSessionLabel = string.IsNullOrWhiteSpace(session.label) ? session.type.ToString() : session.label;
+
+            areaIndicatorController?.ShowForSession(session);
 
             if (logSessions)
             {
@@ -199,6 +245,7 @@ public class MatchFlowDirector : MonoBehaviour
 
             yield return RunSession(session);
 
+            SetSessionPhase(session, MatchFlowSessionPhase.None);
             OnSessionEnded?.Invoke(i, session);
 
             if (logSessions)
@@ -206,7 +253,12 @@ public class MatchFlowDirector : MonoBehaviour
                 Debug.Log($"[MatchFlow] END {i}: {currentSessionLabel}", this);
             }
 
-            if (session.type == MatchFlowSessionType.EndGameWrap)
+            bool isTerminalSession =
+                session.type == MatchFlowSessionType.EndGameWrap;
+
+            currentSession = null;
+
+            if (isTerminalSession)
             {
                 CompletePlayableMatch();
                 yield break;
@@ -226,8 +278,10 @@ public class MatchFlowDirector : MonoBehaviour
 
         currentSessionIndex = -1;
         currentSessionLabel = string.Empty;
+        currentSession = null;
 
         ResetArenaMacroState();
+        areaIndicatorController?.ShowPostGame();
 
         if (logSessions)
         {
@@ -247,6 +301,7 @@ public class MatchFlowDirector : MonoBehaviour
         switch (session.type)
         {
             case MatchFlowSessionType.FreePlay:
+                SetSessionPhase(session, MatchFlowSessionPhase.Active);
                 yield return WaitSeconds(session.duration);
                 break;
 
@@ -270,6 +325,8 @@ public class MatchFlowDirector : MonoBehaviour
 
     private IEnumerator RunCartRestock(MatchFlowSession session)
     {
+        SetSessionPhase(session, MatchFlowSessionPhase.Active);
+
         if (cartRestockSpawner == null)
         {
             Debug.LogError("[MatchFlowDirector] Cart Restock session has no CartRestockSpawner.", this);
@@ -287,19 +344,23 @@ public class MatchFlowDirector : MonoBehaviour
         if (zone == null)
         {
             Debug.LogError($"[MatchFlowDirector] Could not find ArenaZone {session.zone}.", this);
+            SetSessionPhase(session, MatchFlowSessionPhase.None);
             yield return WaitSeconds(session.GetPlannedDuration());
             yield break;
         }
 
         zone.SetWarning();
+        SetSessionPhase(session, MatchFlowSessionPhase.Warning);
         yield return WaitSeconds(session.telegraphDuration);
 
         zone.SetActive();
+        SetSessionPhase(session, MatchFlowSessionPhase.Active);
         yield return zone.SpawnLootBudget(session.resourceBudget, session.duration, session.batchSize);
 
         // The loot budget is now complete, but the zone intentionally remains
         // Active during closing. This keeps its power-up spawners and existing
         // chaotic gameplay available without releasing more zone loot.
+        SetSessionPhase(session, MatchFlowSessionPhase.Closing);
         yield return WaitSeconds(session.closingDuration);
 
         zone.SetIdle();
@@ -309,11 +370,13 @@ public class MatchFlowDirector : MonoBehaviour
     {
         CloseAllCheckoutStations();
         SetCheckoutTelegraph(session.checkoutStations, true);
+        SetSessionPhase(session, MatchFlowSessionPhase.Warning);
 
         yield return WaitSeconds(session.telegraphDuration);
 
         SetCheckoutTelegraph(session.checkoutStations, false);
         SetCheckoutOpen(session.checkoutStations, true);
+        SetSessionPhase(session, MatchFlowSessionPhase.Active);
 
         yield return WaitSeconds(session.duration);
 
@@ -326,6 +389,7 @@ public class MatchFlowDirector : MonoBehaviour
         // no new loot, no cart restock, no new checkout entry.
         // Existing normal player gameplay may continue during this tiny buffer.
         ResetArenaMacroState();
+        SetSessionPhase(session, MatchFlowSessionPhase.Active);
 
         yield return WaitSeconds(session.duration);
     }
@@ -334,6 +398,37 @@ public class MatchFlowDirector : MonoBehaviour
     {
         if (duration <= 0f) yield break;
         yield return new WaitForSeconds(duration);
+    }
+
+    #endregion
+
+    #region Session Phase State
+
+    private void SetSessionPhase(
+        MatchFlowSession session,
+        MatchFlowSessionPhase phase
+    )
+    {
+        if (currentSessionPhase == phase) return;
+
+        currentSessionPhase = phase;
+        phaseChangeCount++;
+        lastPhaseChangeFrame = Time.frameCount;
+
+        if (logSessions)
+        {
+            string sessionName = session != null
+                ? session.type.ToString()
+                : "No Session";
+
+            Debug.Log(
+                $"[MatchFlow] PHASE {currentSessionIndex}: " +
+                $"{sessionName} -> {phase}",
+                this
+            );
+        }
+
+        OnSessionPhaseChanged?.Invoke(currentSessionIndex, session, phase);
     }
 
     #endregion
