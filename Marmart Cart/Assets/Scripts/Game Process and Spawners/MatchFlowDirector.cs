@@ -287,7 +287,7 @@ public class MatchFlowDirector : MonoBehaviour
         if (zone == null)
         {
             Debug.LogError($"[MatchFlowDirector] Could not find ArenaZone {session.zone}.", this);
-            yield return WaitSeconds(session.telegraphDuration + session.duration);
+            yield return WaitSeconds(session.GetPlannedDuration());
             yield break;
         }
 
@@ -296,6 +296,12 @@ public class MatchFlowDirector : MonoBehaviour
 
         zone.SetActive();
         yield return zone.SpawnLootBudget(session.resourceBudget, session.duration, session.batchSize);
+
+        // The loot budget is now complete, but the zone intentionally remains
+        // Active during closing. This keeps its power-up spawners and existing
+        // chaotic gameplay available without releasing more zone loot.
+        yield return WaitSeconds(session.closingDuration);
+
         zone.SetIdle();
     }
 

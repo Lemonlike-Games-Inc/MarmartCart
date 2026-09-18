@@ -22,7 +22,7 @@ public class MatchFlowProfileEditor : Editor
 
         sessionList.drawHeaderCallback = rect =>
         {
-            EditorGUI.LabelField(rect, "Authored Match Sessions — drag to reorder");
+            EditorGUI.LabelField(rect, "Authored Match Sessions - drag to reorder");
         };
 
         sessionList.elementHeightCallback = GetElementHeight;
@@ -39,7 +39,8 @@ public class MatchFlowProfileEditor : Editor
 
         EditorGUILayout.HelpBox(
             $"Planned playable timeline: {FormatTime(profile.GetPlannedDuration())}\n" +
-            "ZoneLoot / Checkout totals include Telegraph + Active Duration.",
+            "ZoneLoot totals include Telegraph + Active Loot + Closing. " +
+            "Checkout totals include Telegraph + Open Duration.",
             MessageType.Info
         );
 
@@ -109,7 +110,7 @@ public class MatchFlowProfileEditor : Editor
                 break;
 
             case MatchFlowSessionType.ZoneLoot:
-                lines = 8;
+                lines = 9;
                 break;
 
             case MatchFlowSessionType.CheckoutWindow:
@@ -138,6 +139,7 @@ public class MatchFlowProfileEditor : Editor
         SerializedProperty type = element.FindPropertyRelative("type");
         SerializedProperty duration = element.FindPropertyRelative("duration");
         SerializedProperty telegraph = element.FindPropertyRelative("telegraphDuration");
+        SerializedProperty closing = element.FindPropertyRelative("closingDuration");
         SerializedProperty budget = element.FindPropertyRelative("resourceBudget");
         SerializedProperty batch = element.FindPropertyRelative("batchSize");
         SerializedProperty zone = element.FindPropertyRelative("zone");
@@ -171,7 +173,15 @@ public class MatchFlowProfileEditor : Editor
                 DrawProperty(ref y, x, width, zone, "Zone");
                 DrawProperty(ref y, x, width, telegraph, "Telegraph Duration");
                 DrawProperty(ref y, x, width, duration, "Active Loot Duration");
-                DrawReadOnlyTotal(ref y, x, width, telegraph.floatValue + duration.floatValue);
+                DrawProperty(ref y, x, width, closing, "Closing Duration");
+                DrawReadOnlyTotal(
+                    ref y,
+                    x,
+                    width,
+                    Mathf.Max(0f, telegraph.floatValue) +
+                    Mathf.Max(0f, duration.floatValue) +
+                    Mathf.Max(0f, closing.floatValue)
+                );
                 DrawProperty(ref y, x, width, budget, "Exact Zone Loot Budget");
                 DrawProperty(ref y, x, width, batch, "Normal Batch Size");
                 break;
@@ -180,7 +190,13 @@ public class MatchFlowProfileEditor : Editor
                 DrawProperty(ref y, x, width, stations, "Open Stations");
                 DrawProperty(ref y, x, width, telegraph, "Telegraph Duration");
                 DrawProperty(ref y, x, width, duration, "Open Duration");
-                DrawReadOnlyTotal(ref y, x, width, telegraph.floatValue + duration.floatValue);
+                DrawReadOnlyTotal(
+                    ref y,
+                    x,
+                    width,
+                    Mathf.Max(0f, telegraph.floatValue) +
+                    Mathf.Max(0f, duration.floatValue)
+                );
                 break;
 
             case MatchFlowSessionType.EndGameWrap:

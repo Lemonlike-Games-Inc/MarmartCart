@@ -52,6 +52,14 @@ public class MatchFlowSession
     [Min(0f)]
     public float telegraphDuration = 2f;
 
+    [Tooltip(
+        "Used only by ZoneLoot. Added after the active loot-drop Duration. " +
+        "No new zone loot is released, but the ArenaZone remains Active so " +
+        "its power-up spawners and existing gameplay stay available."
+    )]
+    [Min(0f)]
+    public float closingDuration = 0f;
+
     [Tooltip("CartRestock = exact carts released. ZoneLoot = exact zone-wide loot budget.")]
     [Min(0)]
     public int resourceBudget = 8;
@@ -71,6 +79,11 @@ public class MatchFlowSession
         switch (type)
         {
             case MatchFlowSessionType.ZoneLoot:
+                return
+                    Mathf.Max(0f, telegraphDuration) +
+                    Mathf.Max(0f, duration) +
+                    Mathf.Max(0f, closingDuration);
+
             case MatchFlowSessionType.CheckoutWindow:
                 return Mathf.Max(0f, telegraphDuration) + Mathf.Max(0f, duration);
 
