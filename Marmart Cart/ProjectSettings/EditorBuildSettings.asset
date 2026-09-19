@@ -23,9 +23,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Liang/2playerTestScene.unity
     guid: 7fbf6de0a80a75a4f85d04db424723a2
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Liang/LevelGreyBoxScene.unity
     guid: dcad2770e08a7c14681377b3489f5cd0
+  - enabled: 1
+    path: Assets/Scenes/Liang/Full Indie Summit 2026/Gameplay Scene 2P.unity
+    guid: 6a44a92b2a5a71647bdb849b3356857c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3d75d177ecca0494d8a00b55bc90705d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

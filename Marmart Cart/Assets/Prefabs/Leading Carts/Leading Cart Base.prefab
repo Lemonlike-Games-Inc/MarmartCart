@@ -1322,7 +1322,7 @@ MonoBehaviour:
   canAim: 0
   keyboardAimFullMagnitudePixels: 300
   maxHype: 100
-  startingHype: 100
+  startingHype: 50
   baseHypeBurnPerSecond: 10
   safeOwnedFollowerCount: 10
   firstPenalizedHypeBurnMultiplier: 1.5
@@ -1330,7 +1330,7 @@ MonoBehaviour:
   maxHypeBurnMultiplier: 2.5
   snakeCartManager: {fileID: 0}
   canSpeedup: 1
-  currentHype: 100
+  currentHype: 50
   hypeBurnOwnedFollowerCount: 0
   colaMentosBoostActive: 0
   colaMentosTargetSpeed: 0
@@ -1441,12 +1441,12 @@ MonoBehaviour:
   driftController: {fileID: 5516393899602412129}
   cartController: {fileID: 5901886544005484465}
   enableDriftHypeReward: 1
-  minimumSuccessDuration: 0.6
-  baseHypeGainPerSecond: 10
+  minimumSuccessDuration: 0.5
+  baseHypeGainPerSecond: 8
   maxHypeRewardPerDrift: 100
   minimumRewardTightness: 0
-  minTightnessRewardMultiplier: 0.5
-  maxTightnessRewardMultiplier: 1.5
+  minTightnessRewardMultiplier: 0.75
+  maxTightnessRewardMultiplier: 1.25
   durationToReachMaxRewardRate: 3
   startingDurationRewardMultiplier: 0.5
   maxDurationRewardMultiplier: 2

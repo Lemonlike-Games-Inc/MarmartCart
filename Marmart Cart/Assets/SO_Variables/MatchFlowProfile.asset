@@ -15,7 +15,7 @@ MonoBehaviour:
   sessions:
   - label: Game Start Empty Period
     type: 0
-    duration: 1
+    duration: 3
     telegraphDuration: 0
     freePlayDuration: 0
     closingDuration: 0
@@ -23,27 +23,27 @@ MonoBehaviour:
     batchSize: 0
     zone: 0
     checkoutStations: 0
-  - label: Cart Restock Cycle1
+  - label: Initial Cart Stock
     type: 5
-    duration: 10
+    duration: 12
     telegraphDuration: 0
-    freePlayDuration: 0
+    freePlayDuration: 3
     closingDuration: 5
-    resourceBudget: 10
-    batchSize: 5
+    resourceBudget: 12
+    batchSize: 2
     zone: 0
     checkoutStations: 0
-  - label: Loot Cycle1
+  - label: Loot c1
     type: 2
-    duration: 15
+    duration: 30
     telegraphDuration: 5
-    freePlayDuration: 0
+    freePlayDuration: 10
     closingDuration: 5
     resourceBudget: 30
     batchSize: 10
     zone: 0
     checkoutStations: 0
-  - label: Checkout Cycle1
+  - label: Checkout c1 and Restock c2
     type: 5
     duration: 15
     telegraphDuration: 5
@@ -52,20 +52,90 @@ MonoBehaviour:
     resourceBudget: 15
     batchSize: 3
     zone: 0
-    checkoutStations: 6
-  - label: End
+    checkoutStations: -1
+  - label: Loot c2
     type: 2
-    duration: 10
+    duration: 30
+    telegraphDuration: 5
+    freePlayDuration: 10
+    closingDuration: 5
+    resourceBudget: 30
+    batchSize: 10
+    zone: 1
+    checkoutStations: -1
+  - label: Checkout c2 and Restock c3
+    type: 5
+    duration: 15
     telegraphDuration: 5
     freePlayDuration: 0
-    closingDuration: 1
-    resourceBudget: 40
+    closingDuration: 5
+    resourceBudget: 20
+    batchSize: 4
+    zone: 0
+    checkoutStations: -1
+  - label: Loot c3
+    type: 2
+    duration: 30
+    telegraphDuration: 5
+    freePlayDuration: 10
+    closingDuration: 5
+    resourceBudget: 50
+    batchSize: 10
+    zone: 2
+    checkoutStations: -1
+  - label: Checkout c3 and Restock c4
+    type: 5
+    duration: 15
+    telegraphDuration: 5
+    freePlayDuration: 0
+    closingDuration: 5
+    resourceBudget: 25
+    batchSize: 5
+    zone: 0
+    checkoutStations: -1
+  - label: Loot c4
+    type: 2
+    duration: 30
+    telegraphDuration: 5
+    freePlayDuration: 10
+    closingDuration: 5
+    resourceBudget: 60
     batchSize: 10
     zone: 3
     checkoutStations: -1
+  - label: Loot c4
+    type: 2
+    duration: 15
+    telegraphDuration: 5
+    freePlayDuration: 0
+    closingDuration: 5
+    resourceBudget: 15
+    batchSize: 15
+    zone: 0
+    checkoutStations: -1
+  - label: Loot c4
+    type: 2
+    duration: 15
+    telegraphDuration: 5
+    freePlayDuration: 0
+    closingDuration: 5
+    resourceBudget: 15
+    batchSize: 15
+    zone: 1
+    checkoutStations: -1
+  - label: End
+    type: 5
+    duration: 15
+    telegraphDuration: 5
+    freePlayDuration: 0
+    closingDuration: 5
+    resourceBudget: 0
+    batchSize: 1
+    zone: 0
+    checkoutStations: -1
   - label: End
     type: 4
-    duration: 3
+    duration: 2
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 0

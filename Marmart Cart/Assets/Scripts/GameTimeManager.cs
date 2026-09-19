@@ -78,60 +78,6 @@ public class GameTimeManager : MonoBehaviour
 
     #endregion
 
-    #region UI References
-
-    [Header("PostGame UI")]
-    [Tooltip("Optional placeholder for the future rankings / final-score presentation.")]
-    [SerializeField] private GameObject finalScoreScreen;
-
-    [Header("Timer UI")]
-    [SerializeField] private TextMeshProUGUI timerTextP1;
-    [SerializeField] private TextMeshProUGUI timerTextP2;
-    [SerializeField] private TextMeshProUGUI timerTextP3;
-    [SerializeField] private TextMeshProUGUI timerTextP4;
-
-    #endregion
-
-    #region Player Cart HUD
-
-    [Header("Player Carts - P1")]
-    [SerializeField] private SnakeCartManager snakeCartManagerP1;
-    [SerializeField] private TextMeshProUGUI currentTotalCartCountP1Text;
-    [SerializeField] private TextMeshProUGUI currentItemCartCountP1Text;
-    [SerializeField] private TextMeshProUGUI currentTotalCartCountP1TextFor4pMode;
-    [SerializeField] private TextMeshProUGUI currentItemCartCountP1TextFor4pMode;
-
-    [Header("Player Carts - P2")]
-    [SerializeField] private SnakeCartManager snakeCartManagerP2;
-    [SerializeField] private TextMeshProUGUI currentTotalCartCountP2Text;
-    [SerializeField] private TextMeshProUGUI currentItemCartCountP2Text;
-    [SerializeField] private TextMeshProUGUI currentTotalCartCountP2TextFor4pMode;
-    [SerializeField] private TextMeshProUGUI currentItemCartCountP2TextFor4pMode;
-
-    [Header("Player Carts - P3")]
-    [SerializeField] private SnakeCartManager snakeCartManagerP3;
-    [SerializeField] private TextMeshProUGUI currentTotalCartCountP3Text;
-    [SerializeField] private TextMeshProUGUI currentItemCartCountP3Text;
-
-    [Header("Player Carts - P4")]
-    [SerializeField] private SnakeCartManager snakeCartManagerP4;
-    [SerializeField] private TextMeshProUGUI currentTotalCartCountP4Text;
-    [SerializeField] private TextMeshProUGUI currentItemCartCountP4Text;
-
-    private TextMeshProUGUI activeTotalCartCountP1Text;
-    private TextMeshProUGUI activeItemCartCountP1Text;
-    private TextMeshProUGUI activeTotalCartCountP2Text;
-    private TextMeshProUGUI activeItemCartCountP2Text;
-
-    private int cartCountP1;
-    private int cartCountP2;
-    private int cartCountP3;
-    private int cartCountP4;
-
-    private bool isAnimatingCartCount;
-
-    #endregion
-
     #region Camera Integration
 
     [Header("Camera Integration")]
@@ -208,7 +154,6 @@ public class GameTimeManager : MonoBehaviour
 
         SetWorldPaused(pauseWorldDuringPreGame);
 
-        if (finalScoreScreen != null) finalScoreScreen.SetActive(false);
 
         UpdateTimerDisplay();
 
@@ -260,8 +205,6 @@ public class GameTimeManager : MonoBehaviour
 
         sessionState = GameSessionState.Playing;
 
-        if (finalScoreScreen != null) finalScoreScreen.SetActive(false);
-
         SetWorldPaused(false);
 
         matchFlowDirector.StartFlow();
@@ -296,8 +239,6 @@ public class GameTimeManager : MonoBehaviour
 
         UpdateTimerDisplay();
 
-        if (finalScoreScreen != null) finalScoreScreen.SetActive(true);
-
         OnPostGameEntered?.Invoke();
     }
 
@@ -324,11 +265,6 @@ public class GameTimeManager : MonoBehaviour
         int seconds = totalSeconds % 60;
 
         string formatted = $"{minutes:D2}:{seconds:D2}";
-
-        SetTextIfAssigned(timerTextP1, formatted);
-        SetTextIfAssigned(timerTextP2, formatted);
-        SetTextIfAssigned(timerTextP3, formatted);
-        SetTextIfAssigned(timerTextP4, formatted);
     }
 
     public float GetCurrentGameTime()
@@ -353,108 +289,15 @@ public class GameTimeManager : MonoBehaviour
     private void ConfigurePlayerHudReferences()
     {
         int playerCount = GMode.Instance != null ? GMode.Instance.PlayerCount() : 2;
-
-        if (playerCount == 4)
-        {
-            activeTotalCartCountP1Text = currentTotalCartCountP1TextFor4pMode;
-            activeItemCartCountP1Text = currentItemCartCountP1TextFor4pMode;
-
-            activeTotalCartCountP2Text = currentTotalCartCountP2TextFor4pMode;
-            activeItemCartCountP2Text = currentItemCartCountP2TextFor4pMode;
-        }
-        else
-        {
-            activeTotalCartCountP1Text = currentTotalCartCountP1Text;
-            activeItemCartCountP1Text = currentItemCartCountP1Text;
-
-            activeTotalCartCountP2Text = currentTotalCartCountP2Text;
-            activeItemCartCountP2Text = currentItemCartCountP2Text;
-        }
     }
 
     private void ResetCartHud()
     {
-        cartCountP1 = 0;
-        cartCountP2 = 0;
-        cartCountP3 = 0;
-        cartCountP4 = 0;
-
-        SetTextIfAssigned(activeTotalCartCountP1Text, "0");
-        SetTextIfAssigned(activeItemCartCountP1Text, "0");
-
-        SetTextIfAssigned(activeTotalCartCountP2Text, "0");
-        SetTextIfAssigned(activeItemCartCountP2Text, "0");
-
-        SetTextIfAssigned(currentTotalCartCountP3Text, "0");
-        SetTextIfAssigned(currentItemCartCountP3Text, "0");
-
-        SetTextIfAssigned(currentTotalCartCountP4Text, "0");
-        SetTextIfAssigned(currentItemCartCountP4Text, "0");
     }
 
     private void UpdateCartHud()
     {
-        UpdatePlayerCartState(snakeCartManagerP1, ref cartCountP1, activeTotalCartCountP1Text, 1);
-        UpdatePlayerCartState(snakeCartManagerP2, ref cartCountP2, activeTotalCartCountP2Text, 2);
-        UpdatePlayerCartState(snakeCartManagerP3, ref cartCountP3, currentTotalCartCountP3Text, 3);
-        UpdatePlayerCartState(snakeCartManagerP4, ref cartCountP4, currentTotalCartCountP4Text, 4);
-    }
-
-    private void UpdatePlayerCartState(
-        SnakeCartManager manager,
-        ref int cachedCartCount,
-        TextMeshProUGUI cartCountText,
-        int playerIndex)
-    {
-        if (manager == null) return;
-
-        int newCount = Mathf.Max(0, manager.GetSnakeBodyLength() - 1);
-        if (newCount == cachedCartCount) return;
-
-        cachedCartCount = newCount;
-
-        SetTextIfAssigned(cartCountText, cachedCartCount.ToString());
-
-        if (cartCountText != null) StartCoroutine(AnimateCartCountText(cartCountText));
-
-        cameraManager?.SetPlayerCartCount(playerIndex, cachedCartCount);
-    }
-
-    private IEnumerator AnimateCartCountText(TextMeshProUGUI text)
-    {
-        if (text == null || isAnimatingCartCount) yield break;
-
-        isAnimatingCartCount = true;
-
-        const float animationDuration = 0.3f;
-        float halfDuration = animationDuration * 0.5f;
-
-        Vector3 originalScale = text.transform.localScale;
-
-        float elapsed = 0f;
-
-        while (elapsed < halfDuration)
-        {
-            float t = elapsed / halfDuration;
-            text.transform.localScale = Vector3.Lerp(originalScale, originalScale * 2f, t);
-
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        elapsed = 0f;
-
-        while (elapsed < halfDuration)
-        {
-            float t = elapsed / halfDuration;
-            text.transform.localScale = Vector3.Lerp(originalScale * 2f, originalScale, t);
-
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        text.transform.localScale = originalScale;
-        isAnimatingCartCount = false;
+      
     }
 
     private void SetTextIfAssigned(TextMeshProUGUI text, string value)
