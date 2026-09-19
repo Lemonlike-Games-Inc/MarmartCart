@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: e8621e3863411024cb130f9889c0e112, type: 3}
   m_Name: MatchFlowProfile
   m_EditorClassIdentifier: Assembly-CSharp::MatchFlowProfile
   sessions:
-  - label: Game Start Empty Period
+  - label: Game Start
     type: 0
     duration: 3
     telegraphDuration: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
     batchSize: 0
     zone: 0
     checkoutStations: 0
-  - label: Initial Cart Stock
+  - label: Initial Cart Restock
     type: 5
     duration: 12
     telegraphDuration: 0
@@ -33,17 +33,17 @@ MonoBehaviour:
     batchSize: 2
     zone: 0
     checkoutStations: 0
-  - label: Loot c1
+  - label: loot c1
     type: 2
     duration: 30
     telegraphDuration: 5
     freePlayDuration: 10
     closingDuration: 5
-    resourceBudget: 30
-    batchSize: 10
+    resourceBudget: 24
+    batchSize: 8
     zone: 0
     checkoutStations: 0
-  - label: Checkout c1 and Restock c2
+  - label: end c1, start c2
     type: 5
     duration: 15
     telegraphDuration: 5
@@ -51,9 +51,9 @@ MonoBehaviour:
     closingDuration: 5
     resourceBudget: 15
     batchSize: 3
-    zone: 0
+    zone: 1
     checkoutStations: -1
-  - label: Loot c2
+  - label: loot c2
     type: 2
     duration: 30
     telegraphDuration: 5
@@ -62,8 +62,8 @@ MonoBehaviour:
     resourceBudget: 30
     batchSize: 10
     zone: 1
-    checkoutStations: -1
-  - label: Checkout c2 and Restock c3
+    checkoutStations: 0
+  - label: end c2, start c3
     type: 5
     duration: 15
     telegraphDuration: 5
@@ -71,9 +71,9 @@ MonoBehaviour:
     closingDuration: 5
     resourceBudget: 20
     batchSize: 4
-    zone: 0
+    zone: 1
     checkoutStations: -1
-  - label: Loot c3
+  - label: loot c3
     type: 2
     duration: 30
     telegraphDuration: 5
@@ -83,7 +83,7 @@ MonoBehaviour:
     batchSize: 10
     zone: 2
     checkoutStations: -1
-  - label: Checkout c3 and Restock c4
+  - label: end c3, start c4
     type: 5
     duration: 15
     telegraphDuration: 5
@@ -91,9 +91,9 @@ MonoBehaviour:
     closingDuration: 5
     resourceBudget: 25
     batchSize: 5
-    zone: 0
+    zone: 2
     checkoutStations: -1
-  - label: Loot c4
+  - label: loot c4
     type: 2
     duration: 30
     telegraphDuration: 5
@@ -103,7 +103,7 @@ MonoBehaviour:
     batchSize: 10
     zone: 3
     checkoutStations: -1
-  - label: Loot c4
+  - label: loot c4
     type: 2
     duration: 15
     telegraphDuration: 5
@@ -113,7 +113,7 @@ MonoBehaviour:
     batchSize: 15
     zone: 0
     checkoutStations: -1
-  - label: Loot c4
+  - label: loot c4
     type: 2
     duration: 15
     telegraphDuration: 5
@@ -123,7 +123,7 @@ MonoBehaviour:
     batchSize: 15
     zone: 1
     checkoutStations: -1
-  - label: End
+  - label: end c4
     type: 5
     duration: 15
     telegraphDuration: 5
@@ -131,15 +131,15 @@ MonoBehaviour:
     closingDuration: 5
     resourceBudget: 0
     batchSize: 1
-    zone: 0
+    zone: 1
     checkoutStations: -1
-  - label: End
+  - label: end c4
     type: 4
     duration: 2
     telegraphDuration: 5
     freePlayDuration: 0
-    closingDuration: 0
+    closingDuration: 3
     resourceBudget: 0
     batchSize: 1
-    zone: 0
+    zone: 1
     checkoutStations: -1

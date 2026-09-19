@@ -1369,7 +1369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileProfile: {fileID: 11400000, guid: f490e1af1b3a4e448a400215d467984d, type: 2}
-  lifecycleEventSystem: {fileID: 0}
+  lifecycleEventSystem: {fileID: 674537954}
   poolRoot: {fileID: 79608705}
   logNeutralCompletions: 1
   totalCreatedActorCount: 0
@@ -1419,7 +1419,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileProfile: {fileID: 11400000, guid: f490e1af1b3a4e448a400215d467984d, type: 2}
-  lifecycleEventSystem: {fileID: 0}
+  lifecycleEventSystem: {fileID: 674537954}
   poolRoot: {fileID: 81323289}
   logNeutralCompletions: 1
   totalCreatedActorCount: 0
@@ -134805,7 +134805,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cashScoreManager: {fileID: 1773933218}
-  gameTimeManager: {fileID: 0}
+  gameTimeManager: {fileID: 1773933216}
   stateSystem: {fileID: 418111801}
   profile: {fileID: 11400000, guid: 64942dae9bb297d4993c585e716e313b, type: 2}
   playerSnakeManagers:
@@ -138084,27 +138084,6 @@ MonoBehaviour:
   pauseWorldDuringPreGame: 0
   pauseWorldDuringPostGame: 0
   sessionState: 0
-  finalScoreScreen: {fileID: 0}
-  timerTextP1: {fileID: 0}
-  timerTextP2: {fileID: 0}
-  timerTextP3: {fileID: 0}
-  timerTextP4: {fileID: 0}
-  snakeCartManagerP1: {fileID: 63967302}
-  currentTotalCartCountP1Text: {fileID: 0}
-  currentItemCartCountP1Text: {fileID: 0}
-  currentTotalCartCountP1TextFor4pMode: {fileID: 0}
-  currentItemCartCountP1TextFor4pMode: {fileID: 0}
-  snakeCartManagerP2: {fileID: 821155007}
-  currentTotalCartCountP2Text: {fileID: 0}
-  currentItemCartCountP2Text: {fileID: 0}
-  currentTotalCartCountP2TextFor4pMode: {fileID: 0}
-  currentItemCartCountP2TextFor4pMode: {fileID: 0}
-  snakeCartManagerP3: {fileID: 1656325508}
-  currentTotalCartCountP3Text: {fileID: 0}
-  currentItemCartCountP3Text: {fileID: 0}
-  snakeCartManagerP4: {fileID: 609359041}
-  currentTotalCartCountP4Text: {fileID: 0}
-  currentItemCartCountP4Text: {fileID: 0}
   cameraManager: {fileID: 1653367397}
   musicManager: {fileID: 11400000, guid: 370ec8eaf8ad6fd469325ba6c5e2850f, type: 2}
 --- !u!114 &1773933217
@@ -142284,7 +142263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileProfile: {fileID: 11400000, guid: f490e1af1b3a4e448a400215d467984d, type: 2}
-  lifecycleEventSystem: {fileID: 0}
+  lifecycleEventSystem: {fileID: 674537954}
   poolRoot: {fileID: 2093745206}
   logNeutralCompletions: 1
   totalCreatedActorCount: 0
