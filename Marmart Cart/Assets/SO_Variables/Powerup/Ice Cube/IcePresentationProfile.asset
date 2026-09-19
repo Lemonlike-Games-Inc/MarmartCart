@@ -20,7 +20,7 @@ MonoBehaviour:
   impactVfxPositionOffset: {x: 0, y: 0, z: 0}
   orientImpactVfxToVictim: 1
   impactVfxEulerOffset: {x: 0, y: 0, z: 0}
-  frozenVictimVisualPrefab: {fileID: 566070471637273572, guid: c7c6d8cc90df969449e3bda3fc449afe, type: 3}
+  frozenVictimVisualPrefab: {fileID: 853623013088803350, guid: 29313842d69d86a499323cb9d2fa1851, type: 3}
   frozenVictimLocalPosition: {x: 0, y: 0, z: 0}
   frozenVictimLocalEulerAngles: {x: 0, y: 0, z: 0}
   frozenVictimScaleMultiplier: {x: 1, y: 1, z: 1}

@@ -15,7 +15,8 @@ public sealed class MatchResultsScoreTokenUnityEvent :
 /// One player's physical final-score presentation.
 ///
 /// - real submitted cargo prefabs represent ordinary score;
-/// - a dedicated reward prefab represents milestone/streak score;
+/// - random ordinary-cargo prefabs represent milestone/streak score;
+/// - the ceremony number is presentation-scaled without changing gameplay score;
 /// - authored first-layer slots repeat upward forever;
 /// - the actual leading cart, score/rank kit, and camera target rise together;
 /// - all animation uses unscaled time and no Rigidbody physics.
@@ -61,7 +62,9 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     [Header("Feedback Events")]
     [SerializeField] private UnityEvent onRevealStarted;
 
-    [Tooltip("Arguments: player index, new live score, is bonus token.")]
+    [Tooltip(
+        "Arguments: player index, new unscaled gameplay score, is reward token."
+    )]
     [SerializeField] private MatchResultsScoreTokenUnityEvent onScoreTokenLanded;
 
     [SerializeField] private UnityEvent onRevealCompleted;
@@ -75,8 +78,15 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     [SerializeField] private bool complete;
     [SerializeField] private int finalScore;
     [SerializeField] private int displayedScore;
+    [SerializeField] private int finalBaseScore;
+    [SerializeField] private int finalBonusScore;
+    [SerializeField] private int displayedBaseScore;
+    [SerializeField] private int displayedBonusScore;
+    [SerializeField] private int displayedPresentationScore;
+    [SerializeField] private bool rewardDisplayCollapsed;
     [SerializeField] private int finalRank;
     [SerializeField] private int totalVisualTokens;
+    [SerializeField] private int baseVisualTokens;
     [SerializeField] private int landedVisualTokens;
     [SerializeField] private float currentCartLift;
 
@@ -84,10 +94,12 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     private readonly List<ScoreVisualToken> revealTokens = new List<ScoreVisualToken>(256);
     private readonly List<ActiveTokenFlight> activeFlights = new List<ActiveTokenFlight>(32);
     private readonly List<GameObject> spawnedVisuals = new List<GameObject>(256);
+    private readonly List<GameObject> rewardCargoPrefabPool = new List<GameObject>(32);
 
     private Transform stagedCart;
     private MatchResultsPresentationProfile activeProfile;
     private Coroutine revealRoutine;
+    private Coroutine scoreTextPopRoutine;
 
     private Vector3 cartBasePosition;
     private Quaternion cartBaseRotation;
@@ -98,6 +110,8 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
 
     private float targetCartLift;
     private float cartLiftVelocity;
+    private Vector3 scoreTextBaseScale = Vector3.one;
+    private bool scoreTextBaseScaleCached;
 
     private sealed class ScoreVisualToken
     {
@@ -123,6 +137,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     public bool IsPresenting => presenting;
     public bool IsComplete => complete;
     public int DisplayedScore => displayedScore;
+    public int DisplayedPresentationScore => displayedPresentationScore;
     public int FinalScore => finalScore;
     public int FinalRank => finalRank;
     public Transform CameraFocusTarget => cameraFocusTarget;
@@ -137,6 +152,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
 
     private void Awake()
     {
+        CacheScoreTextBaseScale();
         EnsureRuntimeVisualRoot();
         SetCompletionVisible(false);
         SetTextVisible(liveScoreText, false);
@@ -146,6 +162,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     private void OnDisable()
     {
         StopRevealRoutine();
+        StopScoreTextPop(true);
     }
 
     private void OnValidate()
@@ -189,6 +206,12 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         activeProfile = profile;
         finalScore = snapshot.FinalScore;
         displayedScore = 0;
+        finalBaseScore = snapshot.BaseScore;
+        finalBonusScore = snapshot.BonusScore;
+        displayedBaseScore = 0;
+        displayedBonusScore = 0;
+        displayedPresentationScore = 0;
+        rewardDisplayCollapsed = false;
         finalRank = snapshot.Rank;
         landedVisualTokens = 0;
         currentCartLift = 0f;
@@ -220,7 +243,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         SetCompletionVisible(false);
         SetTextVisible(liveScoreText, true);
         SetTextVisible(finalRankText, false);
-        RefreshScoreText();
+        RefreshScoreText(false);
 
         onRevealStarted?.Invoke();
         OnRevealStarted?.Invoke(playerIndex);
@@ -233,6 +256,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     public void ClearPresentation()
     {
         StopRevealRoutine();
+        StopScoreTextPop(true);
 
         for (int i = spawnedVisuals.Count - 1; i >= 0; i--)
         {
@@ -243,13 +267,21 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         spawnedVisuals.Clear();
         activeFlights.Clear();
         revealTokens.Clear();
+        rewardCargoPrefabPool.Clear();
 
         presenting = false;
         complete = false;
         displayedScore = 0;
         finalScore = 0;
+        finalBaseScore = 0;
+        finalBonusScore = 0;
+        displayedBaseScore = 0;
+        displayedBonusScore = 0;
+        displayedPresentationScore = 0;
+        rewardDisplayCollapsed = false;
         finalRank = 0;
         totalVisualTokens = 0;
+        baseVisualTokens = 0;
         landedVisualTokens = 0;
         currentCartLift = 0f;
         targetCartLift = 0f;
@@ -269,6 +301,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     private void BuildRevealTokens(MatchResultsPlayerSnapshot snapshot)
     {
         revealTokens.Clear();
+        rewardCargoPrefabPool.Clear();
 
         int basePointsPerVisual = activeProfile.BaseScorePointsPerVisual;
         int bonusPointsPerVisual = activeProfile.BonusScorePointsPerVisual;
@@ -331,6 +364,8 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
             baseScoreRemaining -= representedScore;
         }
 
+        BuildRewardCargoPrefabPool(records);
+
         int bonusScoreRemaining = snapshot.BonusScore;
 
         while (bonusScoreRemaining > 0)
@@ -339,7 +374,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
 
             revealTokens.Add(new ScoreVisualToken
             {
-                prefab = activeProfile.BonusCargoVisualPrefab,
+                prefab = GetRandomRewardCargoPrefab(),
                 scoreValue = representedScore,
                 isBonus = true
             });
@@ -361,6 +396,59 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
                 this
             );
         }
+
+        baseVisualTokens = 0;
+
+        for (int i = 0; i < revealTokens.Count; i++)
+        {
+            if (!revealTokens[i].isBonus) baseVisualTokens++;
+        }
+    }
+
+    private void BuildRewardCargoPrefabPool(
+        IReadOnlyList<MatchResultsCargoRecord> records)
+    {
+        GameObject[] authoredPrefabs = activeProfile.RewardCargoVisualPrefabs;
+
+        if (authoredPrefabs != null)
+        {
+            for (int i = 0; i < authoredPrefabs.Length; i++)
+                AddUniqueRewardCargoPrefab(authoredPrefabs[i]);
+        }
+
+        // An explicitly authored list is authoritative. Otherwise the reward
+        // phase automatically reuses ordinary cargo this player really submitted.
+        if (rewardCargoPrefabPool.Count == 0 && records != null)
+        {
+            for (int i = 0; i < records.Count; i++)
+            {
+                MatchResultsCargoRecord record = records[i];
+
+                if (record == null || record.CargoVisual == null) continue;
+
+                AddUniqueRewardCargoPrefab(
+                    record.CargoVisual.CargoVisualPrefab
+                );
+            }
+        }
+
+        if (rewardCargoPrefabPool.Count == 0)
+            AddUniqueRewardCargoPrefab(activeProfile.FallbackCargoVisualPrefab);
+    }
+
+    private void AddUniqueRewardCargoPrefab(GameObject prefab)
+    {
+        if (prefab == null || rewardCargoPrefabPool.Contains(prefab)) return;
+        rewardCargoPrefabPool.Add(prefab);
+    }
+
+    private GameObject GetRandomRewardCargoPrefab()
+    {
+        if (rewardCargoPrefabPool.Count == 0) return null;
+
+        return rewardCargoPrefabPool[
+            UnityEngine.Random.Range(0, rewardCargoPrefabPool.Count)
+        ];
     }
 
     private void CompressTokenPlanToMaximum(int requestedMaximum)
@@ -458,25 +546,28 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
 
     private IEnumerator RevealRoutine()
     {
-        int nextTokenIndex = 0;
-        float spawnCountdown = 0f;
+        yield return RunTokenPhase(0, baseVisualTokens);
 
-        while (nextTokenIndex < revealTokens.Count || activeFlights.Count > 0)
+        if (baseVisualTokens < revealTokens.Count)
         {
-            float deltaTime = Time.unscaledDeltaTime;
-            spawnCountdown -= deltaTime;
-
-            while (nextTokenIndex < revealTokens.Count && spawnCountdown <= 0f)
-            {
-                SpawnTokenFlight(revealTokens[nextTokenIndex], nextTokenIndex);
-                nextTokenIndex++;
-                spawnCountdown += activeProfile.TokenSpawnInterval;
-            }
-
-            UpdateTokenFlights(deltaTime);
-            UpdateMovingTop(deltaTime, false);
-
+            // Make the ordinary total readable for at least one rendered frame
+            // before reward cargo begins adding the parenthesized score.
+            UpdateMovingTop(Time.unscaledDeltaTime, false);
             yield return null;
+
+            yield return RunTokenPhase(baseVisualTokens, revealTokens.Count);
+        }
+
+        displayedBaseScore = finalBaseScore;
+        displayedBonusScore = finalBonusScore;
+        displayedScore = finalScore;
+
+        if (finalBonusScore > 0)
+        {
+            // The reward phase has already shown Base (+Reward). Collapse it
+            // to the final multiplied total on the following rendered frame.
+            rewardDisplayCollapsed = true;
+            RefreshScoreText(true);
         }
 
         // Let the cart/camera/kit reach the exact final height even when the
@@ -488,8 +579,6 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         }
 
         UpdateMovingTop(0f, true);
-        displayedScore = finalScore;
-        RefreshScoreText();
 
         if (activeProfile.CompletionRevealDelay > 0f)
         {
@@ -510,6 +599,31 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         OnRevealCompleted?.Invoke(playerIndex);
     }
 
+    private IEnumerator RunTokenPhase(int startIndex, int endIndex)
+    {
+        int nextTokenIndex = Mathf.Clamp(startIndex, 0, revealTokens.Count);
+        int exclusiveEnd = Mathf.Clamp(endIndex, nextTokenIndex, revealTokens.Count);
+        float spawnCountdown = 0f;
+
+        while (nextTokenIndex < exclusiveEnd || activeFlights.Count > 0)
+        {
+            float deltaTime = Time.unscaledDeltaTime;
+            spawnCountdown -= deltaTime;
+
+            while (nextTokenIndex < exclusiveEnd && spawnCountdown <= 0f)
+            {
+                SpawnTokenFlight(revealTokens[nextTokenIndex], nextTokenIndex);
+                nextTokenIndex++;
+                spawnCountdown += activeProfile.TokenSpawnInterval;
+            }
+
+            UpdateTokenFlights(deltaTime);
+            UpdateMovingTop(deltaTime, false);
+
+            yield return null;
+        }
+    }
+
     private void SpawnTokenFlight(ScoreVisualToken token, int tokenIndex)
     {
         if (token == null || stagedCart == null) return;
@@ -527,7 +641,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
 
         GameObject instance = token.prefab != null
             ? Instantiate(token.prefab, runtimeVisualRoot)
-            : CreatePrototypeVisual(token.isBonus);
+            : CreatePrototypeVisual();
 
         if (instance == null)
         {
@@ -638,13 +752,33 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
     private void LandScoreValue(int scoreValue, bool isBonus)
     {
         landedVisualTokens++;
-        displayedScore = Mathf.Min(finalScore, displayedScore + Mathf.Max(0, scoreValue));
+        int safeScoreValue = Mathf.Max(0, scoreValue);
+
+        if (isBonus)
+        {
+            displayedBonusScore = Mathf.Min(
+                finalBonusScore,
+                displayedBonusScore + safeScoreValue
+            );
+        }
+        else
+        {
+            displayedBaseScore = Mathf.Min(
+                finalBaseScore,
+                displayedBaseScore + safeScoreValue
+            );
+        }
+
+        displayedScore = Mathf.Min(
+            finalScore,
+            displayedBaseScore + displayedBonusScore
+        );
 
         int slotsPerLayer = Mathf.Max(1, validLayerSlots.Count);
         int completedOrStartedLayers = DivideRoundUp(landedVisualTokens, slotsPerLayer);
         targetCartLift = completedOrStartedLayers * activeProfile.LayerHeight;
 
-        RefreshScoreText();
+        RefreshScoreText(true);
 
         onScoreTokenLanded?.Invoke(playerIndex, displayedScore, isBonus);
         OnScoreTokenLanded?.Invoke(playerIndex, displayedScore, isBonus);
@@ -751,7 +885,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         runtimeVisualRoot = root.transform;
     }
 
-    private GameObject CreatePrototypeVisual(bool isBonus)
+    private GameObject CreatePrototypeVisual()
     {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.transform.SetParent(runtimeVisualRoot, false);
@@ -768,9 +902,7 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
             MaterialPropertyBlock block = new MaterialPropertyBlock();
             renderer.GetPropertyBlock(block);
 
-            Color color = isBonus
-                ? new Color(1f, 0.72f, 0.08f, 1f)
-                : Color.white;
+            Color color = Color.white;
 
             block.SetColor("_BaseColor", color);
             block.SetColor("_Color", color);
@@ -803,21 +935,95 @@ public sealed class FinalScoreCargoTower : MonoBehaviour
         }
     }
 
-    private void RefreshScoreText()
+    private void RefreshScoreText(bool animate)
     {
         if (liveScoreText == null || activeProfile == null) return;
 
+        int multiplier = activeProfile.ScoreDisplayMultiplier;
+        int multipliedBaseScore = displayedBaseScore * multiplier;
+        int multipliedBonusScore = displayedBonusScore * multiplier;
+        displayedPresentationScore = displayedScore * multiplier;
+
         try
         {
-            liveScoreText.text = string.Format(
-                activeProfile.ScoreTextFormat,
-                displayedScore
-            );
+            liveScoreText.text =
+                displayedBonusScore > 0 && !rewardDisplayCollapsed
+                    ? string.Format(
+                        activeProfile.RewardScoreTextFormat,
+                        multipliedBaseScore,
+                        multipliedBonusScore
+                    )
+                    : string.Format(
+                        activeProfile.ScoreTextFormat,
+                        displayedPresentationScore
+                    );
         }
         catch (FormatException)
         {
-            liveScoreText.text = displayedScore.ToString();
+            liveScoreText.text =
+                displayedBonusScore > 0 && !rewardDisplayCollapsed
+                    ? $"{multipliedBaseScore} (+{multipliedBonusScore})"
+                    : displayedPresentationScore.ToString();
         }
+
+        if (animate) PlayScoreTextPop();
+    }
+
+    private void PlayScoreTextPop()
+    {
+        if (liveScoreText == null ||
+            activeProfile == null ||
+            !activeProfile.AnimateScoreTextChanges)
+        {
+            return;
+        }
+
+        CacheScoreTextBaseScale();
+        StopScoreTextPop(true);
+        scoreTextPopRoutine = StartCoroutine(AnimateScoreTextPop());
+    }
+
+    private IEnumerator AnimateScoreTextPop()
+    {
+        float duration = activeProfile.ScoreTextPopDuration;
+        float peakMultiplier = activeProfile.ScoreTextPopScaleMultiplier;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float normalizedTime = Mathf.Clamp01(elapsed / duration);
+            float pulse = Mathf.Sin(normalizedTime * Mathf.PI);
+            float scaleMultiplier = Mathf.Lerp(1f, peakMultiplier, pulse);
+
+            liveScoreText.transform.localScale =
+                scoreTextBaseScale * scaleMultiplier;
+
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        liveScoreText.transform.localScale = scoreTextBaseScale;
+        scoreTextPopRoutine = null;
+    }
+
+    private void CacheScoreTextBaseScale()
+    {
+        if (scoreTextBaseScaleCached || liveScoreText == null) return;
+
+        scoreTextBaseScale = liveScoreText.transform.localScale;
+        scoreTextBaseScaleCached = true;
+    }
+
+    private void StopScoreTextPop(bool restoreScale)
+    {
+        if (scoreTextPopRoutine != null)
+        {
+            StopCoroutine(scoreTextPopRoutine);
+            scoreTextPopRoutine = null;
+        }
+
+        if (restoreScale && liveScoreText != null && scoreTextBaseScaleCached)
+            liveScoreText.transform.localScale = scoreTextBaseScale;
     }
 
     private void RefreshRankText()

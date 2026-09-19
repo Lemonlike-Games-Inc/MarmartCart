@@ -16,11 +16,24 @@ MonoBehaviour:
   bonusScorePointsPerVisual: 1
   maximumVisualTokensPerPlayer: 1200
   fallbackCargoVisualPrefab: {fileID: 1327934026257116924, guid: 84a444bad4e5ae54e894df707aa510e4, type: 3}
-  bonusCargoVisualPrefab: {fileID: 481491271392769975, guid: f3e3a202a52285647aa049e54b24cff9, type: 3}
+  rewardCargoVisualPrefabs:
+  - {fileID: 990913548469700982, guid: 1c1dabf011770434fae36e598feb1337, type: 3}
+  - {fileID: 7896915788875807211, guid: 274c431e683a5e64b9160b4c88151fd2, type: 3}
+  - {fileID: 6542398599915684010, guid: e98749f8ac06ac242860eefce129886f, type: 3}
+  - {fileID: 4976847387916365378, guid: 25e6268b0eb91504daaae94503f27fff, type: 3}
+  - {fileID: 3654446762085240955, guid: b8d627834c95c1e4499e848a8145c2cb, type: 3}
+  - {fileID: 7239131244614650219, guid: 01f0284108ee3db42a86239735aa1cf3, type: 3}
+  - {fileID: 1327934026257116924, guid: 84a444bad4e5ae54e894df707aa510e4, type: 3}
+  - {fileID: 8748127077485087760, guid: c66003d8109efad4595e04cd4a0df51a, type: 3}
+  - {fileID: 4755113974531445280, guid: 0f0bd9b82a36529428145c32138c4def, type: 3}
+  - {fileID: 2037641638393517455, guid: f67ca5e1aea997b42bdbc55f2ccf3730, type: 3}
+  - {fileID: 5158656684279775047, guid: e77d21ac165290045b5b1c6b4e061fb1, type: 3}
   prototypeFallbackMaterial: {fileID: 0}
   prototypeFallbackScale: 0.22
   layerHeight: 0.85
   spawnOffsetFromCart: {x: 0, y: 0.05, z: 0}
+  randomizeOrdinaryCargoFinalYaw: 1
+  ordinaryCargoFinalYawRange: {x: 0, y: 360}
   ceremonyStartDelay: 2.5
   tokenSpawnInterval: 0.25
   tokenTravelDuration: 0.15
@@ -53,5 +66,10 @@ MonoBehaviour:
   tokenSpinDegrees: 0
   cartRiseSmoothTime: 0.12
   completionRevealDelay: 0.18
+  scoreDisplayMultiplier: 10
   scoreTextFormat: '{0}'
+  rewardScoreTextFormat: '{0} (+{1})'
   rankTextFormat: '{0}'
+  animateScoreTextChanges: 1
+  scoreTextPopScaleMultiplier: 1.18
+  scoreTextPopDuration: 0.1

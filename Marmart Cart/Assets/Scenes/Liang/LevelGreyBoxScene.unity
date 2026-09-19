@@ -8916,7 +8916,6 @@ GameObject:
   m_Component:
   - component: {fileID: 300062271}
   - component: {fileID: 300062270}
-  - component: {fileID: 300062269}
   - component: {fileID: 300062268}
   - component: {fileID: 300062267}
   - component: {fileID: 300062266}
@@ -9031,14 +9030,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &300062269
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300062265}
-  m_Enabled: 1
 --- !u!20 &300062270
 Camera:
   m_ObjectHideFlags: 0
@@ -22612,7 +22603,7 @@ MonoBehaviour:
   freePlaySelection: 2
   endGameWrapSelection: 2
   postGameSelection: 2
-  transitionMode: 2
+  transitionMode: 1
   useUnscaledTime: 1
   fadeInSeconds: 0.5
   fadeOutSeconds: 0.5
@@ -24939,19 +24930,7 @@ MonoBehaviour:
   effectId: 3
   onActivated:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onProjectileImpacted:
     m_PersistentCalls:
       m_Calls: []
@@ -24960,13 +24939,49 @@ MonoBehaviour:
       m_Calls: []
   onEffectStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CokeBubbling
+          m_BoolArgument: 0
+        m_CallState: 2
   onEffectRefreshed:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CokeBubbling
+          m_BoolArgument: 0
+        m_CallState: 2
   onEffectEnded:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: StopSFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CokeBubbling
+          m_BoolArgument: 0
+        m_CallState: 2
   lastActivation:
     PowerupId: 0
     Mode: 0
@@ -27535,7 +27550,6 @@ GameObject:
   m_Component:
   - component: {fileID: 797538520}
   - component: {fileID: 797538519}
-  - component: {fileID: 797538518}
   - component: {fileID: 797538517}
   - component: {fileID: 797538516}
   - component: {fileID: 797538521}
@@ -27622,14 +27636,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &797538518
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797538514}
-  m_Enabled: 1
 --- !u!20 &797538519
 Camera:
   m_ObjectHideFlags: 0
@@ -27976,15 +27982,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 0
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Projectile Throw
           m_BoolArgument: 0
         m_CallState: 2
   onProjectileImpacted:
@@ -30334,8 +30340,10 @@ MonoBehaviour:
   viewportOverlayRenderer: {fileID: 1098845340}
   presentationObjectsToHide:
   - {fileID: 874786256}
+  - {fileID: 107398662}
   presentationBehavioursToDisable:
-  - {fileID: 874786258}
+  - {fileID: 1561177209}
+  - {fileID: 610152314}
   hideFollowerCarts: 1
   disableCheckoutRuntime: 1
   disableStagedCartCollisions: 1
@@ -151908,7 +151916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da079b917b9691a4296d98c8fdaab99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentMode: 1
+  CurrentMode: 0
 --- !u!4 &1409103362
 Transform:
   m_ObjectHideFlags: 0
@@ -154773,7 +154781,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1531898270}
   - component: {fileID: 1531898269}
-  - component: {fileID: 1531898268}
   - component: {fileID: 1531898267}
   - component: {fileID: 1531898266}
   - component: {fileID: 1531898265}
@@ -154888,14 +154895,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &1531898268
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1531898264}
-  m_Enabled: 1
 --- !u!20 &1531898269
 Camera:
   m_ObjectHideFlags: 0
@@ -169753,20 +169752,32 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 0
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Projectile Throw
           m_BoolArgument: 0
         m_CallState: 2
   onProjectileImpacted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Tomato Hit Impact
+          m_BoolArgument: 0
+        m_CallState: 2
   onProjectileCancelled:
     m_PersistentCalls:
       m_Calls: []
@@ -171771,8 +171782,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91197a00a83ff7344a01260dbc9d3a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaWidth: 40
-  areaLength: 40
+  areaWidth: 60
+  areaLength: 60
   useTransformYaw: 1
   groundLayers:
     serializedVersion: 2

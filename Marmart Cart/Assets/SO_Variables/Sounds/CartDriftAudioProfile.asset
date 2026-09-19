@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4997b7ff7f641e348955ac4e58cc883e, type: 3}
+  m_Name: CartDriftAudioProfile
+  m_EditorClassIdentifier: 
+  normalDriftLoop: {fileID: 8300000, guid: aafb6e3c03556be489e213f7ceca48ce, type: 3}
+  tightDriftLoop: {fileID: 8300000, guid: a6052e9dedc875c4f9c9bf7dcb765394, type: 3}
+  outputMixerGroup: {fileID: 24300002, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
+  normalLoopVolume: 0.75
+  tightLoopVolume: 0.75
+  tightBlendStart: 0.3
+  tightBlendFull: 0.85
+  silentAtSpeed: 1.5
+  fullVolumeAtSpeed: 12
+  minimumPitch: 0.92
+  maximumPitch: 1.08
+  tightnessPitchBoost: 0.04
+  perDriftPitchOffsetRange: {x: -0.025, y: 0.025}
+  fadeInSeconds: 0.08
+  fadeOutSeconds: 0.14
+  parameterResponseSeconds: 0.06
+  randomizeLoopStartPosition: 1
+  spatialBlend: 0.8
+  rolloffMode: 0
+  minimumDistance: 2
+  maximumDistance: 28
+  dopplerLevel: 0

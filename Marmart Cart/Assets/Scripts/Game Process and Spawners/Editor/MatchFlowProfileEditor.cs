@@ -40,7 +40,8 @@ public class MatchFlowProfileEditor : Editor
         EditorGUILayout.HelpBox(
             $"Planned playable timeline: {FormatTime(profile.GetPlannedDuration())}\n" +
             "ZoneLoot totals include Telegraph + Active Loot + Closing. " +
-            "Checkout totals include Telegraph + Open Duration.",
+            "Checkout totals include Telegraph + Open Duration. " +
+            "Checkout + Restock totals include Telegraph + Active + Closing.",
             MessageType.Info
         );
 
@@ -115,6 +116,10 @@ public class MatchFlowProfileEditor : Editor
 
             case MatchFlowSessionType.CheckoutWindow:
                 lines = 6;
+                break;
+
+            case MatchFlowSessionType.CheckoutRestock:
+                lines = 9;
                 break;
 
             case MatchFlowSessionType.EndGameWrap:
@@ -197,6 +202,23 @@ public class MatchFlowProfileEditor : Editor
                     Mathf.Max(0f, telegraph.floatValue) +
                     Mathf.Max(0f, duration.floatValue)
                 );
+                break;
+
+            case MatchFlowSessionType.CheckoutRestock:
+                DrawProperty(ref y, x, width, stations, "Open Stations");
+                DrawProperty(ref y, x, width, telegraph, "Telegraph Duration");
+                DrawProperty(ref y, x, width, duration, "Open + Restock Duration");
+                DrawProperty(ref y, x, width, closing, "Closing Duration");
+                DrawReadOnlyTotal(
+                    ref y,
+                    x,
+                    width,
+                    Mathf.Max(0f, telegraph.floatValue) +
+                    Mathf.Max(0f, duration.floatValue) +
+                    Mathf.Max(0f, closing.floatValue)
+                );
+                DrawProperty(ref y, x, width, budget, "Exact Restock Cart Budget");
+                DrawProperty(ref y, x, width, batch, "Normal Batch Size");
                 break;
 
             case MatchFlowSessionType.EndGameWrap:

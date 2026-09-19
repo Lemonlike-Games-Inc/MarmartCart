@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &8924587627727995533
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 155.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.544
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -657.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 145945555982649047, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181238423953882696, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.309
+      objectReference: {fileID: 0}
+    - target: {fileID: 181238423953882696, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.187
+      objectReference: {fileID: 0}
+    - target: {fileID: 2648267995249854490, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.014
+      objectReference: {fileID: 0}
+    - target: {fileID: 8071062625868544155, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_Name
+      value: PowerUp_Ice Cube_Frozen Cart Effect Prefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.9486142
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2128131
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.3986604
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.239
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.169
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516324913445471453, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6156915359894978947, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+    - {fileID: 4108353810851359514, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}

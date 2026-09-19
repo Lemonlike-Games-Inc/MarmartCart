@@ -4,11 +4,14 @@ using UnityEngine;
 
 public enum MatchFlowSessionType
 {
-    FreePlay,
-    CartRestock,
-    ZoneLoot,
-    CheckoutWindow,
-    EndGameWrap
+    FreePlay = 0,
+    CartRestock = 1,
+    ZoneLoot = 2,
+    CheckoutWindow = 3,
+    EndGameWrap = 4,
+
+    [InspectorName("Checkout + Restock")]
+    CheckoutRestock = 5
 }
 
 public enum ArenaZoneId
@@ -43,24 +46,26 @@ public class MatchFlowSession
         "CartRestock: total distribution duration.\n" +
         "ZoneLoot: active loot-drop duration after telegraph.\n" +
         "CheckoutWindow: how long selected checkout stations remain open.\n" +
+        "Checkout + Restock: how long checkout and cart distribution are active together.\n" +
         "EndGameWrap: final gameplay buffer before the Director requests match end."
     )]
     [Min(0f)]
     public float duration = 5f;
 
-    [Tooltip("Used only by ZoneLoot and CheckoutWindow. This time is ADDED before active Duration.")]
+    [Tooltip("Used by ZoneLoot, CheckoutWindow, and Checkout + Restock. This time is ADDED before active Duration.")]
     [Min(0f)]
     public float telegraphDuration = 2f;
 
     [Tooltip(
-        "Used only by ZoneLoot. Added after the active loot-drop Duration. " +
-        "No new zone loot is released, but the ArenaZone remains Active so " +
-        "its power-up spawners and existing gameplay stay available."
+        "Used by ZoneLoot and Checkout + Restock. Added after active Duration.\n" +
+        "ZoneLoot: no new loot is released, while the ArenaZone remains Active.\n" +
+        "Checkout + Restock: restocking stops and checkout stations close, " +
+        "while the center-area light indicator remains selected."
     )]
     [Min(0f)]
     public float closingDuration = 0f;
 
-    [Tooltip("CartRestock = exact carts released. ZoneLoot = exact zone-wide loot budget.")]
+    [Tooltip("CartRestock / Checkout + Restock = exact carts released. ZoneLoot = exact zone-wide loot budget.")]
     [Min(0)]
     public int resourceBudget = 8;
 
@@ -71,7 +76,7 @@ public class MatchFlowSession
     [Tooltip("Used only by ZoneLoot.")]
     public ArenaZoneId zone = ArenaZoneId.ZoneA;
 
-    [Tooltip("Used only by CheckoutWindow.")]
+    [Tooltip("Used by CheckoutWindow and Checkout + Restock.")]
     public CheckoutStationMask checkoutStations = CheckoutStationMask.North | CheckoutStationMask.South;
 
     public float GetPlannedDuration()
@@ -79,6 +84,7 @@ public class MatchFlowSession
         switch (type)
         {
             case MatchFlowSessionType.ZoneLoot:
+            case MatchFlowSessionType.CheckoutRestock:
                 return
                     Mathf.Max(0f, telegraphDuration) +
                     Mathf.Max(0f, duration) +

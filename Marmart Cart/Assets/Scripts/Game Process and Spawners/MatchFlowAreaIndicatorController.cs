@@ -174,6 +174,7 @@ public class MatchFlowAreaIndicatorController : MonoBehaviour
 
             case MatchFlowSessionType.CartRestock:
             case MatchFlowSessionType.CheckoutWindow:
+            case MatchFlowSessionType.CheckoutRestock:
                 ApplySelection(MatchAreaIndicatorSelection.Center);
                 break;
 

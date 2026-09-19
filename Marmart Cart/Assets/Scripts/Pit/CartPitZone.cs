@@ -130,6 +130,24 @@ public class CartPitZone : MonoBehaviour
 
     #endregion
 
+    #region Events
+
+    /// <summary>
+    /// Raised once when checkout processing has finished and this pit changes
+    /// from the checkout stop into AutoExiting. The cart begins moving toward
+    /// the first exit waypoint on the following physics step.
+    /// </summary>
+    public event System.Action<int> OnCheckoutExitStarted;
+
+    /// <summary>
+    /// Raised once for a successful checkout after CashScoreManager has
+    /// committed the base score and any checkout reward, and after the lane
+    /// has safely returned control to the player.
+    /// </summary>
+    public event System.Action<int> OnCheckoutCompleted;
+
+    #endregion
+
     #region Unity Lifecycle
 
     private void Awake()
@@ -390,6 +408,8 @@ public class CartPitZone : MonoBehaviour
         laneState = CheckoutLaneState.AutoExiting;
         currentWaypointIndex = 0;
         lastAutoDriveDirection = Vector3.zero;
+
+        OnCheckoutExitStarted?.Invoke(occupyingPlayerIndex);
     }
 
     #endregion
@@ -541,6 +561,11 @@ public class CartPitZone : MonoBehaviour
 
         RestorePlayerControl(true, true);
         ClearRuntimeCheckoutState();
+
+        // Keep feedback at the exact score-commit boundary without allowing a
+        // presentation listener to interfere with lane cleanup or control
+        // restoration. This still occurs in the same frame as EndCheckoutSession.
+        OnCheckoutCompleted?.Invoke(exitingPlayerIndex);
     }
 
     private void RestorePlayerControl(bool applyExitGhost, bool preserveExitMomentum = false)

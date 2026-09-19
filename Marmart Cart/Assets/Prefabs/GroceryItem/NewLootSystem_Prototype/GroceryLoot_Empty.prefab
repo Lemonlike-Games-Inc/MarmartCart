@@ -278,7 +278,7 @@ MonoBehaviour:
   lootDefinition: {fileID: 0}
   destroyOnCollected: 1
   destroyDelay: 0
-  selfCleanTime: 10
+  selfCleanTime: 15
   useDefinitionDebugPresentation: 0
   debugVisualRoot: {fileID: 979296044675408397}
   debugRenderer: {fileID: 4716203262520992364}

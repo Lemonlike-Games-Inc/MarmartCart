@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum CheckoutStationId
@@ -44,6 +45,12 @@ public class CheckoutStationFlowController : MonoBehaviour
     public CheckoutStationId StationId => stationId;
     public bool IsOpen => isOpen;
 
+    /// <summary>
+    /// Raised only on a real closed-to-open transition. Reapplying SetOpen(true)
+    /// to an already-open station does not replay opening feedback.
+    /// </summary>
+    public event Action OnStationOpened;
+
     private void Awake()
     {
         if (checkOutManager == null) checkOutManager = GetComponent<CheckOutManager>();
@@ -72,6 +79,8 @@ public class CheckoutStationFlowController : MonoBehaviour
 
     public void SetOpen(bool open)
     {
+        bool wasOpen = isOpen;
+
         isOpen = open;
         isTelegraphing = false;
 
@@ -86,6 +95,11 @@ public class CheckoutStationFlowController : MonoBehaviour
         if (closedIndicator != null) closedIndicator.SetActive(!open);
 
         RefreshPitAvailabilityVisual();
+
+        if (open && !wasOpen)
+        {
+            OnStationOpened?.Invoke();
+        }
     }
 
     private void RefreshPitAvailabilityVisual()

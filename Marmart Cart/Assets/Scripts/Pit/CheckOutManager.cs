@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,7 +30,6 @@ public class CheckOutManager : MonoBehaviour
     [SerializeField] private CargoCapacityController enteredCargoController;
     [SerializeField] private CartPitZone myPitZone;
     [SerializeField] private CashScoreManager cashScoreManager;
-    [SerializeField] private SfxManager sfxManager;
     [SerializeField] private CheckoutCargoDisplay checkoutCargoDisplay;
 
     #endregion
@@ -48,13 +48,6 @@ public class CheckOutManager : MonoBehaviour
     [Tooltip("Small pause after the final loaded cart before the lane begins auto-exit.")]
     [Min(0f)]
     [SerializeField] private float postCheckoutDelay = 0.2f;
-
-    #endregion
-
-    #region Feedback
-
-    [Header("Checkout Feedback")]
-    [SerializeField] private string checkoutCartSfxKey = "CheckoutSingle";
 
     #endregion
 
@@ -85,6 +78,21 @@ public class CheckOutManager : MonoBehaviour
     public bool IsCheckingOut => isCheckingOut;
     public bool IsManualCheckoutEnabled => isCheckingOut && manualCheckoutEnabled;
     public bool IsAutoFallbackActive => isCheckingOut && autoFallbackActive;
+
+    #endregion
+
+    #region Events
+
+    /// <summary>
+    /// Raised after one loaded follower cart has been removed and its cargo has
+    /// been registered with CashScoreManager.
+    ///
+    /// Arguments:
+    /// 1) player index;
+    /// 2) one-based checked-out cart number within this checkout session;
+    /// 3) number of CargoEntries checked out from that physical cart.
+    /// </summary>
+    public event Action<int, int, int> OnCartCheckedOut;
 
     #endregion
 
@@ -325,10 +333,11 @@ public class CheckOutManager : MonoBehaviour
         cartsCheckedOutThisSession++;
         cargoCheckedOutThisSession += checkoutEntryBuffer.Count;
 
-        if (sfxManager != null && !string.IsNullOrEmpty(checkoutCartSfxKey))
-        {
-            sfxManager.PlaySFX(checkoutCartSfxKey);
-        }
+        OnCartCheckedOut?.Invoke(
+            checkoutPlayerIndex,
+            cartsCheckedOutThisSession,
+            checkoutEntryBuffer.Count
+        );
 
         return true;
     }

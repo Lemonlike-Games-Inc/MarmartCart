@@ -20,8 +20,8 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
     [SerializeField] private int baseScorePointsPerVisual = 1;
 
     [Tooltip(
-        "Milestone/streak score carried by one special reward visual. Keep at 1 " +
-        "for one reward point == one special cargo display."
+        "Milestone/streak score carried by one random ordinary-cargo visual. Keep " +
+        "at 1 for one reward point == one additional cargo display."
     )]
     [Min(1)]
     [SerializeField] private int bonusScorePointsPerVisual = 1;
@@ -41,8 +41,14 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
     )]
     [SerializeField] private GameObject fallbackCargoVisualPrefab;
 
-    [Tooltip("Special visual used exclusively for milestone/streak reward points.")]
-    [SerializeField] private GameObject bonusCargoVisualPrefab;
+    [Tooltip(
+        "Ordinary cargo prefabs eligible to represent milestone/streak reward points. " +
+        "One is selected independently for each reward token. When this list has no " +
+        "valid entries, the player's submitted cargo visuals are used instead."
+    )]
+    [SerializeField]
+    private GameObject[] rewardCargoVisualPrefabs =
+        new GameObject[0];
 
     [Tooltip("Optional material for the generated debug sphere when no prefab is available.")]
     [SerializeField] private Material prototypeFallbackMaterial;
@@ -71,7 +77,8 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
     [Header("Ordinary Cargo Rotation")]
     [Tooltip(
         "Give each ordinary cargo visual a random final yaw relative to its authored " +
-        "slot rotation. The special bonus/reward cargo is never randomized."
+        "slot rotation. Reward-phase cargo remains excluded and keeps the authored " +
+        "slot rotation."
     )]
     [SerializeField] private bool randomizeOrdinaryCargoFinalYaw = true;
 
@@ -132,11 +139,36 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
     #region Text
 
     [Header("World Text")]
-    [Tooltip("{0} is the live score integer.")]
+    [Tooltip(
+        "Presentation-only multiplier applied to the live/final ceremony number. " +
+        "Gameplay score, ranking, and score events remain unscaled."
+    )]
+    [Min(1)]
+    [SerializeField] private int scoreDisplayMultiplier = 10;
+
+    [Tooltip("{0} is the multiplied live or final total.")]
     [SerializeField] private string scoreTextFormat = "{0}";
+
+    [Tooltip(
+        "Used while reward cargo is being added. {0} is the completed ordinary " +
+        "cargo score; {1} is the currently revealed reward score. Both are multiplied."
+    )]
+    [SerializeField] private string rewardScoreTextFormat = "{0} (+{1})";
 
     [Tooltip("{0} is the ordinal rank label, for example 1ST.")]
     [SerializeField] private string rankTextFormat = "{0}";
+
+    [Header("Live Score Pop")]
+    [Tooltip("Play a quick local-scale pulse whenever the live score text changes.")]
+    [SerializeField] private bool animateScoreTextChanges = true;
+
+    [Tooltip("Peak scale relative to the authored Live Score Text scale.")]
+    [Min(1f)]
+    [SerializeField] private float scoreTextPopScaleMultiplier = 1.18f;
+
+    [Tooltip("Total real-time duration of one score-text pulse.")]
+    [Min(0.01f)]
+    [SerializeField] private float scoreTextPopDuration = 0.1f;
 
     #endregion
 
@@ -147,7 +179,7 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
             ? 0
             : Mathf.Max(2, maximumVisualTokensPerPlayer);
     public GameObject FallbackCargoVisualPrefab => fallbackCargoVisualPrefab;
-    public GameObject BonusCargoVisualPrefab => bonusCargoVisualPrefab;
+    public GameObject[] RewardCargoVisualPrefabs => rewardCargoVisualPrefabs;
     public Material PrototypeFallbackMaterial => prototypeFallbackMaterial;
     public float PrototypeFallbackScale => Mathf.Max(0.01f, prototypeFallbackScale);
     public float LayerHeight => Mathf.Max(0.01f, layerHeight);
@@ -172,8 +204,17 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
     public float TokenSpinDegrees => tokenSpinDegrees;
     public float CartRiseSmoothTime => Mathf.Max(0.01f, cartRiseSmoothTime);
     public float CompletionRevealDelay => Mathf.Max(0f, completionRevealDelay);
+    public int ScoreDisplayMultiplier => Mathf.Max(1, scoreDisplayMultiplier);
     public string ScoreTextFormat => string.IsNullOrEmpty(scoreTextFormat) ? "{0}" : scoreTextFormat;
+    public string RewardScoreTextFormat =>
+        string.IsNullOrEmpty(rewardScoreTextFormat)
+            ? "{0} (+{1})"
+            : rewardScoreTextFormat;
     public string RankTextFormat => string.IsNullOrEmpty(rankTextFormat) ? "{0}" : rankTextFormat;
+    public bool AnimateScoreTextChanges => animateScoreTextChanges;
+    public float ScoreTextPopScaleMultiplier =>
+        Mathf.Max(1f, scoreTextPopScaleMultiplier);
+    public float ScoreTextPopDuration => Mathf.Max(0.01f, scoreTextPopDuration);
 
     public float EvaluateTokenTravel(float normalizedTime)
     {
@@ -199,5 +240,8 @@ public sealed class MatchResultsPresentationProfile : ScriptableObject
         tokenStartScaleMultiplier = Mathf.Clamp(tokenStartScaleMultiplier, 0.01f, 1f);
         cartRiseSmoothTime = Mathf.Max(0.01f, cartRiseSmoothTime);
         completionRevealDelay = Mathf.Max(0f, completionRevealDelay);
+        scoreDisplayMultiplier = Mathf.Max(1, scoreDisplayMultiplier);
+        scoreTextPopScaleMultiplier = Mathf.Max(1f, scoreTextPopScaleMultiplier);
+        scoreTextPopDuration = Mathf.Max(0.01f, scoreTextPopDuration);
     }
 }

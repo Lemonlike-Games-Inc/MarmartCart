@@ -317,6 +317,10 @@ public class MatchFlowDirector : MonoBehaviour
                 yield return RunCheckoutWindow(session);
                 break;
 
+            case MatchFlowSessionType.CheckoutRestock:
+                yield return RunCheckoutRestock(session);
+                break;
+
             case MatchFlowSessionType.EndGameWrap:
                 yield return RunEndGameWrap(session);
                 break;
@@ -381,6 +385,49 @@ public class MatchFlowDirector : MonoBehaviour
         yield return WaitSeconds(session.duration);
 
         SetCheckoutOpen(session.checkoutStations, false);
+    }
+
+    private IEnumerator RunCheckoutRestock(MatchFlowSession session)
+    {
+        // Warning owns checkout telegraph only. Restock does not begin early.
+        CloseAllCheckoutStations();
+        SetCheckoutTelegraph(session.checkoutStations, true);
+        SetSessionPhase(session, MatchFlowSessionPhase.Warning);
+
+        yield return WaitSeconds(session.telegraphDuration);
+
+        // Active is the one shared window: selected checkouts are open while
+        // the exact empty-cart budget is distributed across the same duration.
+        SetCheckoutTelegraph(session.checkoutStations, false);
+        SetCheckoutOpen(session.checkoutStations, true);
+        SetSessionPhase(session, MatchFlowSessionPhase.Active);
+
+        if (cartRestockSpawner == null)
+        {
+            Debug.LogError(
+                "[MatchFlowDirector] Checkout + Restock session has no CartRestockSpawner. " +
+                "Checkout will remain active for the authored duration, but no carts can spawn.",
+                this
+            );
+
+            yield return WaitSeconds(session.duration);
+        }
+        else
+        {
+            yield return cartRestockSpawner.SpawnExactBudget(
+                session.resourceBudget,
+                session.duration,
+                session.batchSize
+            );
+        }
+
+        // Closing is deliberately quiet. Stop both gameplay services first,
+        // then retain only the session's center-area light selection until the
+        // authored closing duration ends.
+        SetCheckoutOpen(session.checkoutStations, false);
+        SetSessionPhase(session, MatchFlowSessionPhase.Closing);
+
+        yield return WaitSeconds(session.closingDuration);
     }
 
     private IEnumerator RunEndGameWrap(MatchFlowSession session)

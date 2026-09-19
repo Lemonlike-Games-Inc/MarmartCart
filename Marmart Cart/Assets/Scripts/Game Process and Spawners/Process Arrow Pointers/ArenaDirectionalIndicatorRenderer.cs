@@ -234,7 +234,10 @@ public sealed class ArenaDirectionalIndicatorRenderer : ImmediateModeShapeDrawer
             );
 
         checkoutVisible =
-            currentSessionType == MatchFlowSessionType.CheckoutWindow &&
+            (
+                currentSessionType == MatchFlowSessionType.CheckoutWindow ||
+                currentSessionType == MatchFlowSessionType.CheckoutRestock
+            ) &&
             currentPhase == MatchFlowSessionPhase.Active &&
             currentCheckoutStations != CheckoutStationMask.None;
     }

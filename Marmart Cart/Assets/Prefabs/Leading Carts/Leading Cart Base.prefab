@@ -1277,6 +1277,7 @@ GameObject:
   - component: {fileID: 9068241723809322355}
   - component: {fileID: 6722514735618396874}
   - component: {fileID: 3594244716909788299}
+  - component: {fileID: 704003045199173649}
   m_Layer: 7
   m_Name: Cart Movement Controllers
   m_TagString: Untagged
@@ -1313,6 +1314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controllable: 1
   isInPit: 0
+  powerupFrozen: 0
   allowDrift: 1
   steerDeadzone: 0.15
   driftController: {fileID: 5516393899602412129}
@@ -1330,6 +1332,8 @@ MonoBehaviour:
   canSpeedup: 1
   currentHype: 100
   hypeBurnOwnedFollowerCount: 0
+  colaMentosBoostActive: 0
+  colaMentosTargetSpeed: 0
   canMoveBackward: 0
   canActivatePowerUp: 0
   powerupsManager: {fileID: 0}
@@ -1438,7 +1442,7 @@ MonoBehaviour:
   cartController: {fileID: 5901886544005484465}
   enableDriftHypeReward: 1
   minimumSuccessDuration: 0.6
-  baseHypeGainPerSecond: 5
+  baseHypeGainPerSecond: 10
   maxHypeRewardPerDrift: 100
   minimumRewardTightness: 0
   minTightnessRewardMultiplier: 0.5
@@ -1621,6 +1625,33 @@ MonoBehaviour:
   stateSystem: {fileID: 0}
   playerIndexOverride: 0
   resolvedPlayerIndex: 0
+--- !u!114 &704003045199173649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2040688800904011672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8598d641d8fb06f4ca41912b9ed71ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  driftController: {fileID: 5516393899602412129}
+  audioProfile: {fileID: 11400000, guid: e56972a1c835fcb42a2243ed3bfac8d6, type: 2}
+  audioAnchor: {fileID: 0}
+  normalLoopSource: {fileID: 0}
+  tightLoopSource: {fileID: 0}
+  createMissingAudioSources: 1
+  driftAudioActive: 0
+  fadeOutRequested: 0
+  currentSpeedResponse: 0
+  currentTightBlend: 0
+  currentPitch: 1
+  currentNormalVolume: 0
+  currentTightVolume: 0
+  currentFadeEnvelope: 0
+  currentPerDriftPitchOffset: 0
 --- !u!1 &2124143889757510336
 GameObject:
   m_ObjectHideFlags: 0
@@ -3296,6 +3327,7 @@ MonoBehaviour:
   minSpeed: 0
   brakeFactor: 1
   maxBrakeForce: 50
+  powerupFreezeSuppressed: 0
 --- !u!1 &3988090723409313001
 GameObject:
   m_ObjectHideFlags: 0
@@ -3598,6 +3630,7 @@ MonoBehaviour:
   minSpeed: 0
   brakeFactor: 1
   maxBrakeForce: 50
+  powerupFreezeSuppressed: 0
 --- !u!1 &4329385579672087611
 GameObject:
   m_ObjectHideFlags: 0
@@ -5789,6 +5822,7 @@ MonoBehaviour:
   minSpeed: 0
   brakeFactor: 1
   maxBrakeForce: 50
+  powerupFreezeSuppressed: 0
 --- !u!1 &6515940038003015164
 GameObject:
   m_ObjectHideFlags: 0
@@ -17542,6 +17576,7 @@ MonoBehaviour:
   minSpeed: 0
   brakeFactor: 1
   maxBrakeForce: 50
+  powerupFreezeSuppressed: 0
 --- !u!1 &8861251655955522181
 GameObject:
   m_ObjectHideFlags: 0

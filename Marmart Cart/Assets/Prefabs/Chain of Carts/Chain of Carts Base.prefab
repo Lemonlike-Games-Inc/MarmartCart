@@ -61,7 +61,7 @@ MonoBehaviour:
   recoveryHingeRestoreSpeed: 5
   moveBackwardController: {fileID: 7301706362411791999}
   physicalJointProbe: {fileID: 8147838864649264086}
-  vulnerableFollowerCount: 3
+  vulnerableFollowerCount: 999
   vulnerabilitySessionActive: 0
   currentVulnerableFollowerCount: 0
   followerSpawnDelay: 0.11
@@ -366,6 +366,7 @@ MonoBehaviour:
   playerPowerupController: {fileID: 1721464837927437150}
   aimStateSystem: {fileID: 0}
   gameplayProfile: {fileID: 11400000, guid: 48a0702ed6192ee4da5ee8c8d9ee085e, type: 2}
+  projectileProfile: {fileID: 0}
   logAcceptedAimSnapshots: 1
   boundCartControl: {fileID: 0}
   boundMounts: {fileID: 0}
@@ -429,6 +430,7 @@ MonoBehaviour:
   playerPowerupController: {fileID: 1721464837927437150}
   targetingController: {fileID: 2247272871967667016}
   projectilePool: {fileID: 0}
+  lifecycleEventSystem: {fileID: 0}
   logSuccessfulLaunches: 1
   logLaunchFailures: 1
   warnWhenPatternExceedsPreview: 1
