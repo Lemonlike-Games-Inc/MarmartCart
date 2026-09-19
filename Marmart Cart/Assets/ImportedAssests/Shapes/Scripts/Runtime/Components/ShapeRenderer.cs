@@ -16,7 +16,12 @@ namespace Shapes {
 		bool initializedComponents = false;
 		MeshRenderer rnd;
 		MeshFilter mf;
+		#if UNITY_6000_4_OR_NEWER
+		EntityId meshOwnerID;
+		#else
 		int meshOwnerID;
+		#endif
+
 		MaterialPropertyBlock mpb;
 		MaterialPropertyBlock Mpb => mpb ??= new MaterialPropertyBlock();
 		Material[] instancedMaterials = null; // used when pass tags are anything but the default (eg ZTest != Less Equal, or scale offset is set, or a weird blend mode)
@@ -476,7 +481,11 @@ namespace Shapes {
 
 			// the next two modes are copy-sensitive, meaning that if we duplicate this object,
 			// we also have to duplicate the mesh and update which mesh the duplicate is pointing to
+			#if UNITY_6000_4_OR_NEWER
+			EntityId id = gameObject.GetEntityId();
+			#else
 			int id = gameObject.GetInstanceID();
+			#endif
 
 			bool createMesh = Mesh == null || meshOwnerID != id;
 

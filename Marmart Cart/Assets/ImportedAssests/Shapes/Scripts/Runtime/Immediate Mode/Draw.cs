@@ -2,15 +2,13 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using TMPro;
-#if SHAPES_URP
-using UnityEngine.Rendering.Universal;
-
-#elif SHAPES_HDRP
-using UnityEngine.Rendering.HighDefinition;
-#else
 using UnityEngine.Rendering;
-
+using TMPro;
+#if URP_INSTALLED
+using UnityEngine.Rendering.Universal;
+#endif
+#if HDRP_INSTALLED
+using UnityEngine.Rendering.HighDefinition;
 #endif
 
 // Shapes © Freya Holmér - https://twitter.com/FreyaHolmer/
@@ -22,18 +20,36 @@ namespace Shapes {
 
 		const MethodImplOptions INLINE = MethodImplOptions.AggressiveInlining;
 
-		/// <summary><para>Creates a DrawCommand for drawing in immediate mode.</para>
-		/// <para>Example usage:</para>
-		/// <para>using(Draw.Command(Camera.main)){ Draw.Line( a, b, Color.red ); }</para></summary>
-		/// <param name="cam">The camera to draw in</param>
-		/// <param name="cameraEvent">When during the render this command should execute</param>
-		#if SHAPES_URP
-		public static DrawCommand Command( Camera cam, RenderPassEvent cameraEvent = RenderPassEvent.BeforeRenderingPostProcessing ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
-		#elif SHAPES_HDRP
-		public static DrawCommand Command( Camera cam, CustomPassInjectionPoint cameraEvent = CustomPassInjectionPoint.BeforePostProcess ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
-		#else
-		public static DrawCommand Command( Camera cam, CameraEvent cameraEvent = CameraEvent.BeforeImageEffects ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
+		#if URP_INSTALLED
+		/// <inheritdoc cref="Command(Camera,CameraEvent)"></inheritdoc>
+		public static DrawCommand Command( Camera cam, RenderPassEvent cameraEvent ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
 		#endif
+		#if HDRP_INSTALLED
+		/// <inheritdoc cref="Command(Camera,CameraEvent)"></inheritdoc>
+		public static DrawCommand Command( Camera cam, CustomPassInjectionPoint cameraEvent ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
+		#endif
+
+		/// <summary><para>Creates a DrawCommand for drawing in immediate mode.</para>
+		/// <para>If <c>cameraEvent</c> is unspecified, it will be drawn just before post processing.</para>
+		/// <example><code>using( Draw.Command(Camera.main) ){
+		///		Draw.Line( a, b, Color.red );
+		/// }</code></example></summary>
+		/// <param name="cam">The camera to draw in</param>
+		/// <param name="cameraEvent">When during the render this command should execute. Defaults to drawing just before post processing</param>
+		public static DrawCommand Command( Camera cam, CameraEvent cameraEvent ) => ObjectPool<DrawCommand>.Alloc().Initialize( cam, cameraEvent );
+
+		public static DrawCommand Command( Camera cam ) {
+			switch( UnityInfo.CurrentRp ) {
+				case RenderPipeline.Legacy: return Command( cam, CameraEvent.BeforeImageEffects );
+				#if URP_INSTALLED
+				case RenderPipeline.URP: return Command( cam, RenderPassEvent.BeforeRenderingPostProcessing );
+				#endif
+				#if HDRP_INSTALLED
+				case RenderPipeline.HDRP: return Command( cam, CustomPassInjectionPoint.BeforePostProcess );
+				#endif
+				default: throw new Exception( $"Failed to set up draw command. Current render pipeline appears to not be installed: {UnityInfo.CurrentRp}" );
+			}
+		}
 
 		/// <summary>Prepares Shapes to draw in IMGUI Repaint events,
 		/// by initializing the _ScreenParams variable to the current drawing context size.

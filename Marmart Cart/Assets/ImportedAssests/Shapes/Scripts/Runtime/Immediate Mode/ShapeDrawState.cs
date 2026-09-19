@@ -43,7 +43,7 @@ namespace Shapes {
 			matrix = default;
 		}
 
-#if SHAPES_URP && UNITY_6000_0_OR_NEWER
+		#if URP_INSTALLED
 		// if on URP, render graph is used (compatibility mode off), on Unity 6:
 		public void AddToCommandBuffer( RasterCommandBuffer cmd ) {
 			if( instanced )
@@ -52,7 +52,8 @@ namespace Shapes {
 				cmd.DrawMesh( drawState.mesh, matrix, drawState.mat, drawState.submesh, 0, mpb );
 			}
 		}
-#endif
+		#endif
+
 		// all other render pipelines use this one
 		public void AddToCommandBuffer( CommandBuffer cmd ) {
 			if( instanced )

@@ -10,6 +10,7 @@ AssetOrigin:
   serializedVersion: 1
   productId: 173167
   packageName: Shapes
-  packageVersion: 4.5.1
-  assetPath: Assets/Shapes/Shaders/Generated Materials/Line 3D Screen (CAP_SQUARE).mat
-  uploadId: 753328
+  packageVersion: 4.6.0
+  assetPath: Assets/ImportedAssests/Shapes/Shaders/Generated Materials/Line 3D Screen
+    (CAP_SQUARE).mat
+  uploadId: 906936

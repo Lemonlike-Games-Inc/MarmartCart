@@ -11,6 +11,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 173167
   packageName: Shapes
-  packageVersion: 4.5.1
-  assetPath: Assets/Shapes/Shaders/Core/Cuboid Core.cginc
-  uploadId: 753328
+  packageVersion: 4.6.0
+  assetPath: Assets/ImportedAssests/Shapes/Shaders/Core/Cuboid Core.cginc
+  uploadId: 906936
