@@ -301,7 +301,9 @@ public class SnakeCartManager : MonoBehaviour, IAssistPlayerDataSource
             if (cart == null) continue;
             if (!TryGetDistancePathTarget(i, out Vector3 targetPosition, out Quaternion targetRotation)) continue;
 
-            cart.transform.SetPositionAndRotation(targetPosition, targetRotation);
+            cart.GetComponent<Rigidbody>().MovePosition(targetPosition);
+            cart.GetComponent<Rigidbody>().MoveRotation(targetRotation);
+            //cart.transform.SetPositionAndRotation(targetPosition, targetRotation);
         }
     }
 

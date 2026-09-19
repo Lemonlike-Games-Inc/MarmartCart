@@ -76,7 +76,7 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
     [SerializeField] private string cargoSpillSfxKey = "";
 
     private Rigidbody rb;
-
+    private RigidbodyInterpolation looseInterpolation;
     #endregion
 
     #region Cargo Spill
@@ -156,6 +156,7 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        looseInterpolation = rb.interpolation;
 
         if (cartMaterialManager == null) cartMaterialManager = GetComponentInChildren<CartMaterialManager>(true);
         if (teamOutlineController == null) teamOutlineController = GetComponentInChildren<CartTeamOutlineController>(true);
@@ -257,6 +258,10 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
             return false;
         }
 
+        // It is now physically owned, even though the logical state finishes
+        // on the next FixedUpdate.
+        SetCollectedPhysicsState(true);
+
         pendingCollectingSnake = collectingSnake;
         collectionWaitingForNextFixedUpdate = true;
 
@@ -291,6 +296,8 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
     public void CollectByPlayer()
     {
+        SetCollectedPhysicsState(true);
+
         SetVulnerable(false);
 
         isCollectedByPlayer = true;
@@ -320,6 +327,7 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
     /// </summary>
     public void RestoreLooseStateAfterFailedCollection()
     {
+        SetCollectedPhysicsState(false);
         SetVulnerable(false);
 
         isCollectedByPlayer = false;
@@ -367,6 +375,9 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
         // CENTRAL RULE:
         // every owned -> loose transition normalizes this physical cart first.
         PrepareForLooseState();
+
+        // Must happen before AddForce/AddTorque.
+        SetCollectedPhysicsState(false);
 
         SetVulnerable(false);
 
@@ -650,7 +661,28 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
     }
 
     #endregion
+    private void SetCollectedPhysicsState(bool collected)
+    {
+        if (rb == null) rb = GetComponent<Rigidbody>();
+        if (rb == null) return;
 
+        if (collected)
+        {
+            // Clear loose-cart falling/spinning before making it kinematic.
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.isKinematic = true;
+        }
+        else
+        {
+            // Must become dynamic before gravity or detach impulses can work.
+            rb.isKinematic = false;
+            rb.interpolation = looseInterpolation;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+    }
 
     #region Validation
 

@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba95ac0072a6b414688f2387b6189109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleSpacing: 0.1
+  sampleSpacing: 0.05
   movementAcceptanceDistance: 0.01
   ignoreVerticalMotion: 1
   initialBackfillDistance: 20

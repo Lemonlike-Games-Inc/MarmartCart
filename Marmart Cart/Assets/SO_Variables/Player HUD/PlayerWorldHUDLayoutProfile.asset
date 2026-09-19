@@ -43,11 +43,6 @@ MonoBehaviour:
   checkoutPromptTextOffsetPixels: {x: 0, y: 0}
   checkoutPromptFontSizePixels: 200
   checkoutPromptTextColor: {r: 1, g: 1, b: 1, a: 1}
-  showCheckoutRegisteredScore: 1
-  checkoutRegisteredScoreOffsetPixels: {x: -73.1, y: 46.5}
-  checkoutRegisteredScoreFontSizePixels: 303.8
-  checkoutRegisteredScoreColor: {r: 1, g: 1, b: 1, a: 1}
-  checkoutRegisteredScoreLifetimeSeconds: 0.4
   useNearCameraRenderPlane: 1
   nearCameraRenderDistance: 0.5
   nearClipSafetyPadding: 0.03
