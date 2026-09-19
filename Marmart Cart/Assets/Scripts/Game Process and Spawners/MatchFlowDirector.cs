@@ -7,7 +7,8 @@ public enum MatchFlowSessionPhase
     None = 0,
     Warning = 1,
     Active = 2,
-    Closing = 3
+    Closing = 3,
+    FreePlay = 4
 }
 
 /// <summary>
@@ -80,8 +81,8 @@ public class MatchFlowDirector : MonoBehaviour
 
     /// <summary>
     /// Raised at the exact semantic boundary between Warning, Active,
-    /// Closing, and None. Presentation systems should use this instead of
-    /// reconstructing session timing or polling ArenaZone state.
+    /// Closing, FreePlay, and None. Presentation systems should use this
+    /// instead of reconstructing session timing or polling ArenaZone state.
     /// </summary>
     public event Action<int, MatchFlowSession, MatchFlowSessionPhase>
         OnSessionPhaseChanged;
@@ -361,9 +362,15 @@ public class MatchFlowDirector : MonoBehaviour
         SetSessionPhase(session, MatchFlowSessionPhase.Active);
         yield return zone.SpawnLootBudget(session.resourceBudget, session.duration, session.batchSize);
 
-        // The loot budget is now complete, but the zone intentionally remains
-        // Active during closing. This keeps its power-up spawners and existing
-        // chaotic gameplay available without releasing more zone loot.
+        // FreePlay preserves the old long breathing-window behavior. The zone
+        // remains Active, so its power-up spawners and existing chaos remain,
+        // but SpawnLootBudget has already completed and releases no new loot.
+        SetSessionPhase(session, MatchFlowSessionPhase.FreePlay);
+        yield return WaitSeconds(session.freePlayDuration);
+
+        // Closing is the short final transition. Gameplay remains in the same
+        // quiet state, but the Player HUD Session Guide now forecasts the next
+        // major session through the end of that session's Telegraph phase.
         SetSessionPhase(session, MatchFlowSessionPhase.Closing);
         yield return WaitSeconds(session.closingDuration);
 
@@ -421,12 +428,14 @@ public class MatchFlowDirector : MonoBehaviour
             );
         }
 
-        // Closing is deliberately quiet. Stop both gameplay services first,
-        // then retain only the session's center-area light selection until the
-        // authored closing duration ends.
+        // FreePlay is the long breathing window. Stop both gameplay services
+        // first, then retain only the session's center-area light selection.
         SetCheckoutOpen(session.checkoutStations, false);
-        SetSessionPhase(session, MatchFlowSessionPhase.Closing);
+        SetSessionPhase(session, MatchFlowSessionPhase.FreePlay);
+        yield return WaitSeconds(session.freePlayDuration);
 
+        // Closing keeps that quiet state for the short guide/transition window.
+        SetSessionPhase(session, MatchFlowSessionPhase.Closing);
         yield return WaitSeconds(session.closingDuration);
     }
 

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7146c575116160e4fb8be2ba942baa67, type: 3}
+  m_Name: PlayerSessionGuideProfile
+  m_EditorClassIdentifier: 
+  showSessionGuide: 1
+  masterScale: 1
+  twoPlayerScaleMultiplier: 1
+  fourPlayerScaleMultiplier: 0.82
+  groupOffsetPixels: {x: 0, y: 180}
+  zoneLootMessage: FLASH SALE IN {COUNTDOWN}!
+  checkoutRestockMessage: CHECKOUTS OPEN IN {COUNTDOWN}!
+  zoneLootActiveMessage: FLASH SALE THERE!
+  checkoutRestockActiveMessage: CHECKOUTS OPENING!
+  zoneLootBackgroundSizePixels: {x: 310, y: 50}
+  checkoutRestockBackgroundSizePixels: {x: 270, y: 50}
+  dialogueBackgroundOffsetPixels: {x: 0, y: 5}
+  dialogueCornerRadiusPixels: 13
+  dialogueBackgroundColor: {r: 0.035, g: 0.05, b: 0.075, a: 0.88}
+  dialogueTextOffsetPixels: {x: 0, y: 5}
+  dialogueFontSizePixels: 250
+  dialogueTextColor: {r: 1, g: 1, b: 1, a: 1}
+  compassOffsetPixels: {x: 0, y: -60}
+  compassCircleRadiusPixels: 36
+  compassCircleColor: {r: 0.035, g: 0.05, b: 0.075, a: 0.88}
+  arrowOffsetPixels: {x: 0, y: 0}
+  arrowLengthPixels: 43
+  arrowShaftThicknessPixels: 9
+  arrowHeadLengthPixels: 15
+  arrowHeadWidthPixels: 30
+  arrowColor: {r: 1, g: 1, b: 1, a: 1}
+  raindropOffsetPixels: {x: 0, y: 0}
+  raindropWidthPixels: 28.5
+  raindropHeightPixels: 42.9
+  raindropColor: {r: 1, g: 1, b: 1, a: 1}
+  raindropCenterCircleRadiusPixels: 4.5
+  raindropCenterCircleColor: {r: 0.03529412, g: 0.050980393, b: 0.07450981, a: 0.8784314}
+  useNearCameraRenderPlane: 1
+  nearCameraRenderDistance: 0.5
+  nearClipSafetyPadding: 0.03

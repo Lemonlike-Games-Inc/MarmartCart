@@ -45,13 +45,28 @@ public class ZoneLootSpawner : MonoBehaviour
 
     public string SectionLabel => string.IsNullOrWhiteSpace(sectionLabel) ? gameObject.name : sectionLabel;
     public float SelectionWeight => Mathf.Max(0f, selectionWeight);
-    public bool CanSpawn => spawnArea != null && validLootPrefabs.Count > 0;
+    public bool CanSpawn
+    {
+        get
+        {
+            ResolveSpawnArea();
+            return spawnArea != null && validLootPrefabs.Count > 0;
+        }
+    }
     public int ValidPrefabCount => validLootPrefabs.Count;
     public int TotalSpawned => totalSpawned;
+    public RandomGroundSpawnArea SpawnArea
+    {
+        get
+        {
+            ResolveSpawnArea();
+            return spawnArea;
+        }
+    }
 
     private void Awake()
     {
-        if (spawnArea == null) spawnArea = GetComponentInChildren<RandomGroundSpawnArea>(true);
+        ResolveSpawnArea();
         RebuildPrefabCache();
     }
 
@@ -62,6 +77,8 @@ public class ZoneLootSpawner : MonoBehaviour
 
     public bool TrySpawnOneLoot()
     {
+        ResolveSpawnArea();
+
         if (!CanSpawn) return false;
         if (!spawnArea.TryGetValidDropPosition(out Vector3 dropPosition)) return false;
 
@@ -112,5 +129,13 @@ public class ZoneLootSpawner : MonoBehaviour
         }
 
         validPrefabCount = validLootPrefabs.Count;
+    }
+
+    private void ResolveSpawnArea()
+    {
+        if (spawnArea == null)
+        {
+            spawnArea = GetComponentInChildren<RandomGroundSpawnArea>(true);
+        }
     }
 }

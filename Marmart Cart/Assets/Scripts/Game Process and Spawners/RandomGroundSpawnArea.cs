@@ -75,6 +75,28 @@ public class RandomGroundSpawnArea : MonoBehaviour
 
     #region Public API
 
+    public float AreaWidth => areaWidth;
+    public float AreaLength => areaLength;
+    public bool UsesTransformYaw => useTransformYaw;
+
+    /// <summary>
+    /// Tests the same authored horizontal rectangle used by spawn sampling.
+    /// World Y is deliberately ignored. Positive padding expands the rectangle.
+    /// </summary>
+    public bool ContainsHorizontalPoint(Vector3 worldPoint, float padding = 0f)
+    {
+        GetHorizontalAxes(out Vector3 right, out Vector3 forward);
+
+        Vector3 fromCenter = worldPoint - transform.position;
+        float localX = Vector3.Dot(fromCenter, right);
+        float localZ = Vector3.Dot(fromCenter, forward);
+        float safePadding = Mathf.Max(0f, padding);
+
+        return
+            Mathf.Abs(localX) <= areaWidth * 0.5f + safePadding &&
+            Mathf.Abs(localZ) <= areaLength * 0.5f + safePadding;
+    }
+
     /// <summary>
     /// Finds a legal X/Z using a downward Ground/InvisibleTop ray, then returns
     /// that X/Z at THIS COMPONENT'S Transform Y so the prefab is released from

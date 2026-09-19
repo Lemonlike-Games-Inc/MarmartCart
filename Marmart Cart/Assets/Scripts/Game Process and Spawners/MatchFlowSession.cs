@@ -57,10 +57,20 @@ public class MatchFlowSession
     public float telegraphDuration = 2f;
 
     [Tooltip(
-        "Used by ZoneLoot and Checkout + Restock. Added after active Duration.\n" +
-        "ZoneLoot: no new loot is released, while the ArenaZone remains Active.\n" +
-        "Checkout + Restock: restocking stops and checkout stations close, " +
-        "while the center-area light indicator remains selected."
+        "Used by ZoneLoot and Checkout + Restock immediately after Active. " +
+        "This is the longer player-breathing window.\n" +
+        "ZoneLoot keeps the zone/power-ups active without releasing new loot.\n" +
+        "Checkout + Restock remains quiet with checkout stations closed and " +
+        "no new carts released."
+    )]
+    [Min(0f)]
+    public float freePlayDuration = 0f;
+
+    [Tooltip(
+        "Used by ZoneLoot and Checkout + Restock after FreePlay and immediately " +
+        "before the next session. The Player HUD Session Guide begins when " +
+        "this short phase starts. Gameplay remains quiet while the current " +
+        "session's area-light selection stays active."
     )]
     [Min(0f)]
     public float closingDuration = 0f;
@@ -88,6 +98,7 @@ public class MatchFlowSession
                 return
                     Mathf.Max(0f, telegraphDuration) +
                     Mathf.Max(0f, duration) +
+                    Mathf.Max(0f, freePlayDuration) +
                     Mathf.Max(0f, closingDuration);
 
             case MatchFlowSessionType.CheckoutWindow:

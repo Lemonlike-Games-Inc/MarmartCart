@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: TomatoPresentationProfile
   m_EditorClassIdentifier: 
   impactVfxPrefab: {fileID: 3008449648864496834, guid: 384c1fb20dc4823489c4895f5c671a65, type: 3}
-  impactVfxPrewarmCount: 8
+  impactVfxPrewarmCount: 12
   allowImpactVfxPoolGrowth: 1
-  maximumImpactVfxInstances: 24
+  maximumImpactVfxInstances: 48
   maximumImpactVfxLifetimeSeconds: 8
   impactSurfaceOffset: 0.02
   alignImpactVfxUpToSurfaceNormal: 1

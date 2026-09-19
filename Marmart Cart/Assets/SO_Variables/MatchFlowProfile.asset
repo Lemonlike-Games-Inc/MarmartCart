@@ -15,35 +15,39 @@ MonoBehaviour:
   sessions:
   - label: Game Start Empty Period
     type: 0
-    duration: 5
+    duration: 1
     telegraphDuration: 0
+    freePlayDuration: 0
     closingDuration: 0
     resourceBudget: 0
     batchSize: 0
     zone: 0
     checkoutStations: 0
   - label: Cart Restock Cycle1
-    type: 1
-    duration: 5
-    telegraphDuration: 2
-    closingDuration: 0
+    type: 5
+    duration: 10
+    telegraphDuration: 0
+    freePlayDuration: 0
+    closingDuration: 5
     resourceBudget: 10
     batchSize: 5
     zone: 0
     checkoutStations: 0
   - label: Loot Cycle1
     type: 2
-    duration: 10
-    telegraphDuration: 0
+    duration: 15
+    telegraphDuration: 5
+    freePlayDuration: 0
     closingDuration: 5
     resourceBudget: 30
     batchSize: 10
-    zone: 1
+    zone: 0
     checkoutStations: 0
   - label: Checkout Cycle1
     type: 5
-    duration: 20
+    duration: 15
     telegraphDuration: 5
+    freePlayDuration: 0
     closingDuration: 5
     resourceBudget: 15
     batchSize: 3
@@ -51,71 +55,19 @@ MonoBehaviour:
     checkoutStations: 6
   - label: End
     type: 2
-    duration: 35
-    telegraphDuration: 0
-    closingDuration: 15
-    resourceBudget: 40
-    batchSize: 10
-    zone: 1
-    checkoutStations: -1
-  - label: End
-    type: 5
-    duration: 20
+    duration: 10
     telegraphDuration: 5
-    closingDuration: 5
-    resourceBudget: 15
-    batchSize: 3
-    zone: 0
-    checkoutStations: 12
-  - label: End
-    type: 2
-    duration: 35
-    telegraphDuration: 0
-    closingDuration: 15
+    freePlayDuration: 0
+    closingDuration: 1
     resourceBudget: 40
-    batchSize: 10
-    zone: 2
-    checkoutStations: -1
-  - label: End
-    type: 5
-    duration: 15
-    telegraphDuration: 0
-    closingDuration: 0
-    resourceBudget: 0
-    batchSize: 1
-    zone: 0
-    checkoutStations: 3
-  - label: End
-    type: 2
-    duration: 35
-    telegraphDuration: 0
-    closingDuration: 15
-    resourceBudget: 60
     batchSize: 10
     zone: 3
-    checkoutStations: -1
-  - label: End
-    type: 2
-    duration: 35
-    telegraphDuration: 0
-    closingDuration: 15
-    resourceBudget: 40
-    batchSize: 10
-    zone: 0
-    checkoutStations: -1
-  - label: End
-    type: 5
-    duration: 15
-    telegraphDuration: 0
-    closingDuration: 5
-    resourceBudget: 0
-    batchSize: 1
-    zone: 0
     checkoutStations: -1
   - label: End
     type: 4
     duration: 3
     telegraphDuration: 5
+    freePlayDuration: 0
     closingDuration: 0
     resourceBudget: 0
     batchSize: 1

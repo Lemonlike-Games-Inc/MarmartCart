@@ -60,8 +60,11 @@ public class ArenaZone : MonoBehaviour
     [SerializeField] private int lastUnreleasedBudget;
     [SerializeField] private int powerupSpawnerCount;
     [SerializeField] private bool powerupSpawnersActivated;
+    [SerializeField] private int sessionGuideAreaCount;
 
     private readonly List<ZoneLootSpawner> sectionAttemptBuffer = new List<ZoneLootSpawner>();
+    private RandomGroundSpawnArea[] sessionGuideAreas;
+    private bool sessionGuideAreaCacheBuilt;
 
     public ArenaZoneId ZoneId => zoneId;
     public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? zoneId.ToString() : displayName;
@@ -73,6 +76,7 @@ public class ArenaZone : MonoBehaviour
     public bool ActivatesPowerupsHere => activatePowerupsHere;
     public bool PowerupSpawnersActivated => powerupSpawnersActivated;
     public int PowerupSpawnerCount => powerupSpawnerCount;
+    public int SessionGuideAreaCount => sessionGuideAreaCount;
 
     #endregion
 
@@ -85,6 +89,7 @@ public class ArenaZone : MonoBehaviour
             sectionLootSpawners = GetComponentsInChildren<ZoneLootSpawner>(true);
         }
 
+        RebuildSessionGuideAreaCache();
         ResolvePowerupSpawners();
 
         SetIdle();
@@ -93,6 +98,90 @@ public class ArenaZone : MonoBehaviour
     private void OnDisable()
     {
         SetPowerupSpawnersActive(false);
+    }
+
+    #endregion
+
+    #region Player Session Guide Area
+
+    /// <summary>
+    /// Rebuilds the allocation-free runtime union used by the player session
+    /// guide. Normal zones use their configured section spawners' authored
+    /// RandomGroundSpawnAreas. A zone with no usable section area (typically
+    /// the center restock zone) falls back to all child spawn areas.
+    /// </summary>
+    [ContextMenu("Rebuild Session Guide Area Cache")]
+    public void RebuildSessionGuideAreaCache()
+    {
+        if (sectionLootSpawners == null || sectionLootSpawners.Length == 0)
+        {
+            sectionLootSpawners = GetComponentsInChildren<ZoneLootSpawner>(true);
+        }
+
+        List<RandomGroundSpawnArea> resolvedAreas =
+            new List<RandomGroundSpawnArea>();
+
+        if (sectionLootSpawners != null)
+        {
+            for (int i = 0; i < sectionLootSpawners.Length; i++)
+            {
+                ZoneLootSpawner spawner = sectionLootSpawners[i];
+                if (spawner == null) continue;
+
+                RandomGroundSpawnArea area = spawner.SpawnArea;
+                if (area == null || resolvedAreas.Contains(area)) continue;
+
+                resolvedAreas.Add(area);
+            }
+        }
+
+        if (resolvedAreas.Count == 0)
+        {
+            RandomGroundSpawnArea[] childAreas =
+                GetComponentsInChildren<RandomGroundSpawnArea>(true);
+
+            for (int i = 0; i < childAreas.Length; i++)
+            {
+                RandomGroundSpawnArea area = childAreas[i];
+                if (area == null || resolvedAreas.Contains(area)) continue;
+
+                resolvedAreas.Add(area);
+            }
+        }
+
+        sessionGuideAreas = resolvedAreas.ToArray();
+        sessionGuideAreaCount = sessionGuideAreas.Length;
+        sessionGuideAreaCacheBuilt = true;
+    }
+
+    /// <summary>
+    /// True when the flattened world point is inside any authored spawn-area
+    /// rectangle belonging to this zone. The rectangles form a union rather
+    /// than one oversized bounding box, so gaps between sections remain gaps.
+    /// </summary>
+    public bool ContainsSessionGuidePoint(
+        Vector3 worldPoint,
+        float padding = 0f)
+    {
+        if (!sessionGuideAreaCacheBuilt)
+        {
+            RebuildSessionGuideAreaCache();
+        }
+
+        if (sessionGuideAreas == null) return false;
+
+        for (int i = 0; i < sessionGuideAreas.Length; i++)
+        {
+            RandomGroundSpawnArea area = sessionGuideAreas[i];
+
+            if (area != null &&
+                area.ContainsHorizontalPoint(worldPoint, padding))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion

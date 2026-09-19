@@ -39,9 +39,9 @@ public class MatchFlowProfileEditor : Editor
 
         EditorGUILayout.HelpBox(
             $"Planned playable timeline: {FormatTime(profile.GetPlannedDuration())}\n" +
-            "ZoneLoot totals include Telegraph + Active Loot + Closing. " +
+            "ZoneLoot totals include Telegraph + Active Loot + FreePlay + Closing. " +
             "Checkout totals include Telegraph + Open Duration. " +
-            "Checkout + Restock totals include Telegraph + Active + Closing.",
+            "Checkout + Restock totals include Telegraph + Active + FreePlay + Closing.",
             MessageType.Info
         );
 
@@ -111,7 +111,7 @@ public class MatchFlowProfileEditor : Editor
                 break;
 
             case MatchFlowSessionType.ZoneLoot:
-                lines = 9;
+                lines = 10;
                 break;
 
             case MatchFlowSessionType.CheckoutWindow:
@@ -119,7 +119,7 @@ public class MatchFlowProfileEditor : Editor
                 break;
 
             case MatchFlowSessionType.CheckoutRestock:
-                lines = 9;
+                lines = 10;
                 break;
 
             case MatchFlowSessionType.EndGameWrap:
@@ -145,6 +145,7 @@ public class MatchFlowProfileEditor : Editor
         SerializedProperty duration = element.FindPropertyRelative("duration");
         SerializedProperty telegraph = element.FindPropertyRelative("telegraphDuration");
         SerializedProperty closing = element.FindPropertyRelative("closingDuration");
+        SerializedProperty freePlay = element.FindPropertyRelative("freePlayDuration");
         SerializedProperty budget = element.FindPropertyRelative("resourceBudget");
         SerializedProperty batch = element.FindPropertyRelative("batchSize");
         SerializedProperty zone = element.FindPropertyRelative("zone");
@@ -178,6 +179,7 @@ public class MatchFlowProfileEditor : Editor
                 DrawProperty(ref y, x, width, zone, "Zone");
                 DrawProperty(ref y, x, width, telegraph, "Telegraph Duration");
                 DrawProperty(ref y, x, width, duration, "Active Loot Duration");
+                DrawProperty(ref y, x, width, freePlay, "FreePlay Duration");
                 DrawProperty(ref y, x, width, closing, "Closing Duration");
                 DrawReadOnlyTotal(
                     ref y,
@@ -185,6 +187,7 @@ public class MatchFlowProfileEditor : Editor
                     width,
                     Mathf.Max(0f, telegraph.floatValue) +
                     Mathf.Max(0f, duration.floatValue) +
+                    Mathf.Max(0f, freePlay.floatValue) +
                     Mathf.Max(0f, closing.floatValue)
                 );
                 DrawProperty(ref y, x, width, budget, "Exact Zone Loot Budget");
@@ -208,6 +211,7 @@ public class MatchFlowProfileEditor : Editor
                 DrawProperty(ref y, x, width, stations, "Open Stations");
                 DrawProperty(ref y, x, width, telegraph, "Telegraph Duration");
                 DrawProperty(ref y, x, width, duration, "Open + Restock Duration");
+                DrawProperty(ref y, x, width, freePlay, "FreePlay Duration");
                 DrawProperty(ref y, x, width, closing, "Closing Duration");
                 DrawReadOnlyTotal(
                     ref y,
@@ -215,6 +219,7 @@ public class MatchFlowProfileEditor : Editor
                     width,
                     Mathf.Max(0f, telegraph.floatValue) +
                     Mathf.Max(0f, duration.floatValue) +
+                    Mathf.Max(0f, freePlay.floatValue) +
                     Mathf.Max(0f, closing.floatValue)
                 );
                 DrawProperty(ref y, x, width, budget, "Exact Restock Cart Budget");

@@ -31,5 +31,5 @@ MonoBehaviour:
     m_Bits: 1536
   projectileBlockingSampleCount: 4
   blockActivationWhenTrajectoryObstructed: 1
-  tomatoPreviewRadius: 2.5
-  iceCubePreviewRadius: 0.9
+  tomatoPreviewRadius: 5
+  iceCubePreviewRadius: 2.5
