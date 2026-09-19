@@ -27,31 +27,22 @@ MonoBehaviour:
     duration: 10
     telegraphDuration: 2
     closingDuration: 0
-    resourceBudget: 10
+    resourceBudget: 20
     batchSize: 2
     zone: 0
     checkoutStations: 0
-  - label: Checkout Cycle1
-    type: 3
-    duration: 10
-    telegraphDuration: 1
-    closingDuration: 0
-    resourceBudget: 0
-    batchSize: 1
-    zone: 0
-    checkoutStations: 11
   - label: Loot Cycle1
     type: 2
-    duration: 10
+    duration: 20
     telegraphDuration: 0
     closingDuration: 0
-    resourceBudget: 20
+    resourceBudget: 40
     batchSize: 4
     zone: 0
     checkoutStations: 0
   - label: End
     type: 2
-    duration: 10
+    duration: 1
     telegraphDuration: 0
     closingDuration: 0
     resourceBudget: 0
@@ -60,7 +51,7 @@ MonoBehaviour:
     checkoutStations: -1
   - label: End
     type: 2
-    duration: 10
+    duration: 1
     telegraphDuration: 0
     closingDuration: 0
     resourceBudget: 0
@@ -69,12 +60,21 @@ MonoBehaviour:
     checkoutStations: -1
   - label: End
     type: 2
-    duration: 10
+    duration: 1
     telegraphDuration: 0
     closingDuration: 0
     resourceBudget: 0
     batchSize: 1
     zone: 3
+    checkoutStations: -1
+  - label: Checkout Cycle1
+    type: 3
+    duration: 15
+    telegraphDuration: 1
+    closingDuration: 0
+    resourceBudget: 0
+    batchSize: 1
+    zone: 0
     checkoutStations: -1
   - label: End
     type: 4

@@ -3,6 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
+/// Immutable checkout-session result published when score becomes banked.
+/// Presentation systems can distinguish ordinary cargo value from milestone
+/// reward value without reconstructing CashScoreManager's rules.
+/// </summary>
+public struct CheckoutSessionCommit
+{
+    public int PlayerIndex { get; }
+    public int CargoCount { get; }
+    public int CheckedOutCartCount { get; }
+    public int BasePoints { get; }
+    public int BonusPoints { get; }
+    public int TotalGain { get; }
+    public int NewPlayerTotal { get; }
+
+    public CheckoutSessionCommit(
+        int playerIndex,
+        int cargoCount,
+        int checkedOutCartCount,
+        int basePoints,
+        int bonusPoints,
+        int totalGain,
+        int newPlayerTotal)
+    {
+        PlayerIndex = playerIndex;
+        CargoCount = Mathf.Max(0, cargoCount);
+        CheckedOutCartCount = Mathf.Max(0, checkedOutCartCount);
+        BasePoints = Mathf.Max(0, basePoints);
+        BonusPoints = Mathf.Max(0, bonusPoints);
+        TotalGain = Mathf.Max(0, totalGain);
+        NewPlayerTotal = Mathf.Max(0, newPlayerTotal);
+    }
+}
+
+/// <summary>
 /// Owns persistent player/team score and checkout-session reward calculation.
 ///
 /// NEW checkout scoring:
@@ -133,6 +167,19 @@ public class CashScoreManager : MonoBehaviour
     public event Action<int, int, int> OnPlayerScoreGained;
     public event Action<int, int, int> OnTeamScoreGained;
 
+    /// <summary>
+    /// Raised synchronously after one physical cart's entries are accepted.
+    /// Listeners must copy any CargoEntry data they need because checkout owns
+    /// the supplied list and may reuse it after this call returns.
+    /// </summary>
+    public event Action<int, IReadOnlyList<CargoEntry>> OnCargoCheckoutRegistered;
+
+    /// <summary>
+    /// Raised once when an active checkout session is committed to the player's
+    /// banked score. Includes the base/bonus split used by final results.
+    /// </summary>
+    public event Action<CheckoutSessionCommit> OnCheckoutSessionCommitted;
+
     #endregion
 
     #region Unity Lifecycle
@@ -201,6 +248,8 @@ public class CashScoreManager : MonoBehaviour
         session.basePoints += scoreAdded;
         RefreshSessionReward(session);
 
+        OnCargoCheckoutRegistered?.Invoke(playerIndex, cargoEntries);
+
         return scoreAdded;
     }
 
@@ -222,7 +271,18 @@ public class CashScoreManager : MonoBehaviour
         playerTotalScore[playerIndex - 1] += gain;
         int newTotal = GetPlayerScore(playerIndex);
 
+        CheckoutSessionCommit commit = new CheckoutSessionCommit(
+            playerIndex,
+            session.cargoCount,
+            session.checkedOutCartCount,
+            Mathf.RoundToInt(session.basePoints),
+            Mathf.RoundToInt(session.bonusPoints),
+            gain,
+            newTotal
+        );
+
         OnPlayerScoreGained?.Invoke(playerIndex, gain, newTotal);
+        OnCheckoutSessionCommitted?.Invoke(commit);
 
         if (GMode.Instance && GMode.Instance.IsTeamBattle)
         {
@@ -239,6 +299,27 @@ public class CashScoreManager : MonoBehaviour
         last.isActive = false;
 
         session.Reset();
+    }
+
+    /// <summary>
+    /// Banks every still-open session at the authoritative end-of-match
+    /// boundary. This prevents already-submitted cargo from being lost when a
+    /// player happens to still be inside a checkout lane as results begin.
+    /// Calling it again is safe because committed sessions reset immediately.
+    /// </summary>
+    public void CommitAllActiveCheckoutSessions()
+    {
+        int playerCount = ActivePlayerCount;
+
+        for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++)
+        {
+            CheckoutSessionData session = currentSession[playerIndex - 1];
+
+            if (session != null && session.isActive)
+            {
+                EndCheckoutSession(playerIndex);
+            }
+        }
     }
 
     public CheckoutSessionData GetCurrentSessionData(int playerIndex)

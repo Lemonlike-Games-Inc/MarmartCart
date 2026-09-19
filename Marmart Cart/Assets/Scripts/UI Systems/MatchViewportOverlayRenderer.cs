@@ -63,6 +63,19 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     [Header("Visibility")]
     [SerializeField] private bool drawingEnabled = true;
 
+    [Tooltip(
+        "Runtime state owned by MatchResultsPresentationController. " +
+        "Results keep the split dividers and final leaderboard but hide the expired timer."
+    )]
+    [SerializeField] private bool resultsMode;
+
+    public bool ResultsMode => resultsMode;
+
+    public void SetResultsMode(bool enabled)
+    {
+        resultsMode = enabled;
+    }
+
     #endregion
 
     #region Runtime Cache
@@ -218,11 +231,14 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
                 renderDepth
             );
 
-            DrawTimer(
-                cam,
-                renderDepth,
-                rootScreen
-            );
+            if (!resultsMode)
+            {
+                DrawTimer(
+                    cam,
+                    renderDepth,
+                    rootScreen
+                );
+            }
 
             DrawLeaderboard(
                 cam,
@@ -800,30 +816,44 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
         if (rowCount <= 0) return;
 
-        Vector2 timerCenter =
-            rootScreen +
-            profile.TimerOffsetPixels;
+        Vector2 firstRowCenter;
 
-        Vector2 timerBackgroundCenter =
-            timerCenter +
-            profile.TimerBackgroundOffsetPixels;
+        if (resultsMode)
+        {
+            // During the ceremony the timer no longer exists. The profile owns
+            // an explicit result-space first-row center so the leaderboard does
+            // not retain an unexplained timer-sized gap.
+            firstRowCenter =
+                rootScreen +
+                profile.ResultsLeaderboardOffsetPixels;
+        }
+        else
+        {
+            Vector2 timerCenter =
+                rootScreen +
+                profile.TimerOffsetPixels;
 
-        float timerBottomY =
-            timerBackgroundCenter.y -
-            profile.TimerBackgroundHeightPixels *
-            0.5f;
+            Vector2 timerBackgroundCenter =
+                timerCenter +
+                profile.TimerBackgroundOffsetPixels;
 
-        // The first row is automatically placed below the timer.
-        // LeaderboardOffsetPixels then moves the complete leaderboard as one unit.
-        Vector2 firstRowCenter =
-            new Vector2(
-                timerCenter.x,
-                timerBottomY -
-                profile.TimerToLeaderboardPaddingPixels -
-                profile.LeaderboardRowHeightPixels *
-                0.5f
-            ) +
-            profile.LeaderboardOffsetPixels;
+            float timerBottomY =
+                timerBackgroundCenter.y -
+                profile.TimerBackgroundHeightPixels *
+                0.5f;
+
+            // The first row is automatically placed below the timer.
+            // LeaderboardOffsetPixels then moves the complete leaderboard as one unit.
+            firstRowCenter =
+                new Vector2(
+                    timerCenter.x,
+                    timerBottomY -
+                    profile.TimerToLeaderboardPaddingPixels -
+                    profile.LeaderboardRowHeightPixels *
+                    0.5f
+                ) +
+                profile.LeaderboardOffsetPixels;
+        }
 
         float rowStep =
             profile.LeaderboardRowHeightPixels +

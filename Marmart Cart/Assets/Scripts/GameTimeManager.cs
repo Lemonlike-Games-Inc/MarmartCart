@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum GameSessionState
 {
@@ -51,8 +52,15 @@ public class GameTimeManager : MonoBehaviour
     )]
     [SerializeField] private bool autoBeginAfterPreGamePause = true;
 
-    [Tooltip("Current prototype freezes gameplay with Time.timeScale = 0 during PreGame and PostGame.")]
-    [SerializeField] private bool pauseWorldOutsideGameplay = true;
+    [Tooltip("Freezes gameplay with Time.timeScale = 0 during the simple PreGame intro window.")]
+    [FormerlySerializedAs("pauseWorldOutsideGameplay")]
+    [SerializeField] private bool pauseWorldDuringPreGame = true;
+
+    [Tooltip(
+        "Usually leave this disabled: the final-results ceremony uses real-time cart, cargo, text, " +
+        "and camera animation. The results controller explicitly locks gameplay systems instead."
+    )]
+    [SerializeField] private bool pauseWorldDuringPostGame = false;
 
     [Header("Runtime - Read Only")]
     [SerializeField] private GameSessionState sessionState = GameSessionState.PreGame;
@@ -198,7 +206,7 @@ public class GameTimeManager : MonoBehaviour
 
         matchFlowDirector?.StopFlow();
 
-        SetWorldPaused(true);
+        SetWorldPaused(pauseWorldDuringPreGame);
 
         if (finalScoreScreen != null) finalScoreScreen.SetActive(false);
 
@@ -284,7 +292,7 @@ public class GameTimeManager : MonoBehaviour
 
         musicManager?.StopMusic();
 
-        SetWorldPaused(true);
+        SetWorldPaused(pauseWorldDuringPostGame);
 
         UpdateTimerDisplay();
 
@@ -295,7 +303,6 @@ public class GameTimeManager : MonoBehaviour
 
     private void SetWorldPaused(bool paused)
     {
-        if (!pauseWorldOutsideGameplay) return;
         Time.timeScale = paused ? 0f : 1f;
     }
 

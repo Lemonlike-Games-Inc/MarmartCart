@@ -144,6 +144,21 @@ public class MatchViewportOverlayProfile : ScriptableObject
     [SerializeField] private Vector2 leaderboardOffsetPixels = Vector2.zero;
 
     [Tooltip(
+        "2P final-results first-row center relative to the overlay root. " +
+        "The timer is hidden during results, so this replaces automatic below-timer placement."
+    )]
+    [SerializeField]
+    private Vector2 twoPlayerResultsLeaderboardOffsetPixels =
+        new Vector2(0f, -28f);
+
+    [Tooltip(
+        "4P final-results first-row center relative to the overlay root."
+    )]
+    [SerializeField]
+    private Vector2 fourPlayerResultsLeaderboardOffsetPixels =
+        new Vector2(0f, -20f);
+
+    [Tooltip(
         "Master vertical gap from the bottom of the timer background " +
         "to the top of the first leaderboard row.")]
     [Min(0f)]
@@ -587,6 +602,13 @@ public class MatchViewportOverlayProfile : ScriptableObject
 
     public Vector2 LeaderboardOffsetPixels =>
         leaderboardOffsetPixels * EffectiveLeaderboardScale;
+
+    public Vector2 ResultsLeaderboardOffsetPixels =>
+        (
+            runtimePlayerCount <= 2
+                ? twoPlayerResultsLeaderboardOffsetPixels
+                : fourPlayerResultsLeaderboardOffsetPixels
+        ) * EffectiveLeaderboardScale;
 
     public float TimerToLeaderboardPaddingPixels =>
         timerToLeaderboardPaddingPixels * EffectiveLeaderboardScale;

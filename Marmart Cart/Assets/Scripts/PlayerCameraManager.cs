@@ -25,6 +25,18 @@ public class PlayerCameraManager : MonoBehaviour
     [SerializeField] private CinemachineCamera fourPlayerCheckoutCameraLane3;
     [SerializeField] private CinemachineCamera fourPlayerCheckoutCameraLane4;
 
+    [Header("Final Results Cameras")]
+    [Tooltip(
+        "Camera used by this player's viewport in a 2P match. Author it wide " +
+        "enough to retain all staged carts while following this player's rising tower target."
+    )]
+    [SerializeField] private CinemachineCamera twoPlayerResultsCamera;
+
+    [Tooltip(
+        "Camera used by this player's viewport in a 4P match. P3/P4 only need this assignment."
+    )]
+    [SerializeField] private CinemachineCamera fourPlayerResultsCamera;
+
     // Preserve the two references authored before the layout-specific camera
     // sets existed. P1/P2 migrate them into the 2P set; P3/P4 migrate them into
     // the 4P set. They remain hidden so existing scene/prefab data is not lost.
@@ -40,6 +52,8 @@ public class PlayerCameraManager : MonoBehaviour
 
     private CinemachineCamera _current;
 
+    public int PlayerIndex => playerIndex;
+
     private void Awake()
     {
         MigrateLegacyCheckoutCameras();
@@ -50,6 +64,7 @@ public class PlayerCameraManager : MonoBehaviour
         // Make startup deterministic even if a checkout camera was accidentally
         // saved with an active priority in the Inspector.
         SetAllCheckoutCameraPriorities(idlePriority);
+        SetAllResultsCameraPriorities(idlePriority);
         SetActiveCamera(followCamera);
     }
 
@@ -103,6 +118,40 @@ public class PlayerCameraManager : MonoBehaviour
         SetActiveCamera(followCamera);
     }
 
+    // -------- Final results --------
+
+    /// <summary>
+    /// Switches this player's viewport to its authored final-results camera.
+    /// The supplied target rises with the player's cargo tower, allowing each
+    /// local viewport to stop independently when that player's reveal finishes.
+    /// </summary>
+    public bool EnterResultsPresentation(Transform risingFocusTarget)
+    {
+        bool useFourPlayerLayout = GetActivePlayerCount() > 2;
+        CinemachineCamera targetCamera = useFourPlayerLayout
+            ? fourPlayerResultsCamera
+            : twoPlayerResultsCamera;
+
+        if (targetCamera == null)
+        {
+            string layoutName = useFourPlayerLayout ? "4P" : "2P";
+            Debug.LogWarning(
+                $"[PlayerCameraManager P{playerIndex}] {layoutName} final-results camera is not assigned.",
+                this
+            );
+            return false;
+        }
+
+        if (risingFocusTarget != null)
+        {
+            targetCamera.Follow = risingFocusTarget;
+            targetCamera.LookAt = risingFocusTarget;
+        }
+
+        SetActiveCamera(targetCamera);
+        return true;
+    }
+
     // -------- Core: priority switching for THIS player only --------
 
     private int GetActivePlayerCount()
@@ -152,6 +201,12 @@ public class PlayerCameraManager : MonoBehaviour
         SetCameraPriority(fourPlayerCheckoutCameraLane2, priority);
         SetCameraPriority(fourPlayerCheckoutCameraLane3, priority);
         SetCameraPriority(fourPlayerCheckoutCameraLane4, priority);
+    }
+
+    private void SetAllResultsCameraPriorities(int priority)
+    {
+        SetCameraPriority(twoPlayerResultsCamera, priority);
+        SetCameraPriority(fourPlayerResultsCamera, priority);
     }
 
     private static void SetCameraPriority(CinemachineCamera camera, int priority)

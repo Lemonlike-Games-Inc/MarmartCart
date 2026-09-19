@@ -23,6 +23,7 @@ public class MatchViewportOverlayLeaderboardAdapter : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private CashScoreManager cashScoreManager;
+    [SerializeField] private GameTimeManager gameTimeManager;
     [SerializeField] private MatchViewportOverlayStateSystem stateSystem;
     [SerializeField] private MatchViewportOverlayProfile profile;
 
@@ -199,12 +200,23 @@ public class MatchViewportOverlayLeaderboardAdapter : MonoBehaviour
                     )
                 );
 
-            GetCheckoutScoreBreakdown(
-                playerIndex,
-                out checkoutSubmittedScores[i],
-                out potentialScores[i],
-                out projectedStreakRewardScores[i]
-            );
+            if (gameTimeManager != null && gameTimeManager.IsPostGame)
+            {
+                // Results are final: unsold carried cargo and an interrupted
+                // checkout projection must not appear in the banked-score bar.
+                checkoutSubmittedScores[i] = 0;
+                potentialScores[i] = 0;
+                projectedStreakRewardScores[i] = 0;
+            }
+            else
+            {
+                GetCheckoutScoreBreakdown(
+                    playerIndex,
+                    out checkoutSubmittedScores[i],
+                    out potentialScores[i],
+                    out projectedStreakRewardScores[i]
+                );
+            }
 
             int combined =
                 committedBankedScores[i] +
@@ -555,6 +567,14 @@ public class MatchViewportOverlayLeaderboardAdapter : MonoBehaviour
             cashScoreManager =
                 FindFirstObjectByType<
                     CashScoreManager
+                >();
+        }
+
+        if (gameTimeManager == null)
+        {
+            gameTimeManager =
+                FindFirstObjectByType<
+                    GameTimeManager
                 >();
         }
 
