@@ -138,60 +138,53 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         string message = ResolveMessage(guideState);
 
-        using (Draw.Command(cam))
-        {
-            Draw.ResetAllDrawStates();
-            Draw.BlendMode = ShapesBlendMode.Transparent;
-            Draw.RadiusSpace = ThicknessSpace.Pixels;
-            Draw.ThicknessSpace = ThicknessSpace.Pixels;
-            Draw.LineGeometry = LineGeometry.Billboard;
-            Draw.LineEndCaps = LineEndCap.Round;
+        // Keep different Shapes primitive types in isolated command scopes.
+        // This isolates the suspected mixed-batch rendering issue without
+        // changing the camera, visibility conditions, or primitive geometry.
+        DrawDialogue(
+            cam,
+            screenDepth,
+            groupCenter,
+            guideState,
+            message,
+            scale
+        );
 
-            DrawDialogue(
+        bool showYouAreHere =
+            guideState.IndicationPhase ==
+                PlayerSessionGuideIndicationPhase.Countdown &&
+            playerIsInsideTarget;
+
+        if (showYouAreHere)
+        {
+            DrawCompassRaindrop(
                 cam,
                 screenDepth,
                 groupCenter,
-                guideState,
-                message,
                 scale
             );
 
-            bool showYouAreHere =
-                guideState.IndicationPhase ==
-                    PlayerSessionGuideIndicationPhase.Countdown &&
-                playerIsInsideTarget;
+            lastRaindropWasVisible = true;
+        }
+        else if (!playerIsInsideTarget &&
+                 guideState.TargetAnchor != null &&
+                 TryGetArrowScreenDirection(
+                     cam,
+                     hudAnchor.position,
+                     guideState.TargetAnchor.position,
+                     out Vector2 direction
+                 ))
+        {
+            DrawCompassArrow(
+                cam,
+                screenDepth,
+                groupCenter,
+                direction,
+                scale
+            );
 
-            if (showYouAreHere)
-            {
-                DrawCompassRaindrop(
-                    cam,
-                    screenDepth,
-                    groupCenter,
-                    scale
-                );
-
-                lastRaindropWasVisible = true;
-            }
-            else if (!playerIsInsideTarget &&
-                     guideState.TargetAnchor != null &&
-                     TryGetArrowScreenDirection(
-                         cam,
-                         hudAnchor.position,
-                         guideState.TargetAnchor.position,
-                         out Vector2 direction
-                     ))
-            {
-                DrawCompassArrow(
-                    cam,
-                    screenDepth,
-                    groupCenter,
-                    direction,
-                    scale
-                );
-
-                lastArrowWasVisible = true;
-                lastArrowScreenDirection = direction;
-            }
+            lastArrowWasVisible = true;
+            lastArrowScreenDirection = direction;
         }
     }
 
@@ -212,24 +205,37 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
                 guideState.TargetKind
             ) * scale;
 
-        DrawRoundedScreenRectangle(
-            cam,
-            screenDepth,
-            groupCenter +
-                presentationProfile.DialogueBackgroundOffsetPixels * scale,
-            backgroundSize,
-            presentationProfile.DialogueCornerRadiusPixels * scale,
-            presentationProfile.DialogueBackgroundColor
-        );
+        // Rectangle and text use separate command scopes so neither relies on
+        // a mixed primitive batch or on draw state left by the other.
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
 
-        DrawCenteredScreenText(
-            cam,
-            screenDepth,
-            groupCenter + presentationProfile.DialogueTextOffsetPixels * scale,
-            message,
-            presentationProfile.DialogueFontSizePixels * scale,
-            presentationProfile.DialogueTextColor
-        );
+            DrawRoundedScreenRectangle(
+                cam,
+                screenDepth,
+                groupCenter +
+                    presentationProfile.DialogueBackgroundOffsetPixels * scale,
+                backgroundSize,
+                presentationProfile.DialogueCornerRadiusPixels * scale,
+                presentationProfile.DialogueBackgroundColor
+            );
+        }
+
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
+
+            DrawCenteredScreenText(
+                cam,
+                screenDepth,
+                groupCenter +
+                    presentationProfile.DialogueTextOffsetPixels * scale,
+                message,
+                presentationProfile.DialogueFontSizePixels * scale,
+                presentationProfile.DialogueTextColor
+            );
+        }
     }
 
     private string ResolveMessage(PlayerSessionGuideState guideState)
@@ -325,12 +331,17 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         Vector2 compassCenter =
             groupCenter + presentationProfile.CompassOffsetPixels * scale;
 
-        DrawCompassBackground(
-            cam,
-            screenDepth,
-            compassCenter,
-            scale
-        );
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
+
+            DrawCompassBackground(
+                cam,
+                screenDepth,
+                compassCenter,
+                scale
+            );
+        }
 
         float arrowLength = presentationProfile.ArrowLengthPixels * scale;
         float shaftThickness =
@@ -353,12 +364,17 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         if (shaftThickness > 0f)
         {
-            Draw.Line(
-                ScreenPointToWorld(cam, tail, screenDepth),
-                ScreenPointToWorld(cam, headBase, screenDepth),
-                shaftThickness,
-                presentationProfile.ArrowColor
-            );
+            using (Draw.Command(cam))
+            {
+                ConfigureDrawState();
+
+                Draw.Line(
+                    ScreenPointToWorld(cam, tail, screenDepth),
+                    ScreenPointToWorld(cam, headBase, screenDepth),
+                    shaftThickness,
+                    presentationProfile.ArrowColor
+                );
+            }
         }
 
         if (headLength <= 0f || halfHeadWidth <= 0f) return;
@@ -367,12 +383,17 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         Vector2 headLeft = headBase + perpendicular * halfHeadWidth;
         Vector2 headRight = headBase - perpendicular * halfHeadWidth;
 
-        Draw.Triangle(
-            ScreenPointToWorld(cam, headLeft, screenDepth),
-            ScreenPointToWorld(cam, headRight, screenDepth),
-            ScreenPointToWorld(cam, tip, screenDepth),
-            presentationProfile.ArrowColor
-        );
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
+
+            Draw.Triangle(
+                ScreenPointToWorld(cam, headLeft, screenDepth),
+                ScreenPointToWorld(cam, headRight, screenDepth),
+                ScreenPointToWorld(cam, tip, screenDepth),
+                presentationProfile.ArrowColor
+            );
+        }
     }
 
     private void DrawCompassRaindrop(
@@ -384,12 +405,17 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         Vector2 compassCenter =
             groupCenter + presentationProfile.CompassOffsetPixels * scale;
 
-        DrawCompassBackground(
-            cam,
-            screenDepth,
-            compassCenter,
-            scale
-        );
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
+
+            DrawCompassBackground(
+                cam,
+                screenDepth,
+                compassCenter,
+                scale
+            );
+        }
 
         float width = presentationProfile.RaindropWidthPixels * scale;
         float height = presentationProfile.RaindropHeightPixels * scale;
@@ -413,33 +439,43 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         Vector2 baseRight =
             triangleBaseCenter + Vector2.right * halfBaseWidth;
 
-        // Submit the pointed tail first and the bulb second so their overlap
-        // reads as one clean, filled raindrop/map-pin silhouette.
-        Draw.Triangle(
-            ScreenPointToWorld(cam, baseLeft, screenDepth),
-            ScreenPointToWorld(cam, baseRight, screenDepth),
-            ScreenPointToWorld(cam, tip, screenDepth),
-            presentationProfile.RaindropColor
-        );
-
-        Draw.Disc(
-            ScreenPointToWorld(cam, bulbCenter, screenDepth),
-            cam.transform.rotation,
-            bulbRadius,
-            presentationProfile.RaindropColor
-        );
-
         float centerCircleRadius =
             presentationProfile.RaindropCenterCircleRadiusPixels * scale;
 
-        if (centerCircleRadius > 0f)
+        // Preserve the original painter order while isolating the Triangle
+        // from the following Disc batch: background -> tail -> bulb/center.
+        using (Draw.Command(cam))
         {
+            ConfigureDrawState();
+
+            Draw.Triangle(
+                ScreenPointToWorld(cam, baseLeft, screenDepth),
+                ScreenPointToWorld(cam, baseRight, screenDepth),
+                ScreenPointToWorld(cam, tip, screenDepth),
+                presentationProfile.RaindropColor
+            );
+        }
+
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
+
             Draw.Disc(
                 ScreenPointToWorld(cam, bulbCenter, screenDepth),
                 cam.transform.rotation,
-                centerCircleRadius,
-                presentationProfile.RaindropCenterCircleColor
+                bulbRadius,
+                presentationProfile.RaindropColor
             );
+
+            if (centerCircleRadius > 0f)
+            {
+                Draw.Disc(
+                    ScreenPointToWorld(cam, bulbCenter, screenDepth),
+                    cam.transform.rotation,
+                    centerCircleRadius,
+                    presentationProfile.RaindropCenterCircleColor
+                );
+            }
         }
     }
 
@@ -465,6 +501,16 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
     #endregion
 
     #region Screen-Space Shape Helpers
+
+    private static void ConfigureDrawState()
+    {
+        Draw.ResetAllDrawStates();
+        Draw.BlendMode = ShapesBlendMode.Transparent;
+        Draw.RadiusSpace = ThicknessSpace.Pixels;
+        Draw.ThicknessSpace = ThicknessSpace.Pixels;
+        Draw.LineGeometry = LineGeometry.Billboard;
+        Draw.LineEndCaps = LineEndCap.Round;
+    }
 
     private static void DrawRoundedScreenRectangle(
         Camera cam,

@@ -29,7 +29,7 @@ MonoBehaviour:
     telegraphDuration: 0
     freePlayDuration: 3
     closingDuration: 5
-    resourceBudget: 12
+    resourceBudget: 24
     batchSize: 2
     zone: 0
     checkoutStations: 0
