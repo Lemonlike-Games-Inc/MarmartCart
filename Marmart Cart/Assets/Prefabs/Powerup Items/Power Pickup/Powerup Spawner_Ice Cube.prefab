@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2133465682941919842, guid: 7e807ec9e0c456c478b95fec29e85e33, type: 3}
+      propertyPath: countdownSeconds
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8661499134002999740, guid: 7e807ec9e0c456c478b95fec29e85e33, type: 3}
       propertyPath: m_Name
       value: Powerup Spawner_Ice Cube
