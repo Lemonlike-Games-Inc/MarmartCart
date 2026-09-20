@@ -39,7 +39,7 @@ public class MatchFlowProfileEditor : Editor
 
         EditorGUILayout.HelpBox(
             $"Planned playable timeline: {FormatTime(profile.GetPlannedDuration())}\n" +
-            "ZoneLoot totals include Telegraph + Active Loot + FreePlay + Closing. " +
+            "ZoneLoot / Tutorial Zone Loot totals include Telegraph + Active Loot + FreePlay + Closing. " +
             "Checkout totals include Telegraph + Open Duration. " +
             "Checkout + Restock totals include Telegraph + Active + FreePlay + Closing.",
             MessageType.Info
@@ -112,6 +112,10 @@ public class MatchFlowProfileEditor : Editor
 
             case MatchFlowSessionType.ZoneLoot:
                 lines = 10;
+                break;
+
+            case MatchFlowSessionType.TutorialZoneLoot:
+                lines = 9;
                 break;
 
             case MatchFlowSessionType.CheckoutWindow:
@@ -191,6 +195,24 @@ public class MatchFlowProfileEditor : Editor
                     Mathf.Max(0f, closing.floatValue)
                 );
                 DrawProperty(ref y, x, width, budget, "Exact Zone Loot Budget");
+                DrawProperty(ref y, x, width, batch, "Normal Batch Size");
+                break;
+
+            case MatchFlowSessionType.TutorialZoneLoot:
+                DrawProperty(ref y, x, width, telegraph, "Telegraph Duration");
+                DrawProperty(ref y, x, width, duration, "Active Loot Duration");
+                DrawProperty(ref y, x, width, freePlay, "FreePlay Duration");
+                DrawProperty(ref y, x, width, closing, "Closing Duration");
+                DrawReadOnlyTotal(
+                    ref y,
+                    x,
+                    width,
+                    Mathf.Max(0f, telegraph.floatValue) +
+                    Mathf.Max(0f, duration.floatValue) +
+                    Mathf.Max(0f, freePlay.floatValue) +
+                    Mathf.Max(0f, closing.floatValue)
+                );
+                DrawProperty(ref y, x, width, budget, "Exact Loot Budget Per Zone");
                 DrawProperty(ref y, x, width, batch, "Normal Batch Size");
                 break;
 

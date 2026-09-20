@@ -61,6 +61,12 @@ public class MatchFlowDirector : MonoBehaviour
     private Coroutine flowRoutine;
     private MatchFlowSession currentSession;
 
+    // Tutorial Zone Loot launches one loot coroutine per arena zone so all
+    // four zones distribute their budgets concurrently across one shared
+    // Match Flow Active phase.
+    private Coroutine[] tutorialZoneLootCoroutines;
+    private int tutorialZoneLootRoutinesRunning;
+
     public MatchFlowProfile Profile => profile;
     public bool IsRunning => isRunning;
     public int CurrentSessionIndex => currentSessionIndex;
@@ -167,6 +173,8 @@ public class MatchFlowDirector : MonoBehaviour
             flowRoutine = null;
         }
 
+        StopTutorialZoneLootCoroutines();
+
         SetSessionPhase(currentSession, MatchFlowSessionPhase.None);
         currentSession = null;
 
@@ -235,7 +243,17 @@ public class MatchFlowDirector : MonoBehaviour
             currentSessionType = session.type;
             currentSessionLabel = string.IsNullOrWhiteSpace(session.label) ? session.type.ToString() : session.label;
 
-            areaIndicatorController?.ShowForSession(session);
+            if (session.type == MatchFlowSessionType.TutorialZoneLoot)
+            {
+                // The existing area-indicator API has no "all four zones but
+                // not center" selection. ShowAll prevents the new tutorial
+                // type from falling through to None in ShowForSession().
+                areaIndicatorController?.ShowAll();
+            }
+            else
+            {
+                areaIndicatorController?.ShowForSession(session);
+            }
 
             if (logSessions)
             {
@@ -314,6 +332,10 @@ public class MatchFlowDirector : MonoBehaviour
                 yield return RunZoneLoot(session);
                 break;
 
+            case MatchFlowSessionType.TutorialZoneLoot:
+                yield return RunTutorialZoneLoot(session);
+                break;
+
             case MatchFlowSessionType.CheckoutWindow:
                 yield return RunCheckoutWindow(session);
                 break;
@@ -375,6 +397,146 @@ public class MatchFlowDirector : MonoBehaviour
         yield return WaitSeconds(session.closingDuration);
 
         zone.SetIdle();
+    }
+
+    private IEnumerator RunTutorialZoneLoot(MatchFlowSession session)
+    {
+        ArenaZone[] tutorialZones = GetAllFourTutorialZones();
+
+        if (tutorialZones == null)
+        {
+            Debug.LogError(
+                "[MatchFlowDirector] Tutorial Zone Loot requires ZoneA, ZoneB, ZoneC, and ZoneD. " +
+                "The session will preserve its authored timeline, but no tutorial-zone loot will run.",
+                this
+            );
+
+            SetSessionPhase(session, MatchFlowSessionPhase.None);
+            yield return WaitSeconds(session.GetPlannedDuration());
+            yield break;
+        }
+
+        // Same semantic flow as normal ZoneLoot, but applied to every zone.
+        for (int i = 0; i < tutorialZones.Length; i++)
+        {
+            tutorialZones[i].SetWarning();
+        }
+
+        SetSessionPhase(session, MatchFlowSessionPhase.Warning);
+        yield return WaitSeconds(session.telegraphDuration);
+
+        for (int i = 0; i < tutorialZones.Length; i++)
+        {
+            tutorialZones[i].SetActive();
+        }
+
+        SetSessionPhase(session, MatchFlowSessionPhase.Active);
+
+        // Each zone receives the full authored resourceBudget. These four
+        // routines run in parallel; they are NOT yielded sequentially.
+        StartTutorialZoneLootCoroutines(tutorialZones, session);
+
+        while (tutorialZoneLootRoutinesRunning > 0)
+        {
+            yield return null;
+        }
+
+        ClearTutorialZoneLootCoroutineTracking();
+
+        // Match normal ZoneLoot behavior: all zones stay Active during the
+        // quiet FreePlay and Closing windows, so power-up spawners and
+        // existing pickups remain available while no new loot is released.
+        SetSessionPhase(session, MatchFlowSessionPhase.FreePlay);
+        yield return WaitSeconds(session.freePlayDuration);
+
+        SetSessionPhase(session, MatchFlowSessionPhase.Closing);
+        yield return WaitSeconds(session.closingDuration);
+
+        for (int i = 0; i < tutorialZones.Length; i++)
+        {
+            tutorialZones[i].SetIdle();
+        }
+    }
+
+    private ArenaZone[] GetAllFourTutorialZones()
+    {
+        ArenaZone zoneA = FindZone(ArenaZoneId.ZoneA);
+        ArenaZone zoneB = FindZone(ArenaZoneId.ZoneB);
+        ArenaZone zoneC = FindZone(ArenaZoneId.ZoneC);
+        ArenaZone zoneD = FindZone(ArenaZoneId.ZoneD);
+
+        if (zoneA == null || zoneB == null || zoneC == null || zoneD == null)
+        {
+            if (zoneA == null) Debug.LogError("[MatchFlowDirector] Tutorial Zone Loot is missing ZoneA.", this);
+            if (zoneB == null) Debug.LogError("[MatchFlowDirector] Tutorial Zone Loot is missing ZoneB.", this);
+            if (zoneC == null) Debug.LogError("[MatchFlowDirector] Tutorial Zone Loot is missing ZoneC.", this);
+            if (zoneD == null) Debug.LogError("[MatchFlowDirector] Tutorial Zone Loot is missing ZoneD.", this);
+
+            return null;
+        }
+
+        return new[] { zoneA, zoneB, zoneC, zoneD };
+    }
+
+    private void StartTutorialZoneLootCoroutines(
+        ArenaZone[] tutorialZones,
+        MatchFlowSession session
+    )
+    {
+        StopTutorialZoneLootCoroutines();
+
+        tutorialZoneLootCoroutines = new Coroutine[tutorialZones.Length];
+        tutorialZoneLootRoutinesRunning = 0;
+
+        for (int i = 0; i < tutorialZones.Length; i++)
+        {
+            ArenaZone zone = tutorialZones[i];
+            if (zone == null) continue;
+
+            tutorialZoneLootRoutinesRunning++;
+
+            tutorialZoneLootCoroutines[i] = StartCoroutine(
+                RunTutorialZoneLootBudget(zone, session)
+            );
+        }
+    }
+
+    private IEnumerator RunTutorialZoneLootBudget(
+        ArenaZone zone,
+        MatchFlowSession session
+    )
+    {
+        yield return zone.SpawnLootBudget(
+            session.resourceBudget,
+            session.duration,
+            session.batchSize
+        );
+
+        tutorialZoneLootRoutinesRunning =
+            Mathf.Max(0, tutorialZoneLootRoutinesRunning - 1);
+    }
+
+    private void StopTutorialZoneLootCoroutines()
+    {
+        if (tutorialZoneLootCoroutines != null)
+        {
+            for (int i = 0; i < tutorialZoneLootCoroutines.Length; i++)
+            {
+                Coroutine routine = tutorialZoneLootCoroutines[i];
+                if (routine != null)
+                {
+                    StopCoroutine(routine);
+                }
+            }
+        }
+
+        ClearTutorialZoneLootCoroutineTracking();
+    }
+
+    private void ClearTutorialZoneLootCoroutineTracking()
+    {
+        tutorialZoneLootCoroutines = null;
+        tutorialZoneLootRoutinesRunning = 0;
     }
 
     private IEnumerator RunCheckoutWindow(MatchFlowSession session)

@@ -45,6 +45,11 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
     private string cachedMessageTemplate = string.Empty;
     private string cachedMessage = string.Empty;
 
+    // One immutable circle mesh is reused for the two missing raindrop fills.
+    // Camera position, pixel radius, and color are applied per draw.
+    private const int RaindropCircleSegments = 64;
+    private PolygonPath raindropCirclePath;
+
     #endregion
 
     #region Unity Lifecycle
@@ -57,6 +62,12 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
     private void OnValidate()
     {
         InvalidateMessageCache();
+    }
+
+    private void OnDestroy()
+    {
+        raindropCirclePath?.Dispose();
+        raindropCirclePath = null;
     }
 
     public override void DrawShapes(Camera cam)
@@ -442,8 +453,8 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         float centerCircleRadius =
             presentationProfile.RaindropCenterCircleRadiusPixels * scale;
 
-        // Preserve the original painter order while isolating the Triangle
-        // from the following Disc batch: background -> tail -> bulb/center.
+        // Preserve the working tail and the original painter order:
+        // background -> Triangle tail -> polygon bulb/center.
         using (Draw.Command(cam))
         {
             ConfigureDrawState();
@@ -460,18 +471,20 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         {
             ConfigureDrawState();
 
-            Draw.Disc(
-                ScreenPointToWorld(cam, bulbCenter, screenDepth),
-                cam.transform.rotation,
+            DrawRaindropCirclePolygon(
+                cam,
+                screenDepth,
+                bulbCenter,
                 bulbRadius,
                 presentationProfile.RaindropColor
             );
 
             if (centerCircleRadius > 0f)
             {
-                Draw.Disc(
-                    ScreenPointToWorld(cam, bulbCenter, screenDepth),
-                    cam.transform.rotation,
+                DrawRaindropCirclePolygon(
+                    cam,
+                    screenDepth,
+                    bulbCenter,
                     centerCircleRadius,
                     presentationProfile.RaindropCenterCircleColor
                 );
@@ -501,6 +514,54 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
     #endregion
 
     #region Screen-Space Shape Helpers
+
+    private void DrawRaindropCirclePolygon(
+        Camera cam,
+        float screenDepth,
+        Vector2 centerPixels,
+        float radiusPixels,
+        Color color)
+    {
+        if (radiusPixels <= 0f) return;
+
+        if (raindropCirclePath == null)
+        {
+            raindropCirclePath = new PolygonPath();
+            for (int i = 0; i < RaindropCircleSegments; i++)
+            {
+                // Clockwise unit-circle vertices. The path stays unchanged
+                // when another player camera or a different radius draws it.
+                float angle = -Mathf.PI * 2f * i / RaindropCircleSegments;
+                raindropCirclePath.AddPoint(Mathf.Cos(angle), Mathf.Sin(angle));
+            }
+        }
+
+        Vector3 origin = ScreenPointToWorld(cam, centerPixels, screenDepth);
+        Vector3 xAxis = ScreenPointToWorld(
+            cam, centerPixels + Vector2.right * radiusPixels, screenDepth
+        ) - origin;
+        Vector3 yAxis = ScreenPointToWorld(
+            cam, centerPixels + Vector2.up * radiusPixels, screenDepth
+        ) - origin;
+        Vector3 forward = cam.transform.forward;
+
+        Matrix4x4 matrix = Matrix4x4.identity;
+        matrix.SetColumn(0, new Vector4(xAxis.x, xAxis.y, xAxis.z, 0f));
+        matrix.SetColumn(1, new Vector4(yAxis.x, yAxis.y, yAxis.z, 0f));
+        matrix.SetColumn(2, new Vector4(forward.x, forward.y, forward.z, 0f));
+        matrix.SetColumn(3, new Vector4(origin.x, origin.y, origin.z, 1f));
+
+        Matrix4x4 previousMatrix = Draw.Matrix;
+        try
+        {
+            Draw.Matrix = matrix;
+            Draw.Polygon(raindropCirclePath, color);
+        }
+        finally
+        {
+            Draw.Matrix = previousMatrix;
+        }
+    }
 
     private static void ConfigureDrawState()
     {

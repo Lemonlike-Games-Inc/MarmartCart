@@ -60,6 +60,12 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     private readonly float[] displayedHypeNormalized = new float[4];
     private readonly bool[] hypeFillInitialized = new bool[4];
 
+    // Reuse immutable local-space meshes across player cameras. Camera motion
+    // changes Draw.Matrix, never the path vertices already queued for rendering.
+    private PolygonPath filledTrianglePath;
+    private PolygonPath weightBodyPath;
+    private float weightTopWidthRatio;
+
     #endregion
 
 
@@ -81,6 +87,14 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         if (hudSystem == null) hudSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
         if (stateSystem == null) stateSystem = FindFirstObjectByType<PlayerWorldHUDStateSystem>();
+    }
+
+    private void OnDestroy()
+    {
+        filledTrianglePath?.Dispose();
+        weightBodyPath?.Dispose();
+        filledTrianglePath = null;
+        weightBodyPath = null;
     }
 
     public override void DrawShapes(Camera cam)
@@ -1350,8 +1364,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             DrawHypeBurnWarningArrowShaft(cam, anchorScreen.z, iconCenter, warningColor);
         }
 
-        // All three filled triangles share one isolated command: arrowhead,
-        // then both bolt pieces. No Line/Arc/Disc calls enter this batch.
+        // Mesh polygons bypass Draw.Triangle for the arrowhead and both bolt
+        // pieces while preserving their original profile-authored vertices.
         using (Draw.Command(cam))
         {
             ConfigureDrawState();
@@ -1478,12 +1492,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             headBaseCenter +
             new Vector2(0f, -headHeight);
 
-        Draw.Triangle(
-            ScreenPointToWorld(cam, a, screenDepth),
-            ScreenPointToWorld(cam, b, screenDepth),
-            ScreenPointToWorld(cam, c, screenDepth),
-            color
-        );
+        DrawScreenTrianglePolygon(cam, screenDepth, a, b, c, color);
     }
 
     private void DrawHypeBurnWarningBolt(
@@ -1542,12 +1551,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 b = center + (Vector2)(rotation * localB);
         Vector2 c = center + (Vector2)(rotation * localC);
 
-        Draw.Triangle(
-            ScreenPointToWorld(cam, a, screenDepth),
-            ScreenPointToWorld(cam, b, screenDepth),
-            ScreenPointToWorld(cam, c, screenDepth),
-            color
-        );
+        DrawScreenTrianglePolygon(cam, screenDepth, a, b, c, color);
     }
 
     private Vector3 ScreenPointToWorld(
@@ -1613,11 +1617,17 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             DrawLowSpeedWarningWheels(cam, anchorScreen.z, cartCenter, warningColor);
         }
 
-        // The weight body and arrowhead are one Triangle-only batch.
+        // Only the missing weight body switches to a polygon. Keep the
+        // working low-speed arrowhead on its original Triangle draw path.
         using (Draw.Command(cam))
         {
             ConfigureDrawState();
             DrawLowSpeedWarningWeight(cam, anchorScreen.z, weightCenter, warningColor);
+        }
+
+        using (Draw.Command(cam))
+        {
+            ConfigureDrawState();
             DrawLowSpeedWarningArrowHead(cam, anchorScreen.z, arrowCenter, warningColor);
         }
 
@@ -1701,16 +1711,31 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         float widthTop = layoutProfile.LowSpeedWarningWeightTopWidthPixels;
         float widthBottom = layoutProfile.LowSpeedWarningWeightBottomWidthPixels;
         float height = layoutProfile.LowSpeedWarningWeightBodyHeightPixels;
-        float halfHeight = height * 0.5f;
+        if (widthTop <= 0f || widthBottom <= 0f || height <= 0f) return;
 
-        Vector2 topLeft = center + new Vector2(-widthTop * 0.5f, halfHeight);
-        Vector2 topRight = center + new Vector2(widthTop * 0.5f, halfHeight);
-        Vector2 bottomRight = center + new Vector2(widthBottom * 0.5f, -halfHeight);
-        Vector2 bottomLeft = center + new Vector2(-widthBottom * 0.5f, -halfHeight);
+        float topWidthRatio = widthTop / widthBottom;
+        if (weightBodyPath == null || topWidthRatio != weightTopWidthRatio)
+        {
+            // Rebuild only when the authored top/bottom proportions change.
+            // Uniform HUD scaling is applied by the drawing matrix below.
+            weightBodyPath?.Dispose();
+            weightBodyPath = new PolygonPath();
+            weightBodyPath.AddPoint(-topWidthRatio * 0.5f, 0.5f);
+            weightBodyPath.AddPoint(topWidthRatio * 0.5f, 0.5f);
+            weightBodyPath.AddPoint(0.5f, -0.5f);
+            weightBodyPath.AddPoint(-0.5f, -0.5f);
+            weightTopWidthRatio = topWidthRatio;
+        }
 
-        // Solid trapezoid body.
-        DrawScreenTriangle(cam, screenDepth, topLeft, topRight, bottomRight, color);
-        DrawScreenTriangle(cam, screenDepth, topLeft, bottomRight, bottomLeft, color);
+        DrawScreenPolygon(
+            cam,
+            screenDepth,
+            weightBodyPath,
+            center,
+            new Vector2(widthBottom, 0f),
+            new Vector2(0f, height),
+            color
+        );
     }
 
     private void DrawLowSpeedWarningWeightHandle(
@@ -1803,6 +1828,80 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             ScreenPointToWorld(cam, c, screenDepth),
             color
         );
+    }
+
+    private void DrawScreenTrianglePolygon(
+        Camera cam,
+        float screenDepth,
+        Vector2 a,
+        Vector2 b,
+        Vector2 c,
+        Color color)
+    {
+        float signedArea =
+            (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        if (Mathf.Abs(signedArea) <= 0.0001f) return;
+
+        // Keep clockwise winding and a non-reflected transform for every
+        // arrow direction and either orientation of the bolt pieces.
+        if (signedArea > 0f)
+        {
+            Vector2 swap = b;
+            b = c;
+            c = swap;
+        }
+
+        if (filledTrianglePath == null)
+        {
+            filledTrianglePath = new PolygonPath();
+            filledTrianglePath.AddPoint(0f, 0f);
+            filledTrianglePath.AddPoint(1f, 0f);
+            filledTrianglePath.AddPoint(0f, -1f);
+        }
+
+        DrawScreenPolygon(
+            cam,
+            screenDepth,
+            filledTrianglePath,
+            a,
+            b - a,
+            a - c,
+            color
+        );
+    }
+
+    private void DrawScreenPolygon(
+        Camera cam,
+        float screenDepth,
+        PolygonPath path,
+        Vector2 originPixels,
+        Vector2 xAxisPixels,
+        Vector2 yAxisPixels,
+        Color color)
+    {
+        // Polygon vertices use local XY coordinates. Project the pixel basis
+        // onto this camera's render plane so size/offset stay correct in 2P/4P.
+        Vector3 origin = ScreenPointToWorld(cam, originPixels, screenDepth);
+        Vector3 xAxis = ScreenPointToWorld(cam, originPixels + xAxisPixels, screenDepth) - origin;
+        Vector3 yAxis = ScreenPointToWorld(cam, originPixels + yAxisPixels, screenDepth) - origin;
+        Vector3 forward = cam.transform.forward;
+
+        Matrix4x4 matrix = Matrix4x4.identity;
+        matrix.SetColumn(0, new Vector4(xAxis.x, xAxis.y, xAxis.z, 0f));
+        matrix.SetColumn(1, new Vector4(yAxis.x, yAxis.y, yAxis.z, 0f));
+        matrix.SetColumn(2, new Vector4(forward.x, forward.y, forward.z, 0f));
+        matrix.SetColumn(3, new Vector4(origin.x, origin.y, origin.z, 1f));
+
+        Matrix4x4 previousMatrix = Draw.Matrix;
+        try
+        {
+            Draw.Matrix = matrix;
+            Draw.Polygon(path, color);
+        }
+        finally
+        {
+            Draw.Matrix = previousMatrix;
+        }
     }
 
     private void DrawScreenCircleStroke(

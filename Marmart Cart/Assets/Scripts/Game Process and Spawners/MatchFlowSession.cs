@@ -10,7 +10,10 @@ public enum MatchFlowSessionType
     EndGameWrap = 4,
 
     [InspectorName("Checkout + Restock")]
-    CheckoutRestock = 5
+    CheckoutRestock = 5,
+
+    [InspectorName("Tutorial Zone Loot")]
+    TutorialZoneLoot = 6
 }
 
 public enum ArenaZoneId
@@ -44,6 +47,7 @@ public class MatchFlowSession
         "FreePlay: free-play duration.\n" +
         "CartRestock: total distribution duration.\n" +
         "ZoneLoot: active loot-drop duration after telegraph.\n" +
+        "Tutorial Zone Loot: active loot-drop duration for all four zones after telegraph.\n" +
         "CheckoutWindow: how long selected checkout stations remain open.\n" +
         "Checkout + Restock: how long checkout and cart distribution are active together.\n" +
         "EndGameWrap: final gameplay buffer before the Director requests match end."
@@ -51,14 +55,15 @@ public class MatchFlowSession
     [Min(0f)]
     public float duration = 5f;
 
-    [Tooltip("Used by ZoneLoot, CheckoutWindow, and Checkout + Restock. This time is ADDED before active Duration.")]
+    [Tooltip("Used by ZoneLoot, Tutorial Zone Loot, CheckoutWindow, and Checkout + Restock. This time is ADDED before active Duration.")]
     [Min(0f)]
     public float telegraphDuration = 2f;
 
     [Tooltip(
-        "Used by ZoneLoot and Checkout + Restock immediately after Active. " +
+        "Used by ZoneLoot, Tutorial Zone Loot, and Checkout + Restock immediately after Active. " +
         "This is the longer player-breathing window.\n" +
-        "ZoneLoot keeps the zone/power-ups active without releasing new loot.\n" +
+        "ZoneLoot keeps the selected zone/power-ups active without releasing new loot.\n" +
+        "Tutorial Zone Loot keeps all four zones/power-ups active without releasing new loot.\n" +
         "Checkout + Restock remains quiet with checkout stations closed and " +
         "no new carts released."
     )]
@@ -66,7 +71,7 @@ public class MatchFlowSession
     public float freePlayDuration = 0f;
 
     [Tooltip(
-        "Used by ZoneLoot and Checkout + Restock after FreePlay and immediately " +
+        "Used by ZoneLoot, Tutorial Zone Loot, and Checkout + Restock after FreePlay and immediately " +
         "before the next session. The Player HUD Session Guide begins when " +
         "this short phase starts. Gameplay remains quiet while the current " +
         "session's area-light selection stays active."
@@ -74,7 +79,11 @@ public class MatchFlowSession
     [Min(0f)]
     public float closingDuration = 0f;
 
-    [Tooltip("CartRestock / Checkout + Restock = exact carts released. ZoneLoot = exact zone-wide loot budget.")]
+    [Tooltip(
+        "CartRestock / Checkout + Restock = exact carts released. " +
+        "ZoneLoot = exact budget for the selected zone. " +
+        "Tutorial Zone Loot = exact budget PER zone, applied independently to all four zones."
+    )]
     [Min(0)]
     public int resourceBudget = 8;
 
@@ -82,7 +91,7 @@ public class MatchFlowSession
     [Min(1)]
     public int batchSize = 1;
 
-    [Tooltip("Used only by ZoneLoot.")]
+    [Tooltip("Used only by ZoneLoot. Tutorial Zone Loot always targets all four zones.")]
     public ArenaZoneId zone = ArenaZoneId.ZoneA;
 
     [Tooltip("Used by CheckoutWindow and Checkout + Restock.")]
@@ -93,6 +102,7 @@ public class MatchFlowSession
         switch (type)
         {
             case MatchFlowSessionType.ZoneLoot:
+            case MatchFlowSessionType.TutorialZoneLoot:
             case MatchFlowSessionType.CheckoutRestock:
                 return
                     Mathf.Max(0f, telegraphDuration) +
