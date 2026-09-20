@@ -9,22 +9,22 @@ public enum GameMode
 }
 
 /// <summary>
-/// Persistent source of truth for the currently selected game mode.
+/// Persistent match-session mode state.
 ///
-/// Normal game flow should call SetMode() before loading the gameplay scene.
-/// For Play Mode testing, changing CurrentMode directly in the Inspector also
-/// raises OnModeChanged so scene systems can reconfigure live.
+/// Lifetime rule:
+/// - A tutorial/gameplay scene may create GMode.
+/// - The first GMode becomes the singleton and survives scene loads.
+/// - It persists through Tutorial -> Gameplay -> Results/etc.
+/// - Returning to Main Menu ends the match session and explicitly destroys it.
+///
+/// Main Menu itself does not need a GMode.
 /// </summary>
-[DefaultExecutionOrder(-1000)]
+[DisallowMultipleComponent]
 public class GMode : MonoBehaviour
 {
     public static GMode Instance { get; private set; }
 
     [Header("Current Match Mode")]
-    [Tooltip(
-        "Authoritative match mode. Normal flow should use SetMode(). " +
-        "While testing in Play Mode, changing this Inspector value also notifies listeners."
-    )]
     public GameMode CurrentMode = GameMode.duel2P;
 
     public event Action<GameMode> OnModeChanged;
@@ -32,9 +32,6 @@ public class GMode : MonoBehaviour
     public bool IsTwoPlayer => CurrentMode == GameMode.duel2P;
     public bool IsFreeForAll => CurrentMode == GameMode.freeForAll4P;
     public bool IsTeamBattle => CurrentMode == GameMode.teamBattle4P;
-
-    private GameMode lastNotifiedMode;
-    private bool hasLastNotifiedMode;
 
     private void Awake()
     {
@@ -46,25 +43,16 @@ public class GMode : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        // The scene controller will read the initial value during its own Awake.
-        // This cache is only for detecting later runtime changes.
-        lastNotifiedMode = CurrentMode;
-        hasLastNotifiedMode = true;
     }
 
-    /// <summary>
-    /// Preferred runtime API for changing the authoritative game mode.
-    /// </summary>
-    public void SetMode(GameMode mode)
+    private void OnDestroy()
     {
-        CurrentMode = mode;
-        NotifyModeChangedIfNeeded();
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
-    /// <summary>
-    /// Compatibility API used by existing gameplay code.
-    /// </summary>
     public int PlayerCount()
     {
         return CurrentMode switch
@@ -72,46 +60,35 @@ public class GMode : MonoBehaviour
             GameMode.duel2P => 2,
             GameMode.freeForAll4P => 4,
             GameMode.teamBattle4P => 4,
-            _ => 2
+            _ => 0
         };
     }
 
-    private void NotifyModeChangedIfNeeded()
+    public void SetMode(GameMode newMode)
     {
-        if (!hasLastNotifiedMode)
-        {
-            lastNotifiedMode = CurrentMode;
-            hasLastNotifiedMode = true;
-            return;
-        }
+        if (CurrentMode == newMode) return;
 
-        if (lastNotifiedMode == CurrentMode) return;
-
-        lastNotifiedMode = CurrentMode;
+        CurrentMode = newMode;
         OnModeChanged?.Invoke(CurrentMode);
     }
 
-#if UNITY_EDITOR
     /// <summary>
-    /// Inspector edits do not go through SetMode(), so during Play Mode we
-    /// detect the serialized field change here and notify on the editor's next
-    /// safe callback. This is editor/testing support only; builds use SetMode().
+    /// Ends the current persistent match session.
+    ///
+    /// Instance is cleared immediately because Destroy itself happens
+    /// at the end of the frame.
     /// </summary>
-    private void OnValidate()
+    public static void DestroyPersistentInstance()
     {
-        if (!Application.isPlaying) return;
+        if (Instance == null) return;
 
-        UnityEditor.EditorApplication.delayCall -= HandleInspectorModeChangedDelayed;
-        UnityEditor.EditorApplication.delayCall += HandleInspectorModeChangedDelayed;
+        GMode oldInstance = Instance;
+
+        Instance = null;
+
+        if (oldInstance != null)
+        {
+            Destroy(oldInstance.gameObject);
+        }
     }
-
-    private void HandleInspectorModeChangedDelayed()
-    {
-        if (this == null) return;
-        if (!Application.isPlaying) return;
-        if (Instance != this) return;
-
-        NotifyModeChangedIfNeeded();
-    }
-#endif
 }

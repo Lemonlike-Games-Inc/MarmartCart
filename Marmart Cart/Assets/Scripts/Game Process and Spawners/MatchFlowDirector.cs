@@ -134,7 +134,7 @@ public class MatchFlowDirector : MonoBehaviour
 
     private void OnDisable()
     {
-        StopFlow();
+        StopFlowInternal(false);
     }
 
     #endregion
@@ -167,13 +167,15 @@ public class MatchFlowDirector : MonoBehaviour
     [ContextMenu("STOP Match Flow")]
     public void StopFlow()
     {
+        StopFlowInternal(true);
+    }
+    private void StopFlowInternal(bool restorePreGamePresentation)
+    {
         if (flowRoutine != null)
         {
             StopCoroutine(flowRoutine);
             flowRoutine = null;
         }
-
-        StopTutorialZoneLootCoroutines();
 
         SetSessionPhase(currentSession, MatchFlowSessionPhase.None);
         currentSession = null;
@@ -188,14 +190,20 @@ public class MatchFlowDirector : MonoBehaviour
         {
             for (int i = 0; i < zones.Length; i++)
             {
-                if (zones[i] != null) zones[i].CancelLootSpawning();
+                if (zones[i] != null)
+                    zones[i].CancelLootSpawning();
             }
         }
 
         ResetArenaMacroState();
-        areaIndicatorController?.ShowPreGame();
-    }
 
+        // Manual/runtime StopFlow still behaves exactly as before.
+        // OnDisable/scene teardown must not start presentation coroutines.
+        if (restorePreGamePresentation)
+        {
+            areaIndicatorController?.ShowPreGame();
+        }
+    }
     [ContextMenu("RESTART Match Flow")]
     public void RestartFlow()
     {

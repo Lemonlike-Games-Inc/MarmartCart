@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8621e3863411024cb130f9889c0e112, type: 3}
-  m_Name: MatchFlowProfile_2Players
+  m_Name: MatchFlowProfile_4Players
   m_EditorClassIdentifier: Assembly-CSharp::MatchFlowProfile
   sessions:
   - label: Game Start
@@ -29,7 +29,7 @@ MonoBehaviour:
     telegraphDuration: 0
     freePlayDuration: 3
     closingDuration: 5
-    resourceBudget: 12
+    resourceBudget: 24
     batchSize: 2
     zone: 0
     checkoutStations: 0
@@ -39,8 +39,8 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 10
     closingDuration: 5
-    resourceBudget: 24
-    batchSize: 8
+    resourceBudget: 42
+    batchSize: 7
     zone: 0
     checkoutStations: 0
   - label: end c1, start c2
@@ -49,7 +49,7 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 5
-    resourceBudget: 18
+    resourceBudget: 30
     batchSize: 3
     zone: 1
     checkoutStations: -1
@@ -59,7 +59,7 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 10
     closingDuration: 5
-    resourceBudget: 30
+    resourceBudget: 55
     batchSize: 10
     zone: 1
     checkoutStations: 0
@@ -69,7 +69,7 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 5
-    resourceBudget: 20
+    resourceBudget: 40
     batchSize: 4
     zone: 1
     checkoutStations: -1
@@ -79,7 +79,7 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 10
     closingDuration: 5
-    resourceBudget: 50
+    resourceBudget: 80
     batchSize: 10
     zone: 2
     checkoutStations: -1
@@ -89,7 +89,7 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 5
-    resourceBudget: 25
+    resourceBudget: 50
     batchSize: 5
     zone: 2
     checkoutStations: -1
@@ -99,7 +99,7 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 10
     closingDuration: 5
-    resourceBudget: 60
+    resourceBudget: 90
     batchSize: 10
     zone: 3
     checkoutStations: -1
@@ -109,8 +109,8 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 5
-    resourceBudget: 15
-    batchSize: 15
+    resourceBudget: 25
+    batchSize: 25
     zone: 0
     checkoutStations: -1
   - label: loot c4
@@ -119,8 +119,8 @@ MonoBehaviour:
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 5
-    resourceBudget: 15
-    batchSize: 15
+    resourceBudget: 25
+    batchSize: 25
     zone: 1
     checkoutStations: -1
   - label: end c4

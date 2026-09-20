@@ -5207,7 +5207,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5772331254854008253}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74a2e6aa78313f24faad6175af92eeca, type: 3}
   m_Name: 
@@ -6256,7 +6256,6 @@ GameObject:
   - component: {fileID: 6053900176431444191}
   - component: {fileID: 5017256018034389344}
   - component: {fileID: 4961159538037742620}
-  - component: {fileID: 4709196753754504773}
   - component: {fileID: 5514334074713262895}
   - component: {fileID: 3149500316474093412}
   m_Layer: 7
@@ -6337,22 +6336,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7012855670675184876}
   m_Mesh: {fileID: 8857616182904770524, guid: 77d177c25d93642cb8514fd1410af42f, type: 3}
---- !u!114 &4709196753754504773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7012855670675184876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6dafbcbdf5ecc84bab3eab6dbb5c932, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cashScoreManager: {fileID: 0}
-  localPlayerIndex: 1
-  leaderOnlyObject: {fileID: 1151086546528535434}
-  refreshRate: 0.1
 --- !u!114 &5514334074713262895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6379,7 +6362,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7012855670675184876}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 

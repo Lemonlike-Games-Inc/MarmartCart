@@ -202,6 +202,13 @@ public class CartControlScript : MonoBehaviour
 
     #endregion
 
+    #region Hidden Reset Input
+
+    private bool isResetHeld;
+    public bool IsResetHeld => isResetHeld;
+
+    #endregion
+
     #region Input Events
 
     public System.Action OnTutorialPrev;
@@ -225,8 +232,10 @@ public class CartControlScript : MonoBehaviour
     public System.Action OnShootPressed;
 
     public System.Action<bool> OnMoveHeld;
+    public System.Action<bool> OnDriftHeld;
     public System.Action<bool> OnAimHeld;
     public System.Action<bool> OnSpeedupHeld;
+    public System.Action<bool> OnResetHeld;
 
     #endregion
 
@@ -234,6 +243,14 @@ public class CartControlScript : MonoBehaviour
 
     public void InitializeWithDevice(InputDevice device)
     {
+        CleanupInput();
+
+        if (device == null)
+        {
+            Debug.LogError("[CartControlScript] Cannot initialize with a null input device.", this);
+            return;
+        }
+
         _inputActions = new InputSystem_Actions();
 
         user = InputUser.CreateUserWithoutPairedDevices();
@@ -246,6 +263,14 @@ public class CartControlScript : MonoBehaviour
 
     public void InitializeWithKeyboard()
     {
+        CleanupInput();
+
+        if (Keyboard.current == null)
+        {
+            Debug.LogError("[CartControlScript] Keyboard.current is null.", this);
+            return;
+        }
+
         _inputActions = new InputSystem_Actions();
 
         user = InputUser.CreateUserWithoutPairedDevices();
@@ -330,6 +355,22 @@ public class CartControlScript : MonoBehaviour
             }
         };
 
+
+        _inputActions.Player.Reset.performed += ctx =>
+        {
+            if (ctx.control.device == device)
+            {
+                SetResetHeld(true);
+            }
+        };
+
+        _inputActions.Player.Reset.canceled += ctx =>
+        {
+            if (ctx.control.device == device)
+            {
+                SetResetHeld(false);
+            }
+        };
 
         _inputActions.Player.TutorialPrev.performed += ctx =>
         {
@@ -428,6 +469,22 @@ public class CartControlScript : MonoBehaviour
         };
 
 
+        _inputActions.Player.Reset.performed += ctx =>
+        {
+            if (ctx.control.device == Keyboard.current)
+            {
+                SetResetHeld(true);
+            }
+        };
+
+        _inputActions.Player.Reset.canceled += ctx =>
+        {
+            if (ctx.control.device == Keyboard.current)
+            {
+                SetResetHeld(false);
+            }
+        };
+
         _inputActions.Player.TutorialPrev.performed += ctx =>
         {
             if (ctx.control.device == Keyboard.current) OnTutorialPrev?.Invoke();
@@ -507,9 +564,40 @@ public class CartControlScript : MonoBehaviour
 
     public void CleanupInput()
     {
-        SetAimInput(Vector2.zero);
-        _inputActions?.Disable();
-        InputUser.PerformPairingWithDevice(null, user);
+        SetResetHeld(false);
+
+        if (_inputActions != null)
+        {
+            _inputActions.Disable();
+            _inputActions.Dispose();
+            _inputActions = null;
+        }
+
+        if (user.valid)
+        {
+            user.UnpairDevicesAndRemoveUser();
+            user = default;
+        }
+
+        _inputVector = Vector2.zero;
+        _aimInputVector = Vector2.zero;
+        _input = Vector3.zero;
+        desiredDirection = Vector3.zero;
+
+        isDriftHeld = false;
+        isSpeedingUp = false;
+    }
+
+    #endregion
+
+    #region Hidden Reset Input Runtime
+
+    private void SetResetHeld(bool held)
+    {
+        if (isResetHeld == held) return;
+
+        isResetHeld = held;
+        OnResetHeld?.Invoke(isResetHeld);
     }
 
     #endregion
@@ -616,6 +704,7 @@ public class CartControlScript : MonoBehaviour
     private void UpdateHeldEvents()
     {
         OnMoveHeld?.Invoke(MoveInput.sqrMagnitude > 0.05f);
+        OnDriftHeld?.Invoke(IsDriftHeld());
         OnAimHeld?.Invoke(_aimInputVector.sqrMagnitude > 0.05f);
     }
 

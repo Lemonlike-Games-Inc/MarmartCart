@@ -2149,17 +2149,17 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7523541113330752153}
-  - {fileID: 5658195825305259284}
-  - {fileID: 4024164540999754019}
   - {fileID: 5881927809459642976}
   - {fileID: 8399162592706131503}
+  - {fileID: 5658195825305259284}
+  - {fileID: 4024164540999754019}
   - {fileID: 3640600473328746056}
   - {fileID: 3120684261429624586}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -833, y: -280}
+  m_AnchoredPosition: {x: -350, y: -280}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4836106196224862897
@@ -2174,14 +2174,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbdc0e1f4a236e34caf2ac0f3d77fdcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveRow: {fileID: 2422692004804707250}
-  moveBackwardRow: {fileID: 4551755552498920659}
+  movementRow: {fileID: 2422692004804707250}
+  driftRow: {fileID: 8492695347342882773}
+  speedupRow: {fileID: 7233081559128497654}
+  reverseRow: {fileID: 4551755552498920659}
   checkoutRow: {fileID: 7702259071448159703}
-  exitRow: {fileID: 8492695347342882773}
   aimRow: {fileID: 3657036919288159517}
-  shootRow: {fileID: 2465523063359169802}
-  chargeRow: {fileID: 7233081559128497654}
-  _cart: {fileID: 0}
+  activatePowerupRow: {fileID: 2465523063359169802}
+  playerIndex: 1
+  cart: {fileID: 0}
 --- !u!1 &8269476327786028913
 GameObject:
   m_ObjectHideFlags: 0

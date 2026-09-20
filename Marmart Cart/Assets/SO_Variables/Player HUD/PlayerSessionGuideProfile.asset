@@ -38,9 +38,9 @@ MonoBehaviour:
   arrowHeadLengthPixels: 15
   arrowHeadWidthPixels: 30
   arrowColor: {r: 1, g: 1, b: 1, a: 1}
-  raindropOffsetPixels: {x: 0, y: 0}
-  raindropWidthPixels: 28.5
-  raindropHeightPixels: 42.9
+  raindropOffsetPixels: {x: 0, y: 6.5}
+  raindropWidthPixels: 36
+  raindropHeightPixels: 59.8
   raindropColor: {r: 1, g: 1, b: 1, a: 1}
   raindropCenterCircleRadiusPixels: 4.5
   raindropCenterCircleColor: {r: 0.03529412, g: 0.050980393, b: 0.07450981, a: 0.8784314}

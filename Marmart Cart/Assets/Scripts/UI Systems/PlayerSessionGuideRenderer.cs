@@ -84,14 +84,6 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
             return;
         }
 
-        if (!sessionGuideSystem.TryGetActiveState(
-                out PlayerSessionGuideState guideState
-            ) ||
-            guideState == null)
-        {
-            return;
-        }
-
         if (!playerWorldHUDSystem.TryGetRenderableSlotForCameraForOverlay(
                 cam,
                 out int playerIndex,
@@ -102,8 +94,18 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
             return;
         }
 
+        if (!sessionGuideSystem.TryGetActiveStateForPlayer(
+                playerIndex,
+                out PlayerSessionGuideState guideState
+            ) ||
+            guideState == null)
+        {
+            return;
+        }
+
         bool playerIsInsideTarget =
-            sessionGuideSystem.IsPointInsideCurrentTarget(
+            sessionGuideSystem.IsPointInsideCurrentTargetForPlayer(
+                playerIndex,
                 hudAnchor.position
             );
 

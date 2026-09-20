@@ -7,44 +7,68 @@ public class TutorialOneSlotSpawner : MonoBehaviour
 {
     [Header("Spawn")]
     [SerializeField] private GameObject prefab;
-    [SerializeField] private Transform spawnPoint;
-    [SerializeField] private Transform spawnParent; // optional
 
-    [Header("Respawn Feel")]
-    [Tooltip("How long after players leave the zone before a new item can respawn.")]
+    [Tooltip("Uses the same legal drop-position system as the current production spawners. Empty = auto-find in children.")]
+    [SerializeField] private RandomGroundSpawnArea spawnArea;
+
+    [SerializeField] private Transform spawnedParent;
+
+    [Header("Spawn Rotation")]
+    [SerializeField] private bool randomizeYaw = true;
+
+    [Header("Repickable Slot")]
+    [Tooltip("Delay after the final player leaves the trigger before the empty slot may refill.")]
+    [Min(0f)]
     [SerializeField] private float respawnDelay = 1.5f;
 
-    [Tooltip("If the spawned item moved this far from the spawn point, we consider it 'taken'.")]
-    [SerializeField] private float takenDistance = 1.0f;
+    [Tooltip("Horizontal X/Z distance from the original drop position required before a movable resource is considered taken.")]
+    [Min(0.01f)]
+    [SerializeField] private float takenDistance = 1f;
 
-    [Header("Area Clear Rules")]
-    [Tooltip("Only respawn if the trigger area is clear (prevents respawning on top of someone stuck there).")]
+    [Tooltip("Preserves the old tutorial anti-overlap rule before refilling.")]
     [SerializeField] private bool requireZoneClearToRespawn = true;
 
-    [Tooltip("Which layers count as 'blocking' the respawn (players, carts, etc).")]
+    [Tooltip("Layers that block this tutorial slot from refilling.")]
     [SerializeField] private LayerMask zoneBlockMask;
 
-    [Tooltip("How often to re-check zone clear while waiting to respawn.")]
-    [SerializeField] private float clearCheckInterval = 0.15f;
+    [Tooltip("How often to retry while the area or RandomGroundSpawnArea is blocked.")]
+    [Min(0.02f)]
+    [SerializeField] private float retryInterval = 0.15f;
 
-    private BoxCollider _zone;
-    private GameObject _current;
-    private int _playersInside = 0;
-    private Coroutine _respawnRoutine;
-    private ISpawnerHoldable _holdable;
-    [SerializeField] private bool needScaleFix = false;
+    [Header("Runtime - Read Only")]
+    [SerializeField] private GameObject currentItem;
+    [SerializeField] private Vector3 currentDropPosition;
+    [SerializeField] private int playersInside;
+    [SerializeField] private bool waitingToRespawn;
+    [SerializeField] private int totalSpawned;
+
+    private BoxCollider zoneTrigger;
+    private Coroutine respawnRoutine;
+    private ISpawnerHoldable currentHoldable;
+
+    public GameObject CurrentItem => currentItem;
+    public bool HasAvailableItem => currentItem != null;
+    public bool WaitingToRespawn => waitingToRespawn;
+    public int TotalSpawned => totalSpawned;
+
     private void Reset()
     {
-        _zone = GetComponent<BoxCollider>();
-        _zone.isTrigger = true;
+        ResolveReferences();
+
+        if (zoneTrigger != null)
+        {
+            zoneTrigger.isTrigger = true;
+        }
     }
 
     private void Awake()
     {
-        _zone = GetComponent<BoxCollider>();
-        _zone.isTrigger = true;
+        ResolveReferences();
 
-        if (!spawnPoint) spawnPoint = transform; // fallback
+        if (zoneTrigger != null)
+        {
+            zoneTrigger.isTrigger = true;
+        }
     }
 
     private void Start()
@@ -54,128 +78,301 @@ public class TutorialOneSlotSpawner : MonoBehaviour
 
     private void Update()
     {
-        // If we have an item and it got moved away/destroyed -> treat as taken.
-        if (_current == null) return;
-
-        // If item is inactive/destroyed, clear reference
-        if (!_current.activeInHierarchy)
+        if (currentItem == null)
         {
-            _holdable?.OnSpawnerHoldEnd();
-            _holdable = null;
-            _current = null;
+            ReleaseCurrentReference();
+
+            if (playersInside == 0)
+            {
+                TryStartRespawn();
+            }
+
             return;
         }
 
-        // If item moved far away from spawn, it's "taken"
-        float d = Vector3.Distance(_current.transform.position, spawnPoint.position);
-        if (d >= takenDistance)
+        if (!currentItem.activeInHierarchy)
         {
-            _holdable?.OnSpawnerHoldEnd();
-            _holdable = null;
-            _current = null;
+            MarkCurrentItemTaken();
+            return;
+        }
+
+        // Ignore vertical drop/fall distance. Only horizontal movement means
+        // a movable cart/resource has actually left this one-slot source.
+        Vector3 offset = currentItem.transform.position - currentDropPosition;
+        offset.y = 0f;
+
+        if (offset.sqrMagnitude >= takenDistance * takenDistance)
+        {
+            MarkCurrentItemTaken();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (respawnRoutine != null)
+        {
+            StopCoroutine(respawnRoutine);
+            respawnRoutine = null;
+        }
+
+        waitingToRespawn = false;
+        playersInside = 0;
+    }
+
+    private void OnValidate()
+    {
+        respawnDelay = Mathf.Max(0f, respawnDelay);
+        takenDistance = Mathf.Max(0.01f, takenDistance);
+        retryInterval = Mathf.Max(0.02f, retryInterval);
+
+        if (zoneTrigger == null)
+        {
+            zoneTrigger = GetComponent<BoxCollider>();
+        }
+
+        if (zoneTrigger != null)
+        {
+            zoneTrigger.isTrigger = true;
+        }
+
+        if (spawnArea == null)
+        {
+            spawnArea = GetComponentInChildren<RandomGroundSpawnArea>(true);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Any player can use it. We don't lock to a player.
-        // Easiest filter: tags "Player1/Player2/Player3/Player4" OR put players on a Player layer.
-        if (IsPlayer(other))
+        if (!IsPlayer(other)) return;
+
+        playersInside++;
+
+        if (respawnRoutine != null)
         {
-            _playersInside++;
-            if (_respawnRoutine != null)
-            {
-                StopCoroutine(_respawnRoutine);
-                _respawnRoutine = null;
-            }
+            StopCoroutine(respawnRoutine);
+            respawnRoutine = null;
+            waitingToRespawn = false;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (IsPlayer(other))
-        {
-            _playersInside = Mathf.Max(0, _playersInside - 1);
+        if (!IsPlayer(other)) return;
 
-            // Start respawn countdown ONLY after last player leaves
-            if (_playersInside == 0)
-                TryStartRespawn();
+        playersInside = Mathf.Max(0, playersInside - 1);
+
+        if (playersInside == 0)
+        {
+            TryStartRespawn();
         }
     }
 
-    private bool IsPlayer(Collider other)
+    private static bool IsPlayer(Collider other)
     {
-        // Tag approach (matches your current setup)
-        return other.CompareTag("Player1") || other.CompareTag("Player2");
-            // || other.CompareTag("Player3") || other.CompareTag("Player4");
+        if (other == null) return false;
+
+        return
+            other.CompareTag("Player1") ||
+            other.CompareTag("Player2") ||
+            other.CompareTag("Player3") ||
+            other.CompareTag("Player4");
+    }
+
+    private void MarkCurrentItemTaken()
+    {
+        ReleaseCurrentReference();
+
+        if (playersInside == 0)
+        {
+            TryStartRespawn();
+        }
+    }
+
+    private void ReleaseCurrentReference()
+    {
+        currentHoldable?.OnSpawnerHoldEnd();
+        currentHoldable = null;
+        currentItem = null;
     }
 
     private void TryStartRespawn()
     {
-        // Only respawn if slot is empty (taken/destroyed)
-        if (_current != null) return;
+        if (currentItem != null) return;
+        if (playersInside > 0) return;
+        if (respawnRoutine != null) return;
+        if (!isActiveAndEnabled) return;
 
-        if (_respawnRoutine != null) return;
-        _respawnRoutine = StartCoroutine(RespawnAfterDelay());
+        respawnRoutine = StartCoroutine(RespawnRoutine());
     }
 
-    private IEnumerator RespawnAfterDelay()
+    private IEnumerator RespawnRoutine()
     {
-        float t = 0f;
+        waitingToRespawn = true;
 
-        // Wait delay, but cancel if a player comes back in
-        while (t < respawnDelay)
+        float elapsed = 0f;
+
+        while (elapsed < respawnDelay)
         {
-            if (_playersInside > 0) { _respawnRoutine = null; yield break; }
-            t += Time.deltaTime;
+            if (playersInside > 0)
+            {
+                FinishRespawnRoutine();
+                yield break;
+            }
+
+            elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // Optional: only respawn if area is clear (prevents stuck-respawn)
-        if (requireZoneClearToRespawn)
+        // Unlike normal match spawning, this tutorial source has no budget.
+        // Keep retrying until its single available item can be restored.
+        while (currentItem == null)
         {
-            while (!IsZoneClear())
+            if (playersInside > 0)
             {
-                if (_playersInside > 0) { _respawnRoutine = null; yield break; }
-                yield return new WaitForSeconds(clearCheckInterval);
+                FinishRespawnRoutine();
+                yield break;
             }
+
+            if (requireZoneClearToRespawn && !IsZoneClear())
+            {
+                yield return new WaitForSeconds(retryInterval);
+                continue;
+            }
+
+            if (TrySpawnNow())
+            {
+                FinishRespawnRoutine();
+                yield break;
+            }
+
+            yield return new WaitForSeconds(retryInterval);
         }
 
-        SpawnNow();
-        _respawnRoutine = null;
+        FinishRespawnRoutine();
     }
 
-    private bool IsZoneClear()
+    private void FinishRespawnRoutine()
     {
-        // Use the box collider’s bounds for an overlap check
-        var center = _zone.bounds.center;
-        var halfExtents = _zone.bounds.extents;
-
-        // OverlapBox uses world rotation; BoxCollider bounds already axis-aligned.
-        // Good enough for tutorial zones. If you rotate zones heavily, tell me and I’ll switch to BoxCollider local-space overlap.
-        var hits = Physics.OverlapBox(center, halfExtents, Quaternion.identity, zoneBlockMask, QueryTriggerInteraction.Ignore);
-
-        return hits == null || hits.Length == 0;
+        respawnRoutine = null;
+        waitingToRespawn = false;
     }
 
     public void SpawnNow()
     {
-        if (!prefab || _current != null) return;
-
-        _current = Instantiate(prefab, spawnPoint.position, prefab.transform.rotation, spawnParent);
-        if (needScaleFix)
-        _current.transform.localScale = new Vector3(5f, 5f, 5f);
-        _holdable = _current.GetComponentInChildren<ISpawnerHoldable>();
-        _holdable?.OnSpawnerHoldStart();
+        TrySpawnNow();
     }
 
-    // Handy for resets / debugging
+    public bool TrySpawnNow()
+    {
+        ResolveReferences();
+
+        if (prefab == null)
+        {
+            Debug.LogError("[TutorialOneSlotSpawner] Prefab is missing.", this);
+            return false;
+        }
+
+        if (spawnArea == null)
+        {
+            Debug.LogError("[TutorialOneSlotSpawner] RandomGroundSpawnArea is missing.", this);
+            return false;
+        }
+
+        if (currentItem != null)
+        {
+            return false;
+        }
+
+        if (!spawnArea.TryGetValidDropPosition(out Vector3 dropPosition))
+        {
+            return false;
+        }
+
+        Quaternion rotation =
+            randomizeYaw
+                ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
+                : prefab.transform.rotation;
+
+        currentItem = Instantiate(
+            prefab,
+            dropPosition,
+            rotation,
+            spawnedParent
+        );
+
+        currentDropPosition = dropPosition;
+
+        // Backwards compatibility only. New cart / GroceryLootPickup prefabs
+        // do not need to implement ISpawnerHoldable.
+        currentHoldable =
+            currentItem.GetComponentInChildren<ISpawnerHoldable>();
+
+        currentHoldable?.OnSpawnerHoldStart();
+
+        Physics.SyncTransforms();
+
+        totalSpawned++;
+        return true;
+    }
+
+    private bool IsZoneClear()
+    {
+        if (zoneTrigger == null) return true;
+
+        Vector3 center = zoneTrigger.bounds.center;
+        Vector3 halfExtents = zoneTrigger.bounds.extents;
+
+        Collider[] hits = Physics.OverlapBox(
+            center,
+            halfExtents,
+            Quaternion.identity,
+            zoneBlockMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        return hits == null || hits.Length == 0;
+    }
+
+    private void ResolveReferences()
+    {
+        if (zoneTrigger == null)
+        {
+            zoneTrigger = GetComponent<BoxCollider>();
+        }
+
+        if (spawnArea == null)
+        {
+            spawnArea =
+                GetComponentInChildren<RandomGroundSpawnArea>(true);
+        }
+    }
+
+    [ContextMenu("Force Clear Slot")]
     public void ForceClearSlot()
     {
-        _holdable?.OnSpawnerHoldEnd();
-        _holdable = null;
+        if (respawnRoutine != null)
+        {
+            StopCoroutine(respawnRoutine);
+            respawnRoutine = null;
+        }
 
-        if (_current != null) Destroy(_current);
-        _current = null;
+        waitingToRespawn = false;
+
+        currentHoldable?.OnSpawnerHoldEnd();
+        currentHoldable = null;
+
+        if (currentItem != null)
+        {
+            Destroy(currentItem);
+        }
+
+        currentItem = null;
+    }
+
+    [ContextMenu("Force Refill Slot")]
+    public void ForceRefillSlot()
+    {
+        ForceClearSlot();
+        SpawnNow();
     }
 }

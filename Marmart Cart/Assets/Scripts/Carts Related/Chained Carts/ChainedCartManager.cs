@@ -404,7 +404,7 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
         rb.AddForce(forceDirection.normalized * forceMagnitude, ForceMode.Impulse);
 
-        Vector3 randomTorque = Random.insideUnitSphere * Random.Range(20f, 30f);
+        Vector3 randomTorque = Random.insideUnitSphere * Random.Range(20f, 30f); 
         rb.AddTorque(randomTorque, ForceMode.Impulse);
     }
 
@@ -559,10 +559,25 @@ public class ChainedCartManager : MonoBehaviour, ISpawnerHoldable
 
     private void StopDisappearCountdown()
     {
-        if (disappearRoutine == null) return;
+        if (disappearRoutine != null)
+        {
+            StopCoroutine(disappearRoutine);
+            disappearRoutine = null;
+        }
 
-        StopCoroutine(disappearRoutine);
-        disappearRoutine = null;
+        // The disappearing-warning ghost visual lives independently inside
+        // CartMaterialManager, so stopping the countdown coroutine alone is not
+        // enough. Restore the cart's real/base materials as well.
+        if (disappearWarningStarted)
+        {
+            disappearWarningStarted = false;
+
+            if (cartMaterialManager != null &&
+                cartMaterialManager.IsGhostVisualActive)
+            {
+                cartMaterialManager.ClearVisualMode();
+            }
+        }
     }
 
     private IEnumerator DisappearRoutine()

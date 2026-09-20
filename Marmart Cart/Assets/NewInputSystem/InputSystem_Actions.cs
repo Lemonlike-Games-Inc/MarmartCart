@@ -143,7 +143,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""QuitCheckOut"",
+                    ""name"": ""Reset"",
                     ""type"": ""Button"",
                     ""id"": ""71757203-3eef-4bae-b5a4-bc5312a6ec70"",
                     ""expectedControlType"": """",
@@ -465,7 +465,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard_WASD"",
-                    ""action"": ""QuitCheckOut"",
+                    ""action"": ""Reset"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -476,7 +476,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Controller"",
-                    ""action"": ""QuitCheckOut"",
+                    ""action"": ""Reset"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1200,7 +1200,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_ActivatePowerUp = m_Player.FindAction("ActivatePowerUp", throwIfNotFound: true);
         m_Player_MoveBackward = m_Player.FindAction("MoveBackward", throwIfNotFound: true);
         m_Player_CheckOut = m_Player.FindAction("CheckOut", throwIfNotFound: true);
-        m_Player_QuitCheckOut = m_Player.FindAction("QuitCheckOut", throwIfNotFound: true);
+        m_Player_Reset = m_Player.FindAction("Reset", throwIfNotFound: true);
         m_Player_Speedup = m_Player.FindAction("Speedup", throwIfNotFound: true);
         m_Player_TutorialPrev = m_Player.FindAction("TutorialPrev", throwIfNotFound: true);
         m_Player_TutorialNext = m_Player.FindAction("TutorialNext", throwIfNotFound: true);
@@ -1303,7 +1303,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ActivatePowerUp;
     private readonly InputAction m_Player_MoveBackward;
     private readonly InputAction m_Player_CheckOut;
-    private readonly InputAction m_Player_QuitCheckOut;
+    private readonly InputAction m_Player_Reset;
     private readonly InputAction m_Player_Speedup;
     private readonly InputAction m_Player_TutorialPrev;
     private readonly InputAction m_Player_TutorialNext;
@@ -1340,9 +1340,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @CheckOut => m_Wrapper.m_Player_CheckOut;
         /// <summary>
-        /// Provides access to the underlying input action "Player/QuitCheckOut".
+        /// Provides access to the underlying input action "Player/Reset".
         /// </summary>
-        public InputAction @QuitCheckOut => m_Wrapper.m_Player_QuitCheckOut;
+        public InputAction @Reset => m_Wrapper.m_Player_Reset;
         /// <summary>
         /// Provides access to the underlying input action "Player/Speedup".
         /// </summary>
@@ -1400,9 +1400,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @CheckOut.started += instance.OnCheckOut;
             @CheckOut.performed += instance.OnCheckOut;
             @CheckOut.canceled += instance.OnCheckOut;
-            @QuitCheckOut.started += instance.OnQuitCheckOut;
-            @QuitCheckOut.performed += instance.OnQuitCheckOut;
-            @QuitCheckOut.canceled += instance.OnQuitCheckOut;
+            @Reset.started += instance.OnReset;
+            @Reset.performed += instance.OnReset;
+            @Reset.canceled += instance.OnReset;
             @Speedup.started += instance.OnSpeedup;
             @Speedup.performed += instance.OnSpeedup;
             @Speedup.canceled += instance.OnSpeedup;
@@ -1441,9 +1441,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @CheckOut.started -= instance.OnCheckOut;
             @CheckOut.performed -= instance.OnCheckOut;
             @CheckOut.canceled -= instance.OnCheckOut;
-            @QuitCheckOut.started -= instance.OnQuitCheckOut;
-            @QuitCheckOut.performed -= instance.OnQuitCheckOut;
-            @QuitCheckOut.canceled -= instance.OnQuitCheckOut;
+            @Reset.started -= instance.OnReset;
+            @Reset.performed -= instance.OnReset;
+            @Reset.canceled -= instance.OnReset;
             @Speedup.started -= instance.OnSpeedup;
             @Speedup.performed -= instance.OnSpeedup;
             @Speedup.canceled -= instance.OnSpeedup;
@@ -1805,12 +1805,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCheckOut(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "QuitCheckOut" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Reset" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQuitCheckOut(InputAction.CallbackContext context);
+        void OnReset(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Speedup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

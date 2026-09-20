@@ -38,11 +38,18 @@ public sealed class PlayerSessionGuideSystem : MonoBehaviour
     [SerializeField] private ArenaZone zoneD;
 
     [Tooltip(
-        "RandomGroundSpawnArea on the center/restock root used by Checkout + " +
-        "Restock. Its Transform is the arrow target and its authored rectangle " +
-        "is the arrival range. No ArenaZone is required for Center."
+        "PRIMARY RandomGroundSpawnArea for Center / Checkout + Restock. " +
+        "Its Transform remains the arrow target. Its authored rectangle is also " +
+        "included in the Center arrival-area union."
     )]
     [SerializeField] private RandomGroundSpawnArea centerZoneArea;
+
+    [Tooltip(
+        "Optional EXTRA rectangles used ONLY by the Player Session Guide when " +
+        "testing whether a player has reached Center. These areas are never used " +
+        "for cart spawning, so they can freely refine the Center shape."
+    )]
+    [SerializeField] private RandomGroundSpawnArea[] centerZoneGuideOnlyAreas;
 
     [SerializeField] private string centerDisplayName = "Center";
 
@@ -69,6 +76,17 @@ public sealed class PlayerSessionGuideSystem : MonoBehaviour
     private MatchFlowProfile cachedProfile;
     private int cachedSessionCount = -1;
     private Coroutine monitorRoutine;
+
+    // Tutorial Zone Loot is the only guide mode with a different destination
+    // per local player. These states mirror the shared forecast timing/phase
+    // while replacing only the resolved zone target.
+    private readonly PlayerSessionGuideState[] tutorialPlayerStates =
+    {
+        new PlayerSessionGuideState(),
+        new PlayerSessionGuideState(),
+        new PlayerSessionGuideState(),
+        new PlayerSessionGuideState()
+    };
 
     public PlayerSessionGuideState CurrentState => currentState;
     public float TargetRangePadding => targetRangePadding;
@@ -125,29 +143,90 @@ public sealed class PlayerSessionGuideSystem : MonoBehaviour
 
     public bool IsPointInsideCurrentTarget(Vector3 worldPoint)
     {
-        if (currentState == null ||
-            !currentState.Visible)
+        return IsPointInsideGuideTarget(currentState, worldPoint);
+    }
+
+    /// <summary>
+    /// Player-aware version of TryGetActiveState.
+    ///
+    /// Existing session types still return the original shared state exactly
+    /// as before. TutorialZoneLoot is the one exception: P1/P2/P3/P4 receive
+    /// ZoneA/ZoneB/ZoneC/ZoneD while sharing the same countdown, indication
+    /// phase, and session indices.
+    /// </summary>
+    public bool TryGetActiveStateForPlayer(
+        int playerIndex,
+        out PlayerSessionGuideState state)
+    {
+        if (!TryGetActiveState(out PlayerSessionGuideState sharedState) ||
+            sharedState == null)
+        {
+            state = sharedState;
+            return false;
+        }
+
+        if (!TryGetStateTargetSession(
+                sharedState,
+                out MatchFlowSession targetSession
+            ) ||
+            targetSession.type != MatchFlowSessionType.TutorialZoneLoot)
+        {
+            state = sharedState;
+            return true;
+        }
+
+        if (!TryGetTutorialZoneIdForPlayer(
+                playerIndex,
+                out ArenaZoneId playerZoneId
+            ))
+        {
+            // The renderer only supplies valid local player indices (1..4).
+            // Keep a safe fallback for any external caller without changing
+            // the original shared-query behavior.
+            state = sharedState;
+            return true;
+        }
+
+        ResolvedGuideTarget playerTarget =
+            ResolveZoneTarget(playerZoneId);
+
+        PlayerSessionGuideState playerState =
+            tutorialPlayerStates[playerIndex - 1];
+
+        playerState.Apply(
+            PlayerSessionGuideTargetKind.ZoneLoot,
+            sharedState.IndicationPhase,
+            sharedState.SourceSessionIndex,
+            sharedState.TargetSessionIndex,
+            playerZoneId,
+            playerTarget.ArenaZone,
+            playerTarget.DirectArea,
+            playerTarget.Anchor,
+            playerTarget.DisplayName,
+            sharedState.SecondsUntilActive
+        );
+
+        state = playerState;
+        return true;
+    }
+
+    /// <summary>
+    /// Player-aware arrival test used only by per-player rendering.
+    /// Normal sessions resolve to the same shared target as before.
+    /// </summary>
+    public bool IsPointInsideCurrentTargetForPlayer(
+        int playerIndex,
+        Vector3 worldPoint)
+    {
+        if (!TryGetActiveStateForPlayer(
+                playerIndex,
+                out PlayerSessionGuideState state
+            ))
         {
             return false;
         }
 
-        if (currentState.TargetZone != null)
-        {
-            return currentState.TargetZone.ContainsSessionGuidePoint(
-                worldPoint,
-                targetRangePadding
-            );
-        }
-
-        if (currentState.TargetDirectArea != null)
-        {
-            return currentState.TargetDirectArea.ContainsHorizontalPoint(
-                worldPoint,
-                targetRangePadding
-            );
-        }
-
-        return false;
+        return IsPointInsideGuideTarget(state, worldPoint);
     }
 
     [ContextMenu("Rebuild Forecast Schedule")]
@@ -385,7 +464,8 @@ public sealed class PlayerSessionGuideSystem : MonoBehaviour
         float secondsUntilActive)
     {
         PlayerSessionGuideTargetKind kind =
-            target.type == MatchFlowSessionType.ZoneLoot
+            target.type == MatchFlowSessionType.ZoneLoot ||
+            target.type == MatchFlowSessionType.TutorialZoneLoot
                 ? PlayerSessionGuideTargetKind.ZoneLoot
                 : PlayerSessionGuideTargetKind.CheckoutRestock;
 
@@ -516,6 +596,188 @@ public sealed class PlayerSessionGuideSystem : MonoBehaviour
         return result;
     }
 
+    private bool TryGetStateTargetSession(
+        PlayerSessionGuideState state,
+        out MatchFlowSession session)
+    {
+        session = null;
+
+        if (state == null ||
+            cachedProfile == null ||
+            cachedProfile.Sessions == null)
+        {
+            return false;
+        }
+
+        int targetIndex = state.TargetSessionIndex;
+
+        if (targetIndex < 0 ||
+            targetIndex >= cachedProfile.Sessions.Count)
+        {
+            return false;
+        }
+
+        session = cachedProfile.Sessions[targetIndex];
+        return session != null;
+    }
+
+    private static bool TryGetTutorialZoneIdForPlayer(
+        int playerIndex,
+        out ArenaZoneId zoneId)
+    {
+        switch (playerIndex)
+        {
+            case 1:
+                zoneId = ArenaZoneId.ZoneA;
+                return true;
+
+            case 2:
+                zoneId = ArenaZoneId.ZoneB;
+                return true;
+
+            case 3:
+                zoneId = ArenaZoneId.ZoneC;
+                return true;
+
+            case 4:
+                zoneId = ArenaZoneId.ZoneD;
+                return true;
+
+            default:
+                zoneId = ArenaZoneId.ZoneA;
+                return false;
+        }
+    }
+
+    private ResolvedGuideTarget ResolveZoneTarget(ArenaZoneId zoneId)
+    {
+        ResolvedGuideTarget result = default(ResolvedGuideTarget);
+        ArenaZone resolvedZone;
+
+        switch (zoneId)
+        {
+            case ArenaZoneId.ZoneA:
+                resolvedZone = zoneA;
+                break;
+
+            case ArenaZoneId.ZoneB:
+                resolvedZone = zoneB;
+                break;
+
+            case ArenaZoneId.ZoneC:
+                resolvedZone = zoneC;
+                break;
+
+            case ArenaZoneId.ZoneD:
+                resolvedZone = zoneD;
+                break;
+
+            default:
+                resolvedZone = null;
+                break;
+        }
+
+        result.ArenaZone = resolvedZone;
+        result.Anchor =
+            resolvedZone != null ? resolvedZone.transform : null;
+        result.DisplayName =
+            resolvedZone != null
+                ? resolvedZone.DisplayName
+                : zoneId.ToString();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Shared arrival test for both the original shared guide query and the
+    /// player-aware tutorial query.
+    ///
+    /// Arena zones already own a union of section spawn rectangles.
+    /// Checkout + Restock uses the same union concept here: the primary Center
+    /// area plus any guide-only refinement rectangles.
+    /// </summary>
+    private bool IsPointInsideGuideTarget(
+        PlayerSessionGuideState state,
+        Vector3 worldPoint)
+    {
+        if (state == null || !state.Visible)
+        {
+            return false;
+        }
+
+        if (state.TargetZone != null)
+        {
+            return state.TargetZone.ContainsSessionGuidePoint(
+                worldPoint,
+                targetRangePadding
+            );
+        }
+
+        // Checkout + Restock is the Center target. Its displayed/arrow target
+        // remains the primary centerZoneArea, but arrival accepts the union of
+        // every authored Center guide rectangle.
+        if (state.TargetKind ==
+            PlayerSessionGuideTargetKind.CheckoutRestock)
+        {
+            return ContainsCenterGuidePoint(worldPoint);
+        }
+
+        if (state.TargetDirectArea != null)
+        {
+            return state.TargetDirectArea.ContainsHorizontalPoint(
+                worldPoint,
+                targetRangePadding
+            );
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Union test for Center.
+    ///
+    /// centerZoneGuideOnlyAreas are presentation/navigation geometry only.
+    /// Nothing in this method requests spawn positions, so adding rectangles
+    /// here cannot cause CartRestockSpawner to spawn inside them.
+    /// </summary>
+    private bool ContainsCenterGuidePoint(Vector3 worldPoint)
+    {
+        if (centerZoneArea != null &&
+            centerZoneArea.ContainsHorizontalPoint(
+                worldPoint,
+                targetRangePadding
+            ))
+        {
+            return true;
+        }
+
+        if (centerZoneGuideOnlyAreas == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < centerZoneGuideOnlyAreas.Length; i++)
+        {
+            RandomGroundSpawnArea area =
+                centerZoneGuideOnlyAreas[i];
+
+            if (area == null || area == centerZoneArea)
+            {
+                continue;
+            }
+
+            if (area.ContainsHorizontalPoint(
+                    worldPoint,
+                    targetRangePadding
+                ))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void EnsureForecastScheduleCurrent()
     {
         MatchFlowProfile profile =
@@ -538,6 +800,7 @@ public sealed class PlayerSessionGuideSystem : MonoBehaviour
             session != null &&
             (
                 session.type == MatchFlowSessionType.ZoneLoot ||
+                session.type == MatchFlowSessionType.TutorialZoneLoot ||
                 session.type == MatchFlowSessionType.CheckoutRestock
             );
     }

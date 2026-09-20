@@ -706,7 +706,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6704257294683854989}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 
@@ -9751,7 +9751,7 @@ GameObject:
   - component: {fileID: 814993126530778047}
   - component: {fileID: 1240603488509534518}
   m_Layer: 7
-  m_Name: FollowingCart
+  m_Name: FollowingCart InfiniteLIfeTime
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10154,7 +10154,7 @@ MonoBehaviour:
   spillUpwardImpulse: 3
   spilledPickupCollectionDelay: 0.5
   lastSpilledCargoCount: 0
-  disappearTime: 15
+  disappearTime: 9999
   disappearWarningDuration: 3
   disappearWarningStarted: 0
   heldBySpawner: 0
@@ -10212,7 +10212,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6914780558269192623}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74a2e6aa78313f24faad6175af92eeca, type: 3}
   m_Name: 

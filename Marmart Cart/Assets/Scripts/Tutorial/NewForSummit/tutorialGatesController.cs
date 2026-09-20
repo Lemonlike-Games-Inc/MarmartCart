@@ -1,30 +1,81 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Tutorial timeline gates.
+/// Every authored time is an absolute timestamp measured from t = 0.
+/// Times are NOT stacked.
+/// </summary>
+[DisallowMultipleComponent]
 public class tutorialGatesController : MonoBehaviour
 {
-    [Header("Tutorial Session Timing")]
+    [Header("Tutorial Timeline - Absolute Seconds From 0")]
+    [Min(0f)]
     [SerializeField] private float tutorialSession2StartAt = 10f;
-    [SerializeField] private float tutorialSession3StartAt = 20f;
 
-    [Header("Session 2")]
-    [SerializeField] private List<GameObject> objectsToDisableAtS2 = new();
-    [SerializeField] private List<GameObject> objectsToEnableAtS2 = new();
+    [Tooltip(
+        "Absolute tutorial time when the Checkout hint becomes visible. " +
+        "This is independent from the session boundaries."
+    )]
+    [Min(0f)]
+    [SerializeField] private float tutorialCheckoutHintStartAt = 20f;
 
-    [Header("Session 4")]
-    [SerializeField] private List<GameObject> objectsToDisableAtS3 = new();
-    [SerializeField] private List<GameObject> objectsToEnableAtS3 = new();
+    [Tooltip(
+        "Absolute tutorial time when Tutorial Session 3 begins. " +
+        "Aim + Activate Powerup hints unlock at this exact same boundary."
+    )]
+    [Min(0f)]
+    [SerializeField] private float tutorialSession3StartAt = 30f;
 
-    private float timer;
+    [Header("Session 2 Object Changes")]
+    [SerializeField]
+    private List<GameObject> objectsToDisableAtS2 =
+        new List<GameObject>();
 
-    private bool session2Triggered;
-    private bool session4Triggered;
+    [SerializeField]
+    private List<GameObject> objectsToEnableAtS2 =
+        new List<GameObject>();
+
+    [Header("Later Tutorial Object Changes")]
+    [SerializeField]
+    private List<GameObject> objectsToDisableAtS4 =
+        new List<GameObject>();
+
+    [SerializeField]
+    private List<GameObject> objectsToEnableAtS4 =
+        new List<GameObject>();
+
+    [Header("Runtime - Read Only")]
+    [SerializeField] private float elapsedTutorialTime;
+    [SerializeField] private bool session2Triggered;
+    [SerializeField] private bool checkoutHintsUnlocked;
+    [SerializeField] private bool session3Triggered;
+    [SerializeField] private bool advancedControlHintsUnlocked;
+
+    public float ElapsedTutorialTime => elapsedTutorialTime;
+    public bool CheckoutHintsUnlocked => checkoutHintsUnlocked;
+    public bool AdvancedControlHintsUnlocked => advancedControlHintsUnlocked;
+
+    public event Action OnCheckoutHintsUnlocked;
+    public event Action OnAdvancedControlHintsUnlocked;
+
+    private void Start()
+    {
+        elapsedTutorialTime = 0f;
+        EvaluateTimeline();
+    }
 
     private void Update()
     {
-        timer += Time.deltaTime;
+        elapsedTutorialTime += Time.deltaTime;
+        EvaluateTimeline();
+    }
 
-        if (!session2Triggered && timer >= tutorialSession2StartAt)
+    private void EvaluateTimeline()
+    {
+        if (!session2Triggered &&
+            elapsedTutorialTime >= tutorialSession2StartAt)
         {
             session2Triggered = true;
 
@@ -32,21 +83,50 @@ public class tutorialGatesController : MonoBehaviour
             SetObjectsActive(objectsToEnableAtS2, true);
         }
 
-        if (!session4Triggered && timer >= tutorialSession3StartAt)
+        if (!checkoutHintsUnlocked &&
+            elapsedTutorialTime >= tutorialCheckoutHintStartAt)
         {
-            session4Triggered = true;
+            checkoutHintsUnlocked = true;
+            OnCheckoutHintsUnlocked?.Invoke();
+        }
 
-            SetObjectsActive(objectsToDisableAtS3, false);
-            SetObjectsActive(objectsToEnableAtS3, true);
+        if (!session3Triggered &&
+            elapsedTutorialTime >= tutorialSession3StartAt)
+        {
+            session3Triggered = true;
+
+            SetObjectsActive(objectsToDisableAtS4, false);
+            SetObjectsActive(objectsToEnableAtS4, true);
+
+            advancedControlHintsUnlocked = true;
+            OnAdvancedControlHintsUnlocked?.Invoke();
         }
     }
 
-    private void SetObjectsActive(List<GameObject> objects, bool active)
+    private static void SetObjectsActive(
+        List<GameObject> objects,
+        bool active)
     {
-        foreach (GameObject obj in objects)
+        if (objects == null) return;
+
+        for (int i = 0; i < objects.Count; i++)
         {
-            if (obj != null)
-                obj.SetActive(active);
+            GameObject target = objects[i];
+
+            if (target != null)
+                target.SetActive(active);
         }
+    }
+
+    private void OnValidate()
+    {
+        tutorialSession2StartAt =
+            Mathf.Max(0f, tutorialSession2StartAt);
+
+        tutorialCheckoutHintStartAt =
+            Mathf.Max(0f, tutorialCheckoutHintStartAt);
+
+        tutorialSession3StartAt =
+            Mathf.Max(0f, tutorialSession3StartAt);
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   sessions:
   - label: Game Start
     type: 0
-    duration: 1
+    duration: 3
     telegraphDuration: 0
     freePlayDuration: 0
     closingDuration: 0
@@ -23,9 +23,9 @@ MonoBehaviour:
     batchSize: 0
     zone: 0
     checkoutStations: 0
-  - label: Initial Cart Restock
+  - label: Learn to move and collect carts
     type: 5
-    duration: 20
+    duration: 15
     telegraphDuration: 0
     freePlayDuration: 0
     closingDuration: 5
@@ -33,9 +33,9 @@ MonoBehaviour:
     batchSize: 1
     zone: 0
     checkoutStations: 0
-  - label: tutorial all zone loot open
+  - label: Learn to move and collect items
     type: 6
-    duration: 30
+    duration: 20
     telegraphDuration: 5
     freePlayDuration: 0
     closingDuration: 5
@@ -43,6 +43,16 @@ MonoBehaviour:
     batchSize: 1
     zone: 0
     checkoutStations: 0
+  - label: Learn to checkout and later battle
+    type: 5
+    duration: 90
+    telegraphDuration: 5
+    freePlayDuration: 0
+    closingDuration: 0
+    resourceBudget: 0
+    batchSize: 1
+    zone: 1
+    checkoutStations: -1
   - label: end c4
     type: 4
     duration: 2

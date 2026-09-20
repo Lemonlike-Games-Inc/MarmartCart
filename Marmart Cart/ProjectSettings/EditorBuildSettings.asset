@@ -27,8 +27,20 @@ EditorBuildSettings:
     path: Assets/Scenes/Liang/LevelGreyBoxScene.unity
     guid: dcad2770e08a7c14681377b3489f5cd0
   - enabled: 1
+    path: Assets/Scenes/Liang/Full Indie Summit 2026/MainMenu.unity
+    guid: 725395efb298dde44a4ecee35aa096ca
+  - enabled: 1
+    path: Assets/Scenes/Liang/Full Indie Summit 2026/Gameplay Scene Tutorial 2P.unity
+    guid: a62681ff4677c034696d41856aedcdc3
+  - enabled: 1
+    path: Assets/Scenes/Liang/Full Indie Summit 2026/Gameplay Scene Tutorial 4P.unity
+    guid: ceaafbc3186150343a2492f223c2d6e6
+  - enabled: 1
     path: Assets/Scenes/Liang/Full Indie Summit 2026/Gameplay Scene 2P.unity
     guid: 6a44a92b2a5a71647bdb849b3356857c
+  - enabled: 1
+    path: Assets/Scenes/Liang/Full Indie Summit 2026/Gameplay Scene 4P.unity
+    guid: 8ae1eabb4f6f625408c95154e3a8a157
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3d75d177ecca0494d8a00b55bc90705d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
