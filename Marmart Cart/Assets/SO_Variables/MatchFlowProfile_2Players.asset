@@ -103,6 +103,16 @@ MonoBehaviour:
     batchSize: 10
     zone: 3
     checkoutStations: -1
+  - label: end c4
+    type: 5
+    duration: 15
+    telegraphDuration: 5
+    freePlayDuration: 0
+    closingDuration: 5
+    resourceBudget: 30
+    batchSize: 5
+    zone: 1
+    checkoutStations: -1
   - label: loot c4
     type: 2
     duration: 15

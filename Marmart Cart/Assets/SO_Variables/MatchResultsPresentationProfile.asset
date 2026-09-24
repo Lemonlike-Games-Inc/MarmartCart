@@ -35,8 +35,8 @@ MonoBehaviour:
   randomizeOrdinaryCargoFinalYaw: 1
   ordinaryCargoFinalYawRange: {x: 0, y: 360}
   ceremonyStartDelay: 2.5
-  tokenSpawnInterval: 0.25
-  tokenTravelDuration: 0.15
+  tokenSpawnInterval: 0.15
+  tokenTravelDuration: 0.075
   tokenTravelCurve:
     serializedVersion: 2
     m_Curve:
