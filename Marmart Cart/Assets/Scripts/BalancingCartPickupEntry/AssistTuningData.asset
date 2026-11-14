@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 781ef8cec18ba2f40b9d692c3e6f5a30, type: 3}
+  m_Name: AssistTuningData
+  m_EditorClassIdentifier: 
+  maxCartCountToBeEligible: 15
+  claimCooldown: 10
+  minNeedScoreToQualify: 3
+  firstPlaceScore: 1
+  secondPlaceScore: 2
+  thirdPlaceScore: 3
+  fourthPlaceScore: 4
+  mediumGapThreshold: 200
+  largeGapThreshold: 500
+  hugeGapThreshold: 800
+  mediumGapScore: 1
+  largeGapScore: 2
+  hugeGapScore: 3
+  lowCartThreshold: 5
+  veryLowCartThreshold: 2
+  lowCartScore: 2
+  veryLowCartScore: 3
+  globalCloseSpreadThreshold: 500
+  globalClosePenalty: 1
+  lowNeedClaimAmount: 2
+  mediumNeedClaimAmount: 4
+  highNeedClaimAmount: 9
+  mediumNeedThreshold: 4
+  highNeedThreshold: 7
+  minAssistPerClaim: 1
+  maxAssistPerClaim: 9

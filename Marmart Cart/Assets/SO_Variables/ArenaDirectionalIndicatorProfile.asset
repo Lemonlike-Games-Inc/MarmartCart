@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d24e17fcc4fb194b9b3cee89c163d48, type: 3}
+  m_Name: ArenaDirectionalIndicatorProfile
+  m_EditorClassIdentifier: 
+  remainGuidanceDuringActive: 1
+  masterScale: 1
+  heightOffset: -0.8
+  checkoutArrowDistance: 18
+  guidanceAnchorDistance: 30
+  firstGuidanceAnchorDirection: 7
+  zoneTargetDistance: 30.01
+  zoneADirection: 7
+  zoneBDirection: 1
+  zoneCDirection: 5
+  zoneDDirection: 3
+  guidanceArrowStyle:
+    color: {r: 0, g: 0, b: 0, a: 0.63529414}
+    shaftLength: 6
+    shaftWidth: 2.5
+    headLength: 4
+    headWidth: 6
+    drawUnderlay: 0
+    underlayColor: {r: 0, g: 0, b: 0, a: 0.11764706}
+    underlayExpansion: 0.08
+  checkoutArrowStyle:
+    color: {r: 1, g: 1, b: 1, a: 0.78431374}
+    shaftLength: 6.5
+    shaftWidth: 1.88
+    headLength: 3.5
+    headWidth: 5.37
+    drawUnderlay: 1
+    underlayColor: {r: 0.04, g: 0.04, b: 0.04, a: 0.12156863}
+    underlayExpansion: 0.08

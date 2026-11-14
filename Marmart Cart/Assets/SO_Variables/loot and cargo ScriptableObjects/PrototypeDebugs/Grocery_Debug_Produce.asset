@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e00005b4efbcc4e8267195b81b33d4, type: 3}
+  m_Name: Grocery_Debug_Produce
+  m_EditorClassIdentifier: 
+  displayName: Debug_Produce
+  category: 0
+  loadCost: 1
+  scoreValue: 1
+  worldPickupPrefab: {fileID: 0}
+  worldDebugColor: {r: 0, g: 1, b: 0, a: 1}
+  worldDebugScale: 1
+  possibleCargoVisuals:
+  - {fileID: 11400000, guid: 2e4655f893286264ba6a95ae0ebb3d08, type: 2}
+  - {fileID: 11400000, guid: 9d5dbd2b60c84c74cad6081cd3bd7de6, type: 2}

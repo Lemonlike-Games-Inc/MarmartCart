@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a58c51f10413834b80ac8ff9407f6b7, type: 3}
+  m_Name: PowerupPickupVisualCatalog
+  m_EditorClassIdentifier: 
+  entries:
+  - visualKind: 0
+    visualPrefab: {fileID: 709214501018388812, guid: 2b768453a05986f40a924b31459103f3, type: 3}
+    localPosition: {x: 0, y: 1, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - visualKind: 1
+    visualPrefab: {fileID: 4171478074659276356, guid: 152f50276a382bc49afc0d3410240960, type: 3}
+    localPosition: {x: 0, y: -7.84, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - visualKind: 2
+    visualPrefab: {fileID: 279011429992569057, guid: abba9cd5b1574684b8873ba01e813739, type: 3}
+    localPosition: {x: 0, y: -7.84, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - visualKind: 4
+    visualPrefab: {fileID: 3194416005795334899, guid: 38bcafbb5a3e81c44ae0592dffe34f64, type: 3}
+    localPosition: {x: 0, y: -7.84, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}

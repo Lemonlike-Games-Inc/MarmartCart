@@ -1,0 +1,1 @@
+Rendered source and optimized comparisons for all 19 prefabs. Generated dedicated lightmap UV2 on final atlas meshes.

@@ -2,54 +2,69 @@ using UnityEngine;
 
 public class ItemGenerationManager : MonoBehaviour
 {
-    [Header("Spawn Settings")]
-    [SerializeField] private bool isForPlayer1 = true;
-    [SerializeField] private Transform spawnCenter;
+    //[Header("Spawn Settings")]
+    //[SerializeField] private bool isForPlayer1 = true;
+    //[SerializeField] private Transform spawnCenter;
 
-    [Header("Spawn Settings")]
-    [SerializeField] private float radius = 20f; // Radius for item spawn around the player
-    [SerializeField] private float minDistanceFromCenter = 5f; // Minimum distance from the center to spawn items
+    [Header("Spawn Box Boundary Settings")]
+    [SerializeField] private float boxWidth = 40f;   // Total width of the spawn box
+    [SerializeField] private float boxLength = 30f;  // Total length of the spawn box
+
     [SerializeField] private LayerMask groundLayer; // Layer mask for ground detection
 
     [Header("Phase 1 Settings")]
     [SerializeField] private float phase1Duration = 60f;
     [SerializeField] private float phase1SpawnInterval = 15f;
     [SerializeField] private int phase1ItemsPerSpawn = 5;
-    [SerializeField, Range(0, 100)] private int phase1NormalItemProbability = 80;
 
     [Header("Phase 2 Settings")]
     [SerializeField] private float phase2Duration = 60f; // Phase 2 starts after Phase 1
     [SerializeField] private float phase2SpawnInterval = 10f;
     [SerializeField] private int phase2ItemsPerSpawn = 6;
-    [SerializeField, Range(0, 100)] private int phase2NormalItemProbability = 70;
 
     [Header("Phase 3 Settings")]
+    [SerializeField] private float phase3Duration = 60f; // Phase 3 starts after Phase 2
     [SerializeField] private float phase3SpawnInterval = 10f;
     [SerializeField] private int phase3ItemsPerSpawn = 8;
-    [SerializeField, Range(0, 100)] private int phase3NormalItemProbability = 60;
+
+    [Header("Phase 4 Settings")]
+    [SerializeField] private float phase4SpawnInterval = 10f;
+    [SerializeField] private int phase4ItemsPerSpawn = 6;
 
     private int currentPhase = 0;
     private float elapsedGameTime = 0f;
     private float spawnInterval;
     private int itemsPerSpawn;
-    private int normalItemProbability;
 
-    [Header("Item Prefabs")]
-    [SerializeField] private GameObject normalItemPrefab; // Prefab for normal items
-    [SerializeField] private GameObject bonusItemPrefab;  // Prefab for bonus items
+    [Header("Optional Rarity Spawning (leave rarePrefab null to disable)")]
+    [SerializeField] private GameObject normalPrefab; // default = cartPrefab
+    [SerializeField] private GameObject rarePrefab;   // optional
+
+    [Range(0f, 1f)]
+    [SerializeField] private float phase1RareChance = 0.00f;
+    [Range(0f, 1f)]
+    [SerializeField] private float phase2RareChance = 0.05f;
+    [Range(0f, 1f)]
+    [SerializeField] private float phase3RareChance = 0.08f;
+    [Range(0f, 1f)]
+    [SerializeField] private float phase4RareChance = 0.12f;
+
+    private float currentRareChance = 0f;
+    [SerializeField] private float yOffset = 20f;
+
+    [Header("Poor and Temp fix on prefab scale issue")]
+    [SerializeField] private SnakeCartManager snakeCartManager1;
+    [SerializeField] private SnakeCartManager snakeCartManager2;
+    [SerializeField] private SnakeCartManager snakeCartManager3;
+    [SerializeField] private SnakeCartManager snakeCartManager4;
+    [SerializeField] private bool applyPrefabScaleFix = false;
+
 
     private float nextSpawnTime;
 
     private void Start()
     {
-        if (isForPlayer1)
-            spawnCenter = GameObject.FindGameObjectWithTag("Player1").transform;
-        else
-            spawnCenter = GameObject.FindGameObjectWithTag("Player2").transform;
-        if (spawnCenter == null )
-        {
-            Debug.LogError("Fail to locate the center of item generation");
-        }
+       
     }
 
     void Update()
@@ -72,27 +87,31 @@ public class ItemGenerationManager : MonoBehaviour
     {
         if (elapsedGameTime < phase1Duration && currentPhase != 1)
         {
-            // Phase 1
             currentPhase = 1;
             spawnInterval = phase1SpawnInterval;
             itemsPerSpawn = phase1ItemsPerSpawn;
-            normalItemProbability = phase1NormalItemProbability;
+            currentRareChance = phase1RareChance;
         }
         else if (elapsedGameTime >= phase1Duration && elapsedGameTime < phase1Duration + phase2Duration && currentPhase != 2)
         {
-            // Phase 2
             currentPhase = 2;
             spawnInterval = phase2SpawnInterval;
             itemsPerSpawn = phase2ItemsPerSpawn;
-            normalItemProbability = phase2NormalItemProbability;
+            currentRareChance = phase2RareChance;
         }
-        else if (elapsedGameTime >= phase1Duration + phase2Duration && currentPhase != 3)
+        else if (elapsedGameTime >= phase1Duration + phase2Duration && elapsedGameTime < phase1Duration + phase2Duration + phase3Duration && currentPhase != 3)
         {
-            // Phase 3
             currentPhase = 3;
             spawnInterval = phase3SpawnInterval;
             itemsPerSpawn = phase3ItemsPerSpawn;
-            normalItemProbability = phase3NormalItemProbability;
+            currentRareChance = phase3RareChance;
+        }
+        else if (elapsedGameTime >= phase1Duration + phase2Duration + phase3Duration && currentPhase != 4)
+        {
+            currentPhase = 4;
+            spawnInterval = phase4SpawnInterval;
+            itemsPerSpawn = phase4ItemsPerSpawn;
+            currentRareChance = phase4RareChance;
         }
     }
 
@@ -100,17 +119,21 @@ public class ItemGenerationManager : MonoBehaviour
     {
         for (int i = 0; i < itemsPerSpawn; i++)
         {
-            // Keep trying to find a valid spawn position
             Vector3 spawnPosition = GetValidSpawnPosition();
             if (spawnPosition != Vector3.zero)
             {
-                // Choose the item to spawn based on the probability
-                GameObject itemToSpawn = (Random.Range(0, 100) < normalItemProbability) ? normalItemPrefab : bonusItemPrefab;
-                Instantiate(itemToSpawn, spawnPosition + new Vector3(0, 10f, 0), Quaternion.identity);
+                GameObject prefabToSpawn = PickPrefabToSpawn();
+                // Instantiate the item
+                GameObject spawned = Instantiate(prefabToSpawn, spawnPosition + new Vector3(0, 10f, 0), prefabToSpawn.transform.rotation);
+                //spawned.transform.localScale = new Vector3(5f, 5f, 5f);
+                if (applyPrefabScaleFix && (snakeCartManager1.needScaleup || snakeCartManager2.needScaleup || snakeCartManager3.needScaleup || snakeCartManager4.needScaleup))
+                {
+                    spawned.transform.localScale = new Vector3(5f, 5f, 5f);
+                }
             }
             else
             {
-                Debug.LogWarning("Failed to find a valid spawn position after multiple attempts.");
+                //Debug.LogWarning("Failed to find a valid spawn position after multiple attempts.");
             }
         }
     }
@@ -122,28 +145,24 @@ public class ItemGenerationManager : MonoBehaviour
 
         while (attempts < maxRetries)
         {
-            // Generate a random point within the radius, ensuring it’s beyond minDistanceFromCenter
-            Vector2 randomPoint = Random.insideUnitCircle * radius;
-            if (randomPoint.magnitude >= minDistanceFromCenter)
-            {
-                Vector3 spawnPosition = new Vector3(randomPoint.x, 20, randomPoint.y) + spawnCenter.position;
+            // Generate a random point within the box
+            float halfWidth = boxWidth * 0.5f;
+            float halfLength = boxLength * 0.5f;
 
-                // Raycast to detect any surface
-                if (Physics.Raycast(spawnPosition, Vector3.down, out RaycastHit hit, Mathf.Infinity))
+            float xOffset = Random.Range(-halfWidth, halfWidth);
+            float zOffset = Random.Range(-halfLength, halfLength);
+
+            Vector3 spawnPosition = this.transform.position + new Vector3(xOffset, 20f, zOffset); // height can be adjusted if needed
+
+            // Raycast to detect any surface
+            if (Physics.Raycast(spawnPosition, Vector3.down, out RaycastHit hit, Mathf.Infinity))
+            {
+                // Check if the hit object is on the ground layer
+                if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0)
                 {
-                    // Check if the hit object is on the ground layer
-                    if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0)
-                    {
-                        return hit.point; // Valid ground point
-                    }
-                    else
-                    {
-                        // If not on ground layer, continue trying
-                        Debug.Log($"Invalid hit on layer {hit.collider.gameObject.layer}, retrying...");
-                    }
+                    return hit.point; // Valid ground point
                 }
             }
-
             attempts++;
         }
 
@@ -153,6 +172,19 @@ public class ItemGenerationManager : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, radius);
+
+        Vector3 center = this.transform.position;
+        Vector3 size = new Vector3(boxWidth, 20f, boxLength);
+
+        Gizmos.DrawWireCube(center, size);
+    }
+
+    private GameObject PickPrefabToSpawn()
+    {
+        // If rarePrefab isn't provided, always spawn normal
+        if (rarePrefab == null)
+            return normalPrefab;
+;
+        return (Random.value < currentRareChance) ? rarePrefab : normalPrefab;
     }
 }

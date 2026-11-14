@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e00005b4efbcc4e8267195b81b33d4, type: 3}
+  m_Name: Loot_Produce_Vegs
+  m_EditorClassIdentifier: 
+  displayName: Produce_Vegs
+  category: 0
+  loadCost: 1
+  scoreValue: 1
+  worldPickupPrefab: {fileID: 9177717753355346318, guid: 0cb04cb62356a48498d693554f1f003d, type: 3}
+  worldDebugColor: {r: 1, g: 1, b: 1, a: 1}
+  worldDebugScale: 1
+  possibleCargoVisuals:
+  - {fileID: 11400000, guid: a37d282d6eb53954e98073b36e9ebea6, type: 2}

@@ -1,0 +1,169 @@
+{
+  "items": [
+    {
+      "name": "beige_microwave",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/beige_microwave.fbx",
+      "color": "Assets/BreadArea/Textures/beige_microwave_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "beige+microwave+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "bread_loaf_Variant2",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/bread_loaf_Variant2.fbx",
+      "color": "Assets/BreadArea/Textures/bread_loaf_Variant2_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "bread+loaf+3d+model (1).zip",
+      "status": "Imported"
+    },
+    {
+      "name": "bread_loaf",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/bread_loaf.fbx",
+      "color": "Assets/BreadArea/Textures/bread_loaf_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "bread+loaf+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "croissant",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/croissant.fbx",
+      "color": "Assets/BreadArea/Textures/croissant_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "croissant+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "desk_fan",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/desk_fan.fbx",
+      "color": "Assets/BreadArea/Textures/desk_fan_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "desk+fan+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "espresso_coffee_machine",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/espresso_coffee_machine.fbx",
+      "color": "Assets/BreadArea/Textures/espresso_coffee_machine_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "espresso+coffee+machine+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "storage_shelf",
+      "group": "Shelves",
+      "model": "Assets/BreadArea/Models/storage_shelf.fbx",
+      "color": "Assets/BreadArea/Textures/storage_shelf_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "storage+shelf+3d+model_Clone1.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "three-tier_shelf_01",
+      "group": "Shelves",
+      "model": "Assets/BreadArea/Models/three-tier_shelf_01.fbx",
+      "color": "Assets/BreadArea/Textures/three-tier_shelf_01_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "three-tier+shelf+3d+model _01.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "three-tier_shelf_3",
+      "group": "Shelves",
+      "model": "Assets/BreadArea/Models/three-tier_shelf_3.fbx",
+      "color": "Assets/BreadArea/Textures/three-tier_shelf_3_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "three-tier+shelf+3d+model_3.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "three-tier_shelf",
+      "group": "Shelves",
+      "model": "Assets/BreadArea/Models/three-tier_shelf.fbx",
+      "color": "Assets/BreadArea/Textures/three-tier_shelf_BaseColor.jpeg",
+      "normal": "Assets/BreadArea/Textures/three-tier_shelf_Normal.jpeg",
+      "metallic": "Assets/BreadArea/Textures/three-tier_shelf_Metallic.jpeg",
+      "roughness": "Assets/BreadArea/Textures/three-tier_shelf_Roughness.jpeg",
+      "archive": "three-tier+shelf+3d+model.zip",
+      "status": "Deferred by user; original archive retained"
+    },
+    {
+      "name": "toaster_oven",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/toaster_oven.fbx",
+      "color": "Assets/BreadArea/Textures/toaster_oven_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "toaster+oven+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "tomato",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/tomato.fbx",
+      "color": "Assets/BreadArea/Textures/tomato_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "tomato+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "wooden_shelf",
+      "group": "Shelves",
+      "model": "Assets/BreadArea/Models/wooden_shelf.fbx",
+      "color": "Assets/BreadArea/Textures/wooden_shelf_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "wooden+shelf+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "wooden_stair_display",
+      "group": "Shelves",
+      "model": "Assets/BreadArea/Models/wooden_stair_display.fbx",
+      "color": "Assets/BreadArea/Textures/wooden_stair_display_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "wooden+stair+display+3d+model.zip",
+      "status": "Imported"
+    },
+    {
+      "name": "yellow_rice_cooker",
+      "group": "BreadAppliances",
+      "model": "Assets/BreadArea/Models/yellow_rice_cooker.fbx",
+      "color": "Assets/BreadArea/Textures/yellow_rice_cooker_BaseColor.jpg",
+      "normal": null,
+      "metallic": null,
+      "roughness": null,
+      "archive": "yellow+rice+cooker+3d+model.zip",
+      "status": "Imported"
+    }
+  ]
+}

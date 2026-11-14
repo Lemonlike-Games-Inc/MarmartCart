@@ -1,0 +1,440 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6172510833367344487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1083702410519722233}
+  - component: {fileID: 6429415885519634099}
+  - component: {fileID: 3341631081010412033}
+  - component: {fileID: 7301706362411791999}
+  - component: {fileID: 8147838864649264086}
+  - component: {fileID: 8337426284634087441}
+  - component: {fileID: 3114217767808218698}
+  - component: {fileID: 1721464837927437150}
+  - component: {fileID: 2247272871967667016}
+  - component: {fileID: 1830793791781320991}
+  m_Layer: 0
+  m_Name: Chain of Carts Base
+  m_TagString: Untagged
+  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1083702410519722233
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -95.32, y: 13.3, z: -674.37}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6429415885519634099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da91cadfcafd4164abb3b271e40055dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathHistory: {fileID: 3341631081010412033}
+  firstFollowerSpacing: 0.5
+  followerCartSpacing: 3.4
+  pathHistorySafetyBuffer: 3
+  firstFollowerHingeInfluence: 0.7
+  hingeInfluenceFalloffPerCart: 0.35
+  recoveryHingeRestoreSpeed: 5
+  moveBackwardController: {fileID: 7301706362411791999}
+  physicalJointProbe: {fileID: 8147838864649264086}
+  vulnerableFollowerCount: 999
+  vulnerabilitySessionActive: 0
+  currentVulnerableFollowerCount: 0
+  followerSpawnDelay: 0.11
+  collectVfxDelay: 0.12
+  pendingCompactSpacing: 0.3
+  pendingPromotionDistanceTolerance: 0.05
+  bodyParts:
+  - {fileID: 7280288703978135140, guid: 4f3f3c272c30336459d42d34a85faa6c, type: 3}
+  snakeBody: []
+  normalScale: {x: 5, y: 5, z: 5}
+  upScale: {x: 10, y: 10, z: 10}
+  downScale: {x: 3, y: 3, z: 3}
+  needScaleup: 0
+  playerIndex: 1
+  setupCamera: {fileID: 11400000, guid: c694c52992c7f5f4fbfb31d18772ac53, type: 2}
+  cashScoreManager: {fileID: 0}
+  sfxManager: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+  requiredPathHistoryDistance: 0
+  pendingFollowerCount: 0
+  pendingPromotionStartHeadProgress: 0
+  pendingRequiredForwardTravel: 0
+  pendingForwardTravelSinceBaseline: 0
+  pendingFollowersDockedToTail: 0
+  pendingPromotionPausedByStall: 0
+  drawFirstFollowerTarget: 1
+--- !u!114 &3341631081010412033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba95ac0072a6b414688f2387b6189109, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sampleSpacing: 0.05
+  movementAcceptanceDistance: 0.01
+  ignoreVerticalMotion: 1
+  initialBackfillDistance: 20
+  maxHistoryDistance: 80
+  pruneBatchSize: 32
+  tangentProbeDistance: 0.35
+  isInitialized: 0
+  acceptedMovementThisTick: 0
+  currentPlanarSpeed: 0
+  headProgress: 0
+  recordedEndProgress: 0
+  distanceSinceLastSample: 0
+  currentSampleCount: 0
+  requiredHistoryDistance: 0
+  availableHistoryDistance: 0
+  backwardExtensionCount: 0
+  drawPath: 0
+  drawStoredSamples: 0
+  drawEveryNthSample: 5
+  sampleGizmoRadius: 0.15
+--- !u!114 &7301706362411791999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fef1c9cd843ec344b9c13fa69e2d522, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveBackwardDistance: 8
+  moveBackwardDuration: 1.25
+  moveBackwardMotionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -0.03223443
+      outSlope: -0.03223443
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.18466051
+    - serializedVersion: 3
+      time: 0.7999939
+      value: 1
+      inSlope: 0.034491803
+      outSlope: 0.0009284016
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.11505006
+      outWeight: 0.25974032
+    - serializedVersion: 3
+      time: 1
+      value: 0.82380956
+      inSlope: -1.2010518
+      outSlope: -1.2010518
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.23051941
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  moveBackwardCooldown: 0.2
+  tangentSampleDistance: 0.1
+  followerRotationFollowSpeed: 12
+  allowStraightExtensionWhenHistoryRunsOut: 1
+  reverseTowExtraSlack: 0.5
+  towActivationTolerance: 0.01
+  leaderTowRotationFollowSpeed: 10
+  rotateLeaderFromReverseTow: 1
+  singleCartReverseSpeed: 8
+  singleCartReverseDuration: 1.25
+  singleCartReverseSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.85
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1.5394057
+      outSlope: -1.5394057
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.25030816
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isInitialized: 0
+  isChainReversing: 0
+  isSingleCartReversing: 0
+  requestedMoveBackwardDistance: 0
+  movedTailDistance: 0
+  tailMainStartProgress: 0
+  availableOldPathDistance: 0
+  temporaryHeadProgress: 0
+  startingLeaderToC1Distance: 0
+  activeReverseTowDistance: 0
+  currentLeaderToC1Distance: 0
+  reverseTowIsTaut: 0
+  leaderMovedDistance: 0
+  drawTemporaryPath: 1
+  drawReverseTow: 1
+  debugMoveBackward: 0
+--- !u!114 &8147838864649264086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5895e67b586bf54c98a6435f09cd739, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armLength: 1
+  armMass: 1
+  linearDamping: 1
+  angularDamping: 6
+  maxArmAngularVelocity: 25
+  limitSwingAngle: 1
+  maxSwingAngle: 60
+  enableAutoRecenter: 1
+  minSpeedForRecenter: 2
+  maxYawRateForRecenter: 20
+  recenterDeadAngle: 1.5
+  recenterSpring: 250
+  recenterDamper: 25
+  showPhysicalArm: 0
+  showProbeSphere: 0
+  probeSphereSize: 0.75
+  currentHingeAngle: 0
+  currentDistanceToHitch: 0
+  currentProbeSpeed: 0
+  isRecentering: 0
+  currentHitchSpeed: 0
+  currentHitchYawRate: 0
+--- !u!114 &8337426284634087441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7df0a53e3563d1745a9cbbc07204168c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snakeCartManager: {fileID: 6429415885519634099}
+  settings: {fileID: 11400000, guid: 2ed7147b99e789940b193086db424cb5, type: 2}
+  debugTestLootDefinitions:
+  - {fileID: 11400000, guid: 4026d120d1d74d54b88ed48ea320832b, type: 2}
+  - {fileID: 11400000, guid: ec9a73219c7e3984f8c0c5bc98cc2f61, type: 2}
+  - {fileID: 11400000, guid: e6726aca3396a264eb4e4bfbdc0da5a5, type: 2}
+  ownedFollowerCount: 0
+  registeredCargoCartCount: 0
+  missingCargoComponentCount: 0
+  totalCapacity: 0
+  totalLoad: 0
+  totalScoreValue: 0
+  totalCargoEntryCount: 0
+  loadedCargoCartCount: 0
+  overloadAmount: 0
+  isOverloaded: 0
+  capacityNormalized: 0
+  movementSpeedMultiplier: 1
+  lastAssignedCartName: 
+  lastAssignedOwnedIndex: -1
+  lastAssignmentWasOverflow: 0
+  lastSelectedOverflowRound: 0
+  lastNormalizationTransferCount: 0
+  lastNormalizationWasCapacityIncrease: 0
+  lastCheckoutCompactionNeeded: 0
+  lastCheckoutCompactionMovedEntries: 0
+--- !u!114 &3114217767808218698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e88ea36612a085445b801cddadac1604, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cargoCapacityController: {fileID: 8337426284634087441}
+  hudSystem: {fileID: 0}
+  stateSystem: {fileID: 0}
+  playerIndexOverride: 0
+  resolvedPlayerIndex: 0
+--- !u!114 &1721464837927437150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f5a4548f2c7804498ba322767ee6880, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 1
+  cartControlInput: {fileID: 0}
+  snakeCartManager: {fileID: 6429415885519634099}
+  runtimeSystem: {fileID: 0}
+  initialCartBindingDelay: 0.1
+  cartBindingRetryInterval: 0.1
+  cartBindingWarningDelay: 3
+  logAcceptedUseRequests: 1
+  logRejectedUseRequests: 1
+  boundPlayerObject: {fileID: 0}
+  hasStoredPowerup: 0
+  storedPowerup: 0
+  activeBlockReasons: 0
+  canUseStoredPowerup: 0
+  acceptedUseRequestVersion: 0
+--- !u!114 &2247272871967667016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a38de5de60851c4b8c95664b44b07e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPowerupController: {fileID: 1721464837927437150}
+  aimStateSystem: {fileID: 0}
+  gameplayProfile: {fileID: 11400000, guid: 48a0702ed6192ee4da5ee8c8d9ee085e, type: 2}
+  projectileProfile: {fileID: 0}
+  logAcceptedAimSnapshots: 1
+  boundCartControl: {fileID: 0}
+  boundMounts: {fileID: 0}
+  currentAimState:
+    PlayerIndex: 0
+    Visible: 0
+    PowerupId: 0
+    RawAimInput: {x: 0, y: 0}
+    RawAimMagnitude: 0
+    AdjustedAimMagnitude: 0
+    AimDirection: {x: 0, y: 0, z: 0}
+    RangeOrigin: {x: 0, y: 0, z: 0}
+    StartPosition: {x: 0, y: 0, z: 0}
+    LandingPosition: {x: 0, y: 0, z: 0}
+    LandingNormal: {x: 0, y: 0, z: 0}
+    TrajectoryObstructed: 0
+    PreviewEndNormalizedTime: 0
+    PreviewEndPosition: {x: 0, y: 0, z: 0}
+    PreviewEndNormal: {x: 0, y: 0, z: 0}
+    RequestedRange: 0
+    ResolvedPlanarDistance: 0
+    FlightDuration: 0
+    ArcHeight: 0
+    ImpactPreviewRadius: 0
+    Revision: 0
+  lastAcceptedAimSnapshot:
+    PlayerIndex: 0
+    Visible: 0
+    PowerupId: 0
+    RawAimInput: {x: 0, y: 0}
+    RawAimMagnitude: 0
+    AdjustedAimMagnitude: 0
+    AimDirection: {x: 0, y: 0, z: 0}
+    RangeOrigin: {x: 0, y: 0, z: 0}
+    StartPosition: {x: 0, y: 0, z: 0}
+    LandingPosition: {x: 0, y: 0, z: 0}
+    LandingNormal: {x: 0, y: 0, z: 0}
+    TrajectoryObstructed: 0
+    PreviewEndNormalizedTime: 0
+    PreviewEndPosition: {x: 0, y: 0, z: 0}
+    PreviewEndNormal: {x: 0, y: 0, z: 0}
+    RequestedRange: 0
+    ResolvedPlanarDistance: 0
+    FlightDuration: 0
+    ArcHeight: 0
+    ImpactPreviewRadius: 0
+    Revision: 0
+  acceptedAimSnapshotVersion: 0
+--- !u!114 &1830793791781320991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25af8238726d08345b444b7da46bf9fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPowerupController: {fileID: 1721464837927437150}
+  targetingController: {fileID: 2247272871967667016}
+  projectilePool: {fileID: 0}
+  lifecycleEventSystem: {fileID: 0}
+  logSuccessfulLaunches: 1
+  logLaunchFailures: 1
+  warnWhenPatternExceedsPreview: 1
+  launchedShotVersion: 0
+  lastLaunchedPowerup: 0
+  lastLaunchedActorCount: 0
+  lastFailureReason: 0

@@ -1,0 +1,1 @@
+Rendered source and optimized comparisons for all 14 prefabs. Dedicated lightmap UV2 preserved through atlas remapping.

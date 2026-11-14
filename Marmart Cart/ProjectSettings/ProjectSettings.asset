@@ -43,7 +43,7 @@ PlayerSettings:
   m_VirtualRealitySplashScreen: {fileID: 0}
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1920
-  defaultScreenHeight: 768
+  defaultScreenHeight: 1080
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
   m_StereoRenderingPath: 0
@@ -70,6 +70,7 @@ PlayerSettings:
   androidStartInFullscreen: 1
   androidRenderOutsideSafeArea: 1
   androidUseSwappy: 0
+  androidDisplayOptions: 1
   androidBlitType: 0
   androidResizeableActivity: 1
   androidDefaultWindowWidth: 1920
@@ -86,6 +87,7 @@ PlayerSettings:
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
+  audioSpatialExperience: 0
   deferSystemGesturesMode: 0
   hideHomeButton: 0
   submitAnalytics: 1
@@ -94,7 +96,7 @@ PlayerSettings:
   bakeCollisionMeshes: 0
   forceSingleInstance: 0
   useFlipModelSwapchain: 1
-  resizableWindow: 0
+  resizableWindow: 1
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
   gpuSkinning: 1
@@ -104,7 +106,7 @@ PlayerSettings:
   xboxEnableKinect: 0
   xboxEnableKinectAutoTracking: 0
   xboxEnableFitness: 0
-  visibleInBackground: 1
+  visibleInBackground: 0
   allowFullscreenSwitch: 1
   fullscreenMode: 0
   xboxSpeechDB: 0
@@ -275,6 +277,9 @@ PlayerSettings:
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
+  androidAppCategory: 3
+  useAndroidAppCategory: 1
+  androidAppCategoryOther: 
   AndroidEnableTango: 0
   androidEnableBanner: 1
   androidUseLowAccuracyLocation: 0
@@ -820,22 +825,25 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Android: UNITY_POST_PROCESSING_STACK_V2
-    EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
-    GameCoreScarlett: UNITY_POST_PROCESSING_STACK_V2
-    GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2
-    Kepler: UNITY_POST_PROCESSING_STACK_V2
-    LinuxHeadlessSimulation: UNITY_POST_PROCESSING_STACK_V2
-    Nintendo Switch: UNITY_POST_PROCESSING_STACK_V2
-    PS4: UNITY_POST_PROCESSING_STACK_V2
-    PS5: UNITY_POST_PROCESSING_STACK_V2
-    QNX: UNITY_POST_PROCESSING_STACK_V2
-    ReservedCFE: UNITY_POST_PROCESSING_STACK_V2
-    Standalone: UNITY_POST_PROCESSING_STACK_V2
-    VisionOS: UNITY_POST_PROCESSING_STACK_V2
-    WebGL: UNITY_POST_PROCESSING_STACK_V2
-    XboxOne: UNITY_POST_PROCESSING_STACK_V2
-    tvOS: UNITY_POST_PROCESSING_STACK_V2
+    Android: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    GameCoreScarlett: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    Kepler: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    LinuxHeadlessSimulation: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    Nintendo Switch: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    Nintendo Switch 2: UNITY_POST_PROCESSING_STACK_V2
+    PS4: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    PS5: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    QNX: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    ReservedCFE: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    Standalone: UNITY_POST_PROCESSING_STACK_V2;BAKERY_INCLUDED;BAKERY_NOREIMPORT;UNITEXT;MOREMOUNTAINS_NICEVIBRATIONS_INSTALLED
+    VisionOS: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    WebGL: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    Windows Store Apps: UNITEXT
+    XboxOne: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
+    iPhone: UNITEXT
+    tvOS: UNITY_POST_PROCESSING_STACK_V2;UNITEXT
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

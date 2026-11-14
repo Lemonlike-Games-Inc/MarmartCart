@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 7ad6d50a0c78f0c4cb31c0ce71d377d5
+AssetOrigin:
+  serializedVersion: 1
+  productId: 357844
+  packageName: "UniText Folio \u2014 Text Engine for Unity"
+  packageVersion: 3.5.12
+  assetPath: Packages/media.lightside.core/Editor/Drawers/RectPlacementDrawer.cs
+  uploadId: 990570

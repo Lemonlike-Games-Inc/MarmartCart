@@ -1,0 +1,308 @@
+Unity 2022.3.48f1
+Source GUIDs and hashes validated. Positions/normals/pivots/winding copied unchanged by source vertex index.
+No source Collider mesh is replaced. UV2 and additional UV/color channels are copied through vertex splits.
+Atlas compression: Unity platform high-quality compression
+Draw calls: not measured. Shared atlases do not imply one draw call.
+Atlas Food_4b5cc76932dc_0: 4096x4096, covered=49.3 %
+Atlas Furniture_4b5cc76932dc_0: 4096x4096, covered=41.2 %
+Lightmap UV regenerated for bfebc04c4efd73133b260626 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_136539cf: 1124 -> 1173 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 9a86f906c46c53f4b39c22f1 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_ac47e340: 2579 -> 2906 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for ce89f7b328b856db820a719d because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_c55fa7ac: 2294 -> 2650 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 858b5a11573d394f054125cc because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_efe335e9: 2178 -> 2393 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 2dea418705c0bbc06934174c because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_a7f9280f: 764 -> 852 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 44794d5fcc243dbbfb7eeaaa because source has no UV2. Atlas remains in UV0.
+Mesh mesh_node: 2071 -> 2199 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 3da888e4790d96c3a7dc1be8 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_04a256d0: 959 -> 1056 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 0c0e72582172df747ad07ef3 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_6d8d7f19: 780 -> 976 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for b8fe7fb681404079d0166fd0 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_e66e0514: 1042 -> 1192 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for cc5d2bce828850e73a6cf8b1 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_9760b9d2: 1026 -> 1151 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for b820610e382e4c76564dadb1 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_4929ab96: 959 -> 1130 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 430a8c0cc06daded57ef4069 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_ac7b3108: 1084 -> 1128 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 75402d82a409758d23a7b6aa because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_a2ac7562: 1173 -> 1404 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 49c113a4230b122eec23b48f because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_e3451aa6: 717 -> 791 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for e3daa316fd3894f69d4eb1be because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_5ba937f7: 830 -> 984 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 7116b9d14646c36a3d1f3402 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_ed0c736f: 995 -> 1138 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 6bfb4daea64bfaf68b165faa because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_312e8bb8: 848 -> 918 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 9318a363d5337cb757056522 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_64045171: 1043 -> 1140 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 6cf436de87883ad8b58f2923 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_5760f0a2: 777 -> 813 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 58bf4b98942b96fd8ff46616 because source has no UV2. Atlas remains in UV0.
+Mesh mesh_node: 954 -> 1068 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 13ebed6b421bf1e07070ccf6 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_4fea0b7f: 777 -> 971 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 1135385542ac3b8e7dfcfcf9 because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_3fc85ad9: 3406 -> 3858 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 7ae66039683d173b594dfaea because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_f9475e36: 3649 -> 4103 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 28c8c5c0dcfe14f3f78e5fcb because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_2c8b43be: 4744 -> 5389 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 60a7de383128d08772bbce2e because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_11003730: 1013 -> 1128 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 724cf285c289f8b7bd42390a because source has no UV2. Atlas remains in UV0.
+Mesh tripo_node_c331e8cf: 789 -> 1304 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for 7703bfce126bcc11c59dd172 because source has no UV2. Atlas remains in UV0.
+Mesh mesh_node: 578 -> 588 vertices; triangle geometry and surface normals preserved; instances=1
+Lightmap UV regenerated for da4b1326e3d1fb2975cdd7ca because source has no UV2. Atlas remains in UV0.
+Mesh mesh_node: 551 -> 572 vertices; triangle geometry and surface normals preserved; instances=1
+STATS Crate_BluePlastic: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Crate_BluePlastic_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Crate_BluePlastic
+SUCCESS Assets/fridge_Area/Prefab/Crate_BluePlastic.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/c17f8839/Crate_BluePlastic.prefab
+STATS Crate_BlueStorage: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Crate_BlueStorage_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Crate_BlueStorage
+SUCCESS Assets/fridge_Area/Prefab/Crate_BlueStorage.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/eff389c0/Crate_BlueStorage.prefab
+STATS Crate_Industrial_B: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Crate_Industrial_B_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Crate_Industrial_B
+SUCCESS Assets/fridge_Area/Prefab/Crate_Industrial_B.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/80cffe63/Crate_Industrial_B.prefab
+STATS Crate_IndustrialStorage: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Crate_IndustrialStorage_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Crate_IndustrialStorage
+SUCCESS Assets/fridge_Area/Prefab/Crate_IndustrialStorage.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/bebec330/Crate_IndustrialStorage.prefab
+STATS Food_BaconBlock: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_BaconBlock_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_BaconBlock
+SUCCESS Assets/fridge_Area/Prefab/Food_BaconBlock.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/dd61109a/Food_BaconBlock.prefab
+STATS Food_BlueberryYogurt: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 27964200 -> 134219928
+BEFORE_TEXTURE Food_BlueberryYogurt_BaseColor 2048x2048 runtimeBytes=5593112
+BEFORE_TEXTURE Food_BlueberryYogurt_Normal 2048x2048 runtimeBytes=11185544
+BEFORE_TEXTURE Food_BlueberryYogurt_MetallicSmoothness 2048x2048 runtimeBytes=11185544
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_BlueberryYogurt
+SUCCESS Assets/fridge_Area/Prefab/Food_BlueberryYogurt.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/751195b5/Food_BlueberryYogurt.prefab
+STATS Food_BoneInPorkChop: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_BoneInPorkChop_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_BoneInPorkChop
+SUCCESS Assets/fridge_Area/Prefab/Food_BoneInPorkChop.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/2b71fe49/Food_BoneInPorkChop.prefab
+STATS Food_CheesePackaging: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_CheesePackaging_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_CheesePackaging
+SUCCESS Assets/fridge_Area/Prefab/Food_CheesePackaging.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/e330a130/Food_CheesePackaging.prefab
+STATS Food_ChickenDrumstick: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_ChickenDrumstick_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_ChickenDrumstick
+SUCCESS Assets/fridge_Area/Prefab/Food_ChickenDrumstick.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/e21ae191/Food_ChickenDrumstick.prefab
+STATS Food_ChocolateMilkCarton: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_ChocolateMilkCarton_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_ChocolateMilkCarton
+SUCCESS Assets/fridge_Area/Prefab/Food_ChocolateMilkCarton.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/a07f4a9c/Food_ChocolateMilkCarton.prefab
+STATS Food_DumplingsPackaging: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_DumplingsPackaging_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_DumplingsPackaging
+SUCCESS Assets/fridge_Area/Prefab/Food_DumplingsPackaging.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/3148acf6/Food_DumplingsPackaging.prefab
+STATS Food_Fish: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_Fish_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_Fish
+SUCCESS Assets/fridge_Area/Prefab/Food_Fish.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/2c255701/Food_Fish.prefab
+STATS Food_FishFilletsPackaging: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_FishFilletsPackaging_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_FishFilletsPackaging
+SUCCESS Assets/fridge_Area/Prefab/Food_FishFilletsPackaging.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/13007818/Food_FishFilletsPackaging.prefab
+STATS Food_GreenPeaBag: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_GreenPeaBag_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_GreenPeaBag
+SUCCESS Assets/fridge_Area/Prefab/Food_GreenPeaBag.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/08ed4b37/Food_GreenPeaBag.prefab
+STATS Food_MilkBottle: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_MilkBottle_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_MilkBottle
+SUCCESS Assets/fridge_Area/Prefab/Food_MilkBottle.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/6e10350c/Food_MilkBottle.prefab
+STATS Food_PorkRibs: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_PorkRibs_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_PorkRibs
+SUCCESS Assets/fridge_Area/Prefab/Food_PorkRibs.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/81927fdf/Food_PorkRibs.prefab
+STATS Food_RainbowTrout: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_RainbowTrout_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_RainbowTrout
+SUCCESS Assets/fridge_Area/Prefab/Food_RainbowTrout.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/0a71d0a7/Food_RainbowTrout.prefab
+STATS Food_RawSteak: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 22370328 -> 134219928
+BEFORE_TEXTURE Food_RawSteak_BaseColor 4096x4096 runtimeBytes=22370328
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_RawSteak
+SUCCESS Assets/fridge_Area/Prefab/Food_RawSteak.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/f7cc3175/Food_RawSteak.prefab
+STATS Food_ShrimpSnackBag: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_ShrimpSnackBag_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_ShrimpSnackBag
+SUCCESS Assets/fridge_Area/Prefab/Food_ShrimpSnackBag.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/df62cc81/Food_ShrimpSnackBag.prefab
+STATS Food_StrawberryMilk_A: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 27964200 -> 134219928
+BEFORE_TEXTURE Food_StrawberryMilk_A_BaseColor 2048x2048 runtimeBytes=5593112
+BEFORE_TEXTURE Food_StrawberryMilk_A_Normal 2048x2048 runtimeBytes=11185544
+BEFORE_TEXTURE Food_StrawberryMilk_A_MetallicSmoothness 2048x2048 runtimeBytes=11185544
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_StrawberryMilk_A
+SUCCESS Assets/fridge_Area/Prefab/Food_StrawberryMilk_A.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/c3b0fa97/Food_StrawberryMilk_A.prefab
+STATS Food_StrawberryMilk_B: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Food_StrawberryMilk_B_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Food_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Food_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Food_StrawberryMilk_B
+SUCCESS Assets/fridge_Area/Prefab/Food_StrawberryMilk_B.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/cf254f16/Food_StrawberryMilk_B.prefab
+STATS Fridge_DisplayCase: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Fridge_DisplayCase_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Fridge_DisplayCase
+SUCCESS Assets/fridge_Area/Prefab/Fridge_DisplayCase.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/085bc313/Fridge_DisplayCase.prefab
+STATS Fridge_MiniFreezer: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Fridge_MiniFreezer_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Fridge_MiniFreezer
+SUCCESS Assets/fridge_Area/Prefab/Fridge_MiniFreezer.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/89ed72df/Fridge_MiniFreezer.prefab
+STATS Shelf_BlueDisplay: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Shelf_BlueDisplay_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Shelf_BlueDisplay
+SUCCESS Assets/fridge_Area/Prefab/Shelf_BlueDisplay.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/c68f27c1/Shelf_BlueDisplay.prefab
+STATS Sign_Dairy: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Sign_Dairy_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Sign_Dairy
+SUCCESS Assets/fridge_Area/Prefab/Sign_Dairy.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/f2102343/Sign_Dairy.prefab
+STATS Sign_FrozenDairy: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 5593112 -> 134219928
+BEFORE_TEXTURE Sign_FrozenDairy_BaseColor 2048x2048 runtimeBytes=5593112
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Sign_FrozenDairy
+SUCCESS Assets/fridge_Area/Prefab/Sign_FrozenDairy.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/8bee2645/Sign_FrozenDairy.prefab
+STATS Sign_IceCold: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 27964200 -> 134219928
+BEFORE_TEXTURE Sign_IceCold_BaseColor 2048x2048 runtimeBytes=5593112
+BEFORE_TEXTURE Sign_IceCold_Normal 2048x2048 runtimeBytes=11185544
+BEFORE_TEXTURE Sign_IceCold_MetallicSmoothness 2048x2048 runtimeBytes=11185544
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Sign_IceCold
+SUCCESS Assets/fridge_Area/Prefab/Sign_IceCold.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/0e513a7b/Sign_IceCold.prefab
+STATS Sign_StayFrosty: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 27964200 -> 134219928
+BEFORE_TEXTURE Sign_StayFrosty_BaseColor 2048x2048 runtimeBytes=5593112
+BEFORE_TEXTURE Sign_StayFrosty_Normal 2048x2048 runtimeBytes=11185544
+BEFORE_TEXTURE Sign_StayFrosty_MetallicSmoothness 2048x2048 runtimeBytes=11185544
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Furniture_4b5cc76932dc_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Sign_StayFrosty
+SUCCESS Assets/fridge_Area/Prefab/Sign_StayFrosty.prefab -> Assets/Core/AtlasOptimized/Runs/20260908_021153_300_91d8e4/Optimized_20260908_021753_212/Prefabs/3f659db8/Sign_StayFrosty.prefab
+BAKE NOTE: 9a86f906c46c53f4b39c22f1_0: isolated 29 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: ce89f7b328b856db820a719d_0: isolated 6 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 3da888e4790d96c3a7dc1be8_0: isolated 3 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 0c0e72582172df747ad07ef3_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: cc5d2bce828850e73a6cf8b1_0: isolated 4 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: b820610e382e4c76564dadb1_0: isolated 11 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 75402d82a409758d23a7b6aa_0: isolated 65 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: e3daa316fd3894f69d4eb1be_0: isolated 3 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 9318a363d5337cb757056522_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 13ebed6b421bf1e07070ccf6_0: isolated 15 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 28c8c5c0dcfe14f3f78e5fcb_0: isolated 5 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 724cf285c289f8b7bd42390a_0: isolated 43 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: Food: one 4096 page, 1391 charts, fitted density 431.7642 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.
+BAKE NOTE: Furniture: one 4096 page, 2454 charts, fitted density 399.3558 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.
+BAKE NOTE: 9a86f906c46c53f4b39c22f1_0: 313 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: ce89f7b328b856db820a719d_0: 63 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 858b5a11573d394f054125cc_0: point-UV triangle 0 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 858b5a11573d394f054125cc_0: point-UV triangle 2 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 858b5a11573d394f054125cc_0: point-UV triangle 6 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 858b5a11573d394f054125cc_0: point-UV triangle 14 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 858b5a11573d394f054125cc_0: line-UV triangle 42 preserved as an isolated dilated 1D atlas sample; original UV rank and authored tangent basis retained.
+BAKE NOTE: 858b5a11573d394f054125cc_0: line-UV triangle 103 preserved as an isolated dilated 1D atlas sample; original UV rank and authored tangent basis retained.
+BAKE NOTE: 858b5a11573d394f054125cc_0: 72 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 0c0e72582172df747ad07ef3_0: 49 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: cc5d2bce828850e73a6cf8b1_0: point-UV triangle 5 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: cc5d2bce828850e73a6cf8b1_0: 39 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: b820610e382e4c76564dadb1_0: 108 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 430a8c0cc06daded57ef4069_0: 23 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 75402d82a409758d23a7b6aa_0: 91 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 49c113a4230b122eec23b48f_0: 24 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 6bfb4daea64bfaf68b165faa_0: 4 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 58bf4b98942b96fd8ff46616_0: point-UV triangle 496 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 58bf4b98942b96fd8ff46616_0: point-UV triangle 497 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 58bf4b98942b96fd8ff46616_0: 30 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 13ebed6b421bf1e07070ccf6_0: 4 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 1135385542ac3b8e7dfcfcf9_0: 330 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 7ae66039683d173b594dfaea_0: 326 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 28c8c5c0dcfe14f3f78e5fcb_0: point-UV triangle 2 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 28c8c5c0dcfe14f3f78e5fcb_0: 1307 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 60a7de383128d08772bbce2e_0: 31 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 724cf285c289f8b7bd42390a_0: 321 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.

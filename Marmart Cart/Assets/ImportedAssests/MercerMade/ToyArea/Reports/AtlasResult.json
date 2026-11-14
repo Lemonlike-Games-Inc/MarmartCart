@@ -1,0 +1,247 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "id": "Goods_734d2bf9a808_0",
+      "group": "Goods",
+      "compatibility": "734d2bf9a808",
+      "template": "a59348d9d33bbe641832ba81d4dd90a8_2100000",
+      "size": 4096,
+      "baseColor": "Baked/Goods_734d2bf9a808_0_BaseColor.png",
+      "normal": "",
+      "masks": "Baked/Goods_734d2bf9a808_0_Masks.png",
+      "coverage": 0.5486591458320618
+    },
+    {
+      "id": "Shelves_734d2bf9a808_0",
+      "group": "Shelves",
+      "compatibility": "734d2bf9a808",
+      "template": "4eca34ecdc3dfd7458a01b37413cc861_2100000",
+      "size": 4096,
+      "baseColor": "Baked/Shelves_734d2bf9a808_0_BaseColor.png",
+      "normal": "Baked/Shelves_734d2bf9a808_0_Normal.png",
+      "masks": "Baked/Shelves_734d2bf9a808_0_Masks.png",
+      "coverage": 0.4763675928115845
+    }
+  ],
+  "variants": [
+    {
+      "key": "811c4fe44eec091411c98b43",
+      "file": "Baked/811c4fe44eec091411c98b43.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 731,
+      "triangles": 870,
+      "hasUV2": true
+    },
+    {
+      "key": "d14bfddcda93d3c8fce08a0b",
+      "file": "Baked/d14bfddcda93d3c8fce08a0b.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 910,
+      "triangles": 815,
+      "hasUV2": true
+    },
+    {
+      "key": "8de19fdbb69421831299ae7e",
+      "file": "Baked/8de19fdbb69421831299ae7e.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 982,
+      "triangles": 969,
+      "hasUV2": true
+    },
+    {
+      "key": "ccd01820d4db142d718c4b9f",
+      "file": "Baked/ccd01820d4db142d718c4b9f.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 528,
+      "triangles": 746,
+      "hasUV2": true
+    },
+    {
+      "key": "22182473c6b766ad1ed821a1",
+      "file": "Baked/22182473c6b766ad1ed821a1.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 1070,
+      "triangles": 1003,
+      "hasUV2": true
+    },
+    {
+      "key": "fec94ea5492cccdccc51ceae",
+      "file": "Baked/fec94ea5492cccdccc51ceae.atlasmesh",
+      "pages": [
+        "Shelves_734d2bf9a808_0"
+      ],
+      "vertices": 3099,
+      "triangles": 2339,
+      "hasUV2": true
+    },
+    {
+      "key": "81f3674df52517dcf05487d0",
+      "file": "Baked/81f3674df52517dcf05487d0.atlasmesh",
+      "pages": [
+        "Shelves_734d2bf9a808_0"
+      ],
+      "vertices": 3098,
+      "triangles": 2103,
+      "hasUV2": true
+    },
+    {
+      "key": "6aab1e206dcc7db31e6fd64d",
+      "file": "Baked/6aab1e206dcc7db31e6fd64d.atlasmesh",
+      "pages": [
+        "Shelves_734d2bf9a808_0"
+      ],
+      "vertices": 2702,
+      "triangles": 2132,
+      "hasUV2": true
+    },
+    {
+      "key": "4c57036606afc8d9935502dc",
+      "file": "Baked/4c57036606afc8d9935502dc.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 929,
+      "triangles": 1020,
+      "hasUV2": true
+    },
+    {
+      "key": "caeea420c6097e9fb9f21956",
+      "file": "Baked/caeea420c6097e9fb9f21956.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 946,
+      "triangles": 946,
+      "hasUV2": true
+    },
+    {
+      "key": "9764b4c76e6d9daa10ea0c8d",
+      "file": "Baked/9764b4c76e6d9daa10ea0c8d.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 1098,
+      "triangles": 1038,
+      "hasUV2": true
+    },
+    {
+      "key": "db18f201055ff99ed6169323",
+      "file": "Baked/db18f201055ff99ed6169323.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 734,
+      "triangles": 853,
+      "hasUV2": true
+    },
+    {
+      "key": "0cf705286bb2f083b8a6995d",
+      "file": "Baked/0cf705286bb2f083b8a6995d.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 858,
+      "triangles": 968,
+      "hasUV2": true
+    },
+    {
+      "key": "7558cb4e3c2b0a590142a8b6",
+      "file": "Baked/7558cb4e3c2b0a590142a8b6.atlasmesh",
+      "pages": [
+        "Shelves_734d2bf9a808_0"
+      ],
+      "vertices": 1592,
+      "triangles": 1454,
+      "hasUV2": true
+    },
+    {
+      "key": "56deb3da9fc01acdac339f7b",
+      "file": "Baked/56deb3da9fc01acdac339f7b.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 1193,
+      "triangles": 1001,
+      "hasUV2": true
+    },
+    {
+      "key": "1e25489ae0a916e0231eb00c",
+      "file": "Baked/1e25489ae0a916e0231eb00c.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 1750,
+      "triangles": 1623,
+      "hasUV2": true
+    },
+    {
+      "key": "6fe5f5196cff34805c6eb75e",
+      "file": "Baked/6fe5f5196cff34805c6eb75e.atlasmesh",
+      "pages": [
+        "Shelves_734d2bf9a808_0"
+      ],
+      "vertices": 2624,
+      "triangles": 1876,
+      "hasUV2": true
+    },
+    {
+      "key": "38f18cd2c38989c325ab5d68",
+      "file": "Baked/38f18cd2c38989c325ab5d68.atlasmesh",
+      "pages": [
+        "Goods_734d2bf9a808_0"
+      ],
+      "vertices": 1799,
+      "triangles": 1784,
+      "hasUV2": true
+    },
+    {
+      "key": "c39a17320866c778b0160e4d",
+      "file": "Baked/c39a17320866c778b0160e4d.atlasmesh",
+      "pages": [
+        "Shelves_734d2bf9a808_0"
+      ],
+      "vertices": 2218,
+      "triangles": 1732,
+      "hasUV2": true
+    }
+  ],
+  "warnings": [
+    "ccd01820d4db142d718c4b9f_0: isolated 4 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "22182473c6b766ad1ed821a1_0: isolated 3 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "fec94ea5492cccdccc51ceae_0: isolated 35 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "81f3674df52517dcf05487d0_0: isolated 15 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "db18f201055ff99ed6169323_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "56deb3da9fc01acdac339f7b_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "6fe5f5196cff34805c6eb75e_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "38f18cd2c38989c325ab5d68_0: isolated 2 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "c39a17320866c778b0160e4d_0: isolated 6 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.",
+    "Goods: one 4096 page, 897 charts, fitted density 561.5912 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.",
+    "Shelves: one 4096 page, 2306 charts, fitted density 502.8703 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.",
+    "811c4fe44eec091411c98b43_0: 1 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "d14bfddcda93d3c8fce08a0b_0: 1 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "ccd01820d4db142d718c4b9f_0: 2 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "fec94ea5492cccdccc51ceae_0: 120 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "81f3674df52517dcf05487d0_0: point-UV triangle 87 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).",
+    "81f3674df52517dcf05487d0_0: 64 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "6aab1e206dcc7db31e6fd64d_0: 125 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "4c57036606afc8d9935502dc_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "0cf705286bb2f083b8a6995d_0: 1 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "7558cb4e3c2b0a590142a8b6_0: point-UV triangle 1 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).",
+    "7558cb4e3c2b0a590142a8b6_0: 10 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "6fe5f5196cff34805c6eb75e_0: point-UV triangle 1271 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).",
+    "6fe5f5196cff34805c6eb75e_0: point-UV triangle 1272 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).",
+    "6fe5f5196cff34805c6eb75e_0: 57 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.",
+    "c39a17320866c778b0160e4d_0: 20 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded."
+  ]
+}

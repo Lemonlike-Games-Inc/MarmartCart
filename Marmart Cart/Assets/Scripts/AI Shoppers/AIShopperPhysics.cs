@@ -1,163 +1,204 @@
+﻿using System.Collections;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.AI;
 
+/// <summary>
+/// Physical hit / knockout handling for an AI shopper.
+///
+/// Player ownership is resolved through SnakeCartManager instead of relying on
+/// the exact collider GameObject carrying Player1/Player2/etc. tags.
+///
+/// This supports the refactored cart hierarchy:
+/// ChainOfCarts
+/// ├── Leading Cart
+/// │   └── child physical colliders
+/// ├── C1
+/// ├── C2
+/// └── ...
+///
+/// A hit from either the leader or any collected follower resolves back to the
+/// owning SnakeCartManager and therefore the correct player.
+/// </summary>
+[DisallowMultipleComponent]
+[RequireComponent(typeof(Rigidbody))]
 public class AIShopperPhysics : MonoBehaviour
 {
+    #region Reward Settings
+
+    [Header("Reward Settings")]
+    [SerializeField] private float rewardMeterAmount = 2f;
+
+    #endregion
+
+    #region Knockout Settings
+
     [Header("Knockout Settings")]
-    [SerializeField] private float knockbackForce = 10f;  // Base force applied to the AI
-    [SerializeField] private float upwardForce = 5f;      // Upward force to make the AI "fly"
-    [SerializeField] private float spinTorque = 5f;       // Torque applied to spin the AI
-    [SerializeField] private float destructionDelay = 2f; // Time before the AI is destroyed
+    [SerializeField] private float knockbackForce = 10f;
+    [SerializeField] private float upwardForce = 5f;
+    [SerializeField] private float spinTorque = 5f;
+    [SerializeField] private float destructionDelay = 2f;
+
+    #endregion
+
+    #region References
+
+    [Header("References")]
+    [SerializeField] private GameObjectPool targetPool;
+    [SerializeField] private SfxManager sfxManager;
 
     private Rigidbody rb;
-    private bool isKnockedOut = false;
-
+    private NavMeshAgent navAgent;
     private AIShopperBehaviour shopperBehaviour;
 
-    [SerializeField] GameObjectPool targetPool;
-    [SerializeField] GameTimeManager gameManager;
-    [SerializeField] SfxManager sfxManager;
-    private void Start()
+    #endregion
+
+    #region Runtime
+
+    [Header("Runtime - Read Only")]
+    [SerializeField] private bool isKnockedOut;
+
+    #endregion
+
+    #region Unity Lifecycle
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            Debug.LogError("Rigidbody is missing on this AI. Please attach a Rigidbody component.");
-        }
-
+        navAgent = GetComponent<NavMeshAgent>();
         shopperBehaviour = GetComponent<AIShopperBehaviour>();
+
         if (shopperBehaviour == null)
         {
-            Debug.LogError("AIShopperBehaviour is missing.");
+            Debug.LogError("[AIShopperPhysics] AIShopperBehaviour is missing.", this);
         }
 
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameTimeManager>();
-        if (gameManager == null)
+        if (navAgent == null)
         {
-            Debug.LogError("gameManager is missing.");
+            Debug.LogError("[AIShopperPhysics] NavMeshAgent is missing.", this);
         }
     }
+
+    #endregion
+
+    #region Hit Detection
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isKnockedOut) return; // Prevent multiple knockouts
+        if (isKnockedOut || other == null) return;
 
-        if (other.gameObject.CompareTag("Player1"))
+        SnakeCartManager attackingSnake = other.GetComponentInParent<SnakeCartManager>();
+        if (attackingSnake == null) return;
+
+        int playerIndex = attackingSnake.GetPlayerId();
+        if (playerIndex < 1 || playerIndex > 4) return;
+
+        RewardAttackingPlayer(attackingSnake);
+        PlayHitSfx();
+
+        rb.isKinematic = false;
+
+        if (shopperBehaviour != null)
         {
-            // Play one of the two sound effects randomly
-            if (Random.value < 0.5f) // Random.value gives a float between 0 and 1
-            {
-                sfxManager.PlaySFX("HitCharacter1");
-            }
-            else
-            {
-                sfxManager.PlaySFX("HitCharacter2");
-            }
-            rb.isKinematic = false;
-            int playerIndex = 1;
-            KnockOut(playerIndex);
             shopperBehaviour.OnKnockOut(playerIndex);
         }
-        else if (other.gameObject.CompareTag("Player2"))
-        {
-            // Play one of the two sound effects randomly
-            if (Random.value < 0.5f) // Random.value gives a float between 0 and 1
-            {
-                sfxManager.PlaySFX("HitCharacter1");
-            }
-            else
-            {
-                sfxManager.PlaySFX("HitCharacter2");
-            }
-            rb.isKinematic = false;
-            int playerIndex = 2;
-            KnockOut(playerIndex);
-            shopperBehaviour.OnKnockOut(playerIndex);
-        }
+
+        KnockOut();
     }
 
-    private void KnockOut(int playerIndex)
+    private void RewardAttackingPlayer(SnakeCartManager attackingSnake)
     {
-        if (rb == null) return;
+        if (attackingSnake == null) return;
+
+        var snakeBody = attackingSnake.GetSnakeBody();
+        if (snakeBody == null || snakeBody.Count == 0 || snakeBody[0] == null) return;
+
+        CartControlScript cartControl = snakeBody[0].GetComponentInChildren<CartControlScript>(true);
+        if (cartControl != null) cartControl.AddHype(rewardMeterAmount);
+    }
+
+    private void PlayHitSfx()
+    {
+        if (sfxManager == null) return;
+
+        sfxManager.PlaySFX(Random.value < 0.5f ? "HitCharacter1" : "HitCharacter2");
+    }
+
+    #endregion
+
+    #region Knockout
+
+    private void KnockOut()
+    {
+        if (rb == null || isKnockedOut) return;
 
         isKnockedOut = true;
-        gameManager.IncreaseHitCount(playerIndex);
-        // Generate a random direction for knockback
+
         Vector3 randomDirection = new Vector3(
             Random.Range(-1f, 1f),
-            1f, // Ensure upward force
+            1f,
             Random.Range(-1f, 1f)
         ).normalized;
 
-        // Apply knockback force
         Vector3 knockback = randomDirection * knockbackForce + Vector3.up * upwardForce;
         rb.AddForce(knockback, ForceMode.Impulse);
 
-        // Apply random spin
         Vector3 randomTorque = new Vector3(
             Random.Range(-spinTorque, spinTorque),
             Random.Range(-spinTorque, spinTorque),
             Random.Range(-spinTorque, spinTorque)
         );
+
         rb.AddTorque(randomTorque, ForceMode.Impulse);
 
-        // Disable AI functionality (e.g., NavMeshAgent)
         DisableAI();
-
-        // Return the AI to the pool after a delay
         StartCoroutine(ReturnToPool());
     }
 
     private void DisableAI()
     {
-        // Disable NavMeshAgent or any other AI logic
-        var navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        if (navAgent != null)
-        {
-            navAgent.enabled = false;
-        }
-
-        // Optionally disable other components
-        var AInavScript = GetComponent<AIShopperBehaviour>();
-        if(AInavScript != null)
-        {
-            AInavScript.enabled = false;
-        }
+        if (navAgent != null) navAgent.enabled = false;
+        if (shopperBehaviour != null) shopperBehaviour.enabled = false;
     }
 
     private IEnumerator ReturnToPool()
     {
-
         yield return new WaitForSeconds(destructionDelay);
 
-        // Reset Rigidbody state
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.isKinematic = true;
-        // Reset AI state
-        var aiBehaviour = GetComponent<AIShopperBehaviour>();
-        if (aiBehaviour != null)
+
+        if (shopperBehaviour != null)
         {
-            aiBehaviour.ResetState();
+            shopperBehaviour.ResetState();
+            shopperBehaviour.enabled = true;
         }
-        var navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        if (navAgent != null)
+
+        if (navAgent != null && !navAgent.enabled)
         {
             navAgent.enabled = true;
         }
-        var AInavScript = GetComponent<AIShopperBehaviour>();
-        if (AInavScript != null)
-        {
-            AInavScript.enabled = true;
-        }
-        // Return to pool
+
         isKnockedOut = false;
-        targetPool.ReturnObject(gameObject);
+
+        if (targetPool != null)
+        {
+            targetPool.ReturnObject(gameObject);
+        }
+        else
+        {
+            Debug.LogWarning("[AIShopperPhysics] Target Pool is not assigned.", this);
+        }
     }
+
+    #endregion
+
+    #region Public API
 
     public bool IsKnockedOut()
     {
         return isKnockedOut;
     }
+
+    #endregion
 }

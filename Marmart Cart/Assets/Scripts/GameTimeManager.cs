@@ -1,317 +1,310 @@
-using UnityEngine;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.Cinemachine;
+using UnityEngine;
+using UnityEngine.Serialization;
 
+public enum GameSessionState
+{
+    PreGame,
+    Playing,
+    PostGame
+}
+
+/// <summary>
+/// Outer gameplay-scene lifecycle shell.
+///
+/// Expected scene flow:
+/// Title/Menu Scene
+/// -> Tutorial / Skip
+/// -> Gameplay Scene
+/// -> PreGame intro window
+/// -> Playing
+/// -> PostGame results window
+///
+/// The Gameplay Scene itself has NO title-screen confirmation and NO start input.
+///
+/// PreGame is intentionally an extension point:
+/// - today: a short automatic real-time pause;
+/// - later: map camera flyover, split-screen intro, countdown, announcer, etc.
+///
+/// MatchFlowDirector remains the authority for the complete playable timeline
+/// and decides when gameplay ends through the final EndGameWrap.
+/// </summary>
 public class GameTimeManager : MonoBehaviour
 {
-    [Header("Game Time Settings")]
-    [SerializeField] private float totalGameDuration = 180f; // Total game time in seconds
-    private float elapsedTime = 0f;
-    private bool gameEnded = false;
-    private bool gamePaused = true;
+    #region Match Lifecycle
 
-    [Header("UI References")]
-    [SerializeField] private GameObject titleScreen; // Title screen object
-    [SerializeField] private TextMeshProUGUI timerText; // TMP for time display
-    [SerializeField] private GameObject finalScoreScreen; // Final score screen object
-//     [SerializeField] private TextMeshProUGUI finalHitCountText; // TMP for hit count display
-//     [SerializeField] private TextMeshProUGUI finalScoreText; // TMP for final score display
-//     [SerializeField] private TextMeshProUGUI normalItemText; // TMP for normal item count
-//     [SerializeField] private TextMeshProUGUI bonusItemText; // TMP for bonus item count
-    [SerializeField] private TextMeshProUGUI scoreBreakdownText; // TMP for score breakdown
-    [SerializeField] private TextMeshProUGUI scoreBreakdownTextP1; // TMP for score breakdown
-    [SerializeField] private TextMeshProUGUI scoreBreakdownTextP2; // TMP for score breakdown
+    [Header("Match Lifecycle")]
+    [SerializeField] private MatchFlowDirector matchFlowDirector;
 
-    private int normalItemCountP1 = 0;
-    private int bonusItemCountP1 = 0;
-    private int finalScoreP1 = 0;
-    private int normalItemCountP2 = 0;
-    private int bonusItemCountP2 = 0;
-    private int finalScoreP2 = 0;
+    [Header("PreGame Intro Window")]
+    [Tooltip(
+        "Current placeholder intro window. The gameplay scene pauses for this many REAL-TIME seconds, " +
+        "then BeginMatch() is called automatically."
+    )]
+    [Min(0f)]
+    [SerializeField] private float preGamePauseDuration = 1f;
 
-    [Header("Points System")]
-    [SerializeField] private int pointsPerHit = 5;
-    [SerializeField] private int pointsPerNormalItem = 20;
-    [SerializeField] private int pointsPerBonusItem = 30;
+    [Tooltip(
+        "Leave enabled for the current simple paused intro. " +
+        "Later disable this when a camera intro/countdown controller should call BeginMatch() itself."
+    )]
+    [SerializeField] private bool autoBeginAfterPreGamePause = true;
 
+    [Tooltip("Freezes gameplay with Time.timeScale = 0 during the simple PreGame intro window.")]
+    [FormerlySerializedAs("pauseWorldOutsideGameplay")]
+    [SerializeField] private bool pauseWorldDuringPreGame = true;
 
-    [Header("Player Carts")]
-    //Player 1
-    [SerializeField] private SnakeCartManager snakeCartManagerP1;
-    private int hitCountP1 = 0;
-    [SerializeField] private TextMeshProUGUI hitCountP1Text; // TMP for hit count display
-    private int cartCountP1 = 0;
-    [SerializeField] private TextMeshProUGUI cartCountP1Text; // TMP for hit count display
+    [Tooltip(
+        "Usually leave this disabled: the final-results ceremony uses real-time cart, cargo, text, " +
+        "and camera animation. The results controller explicitly locks gameplay systems instead."
+    )]
+    [SerializeField] private bool pauseWorldDuringPostGame = false;
 
-    //Player 2
-    [SerializeField] private SnakeCartManager snakeCartManagerP2;
-    private int hitCountP2 = 0;
-    [SerializeField] private TextMeshProUGUI hitCountP2Text; // TMP for hit count display
-    private int cartCountP2 = 0;
-    [SerializeField] private TextMeshProUGUI cartCountP2Text; // TMP for hit count display
+    [Header("Runtime - Read Only")]
+    [SerializeField] private GameSessionState sessionState = GameSessionState.PreGame;
 
-    private bool isAnimatingHitCount = false; // Flag for hit count text animation
-    private bool isAnimatingCartCount = false; // Flag for cart count text animation
+    private Coroutine preGameRoutine;
 
-    [Header("Camera Settings")]
-    [SerializeField] private CinemachineCamera cinemachineCameraP1;
-    [SerializeField] private CinemachineCamera cinemachineCameraP2;
-    [SerializeField] private float defaultOrthographicSize = 16f;
-    [SerializeField] private float orthographicSizeIncrement = 0.5f;
-    [SerializeField] private int cartsPerZoomIncrement = 5;
-    [SerializeField] private float maxOrthographicSize = 20f;
+    public GameSessionState SessionState => sessionState;
+    public bool IsPreGame => sessionState == GameSessionState.PreGame;
+    public bool IsPlaying => sessionState == GameSessionState.Playing;
+    public bool IsPostGame => sessionState == GameSessionState.PostGame;
 
-    [Header("Music Settings")]
+    public event Action OnPreGameEntered;
+    public event Action OnMatchStarted;
+    public event Action OnPostGameEntered;
+
+    #endregion
+
+    #region Camera Integration
+
+    [Header("Camera Integration")]
+    [Tooltip(
+        "Camera lens settings and calculations now live in CameraManager + MatchSceneModeProfile. " +
+        "GameTimeManager only forwards cart-count changes."
+    )]
+    [SerializeField] private CameraManager cameraManager;
+
+    #endregion
+
+    #region Audio
+
+    [Header("Music")]
     [SerializeField] private MusicManager musicManager;
+
+    #endregion
+
+    #region Unity Lifecycle
+
+    private void Awake()
+    {
+        if (matchFlowDirector == null) matchFlowDirector = FindFirstObjectByType<MatchFlowDirector>();
+        if (cameraManager == null) cameraManager = FindFirstObjectByType<CameraManager>();
+    }
+
+    private void OnEnable()
+    {
+        if (matchFlowDirector != null)
+        {
+            matchFlowDirector.OnMatchEndRequested += HandleDirectorMatchEndRequested;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (matchFlowDirector != null)
+        {
+            matchFlowDirector.OnMatchEndRequested -= HandleDirectorMatchEndRequested;
+        }
+
+        if (preGameRoutine != null)
+        {
+            StopCoroutine(preGameRoutine);
+            preGameRoutine = null;
+        }
+    }
 
     private void Start()
     {
-        // Pause game and show title screen at the beginning
-        PauseGame();
-        titleScreen.SetActive(true);
-        hitCountP1Text.text = "0";
-        cartCountP1Text.text = "0";
-        hitCountP2Text.text = "0";
-        cartCountP2Text.text = "0";
-        // Initialize camera zoom
-        if (cinemachineCameraP1 != null)
-        {
-            cinemachineCameraP1.Lens.OrthographicSize = defaultOrthographicSize;
-        }
-        if (cinemachineCameraP2 != null)
-        {
-            cinemachineCameraP2.Lens.OrthographicSize = defaultOrthographicSize;
-        }
+        ConfigurePlayerHudReferences();
+        ResetCartHud();
+
+        EnterPreGame();
     }
 
     private void Update()
     {
-        //Start the game from the title screen
-        if (gamePaused)
+        if (sessionState != GameSessionState.Playing) return;
+
+        UpdateTimerDisplay();
+        UpdateCartHud();
+    }
+
+    #endregion
+
+    #region Lifecycle
+
+    private void EnterPreGame()
+    {
+        sessionState = GameSessionState.PreGame;
+
+        matchFlowDirector?.StopFlow();
+
+        SetWorldPaused(pauseWorldDuringPreGame);
+
+
+        UpdateTimerDisplay();
+
+        OnPreGameEntered?.Invoke();
+
+        if (autoBeginAfterPreGamePause)
         {
-            // Check for game start input while paused
-            if (Input.GetButtonDown("Submit")) // "Submit" is mapped to "A" by default in the new Input System
-            {
-                StartGame();
-            }
+            if (preGameRoutine != null) StopCoroutine(preGameRoutine);
+            preGameRoutine = StartCoroutine(AutoBeginMatchAfterDelay());
+        }
+    }
+
+    private IEnumerator AutoBeginMatchAfterDelay()
+    {
+        if (preGamePauseDuration > 0f)
+        {
+            yield return new WaitForSecondsRealtime(preGamePauseDuration);
+        }
+
+        preGameRoutine = null;
+        BeginMatch();
+    }
+
+    /// <summary>
+    /// Starts the playable match.
+    ///
+    /// Current prototype:
+    /// GameTimeManager calls this automatically after preGamePauseDuration.
+    ///
+    /// Future:
+    /// Disable Auto Begin After PreGame Pause and let a camera intro/countdown
+    /// controller call BeginMatch() when its presentation is complete.
+    /// </summary>
+    public void BeginMatch()
+    {
+        if (sessionState != GameSessionState.PreGame) return;
+
+        if (preGameRoutine != null)
+        {
+            StopCoroutine(preGameRoutine);
+            preGameRoutine = null;
+        }
+
+        if (matchFlowDirector == null)
+        {
+            Debug.LogError("[GameTimeManager] MatchFlowDirector is missing.", this);
             return;
         }
 
-        // Increment elapsed time
-        elapsedTime += Time.deltaTime;
+        sessionState = GameSessionState.Playing;
 
-        // Update timer display
+        SetWorldPaused(false);
+
+        matchFlowDirector.StartFlow();
+
+        if (!matchFlowDirector.IsRunning)
+        {
+            Debug.LogError("[GameTimeManager] MatchFlowDirector failed to start. Returning to PreGame.", this);
+            EnterPreGame();
+            return;
+        }
+
+        musicManager?.PlayMusic("BackgroundMusic");
+
         UpdateTimerDisplay();
-        //Update Player1 Cart Count display and adjust camera
-        int currentCartCountP1 = snakeCartManagerP1.GetSnakeBodyLength();
-        if (currentCartCountP1 != cartCountP1)
-        {
-            cartCountP1 = currentCartCountP1;
-            cartCountP1Text.text = cartCountP1.ToString();
-            StartCoroutine(AnimateText(cartCountP1Text, false));
-            UpdateCameraZoomP1();
-        }
-        //Update Player2 Cart Count display and adjust camera
-        int currentCartCountP2 = snakeCartManagerP2.GetSnakeBodyLength();
-        if (currentCartCountP2 != cartCountP2)
-        {
-            cartCountP2 = currentCartCountP2;
-            cartCountP2Text.text = cartCountP2.ToString();
-            StartCoroutine(AnimateText(cartCountP2Text, false));
-            UpdateCameraZoomP2();
-        }
-
-        // Check if game time has ended
-        if (elapsedTime >= totalGameDuration)
-        {
-            EndGame();
-        }
+        OnMatchStarted?.Invoke();
     }
+
+    private void HandleDirectorMatchEndRequested()
+    {
+        if (sessionState != GameSessionState.Playing) return;
+
+        EnterPostGame();
+    }
+
+    private void EnterPostGame()
+    {
+        sessionState = GameSessionState.PostGame;
+
+        musicManager?.StopMusic();
+
+        SetWorldPaused(pauseWorldDuringPostGame);
+
+        UpdateTimerDisplay();
+
+        OnPostGameEntered?.Invoke();
+    }
+
+    private void SetWorldPaused(bool paused)
+    {
+        Time.timeScale = paused ? 0f : 1f;
+    }
+
+    #endregion
+
+    #region Timer
 
     private void UpdateTimerDisplay()
     {
-        float timeRemaining = Mathf.Max(0, totalGameDuration - elapsedTime);
-        int minutes = Mathf.FloorToInt(timeRemaining / 60);
-        int seconds = Mathf.FloorToInt(timeRemaining % 60);
-        timerText.text = $"{minutes:D2}:{seconds:D2}";
-    }
+        float timeRemaining = matchFlowDirector != null ? matchFlowDirector.RemainingFlowTime : 0f;
 
-    private void StartGame()
-    {
-        // Unpause the game and hide title screen
-        gamePaused = false;
-        titleScreen.SetActive(false);
-        ResumeGame();
-        musicManager.PlayMusic("BackgroundMusic");
-    }
-
-    private void EndGame()
-    {
-        gameEnded = true;
-        musicManager.StopMusic();
-        PauseGame();
-        //Debug.Log("Game Over!");
-
-        // Calculate the final score
-        CalculateFinalScore();
-
-        // Show final score screen
-        finalScoreScreen.SetActive(true);
-        DisplayScoreBreakdown();
-    }
-
-    private void PauseGame()
-    {
-        Time.timeScale = 0f;
-        gamePaused = true;
-    }
-
-    private void ResumeGame()
-    {
-        Time.timeScale = 1f;
-        gamePaused = false;
-    }
-
-    public void IncreaseHitCount(int playerIndex)
-    {
-        if(playerIndex == 1)
+        if (sessionState == GameSessionState.PreGame && matchFlowDirector != null)
         {
-            hitCountP1++;
-            hitCountP1Text.text = hitCountP1.ToString();
-            StartCoroutine(AnimateText(hitCountP1Text, true));
-        }
-        else if(playerIndex == 2)
-        {
-            hitCountP2++;
-            hitCountP2Text.text = hitCountP2.ToString();
-            StartCoroutine(AnimateText(hitCountP2Text, true));
-        }
-    }
-
-    private IEnumerator AnimateText(TextMeshProUGUI text, bool isHitCount)
-    {
-        // Determine which flag to check and update
-        bool isAnimating = isHitCount ? isAnimatingHitCount : isAnimatingCartCount;
-        if (isAnimating) yield break; // Exit if this text's animation is already in progress
-
-        if (isHitCount)
-            isAnimatingHitCount = true;
-        else
-            isAnimatingCartCount = true;
-
-        float animationDuration = 0.3f; // Total animation time
-        float scaleUpDuration = animationDuration / 2; // Time for scaling up
-        float scaleDownDuration = animationDuration / 2; // Time for scaling down
-        Vector3 originalScale = text.transform.localScale;
-
-        // Scale up
-        float elapsed = 0f;
-        while (elapsed < scaleUpDuration)
-        {
-            float t = elapsed / scaleUpDuration;
-            text.transform.localScale = Vector3.Lerp(originalScale, originalScale * 2f, t);
-            elapsed += Time.deltaTime;
-            yield return null;
+            timeRemaining = matchFlowDirector.PlannedProfileDuration;
         }
 
-        // Scale down
-        elapsed = 0f;
-        while (elapsed < scaleDownDuration)
-        {
-            float t = elapsed / scaleDownDuration;
-            text.transform.localScale = Vector3.Lerp(originalScale * 2f, originalScale, t);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
+        int totalSeconds = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
 
-        text.transform.localScale = originalScale; // Ensure the scale resets
-
-        // Reset the corresponding flag
-        if (isHitCount)
-            isAnimatingHitCount = false;
-        else
-            isAnimatingCartCount = false;
+        string formatted = $"{minutes:D2}:{seconds:D2}";
     }
-    private void UpdateCameraZoomP1()
+
+    public float GetCurrentGameTime()
     {
-        if (cinemachineCameraP1 == null) return;
-
-        // Calculate new orthographic size based on cart count
-        float newOrthographicSize = defaultOrthographicSize + (cartCountP1 / cartsPerZoomIncrement) * orthographicSizeIncrement;
-        newOrthographicSize = Mathf.Clamp(newOrthographicSize, defaultOrthographicSize, maxOrthographicSize);
-
-        // Apply the new orthographic size
-        cinemachineCameraP1.Lens.OrthographicSize = newOrthographicSize;
+        return matchFlowDirector != null ? matchFlowDirector.ElapsedFlowTime : 0f;
     }
-    private void UpdateCameraZoomP2()
+
+    public float GetRemainingGameTime()
     {
-        if (cinemachineCameraP2 == null) return;
-
-        // Calculate new orthographic size based on cart count
-        float newOrthographicSize = defaultOrthographicSize + (cartCountP2 / cartsPerZoomIncrement) * orthographicSizeIncrement;
-        newOrthographicSize = Mathf.Clamp(newOrthographicSize, defaultOrthographicSize, maxOrthographicSize);
-
-        // Apply the new orthographic size
-        cinemachineCameraP2.Lens.OrthographicSize = newOrthographicSize;
+        return matchFlowDirector != null ? matchFlowDirector.RemainingFlowTime : 0f;
     }
-    private void CalculateFinalScore()
+
+    public float GetPlannedGameDuration()
     {
-        normalItemCountP1 = 0;
-        bonusItemCountP1 = 0;
-        normalItemCountP2 = 0;
-        bonusItemCountP2 = 0;
-        // Count items in the snake body player 1
-        foreach (var cart in snakeCartManagerP1.GetSnakeBody())
-        {
-            var cartManager = cart.GetComponent<ChainedCartManager>();
-            if (cartManager != null)
-            {
-                if (cartManager.isBonusCart)
-                    bonusItemCountP1++;
-                else
-                    normalItemCountP1++;
-            }
-        }
-
-        // Count items in the snake body player 2
-        foreach (var cart in snakeCartManagerP2.GetSnakeBody())
-        {
-            var cartManager = cart.GetComponent<ChainedCartManager>();
-            if (cartManager != null)
-            {
-                if (cartManager.isBonusCart)
-                    bonusItemCountP2++;
-                else
-                    normalItemCountP2++;
-            }
-        }
-
-        finalScoreP1 = (hitCountP1 * pointsPerHit) + (normalItemCountP1 * pointsPerNormalItem) + (bonusItemCountP1 * pointsPerBonusItem);
-        finalScoreP2 = (hitCountP2 * pointsPerHit) + (normalItemCountP2 * pointsPerNormalItem) + (bonusItemCountP2 * pointsPerBonusItem);
+        return matchFlowDirector != null ? matchFlowDirector.PlannedProfileDuration : 0f;
     }
-    private void DisplayScoreBreakdown()
+
+    #endregion
+
+    #region Cart HUD
+
+    private void ConfigurePlayerHudReferences()
     {
-        //         hitCountText.text = $"Hits: {hitCount}";
-        //         normalItemText.text = $"Normal Items: {normalItemCount}";
-        //         bonusItemText.text = $"Bonus Items: {bonusItemCount}";
-        //         finalScoreText.text = $"Final Score: {finalScore}";
-        scoreBreakdownTextP1.text =
-            $"Score Breakdown:\n" +
-            $"{hitCountP1} x {pointsPerHit} (Hits) = {hitCountP1 * pointsPerHit}\n" +
-            $"{normalItemCountP1} x {pointsPerNormalItem} (Normal Items) = {normalItemCountP1 * pointsPerNormalItem}\n" +
-            $"{bonusItemCountP1} x {pointsPerBonusItem} (Bonus Items) = {bonusItemCountP1 * pointsPerBonusItem}\n" +
-            $"Player1 Score: {finalScoreP1}";
-        scoreBreakdownTextP2.text =
-            $"Score Breakdown:\n" +
-            $"{hitCountP2} x {pointsPerHit} (Hits) = {hitCountP2 * pointsPerHit}\n" +
-            $"{normalItemCountP2} x {pointsPerNormalItem} (Normal Items) = {normalItemCountP2 * pointsPerNormalItem}\n" +
-            $"{bonusItemCountP2} x {pointsPerBonusItem} (Bonus Items) = {bonusItemCountP2 * pointsPerBonusItem}\n" +
-            $"Player2 Score: {finalScoreP2}";
-
-        scoreBreakdownText.text =
-            $"Total Score: {finalScoreP1 + finalScoreP2}\n" +
-            "Thanks For Shopping!";
+        int playerCount = GMode.Instance != null ? GMode.Instance.PlayerCount() : 2;
     }
+
+    private void ResetCartHud()
+    {
+    }
+
+    private void UpdateCartHud()
+    {
+      
+    }
+
+    private void SetTextIfAssigned(TextMeshProUGUI text, string value)
+    {
+        if (text != null) text.text = value;
+    }
+
+    #endregion
+
 }

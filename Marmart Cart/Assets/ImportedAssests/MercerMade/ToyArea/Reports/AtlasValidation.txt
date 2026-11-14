@@ -1,0 +1,178 @@
+Unity 2022.3.48f1
+Source GUIDs and hashes validated. Positions/normals/pivots/winding copied unchanged by source vertex index.
+No source Collider mesh is replaced. UV2 and additional UV/color channels are copied through vertex splits.
+Atlas compression: Unity platform high-quality compression
+Draw calls: not measured. Shared atlases do not imply one draw call.
+Atlas Goods_734d2bf9a808_0: 4096x4096, covered=54.9 %
+Atlas Shelves_734d2bf9a808_0: 4096x4096, covered=47.6 %
+Mesh beverage_box_-3214: 731 -> 731 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh blue_cookie_box_-3320: 910 -> 910 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh candy_wrapper_-3424: 982 -> 982 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh cute_robot_-3528: 515 -> 528 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh lemon_soda_bottle_-3632: 1059 -> 1070 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh Purple_Industrial_She_0913012541_-3798: 3032 -> 3099 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh Purple_Utility_Shelf_0913012548_-3964: 3062 -> 3098 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh Purple_Utility_Shelf_0913012600_-4130: 2701 -> 2702 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh orange_box_-4234: 929 -> 929 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh orange_can_-4338: 946 -> 946 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh orange_juice_bottle_-4442: 1098 -> 1098 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh pink_chocolate_box_-4546: 731 -> 734 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh potato_chip_bag_-4650: 858 -> 858 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh snack_banner_-4754: 1592 -> 1592 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh soda_bottle_-4858: 1190 -> 1193 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh teddy_bear_-4962: 1750 -> 1750 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh three-step_wooden_shelf_-5066: 2618 -> 2624 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh toy_car_-5170: 1795 -> 1799 vertices; triangle geometry and surface normals preserved; instances=1
+Mesh wooden_shelf_-5274: 2204 -> 2218 vertices; triangle geometry and surface normals preserved; instances=1
+STATS beverage_box: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE beverage_box_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: beverage_box
+SUCCESS Assets/ToyArea/_Work/beverage_box.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/fbfa7608/beverage_box.prefab
+STATS blue_cookie_box: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE blue_cookie_box_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: blue_cookie_box
+SUCCESS Assets/ToyArea/_Work/blue_cookie_box.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/08f07bed/blue_cookie_box.prefab
+STATS candy_wrapper: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE candy_wrapper_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: candy_wrapper
+SUCCESS Assets/ToyArea/_Work/candy_wrapper.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/81b06a41/candy_wrapper.prefab
+STATS cute_robot: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 16777895 -> 89479952
+BEFORE_TEXTURE cute_robot_BaseColor 2048x2048 runtimeBytes=16777895
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: cute_robot
+SUCCESS Assets/ToyArea/_Work/cute_robot.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/50256cb4/cute_robot.prefab
+STATS lemon_soda_bottle: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE lemon_soda_bottle_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: lemon_soda_bottle
+SUCCESS Assets/ToyArea/_Work/lemon_soda_bottle.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/f49d9a74/lemon_soda_bottle.prefab
+STATS Purple_Industrial_She_0913012541: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 128627355 -> 134219928
+BEFORE_TEXTURE Purple_Industrial_She_0913012541_BaseColor 2048x2048 runtimeBytes=39147515
+BEFORE_TEXTURE Purple_Industrial_She_0913012541_Normal 2048x2048 runtimeBytes=44739920
+BEFORE_TEXTURE Purple_Industrial_She_0913012541_MetallicSmoothness 2048x2048 runtimeBytes=44739920
+AFTER_TEXTURE Shelves_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Purple_Industrial_She_0913012541
+SUCCESS Assets/ToyArea/_Work/Purple_Industrial_She_0913012541.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/e49700a6/Purple_Industrial_She_0913012541.prefab
+STATS Purple_Utility_Shelf_0913012548: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 106257735 -> 134219928
+BEFORE_TEXTURE Purple_Utility_Shelf_0913012548_BaseColor 2048x2048 runtimeBytes=39147515
+BEFORE_TEXTURE Purple_Utility_Shelf_0913012548_Normal 2048x2048 runtimeBytes=44739920
+BEFORE_TEXTURE Purple_Utility_Shelf_0913012548_MetallicSmoothness 2048x2048 runtimeBytes=22370300
+AFTER_TEXTURE Shelves_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Purple_Utility_Shelf_0913012548
+SUCCESS Assets/ToyArea/_Work/Purple_Utility_Shelf_0913012548.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/84b08c31/Purple_Utility_Shelf_0913012548.prefab
+STATS Purple_Utility_Shelf_0913012600: independent materials 1 -> 1; referenced textures 3 -> 3; Unity runtime texture bytes 106257735 -> 134219928
+BEFORE_TEXTURE Purple_Utility_Shelf_0913012600_BaseColor 2048x2048 runtimeBytes=39147515
+BEFORE_TEXTURE Purple_Utility_Shelf_0913012600_Normal 2048x2048 runtimeBytes=44739920
+BEFORE_TEXTURE Purple_Utility_Shelf_0913012600_MetallicSmoothness 2048x2048 runtimeBytes=22370300
+AFTER_TEXTURE Shelves_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: Purple_Utility_Shelf_0913012600
+SUCCESS Assets/ToyArea/_Work/Purple_Utility_Shelf_0913012600.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/82ed8db4/Purple_Utility_Shelf_0913012600.prefab
+STATS orange_box: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE orange_box_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: orange_box
+SUCCESS Assets/ToyArea/_Work/orange_box.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/5fd24784/orange_box.prefab
+STATS orange_can: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE orange_can_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: orange_can
+SUCCESS Assets/ToyArea/_Work/orange_can.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/15587d2f/orange_can.prefab
+STATS orange_juice_bottle: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE orange_juice_bottle_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: orange_juice_bottle
+SUCCESS Assets/ToyArea/_Work/orange_juice_bottle.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/34d45962/orange_juice_bottle.prefab
+STATS pink_chocolate_box: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE pink_chocolate_box_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: pink_chocolate_box
+SUCCESS Assets/ToyArea/_Work/pink_chocolate_box.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/b522def6/pink_chocolate_box.prefab
+STATS potato_chip_bag: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE potato_chip_bag_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: potato_chip_bag
+SUCCESS Assets/ToyArea/_Work/potato_chip_bag.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/1de422a1/potato_chip_bag.prefab
+STATS snack_banner: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 16777895 -> 134219928
+BEFORE_TEXTURE snack_banner_BaseColor 2048x2048 runtimeBytes=16777895
+AFTER_TEXTURE Shelves_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: snack_banner
+SUCCESS Assets/ToyArea/_Work/snack_banner.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/9e68d16e/snack_banner.prefab
+STATS soda_bottle: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE soda_bottle_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: soda_bottle
+SUCCESS Assets/ToyArea/_Work/soda_bottle.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/9e19f89e/soda_bottle.prefab
+STATS teddy_bear: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE teddy_bear_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: teddy_bear
+SUCCESS Assets/ToyArea/_Work/teddy_bear.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/ad13657f/teddy_bear.prefab
+STATS three-step_wooden_shelf: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 39147515 -> 134219928
+BEFORE_TEXTURE three-step_wooden_shelf_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Shelves_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: three-step_wooden_shelf
+SUCCESS Assets/ToyArea/_Work/three-step_wooden_shelf.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/0a3e82ea/three-step_wooden_shelf.prefab
+STATS toy_car: independent materials 1 -> 1; referenced textures 1 -> 2; Unity runtime texture bytes 39147515 -> 89479952
+BEFORE_TEXTURE toy_car_BaseColor 2048x2048 runtimeBytes=39147515
+AFTER_TEXTURE Goods_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Goods_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: toy_car
+SUCCESS Assets/ToyArea/_Work/toy_car.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/eae89b0d/toy_car.prefab
+STATS wooden_shelf: independent materials 1 -> 1; referenced textures 1 -> 3; Unity runtime texture bytes 16777895 -> 134219928
+BEFORE_TEXTURE wooden_shelf_BaseColor 2048x2048 runtimeBytes=16777895
+AFTER_TEXTURE Shelves_734d2bf9a808_0_BaseColor 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Normal 4096x4096 runtimeBytes=44739976
+AFTER_TEXTURE Shelves_734d2bf9a808_0_Masks 4096x4096 runtimeBytes=44739976
+PASS hierarchy, local TRS, components, collider references and world-space bounds: wooden_shelf
+SUCCESS Assets/ToyArea/_Work/wooden_shelf.prefab -> Assets/Core/AtlasOptimized/Runs/20260912_195828_043_919f1d/Optimized_20260912_200219_719/Prefabs/7dda1ec4/wooden_shelf.prefab
+BAKE NOTE: ccd01820d4db142d718c4b9f_0: isolated 4 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 22182473c6b766ad1ed821a1_0: isolated 3 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: fec94ea5492cccdccc51ceae_0: isolated 35 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 81f3674df52517dcf05487d0_0: isolated 15 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: db18f201055ff99ed6169323_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 56deb3da9fc01acdac339f7b_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 6fe5f5196cff34805c6eb75e_0: isolated 1 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: 38f18cd2c38989c325ab5d68_0: isolated 2 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: c39a17320866c778b0160e4d_0: isolated 6 overlapping source-UV triangles as separate atlas islands; zero positive-area overlaps verified.
+BAKE NOTE: Goods: one 4096 page, 897 charts, fitted density 561.5912 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.
+BAKE NOTE: Shelves: one 4096 page, 2306 charts, fitted density 502.8703 texels/unit; padding 8px. Uniform positive UV transforms validated; no overlap.
+BAKE NOTE: 811c4fe44eec091411c98b43_0: 1 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: d14bfddcda93d3c8fce08a0b_0: 1 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: ccd01820d4db142d718c4b9f_0: 2 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: fec94ea5492cccdccc51ceae_0: 120 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 81f3674df52517dcf05487d0_0: point-UV triangle 87 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 81f3674df52517dcf05487d0_0: 64 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 6aab1e206dcc7db31e6fd64d_0: 125 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 4c57036606afc8d9935502dc_0: 3 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 0cf705286bb2f083b8a6995d_0: 1 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 7558cb4e3c2b0a590142a8b6_0: point-UV triangle 1 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 7558cb4e3c2b0a590142a8b6_0: 10 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: 6fe5f5196cff34805c6eb75e_0: point-UV triangle 1271 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 6fe5f5196cff34805c6eb75e_0: point-UV triangle 1272 preserved using isolated constant material sample with padding; original authored tangent basis retained (source and target UV derivatives both zero).
+BAKE NOTE: 6fe5f5196cff34805c6eb75e_0: 57 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.
+BAKE NOTE: c39a17320866c778b0160e4d_0: 20 subpixel triangles conservatively rasterized with closest surface samples; no unsampled islands discarded.

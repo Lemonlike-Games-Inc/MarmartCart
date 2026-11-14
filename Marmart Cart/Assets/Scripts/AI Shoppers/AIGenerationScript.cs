@@ -1,162 +1,300 @@
 using UnityEngine;
 
+/// <summary>
+/// Spawns pooled AI shoppers inside a rectangular ground area.
+///
+/// Spawn flow:
+/// - Spawn a configurable amount immediately when the game starts.
+/// - Continue spawning waves using the existing three-phase rate settings.
+/// - Every AI receives exactly one PrepareForSpawn() call when taken from a pool.
+/// </summary>
+[DisallowMultipleComponent]
 public class AIGenerationScript : MonoBehaviour
 {
-    [Header("Spawn Settings")]
-    [SerializeField] private bool isForPlayer1 = true;
-    [SerializeField] private Transform spawnCenter;
+    #region Spawn Area
 
-    [Header("Spawn Area Settings")]
-    [SerializeField] private float radius = 50f; // Radius for AI spawn around the player
-    [SerializeField] private float minDistanceFromCenter = 20f; // Minimum distance from the center to spawn AIs
-    [SerializeField] private LayerMask groundLayer; // Layer mask for ground detection
+    [Header("Spawn Box Boundary Settings")]
+    [SerializeField] private float boxWidth = 40f;
+    [SerializeField] private float boxLength = 30f;
+    [SerializeField] private LayerMask groundLayer;
+
+    [Min(0.1f)]
+    [SerializeField] private float raycastHeight = 20f;
+
+    [Min(0f)]
+    [SerializeField] private float spawnHeightAboveGround = 0.5f;
+
+    [Min(1)]
+    [SerializeField] private int maxSpawnPositionAttempts = 50;
+
+    #endregion
+
+    #region Initial Spawn
+
+    [Header("Initial Spawn")]
+    [Tooltip("Number of AI spawned immediately after the pools are initialized.")]
+    [Min(0)]
+    [SerializeField] private int initialSpawnAmount = 6;
+
+    #endregion
+
+    #region Phase 1
 
     [Header("Phase 1 Settings")]
+    [Min(0f)]
     [SerializeField] private float phase1Duration = 60f;
+
+    [Min(0.05f)]
     [SerializeField] private float phase1SpawnInterval = 6f;
+
+    [Min(1)]
     [SerializeField] private int phase1AIsPerWave = 3;
 
+    #endregion
+
+    #region Phase 2
+
     [Header("Phase 2 Settings")]
-    [SerializeField] private float phase2Duration = 60f; // Phase 2 starts after Phase 1
+    [Min(0f)]
+    [SerializeField] private float phase2Duration = 60f;
+
+    [Min(0.05f)]
     [SerializeField] private float phase2SpawnInterval = 5f;
+
+    [Min(1)]
     [SerializeField] private int phase2AIsPerWave = 4;
 
+    #endregion
+
+    #region Phase 3
+
     [Header("Phase 3 Settings")]
+    [Min(0.05f)]
     [SerializeField] private float phase3SpawnInterval = 4f;
+
+    [Min(1)]
     [SerializeField] private int phase3AIsPerWave = 6;
 
-    [Header("AI Prefabs")]
-    [SerializeField] private GameObjectPool[] aiPools; // Array of pools of AI shopper prefabs
+    #endregion
 
-    private int currentPhase = 0;
-    private float elapsedGameTime = 0f;
-    private float spawnInterval;
-    private int aiPerWave;
-    private bool isSpawning = false;
+    #region Pools
+
+    [Header("AI Prefabs")]
+    [SerializeField] private GameObjectPool[] aiPools;
+
+    #endregion
+
+    #region Runtime
+
+    [Header("Runtime - Read Only")]
+    [SerializeField] private int currentPhase;
+    [SerializeField] private float elapsedGameTime;
+    [SerializeField] private float spawnInterval;
+    [SerializeField] private int aiPerWave;
 
     private float nextSpawnTime;
 
+    #endregion
+
+    #region Unity Lifecycle
+
     private void Start()
     {
-        // Initialize pools for all AI prefabs
-        foreach (var pool in aiPools)
-        {
-            pool.SpawnPool();
-        }
-        // Find the spawn center (typically the player)
-        if (isForPlayer1)
-            spawnCenter = GameObject.FindGameObjectWithTag("Player1").transform;
-        else
-            spawnCenter = GameObject.FindGameObjectWithTag("Player2").transform;
+        InitializePools();
 
-        if (spawnCenter == null)
-        {
-            Debug.LogError("Failed to locate the center of AI generation.");
-        }
-
-        // Initialize the first phase
         UpdateGamePhase();
+
+        // Explicit initial population instead of relying on nextSpawnTime
+        // defaulting to zero and accidentally creating an immediate wave.
+        SpawnAICount(initialSpawnAmount);
+
+        nextSpawnTime = Time.time + spawnInterval;
     }
 
     private void Update()
     {
-        // Update game time progression
         elapsedGameTime += Time.deltaTime;
 
-        // Adjust spawn settings based on game progression
         UpdateGamePhase();
 
-        // Spawn AIs at intervals
-        if (Time.time >= nextSpawnTime)
+        if (Time.time < nextSpawnTime) return;
+
+        SpawnAICount(aiPerWave);
+        nextSpawnTime = Time.time + spawnInterval;
+    }
+
+    #endregion
+
+    #region Pool Setup
+
+    private void InitializePools()
+    {
+        if (aiPools == null) return;
+
+        for (int i = 0; i < aiPools.Length; i++)
         {
-            SpawnAIWave();
-            nextSpawnTime = Time.time + spawnInterval;
+            if (aiPools[i] != null) aiPools[i].SpawnPool();
         }
     }
 
+    #endregion
+
+    #region Phase Control
+
     private void UpdateGamePhase()
     {
-        if (elapsedGameTime < phase1Duration && currentPhase != 1)
+        if (elapsedGameTime < phase1Duration)
         {
-            // Phase 1
-            currentPhase = 1;
-            spawnInterval = phase1SpawnInterval;
-            aiPerWave = phase1AIsPerWave;
+            if (currentPhase != 1)
+            {
+                currentPhase = 1;
+                spawnInterval = phase1SpawnInterval;
+                aiPerWave = phase1AIsPerWave;
+            }
+
+            return;
         }
-        else if (elapsedGameTime >= phase1Duration && elapsedGameTime < phase1Duration + phase2Duration && currentPhase != 2)
+
+        if (elapsedGameTime < phase1Duration + phase2Duration)
         {
-            // Phase 2
-            currentPhase = 2;
-            spawnInterval = phase2SpawnInterval;
-            aiPerWave = phase2AIsPerWave;
+            if (currentPhase != 2)
+            {
+                currentPhase = 2;
+                spawnInterval = phase2SpawnInterval;
+                aiPerWave = phase2AIsPerWave;
+            }
+
+            return;
         }
-        else if (elapsedGameTime >= phase1Duration + phase2Duration && currentPhase != 3)
+
+        if (currentPhase != 3)
         {
-            // Phase 3
             currentPhase = 3;
             spawnInterval = phase3SpawnInterval;
             aiPerWave = phase3AIsPerWave;
         }
     }
 
-    private void SpawnAIWave()
-    {
-        if (isSpawning) return; // Prevent overlapping calls
-        isSpawning = true;
+    #endregion
 
-        Debug.Log("SpawnAIWave called");
-        for (int i = 0; i < aiPerWave; i++)
+    #region Spawning
+
+    private void SpawnAICount(int count)
+    {
+        if (count <= 0 || aiPools == null || aiPools.Length == 0) return;
+
+        for (int i = 0; i < count; i++)
         {
-            Vector3 spawnPosition = GetValidSpawnPosition();
-            if (spawnPosition != Vector3.zero)
+            if (!TryGetValidSpawnPosition(out Vector3 groundPosition)) continue;
+
+            GameObjectPool randomPool = GetRandomValidPool();
+            if (randomPool == null) return;
+
+            Vector3 spawnPosition = groundPosition + Vector3.up * spawnHeightAboveGround;
+
+            GameObject ai = randomPool.GetGameObject(spawnPosition, Quaternion.identity);
+            if (ai == null) continue;
+
+            AIShopperBehaviour aiBehaviour = ai.GetComponent<AIShopperBehaviour>();
+
+            if (aiBehaviour != null)
             {
-                var randomPool = aiPools[Random.Range(0, aiPools.Length)];
-                GameObject ai = randomPool.GetGameObject(spawnPosition + Vector3.up * 0.5f, Quaternion.identity);
-                Debug.Log("AI generated");
-                var aiBehaviour = ai.GetComponent<AIShopperBehaviour>();
-                if (aiBehaviour != null)
-                {
-                    aiBehaviour.ResetState();
-                }
+                aiBehaviour.PrepareForSpawn();
+            }
+            else
+            {
+                Debug.LogWarning("[AIGenerationScript] Spawned AI is missing AIShopperBehaviour.", ai);
             }
         }
-
-        isSpawning = false; // Reset spawning state
     }
 
-    private Vector3 GetValidSpawnPosition()
+    private GameObjectPool GetRandomValidPool()
     {
-        int maxRetries = 50; // Limit the number of retries to prevent infinite loops
-        int attempts = 0;
+        int validPoolCount = 0;
 
-        while (attempts < maxRetries)
+        for (int i = 0; i < aiPools.Length; i++)
         {
-            // Generate a random point within the radius, ensuring it’s beyond minDistanceFromCenter
-            Vector2 randomPoint = Random.insideUnitCircle * radius;
-            if (randomPoint.magnitude >= minDistanceFromCenter)
-            {
-                Vector3 spawnPosition = new Vector3(randomPoint.x, 20, randomPoint.y) + spawnCenter.position;
-
-                // Raycast to detect any surface
-                if (Physics.Raycast(spawnPosition, Vector3.down, out RaycastHit hit, Mathf.Infinity))
-                {
-                    // Check if the hit object is on the ground layer
-                    if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0)
-                    {
-                        return hit.point; // Valid ground point
-                    }
-                }
-            }
-
-            attempts++;
+            if (aiPools[i] != null) validPoolCount++;
         }
 
-        return Vector3.zero; // Return an invalid position if no ground is found after retries
+        if (validPoolCount == 0) return null;
+
+        int selected = Random.Range(0, validPoolCount);
+
+        for (int i = 0; i < aiPools.Length; i++)
+        {
+            if (aiPools[i] == null) continue;
+
+            if (selected == 0) return aiPools[i];
+            selected--;
+        }
+
+        return null;
+    }
+
+    #endregion
+
+    #region Spawn Position
+
+    private bool TryGetValidSpawnPosition(out Vector3 groundPosition)
+    {
+        groundPosition = Vector3.zero;
+
+        float halfWidth = boxWidth * 0.5f;
+        float halfLength = boxLength * 0.5f;
+
+        for (int attempt = 0; attempt < maxSpawnPositionAttempts; attempt++)
+        {
+            float xOffset = Random.Range(-halfWidth, halfWidth);
+            float zOffset = Random.Range(-halfLength, halfLength);
+
+            Vector3 rayOrigin = transform.position + new Vector3(xOffset, raycastHeight, zOffset);
+
+            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, Mathf.Infinity, groundLayer, QueryTriggerInteraction.Ignore))
+            {
+                groundPosition = hit.point;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region Validation / Gizmos
+
+    private void OnValidate()
+    {
+        boxWidth = Mathf.Max(0.1f, boxWidth);
+        boxLength = Mathf.Max(0.1f, boxLength);
+        raycastHeight = Mathf.Max(0.1f, raycastHeight);
+        spawnHeightAboveGround = Mathf.Max(0f, spawnHeightAboveGround);
+        maxSpawnPositionAttempts = Mathf.Max(1, maxSpawnPositionAttempts);
+
+        initialSpawnAmount = Mathf.Max(0, initialSpawnAmount);
+
+        phase1Duration = Mathf.Max(0f, phase1Duration);
+        phase2Duration = Mathf.Max(0f, phase2Duration);
+
+        phase1SpawnInterval = Mathf.Max(0.05f, phase1SpawnInterval);
+        phase2SpawnInterval = Mathf.Max(0.05f, phase2SpawnInterval);
+        phase3SpawnInterval = Mathf.Max(0.05f, phase3SpawnInterval);
+
+        phase1AIsPerWave = Mathf.Max(1, phase1AIsPerWave);
+        phase2AIsPerWave = Mathf.Max(1, phase2AIsPerWave);
+        phase3AIsPerWave = Mathf.Max(1, phase3AIsPerWave);
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.color = Color.blue;
+
+        Vector3 center = transform.position + Vector3.up * (raycastHeight * 0.5f);
+        Vector3 size = new Vector3(boxWidth, raycastHeight, boxLength);
+
+        Gizmos.DrawWireCube(center, size);
     }
+
+    #endregion
 }

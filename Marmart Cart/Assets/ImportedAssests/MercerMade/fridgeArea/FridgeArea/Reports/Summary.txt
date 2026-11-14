@@ -1,0 +1,1 @@
+SUCCESS: 28 standalone prefabs; 28 meshes; 2 model materials; 2 groups of 4096x4096 BaseColor/Normal/Masks atlases. Source positions/normals/winding verified by Atlas Pipeline. No original source asset dependencies in optimized prefabs. Showcase: 6 columns x 5 rows.

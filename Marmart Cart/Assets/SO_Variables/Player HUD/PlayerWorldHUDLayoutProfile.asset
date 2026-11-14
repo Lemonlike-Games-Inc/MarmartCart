@@ -1,0 +1,248 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b59d8dd5a0b6df24f9ca6154a16d45e7, type: 3}
+  m_Name: PlayerWorldHUDLayoutProfile
+  m_EditorClassIdentifier: 
+  masterScale: 1.5
+  horizontalSeparationPixels: 24
+  verticalOffsetPixels: 0
+  showMoveBackwardPrompt: 1
+  moveBackwardPromptOffsetPixels: {x: 0, y: -140}
+  moveBackwardPromptMasterScale: 1
+  moveBackwardPromptBackgroundOffsetPixels: {x: 0, y: 0}
+  moveBackwardPromptBackgroundSizePixels: {x: 150, y: 38}
+  moveBackwardPromptCornerRadiusPixels: 10
+  moveBackwardPromptBackgroundColor: {r: 0, g: 0, b: 0, a: 0.87058824}
+  moveBackwardPromptCircleOffsetPixels: {x: -52.5, y: -0.55}
+  moveBackwardPromptCircleRadiusPixels: 13
+  moveBackwardPromptCircleColor: {r: 1, g: 0.35889024, b: 0.19999999, a: 1}
+  moveBackwardPromptText: B to Reverse
+  moveBackwardPromptTextOffsetPixels: {x: 3, y: 0}
+  moveBackwardPromptFontSizePixels: 200
+  moveBackwardPromptTextColor: {r: 1, g: 1, b: 1, a: 1}
+  showCheckoutPrompt: 1
+  checkoutPromptOffsetPixels: {x: 200, y: -3}
+  checkoutPromptMasterScale: 1
+  checkoutPromptBackgroundOffsetPixels: {x: 0, y: 0}
+  checkoutPromptBackgroundSizePixels: {x: 165, y: 42}
+  checkoutPromptCornerRadiusPixels: 11
+  checkoutPromptBackgroundColor: {r: 0, g: 0, b: 0, a: 0.87058824}
+  checkoutPromptCircleOffsetPixels: {x: -60.2, y: -0.3}
+  checkoutPromptCircleRadiusPixels: 13
+  checkoutPromptCircleColor: {r: 0.2, g: 0.72156864, b: 1, a: 1}
+  checkoutPromptText: X to Checkout
+  checkoutPromptTextOffsetPixels: {x: 0, y: 0}
+  checkoutPromptFontSizePixels: 200
+  checkoutPromptTextColor: {r: 1, g: 1, b: 1, a: 1}
+  useNearCameraRenderPlane: 1
+  nearCameraRenderDistance: 0.5
+  nearClipSafetyPadding: 0.03
+  loadRadiusPixels: 82
+  loadTrackThicknessPixels: 38
+  loadSpanDegrees: 120
+  loadCenterAngleDegrees: 180
+  loadCapsuleLengthPixels: 15
+  minimumVisualSlotCount: 10
+  loadWindowSize: 20
+  capsuleThicknessAt10Slots: 12
+  capsuleThicknessAt15Slots: 9
+  capsuleThicknessAt20Slots: 6
+  loadTrackColor: {r: 0.2, g: 0.23921569, b: 0.29803923, a: 0.84313726}
+  loadPreSlotColor: {r: 0.52, g: 0.56, b: 0.62, a: 0.12}
+  loadEmptyColor: {r: 0.8679245, g: 0.8679245, b: 0.8679245, a: 1}
+  loadFilledColor: {r: 0.1, g: 0.92, b: 1, a: 1}
+  loadOverloadSeverityGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 0.68, b: 0.05, a: 1}
+    key1: {r: 1, g: 0.36, b: 0.02, a: 1}
+    key2: {r: 1, g: 0.1, b: 0.02, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 27371
+    ctime2: 56412
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 3
+    m_NumAlphaKeys: 2
+  overloadAmountForMaximumSeverity: 30
+  showLoadMilestoneTicks: 1
+  loadMilestoneInterval: 10
+  loadMilestoneTickLengthPixels: 3
+  loadMilestoneTickThicknessPixels: 2.5
+  loadMilestoneTickColor: {r: 0.2, g: 0.23921569, b: 0.29803923, a: 0.84313726}
+  loadMilestoneTextColor: {r: 0.2, g: 0.23921569, b: 0.29803923, a: 0.84313726}
+  loadMilestoneFontSizePixels: 200
+  loadMilestoneLabelOffsetPixels: 8
+  showCurrentLoadTick: 1
+  currentLoadTickLengthPixels: 10
+  currentLoadTickThicknessPixels: 3.5
+  currentLoadTickColor: {r: 0.2, g: 0.23921569, b: 0.29803923, a: 0.84313726}
+  currentLoadTextColor: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
+  currentLoadFontSizePixels: 350
+  currentLoadLabelOffsetPixels: 8
+  hypeRadiusPixels: 82
+  hypeTrackThicknessPixels: 24
+  hypeFillThicknessPixels: 14
+  hypeSpanDegrees: 140
+  hypeCenterAngleDegrees: 0
+  hypeTrackColor: {r: 0.2, g: 0.24, b: 0.3, a: 0.84313726}
+  hypeFillColor: {r: 0.19999999, g: 1, b: 0.57171476, a: 1}
+  flashHypeFillWhileSpeedingUp: 1
+  hypeSpeedupFlashColor: {r: 0, g: 0.7610062, b: 0.034434758, a: 1}
+  hypeSpeedupFlashFrequencyHz: 3
+  animateHypeGainFill: 1
+  hypeGainFillSpeedNormalizedPerSecond: 0.75
+  hypeRewardPreviewThicknessPixels: 14
+  hypeRewardPreviewRadiusOffsetPixels: 0
+  hypeRewardPreviewColor: {r: 0.5982357, g: 0.9559748, b: 0.76482993, a: 0.5882353}
+  hypePenaltyPreviewThicknessPixels: 6
+  hypePenaltyPreviewRadiusOffsetPixels: 0
+  hypePenaltyPreviewColor: {r: 0, g: 0.8679245, b: 0.03868192, a: 1}
+  hypeBurnWarningOffsetPixels: {x: 19.8, y: -87.8}
+  hypeBurnWarningMasterScale: 0.85
+  hypeBurnWarningBackgroundOffsetPixels: {x: 0, y: 0}
+  hypeBurnWarningBackgroundRadiusPixels: 24
+  hypeBurnWarningBackgroundColor: {r: 0.05, g: 0.06, b: 0.08, a: 0.72}
+  hypeBurnWarningColor: {r: 1, g: 0.49859706, b: 0.12156862, a: 0.8235294}
+  hypeBurnWarningColorGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 0.885563, b: 0.07843137, a: 1}
+    key1: {r: 1, g: 0.42, b: 0.03, a: 1}
+    key2: {r: 1, g: 0.12, b: 0.02, a: 0}
+    key3: {r: 0.58, g: 0.015, b: 0.015, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 22937
+    ctime2: 47185
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  hypeBurnWarningColorMinMultiplier: 1.5
+  hypeBurnWarningColorMaxMultiplier: 2.5
+  hypeBurnWarningRingRadiusPixels: 15
+  hypeBurnWarningRingThicknessPixels: 4.5
+  hypeBurnWarningGapDegrees: 105.1
+  hypeBurnWarningGapCenterDegrees: -34.5
+  hypeBurnWarningArrowOffsetPixels: {x: 11.7, y: -5.5}
+  hypeBurnWarningArrowShaftLengthPixels: 10
+  hypeBurnWarningArrowShaftThicknessPixels: 3
+  hypeBurnWarningArrowHeadWidthPixels: 11
+  hypeBurnWarningArrowHeadHeightPixels: 9
+  hypeBurnWarningBoltOffsetPixels: {x: 0.4, y: -0.4}
+  hypeBurnWarningBoltTriangleAOffsetPixels: {x: -3, y: 4.5}
+  hypeBurnWarningBoltTriangleAWidthPixels: 9
+  hypeBurnWarningBoltTriangleAHeightPixels: 12
+  hypeBurnWarningBoltTriangleASkewPixels: -3
+  hypeBurnWarningBoltTriangleARotationDegrees: -180
+  hypeBurnWarningBoltTriangleBOffsetPixels: {x: 2, y: -5}
+  hypeBurnWarningBoltTriangleBWidthPixels: 9
+  hypeBurnWarningBoltTriangleBHeightPixels: 12
+  hypeBurnWarningBoltTriangleBSkewPixels: -3
+  hypeBurnWarningBoltTriangleBRotationDegrees: 0
+  lowSpeedWarningOffsetPixels: {x: -28, y: -67}
+  lowSpeedWarningMasterScale: 0.75
+  lowSpeedWarningBackgroundOffsetPixels: {x: 1.76, y: -29}
+  lowSpeedWarningBackgroundRadiusPixels: 26
+  lowSpeedWarningBackgroundColor: {r: 0.05, g: 0.06, b: 0.08, a: 0.72}
+  lowSpeedWarningColor: {r: 1, g: 0.55, b: 0.12, a: 0.8235294}
+  lowSpeedWarningColorGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 0.68, b: 0.05, a: 1}
+    key1: {r: 1, g: 0.36, b: 0.02, a: 1}
+    key2: {r: 1, g: 0.1, b: 0.02, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 27371
+    ctime2: 56412
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 3
+    m_NumAlphaKeys: 2
+  lowSpeedWarningColorMinPenalty: 0.05
+  lowSpeedWarningColorMaxPenalty: 0.5
+  lowSpeedWarningCartOffsetPixels: {x: 4, y: -28.5}
+  lowSpeedWarningWeightOffsetPixels: {x: 6.5, y: -22.2}
+  lowSpeedWarningArrowOffsetPixels: {x: -13.4, y: -33.2}
+  lowSpeedWarningCartStrokeThicknessPixels: 2.5
+  lowSpeedWarningCartBasketTopLeftOffsetPixels: {x: -10.5, y: 9}
+  lowSpeedWarningCartBasketTopRightOffsetPixels: {x: 16, y: 9}
+  lowSpeedWarningCartBasketBottomRightOffsetPixels: {x: 12, y: -5}
+  lowSpeedWarningCartBasketBottomLeftOffsetPixels: {x: -8.5, y: -5}
+  lowSpeedWarningCartHandleJointOffsetPixels: {x: -12, y: 14.7}
+  lowSpeedWarningCartHandleEndOffsetPixels: {x: -17.7, y: 14.7}
+  lowSpeedWarningCartLeftWheelOffsetPixels: {x: -3.48, y: -14}
+  lowSpeedWarningCartRightWheelOffsetPixels: {x: 9.5, y: -14}
+  lowSpeedWarningCartWheelRadiusPixels: 2.5
+  lowSpeedWarningCartBaseLeftEndOffsetPixels: {x: -6, y: -6}
+  lowSpeedWarningCartBaseMidOffsetPixels: {x: -8, y: -10}
+  lowSpeedWarningCartBaseRightEndOffsetPixels: {x: 13.5, y: -10}
+  lowSpeedWarningWeightTopWidthPixels: 12.2
+  lowSpeedWarningWeightBottomWidthPixels: 16.2
+  lowSpeedWarningWeightBodyHeightPixels: 14.5
+  lowSpeedWarningWeightRingOffsetPixels: {x: 0, y: 9.91}
+  lowSpeedWarningWeightRingRadiusPixels: 2.5
+  lowSpeedWarningWeightRingThicknessPixels: 2.25
+  lowSpeedWarningArrowShaftLengthPixels: 10
+  lowSpeedWarningArrowShaftThicknessPixels: 3
+  lowSpeedWarningArrowHeadWidthPixels: 11
+  lowSpeedWarningArrowHeadHeightPixels: 9

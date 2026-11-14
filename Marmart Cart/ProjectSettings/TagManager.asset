@@ -12,6 +12,19 @@ TagManager:
   - GameManager
   - Player1
   - Player2
+  - Walls
+  - SnakeCartManagerP1
+  - SnakeCartManagerP2
+  - CheckOutStation
+  - ComboDealManager
+  - NormalGrocery
+  - ExpensiveGrocery
+  - PowerupNormal
+  - PowerupGold
+  - SnakeCartManagerP3
+  - SnakeCartManagerP4
+  - Player3
+  - Player4
   layers:
   - Default
   - TransparentFX
@@ -23,14 +36,14 @@ TagManager:
   - Cart
   - Collectibles
   - Obstacles
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Walls
+  - DinoTiles
+  - ComboUI
+  - InvisibleTop
+  - P1CheckoutUI
+  - P2CheckoutUI
+  - P3CheckoutUI
+  - P4CheckoutUI
   - 
   - 
   - 

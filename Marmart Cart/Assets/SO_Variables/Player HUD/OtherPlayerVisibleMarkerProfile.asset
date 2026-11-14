@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d351da02b864142a85dfd140501c03, type: 3}
+  m_Name: OtherPlayerVisibleMarkerProfile
+  m_EditorClassIdentifier: 
+  markerTipOffsetPixels: {x: 0, y: 20}
+  markerMasterScale: 1.5
+  bodyRadiusPixels: 18
+  tailWidthPixels: 20
+  tailHeightPixels: 14
+  tailBodyOverlapPixels: 7
+  textOffsetPixels: {x: 0.15, y: 0}
+  fontSizePixels: 235
+  textColor: {r: 0, g: 0, b: 0, a: 1}
+  screenVisibilityPaddingPixels: 0
+  requireLineOfSight: 0
+  lineOfSightBlockingMask:
+    serializedVersion: 2
+    m_Bits: 0
+  lineOfSightTargetTolerance: 0.15
+  nearCameraRenderDistance: 0.5
+  nearClipSafetyPadding: 0.03

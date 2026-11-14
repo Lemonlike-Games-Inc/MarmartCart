@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: deed24f5c316369469542ec74620b61f
+AssetOrigin:
+  serializedVersion: 1
+  productId: 357844
+  packageName: "UniText Folio \u2014 Text Engine for Unity"
+  packageVersion: 3.5.12
+  assetPath: Packages/media.lightside.unitext/Runtime/StyleCore/Animation/DeformModifier.cs
+  uploadId: 990570

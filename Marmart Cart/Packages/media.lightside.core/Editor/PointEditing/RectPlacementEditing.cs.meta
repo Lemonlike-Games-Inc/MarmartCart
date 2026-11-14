@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 801256277a8455341905a5211e2346a1
+AssetOrigin:
+  serializedVersion: 1
+  productId: 357844
+  packageName: "UniText Folio \u2014 Text Engine for Unity"
+  packageVersion: 3.5.12
+  assetPath: Packages/media.lightside.core/Editor/PointEditing/RectPlacementEditing.cs
+  uploadId: 990570

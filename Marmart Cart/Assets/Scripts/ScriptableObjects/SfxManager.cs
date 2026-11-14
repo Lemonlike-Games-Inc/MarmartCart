@@ -33,7 +33,24 @@ public class SfxManager : ScriptableObject
             Debug.LogWarning($"SFX Name not found or AudioSource not initialized.");
         }
     }
+    public void PlaySFX(string sfxName, float minPitch, float maxPitch)
+    {
+        SFXEntry entry = sfxEntries.Find(s => s.name == sfxName);
+        if (entry != null && audioSource != null)
+        {
+            float originalPitch = audioSource.pitch;
+            audioSource.pitch = Random.Range(minPitch, maxPitch);
 
+            audioSource.PlayOneShot(entry.clip, entry.volume);
+
+            // Reset pitch after playback
+            audioSource.pitch = originalPitch;
+        }
+        else
+        {
+            Debug.LogWarning($"SFX Name '{sfxName}' not found or AudioSource missing.");
+        }
+    }
     public void StopSFX(string sfxName)
     {
         SFXEntry entry = sfxEntries.Find(s => s.name == sfxName);

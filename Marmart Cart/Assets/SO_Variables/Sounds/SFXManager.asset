@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4beb4d34b1085c94ebfe783bf667c18a, type: 3}
+  m_Name: SFXManager
+  m_EditorClassIdentifier: 
+  sfxEntries:
+  - name: HitCharacter1
+    clip: {fileID: 8300000, guid: b4029ed5469e43b4688872fffebfa9b0, type: 3}
+    volume: 1
+  - name: HitCharacter2
+    clip: {fileID: 8300000, guid: 63a49480338d81843ac15af5087e15e5, type: 3}
+    volume: 1
+  - name: CrashWalls
+    clip: {fileID: 8300000, guid: cb98f158c3277c74d8b115494e3f93a2, type: 3}
+    volume: 0.3
+  - name: Detach
+    clip: {fileID: 8300000, guid: 10fa46f7857d7984ea471145091684e4, type: 3}
+    volume: 1
+  - name: CollectCart
+    clip: {fileID: 8300000, guid: f4e6e3307a2daa94fb48ac855f47fa3c, type: 3}
+    volume: 0.5
+  - name: CheckoutCarts
+    clip: {fileID: 8300000, guid: 8878a4cf636125f46bbab41533d0da49, type: 3}
+    volume: 1
+  - name: CollectGroceryItem
+    clip: {fileID: 8300000, guid: e2a4bfd1e04163d43be6fdd5bb8f5b7b, type: 3}
+    volume: 1
+  - name: CollectPowerup
+    clip: {fileID: 8300000, guid: 496e4637cf17c344ca3185408b7abef3, type: 3}
+    volume: 1
+  - name: UnstoppableCharge
+    clip: {fileID: 8300000, guid: a538e67d437a0c94b9ed484f3ab93db1, type: 3}
+    volume: 1
+  - name: CheckoutSingle
+    clip: {fileID: 8300000, guid: a1d09ef934c46074d8104356146babc3, type: 3}
+    volume: 0.15
+  - name: CheckoutComplete
+    clip: {fileID: 8300000, guid: c13d3c14c05eb54469203e2f2a2200dc, type: 3}
+    volume: 0.75
+  - name: CheckoutOpen
+    clip: {fileID: 8300000, guid: f69f042fc86b8754cbb4c2d608b77bb2, type: 3}
+    volume: 0.2
+  - name: Projectile Throw
+    clip: {fileID: 8300000, guid: f30b8a5327f7bad48996995e92767848, type: 3}
+    volume: 1
+  - name: Tomato Hit Impact
+    clip: {fileID: 8300000, guid: cd95ad039ddfdf24f86a68d6d4452ea2, type: 3}
+    volume: 0.5
+  - name: CokeBubbling
+    clip: {fileID: 8300000, guid: 0dd1978b6854d574c883adfde6b47d6d, type: 3}
+    volume: 1

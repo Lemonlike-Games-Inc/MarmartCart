@@ -22,28 +22,16 @@ public class MarkerManager : MonoBehaviour
     [SerializeField] float cartMaxSpeed = 30f;
     [SerializeField] float offsetValue = 0.0f;
 
-    private Rigidbody cartRigidbody;
-    private SnakeCartManager snakeCartManager;
-
     void Start()
     {
         offsetValueCurve = Resources.Load<AnimationCurveVariable>("SO_Variables/Offset Value Curve");
-        snakeCartManager = GameObject.FindWithTag("SnakeCartManager").GetComponent<SnakeCartManager>();
-        if (snakeCartManager != null)
-        {
-            cartRigidbody = snakeCartManager.gameObject.transform.GetChild(0).GetComponent<Rigidbody>(); //refer to the leading cart's rigidbody
-        }
+       
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(cartRigidbody != null)
-        {
-            float cartSpeed = Vector3.Dot(cartRigidbody.gameObject.transform.forward, cartRigidbody.linearVelocity);
-            offsetValue = offsetValueCurve.curve.Evaluate(Mathf.Abs(cartSpeed) / cartMaxSpeed);
-            // offsetValue = 0.5f;
-        }
+        
     }
 
     void FixedUpdate()
@@ -54,11 +42,24 @@ public class MarkerManager : MonoBehaviour
     public void UpdateMarkerList()
     {
         markerList.Add(new Marker(transform.position + -1 * offsetValue * transform.forward, transform.rotation));
+        //float dist = Vector3.Distance(transform.position, lastMarkerPosition);
+        //distanceSinceLastMarker += dist;
+
+        //if (distanceSinceLastMarker >= markerSpacing)
+        //{
+        //    markerList.Add(new Marker(transform.position, transform.rotation));
+        //    lastMarkerPosition = transform.position;
+        //    distanceSinceLastMarker = 0f;
+        //}
     }
 
     public void ClearMarkerList()
     {
         markerList.Clear();
         markerList.Add(new Marker(transform.position + -1 * offsetValue * transform.forward, transform.rotation));
+        //markerList.Clear();
+        //lastMarkerPosition = transform.position;
+        //distanceSinceLastMarker = 0f;
+        //markerList.Add(new Marker(transform.position, transform.rotation));
     }
 }

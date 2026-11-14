@@ -1,0 +1,8 @@
+SUCCESS: 28 retained models, 38,122 total triangles. Removed Crate_Industrial_A, Fridge_DisplayCooler and Crate_BlueMetal.
+Merged output: Assets/fridgeArea/Atlas_4K
+Furniture/signs: 11 prefabs, one 4096x4096 atlas set. Food: 17 prefabs, one 4096x4096 atlas set.
+2 BaseColor, 2 Normal, 2 Masks PNGs (all 4K); 2 atlas materials. Additional 2 display materials.
+28 independent prefabs and 28 meshes; no original source dependencies.
+Source geometry, normals, winding and prefab transforms verified by Atlas Pipeline.
+Three visual comparisons inspected; full-frame RGB mean differences: 0.3045%, 0.1995%, 0.2183%.
+Source model Normal import settings remain Calculate; baked mesh normals are preserved.

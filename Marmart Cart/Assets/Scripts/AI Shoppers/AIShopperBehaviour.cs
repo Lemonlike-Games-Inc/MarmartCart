@@ -5,47 +5,77 @@ public class AIShopperBehaviour : MonoBehaviour
 {
     public AIState currentState = AIState.Wandering;
 
-    [SerializeField] private float collectRange = 5f; // Distance to "collect" item
-    [SerializeField] private float wanderRange = 20f;   // Distance for random wandering
+    [Header("Movement")]
+    [SerializeField] private float collectRange = 5f;
+    [SerializeField] private float wanderRange = 20f;
     [SerializeField] private float baseSpeed = 3.5f;
     [SerializeField] private float escapeSpeedMultiplier = 2f;
-    [Header("Carrying Items")]
-    [SerializeField] private GameObject normalItemVisual; // Visual for normal item
-    [SerializeField] private GameObject bonusItemVisual; // Visual for bonus item
-    [SerializeField] private GameEvent p1CollectNormalItemEvent; // Event for normal item p1
-    [SerializeField] private GameEvent p1CollectBonusItemEvent; // Event for bonus item p1
-    [SerializeField] private GameEvent p2CollectNormalItemEvent; // Event for normal item p2
-    [SerializeField] private GameEvent p2CollectBonusItemEvent; // Event for bonus item p2
+
+    [Header("Carrying Cart Visuals")]
+    [SerializeField] private GameObject commonVisual;
+    [SerializeField] private GameObject rareVisual;
+    [SerializeField] private GameObject epicVisual;
+    [SerializeField] private GameObject legendaryVisual;
+    [SerializeField] private GameObject emptyCartVisual;
+    [SerializeField] private GameObject itemCartVisual;
+    [SerializeField] private GameObject expensiveItemCartVisual;
+
+    [Header("Related Events")]
+    private const int MaxSupportedPlayers = 4;
+    [SerializeField] private GameEvent[] collectEmptyCartEvent = new GameEvent[MaxSupportedPlayers];
+    [SerializeField] private GameEvent[] collectNormalGroceryItemCartEvent = new GameEvent[MaxSupportedPlayers];
+    [SerializeField] private GameEvent[] collectExpensiveGroceryItemCartEvent = new GameEvent[MaxSupportedPlayers];
+
+    [Header("Starting Carry Chance")]
+    [Tooltip("Chance that a newly spawned AI starts already carrying an empty cart.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float startingItemChance = 0.5f;
+
+    [Header("Runtime Carry State")]
+    [SerializeField] private bool carryingItem;
+    [SerializeField] private bool carryingNormalItem;
+    [SerializeField] private bool carryingExpensiveItem;
+
+    [Header("Pool")]
+    [SerializeField] private GameObjectPool targetPool;
 
     private NavMeshAgent agent;
     private Transform targetItem;
     private Transform targetExit;
-    private bool itemIsBonus = false;
 
     private GameObject runningVFX;
     private GameObject hittingVFX;
 
-    [SerializeField] GameObjectPool targetPool;
-
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = baseSpeed;
+
+        if (agent != null) agent.speed = baseSpeed;
     }
+
     private void Start()
     {
-        FindRandomTargetItem();
+        // Keep these old hierarchy references for tonight so no prefab setup changes are required.
+        if (transform.childCount > 0)
+        {
+            Transform visualRoot = transform.GetChild(0);
 
-        runningVFX = this.transform.GetChild(0).GetChild(0).gameObject;
-        runningVFX.SetActive(false);
-        hittingVFX = this.transform.GetChild(0).GetChild(1).gameObject;
-        hittingVFX.SetActive(false);
+            if (visualRoot.childCount > 0) runningVFX = visualRoot.GetChild(0).gameObject;
+            if (visualRoot.childCount > 1) hittingVFX = visualRoot.GetChild(1).gameObject;
+        }
 
-        // Disable item visuals initially
-        normalItemVisual = this.transform.GetChild(1).GetChild(0).gameObject;
-        normalItemVisual.SetActive(false);
-        bonusItemVisual = this.transform.GetChild(1).GetChild(1).gameObject;
-        bonusItemVisual.SetActive(false);
+        if (runningVFX != null) runningVFX.SetActive(false);
+        if (hittingVFX != null) hittingVFX.SetActive(false);
+
+        if (commonVisual != null) commonVisual.SetActive(false);
+        if (rareVisual != null) rareVisual.SetActive(false);
+        if (epicVisual != null) epicVisual.SetActive(false);
+        if (legendaryVisual != null) legendaryVisual.SetActive(false);
+
+        // Do NOT roll here. AIGenerationScript calls PrepareForSpawn().
+        // Just make the current carry state visually correct in case this Start
+        // happens after the pool has already prepared the AI.
+        ApplyCarryVisuals();
     }
 
     private void Update()
@@ -72,182 +102,266 @@ public class AIShopperBehaviour : MonoBehaviour
 
     private void SeekTarget()
     {
-        if (targetItem != null)
-        {
-            var itemManager = targetItem.GetComponent<ChainedCartManager>();
-            if (itemManager != null && !itemManager.isAvailable)
-            {
-                // If the item is no longer available, reset target and wander
-                targetItem = null;
-                currentState = AIState.Wandering;
-                Debug.Log("Target item is no longer available, switching to wandering.");
-                return;
-            }
-
-            agent.SetDestination(targetItem.position);
-
-            if (Vector3.Distance(transform.position, targetItem.position) <= collectRange)
-            {
-                currentState = AIState.Collecting;
-            }
-        }
-        else
+        if (targetItem == null)
         {
             currentState = AIState.Wandering;
+            return;
+        }
+
+        ChainedCartManager itemManager = targetItem.GetComponent<ChainedCartManager>();
+
+        if (itemManager != null && !itemManager.isAvailable)
+        {
+            targetItem = null;
+            currentState = AIState.Wandering;
+            return;
+        }
+
+        agent.SetDestination(targetItem.position);
+
+        if (Vector3.Distance(transform.position, targetItem.position) <= collectRange)
+        {
+            currentState = AIState.Collecting;
         }
     }
 
     private void CollectItem()
     {
-        if (targetItem != null)
+        if (targetItem == null)
         {
-            var itemManager = targetItem.GetComponent<ChainedCartManager>();
-            if (itemManager != null)
-            {
-                itemManager.CollectByAI(); // Mark as collected by AI
-                if(!itemManager.isBonusCart)
-                {
-                    itemIsBonus = false;
-                    normalItemVisual.SetActive(true);
-                }
-                else
-                {
-                    itemIsBonus = true;
-                    bonusItemVisual.SetActive(true);
-                }
-            }
-
-            Destroy(targetItem.gameObject); // Assume item is collected
-            targetItem = null;
-
-            FindNearestExit();
-            agent.speed = baseSpeed * escapeSpeedMultiplier;
-            currentState = AIState.Escaping;
+            currentState = AIState.Wandering;
+            return;
         }
+
+        ChainedCartManager itemManager = targetItem.GetComponent<ChainedCartManager>();
+
+        if (itemManager != null)
+        {
+            //itemManager.CollectByAI();
+
+            // All three collected-cart cases now consistently mean
+            // carryingItem = true.
+            carryingItem = true;
+
+            //if (itemManager.HasGroceryItem() && itemManager.isCarryingNormalGroceryItem())
+            //{
+            //    carryingNormalItem = true;
+            //    carryingExpensiveItem = false;
+            //}
+            //else if (itemManager.HasGroceryItem() && itemManager.isCarryingExpensiveGroceryItem())
+            //{
+            //    carryingNormalItem = false;
+            //    carryingExpensiveItem = true;
+            //}
+            //else
+            //{
+            //    // Empty cart.
+            //    carryingNormalItem = false;
+            //    carryingExpensiveItem = false;
+            //}
+
+            ApplyCarryVisuals();
+        }
+
+        Destroy(targetItem.gameObject);
+        targetItem = null;
+
+        FindNearestExit();
+
+        if (agent != null) agent.speed = baseSpeed * escapeSpeedMultiplier;
+
+        currentState = AIState.Escaping;
     }
 
     private void Escape()
     {
         if (targetExit != null)
         {
-            runningVFX.SetActive(true);
+            if (runningVFX != null) runningVFX.SetActive(true);
+
             agent.SetDestination(targetExit.position);
 
             if (Vector3.Distance(transform.position, targetExit.position) <= collectRange)
             {
-                // Exit reached, destroy AI or mark as "exited"
                 ResetState();
-                targetPool.ReturnObject(gameObject);
+
+                if (targetPool != null) targetPool.ReturnObject(gameObject);
             }
         }
         else
         {
-            runningVFX.SetActive(false);
+            if (runningVFX != null) runningVFX.SetActive(false);
             currentState = AIState.Wandering;
         }
     }
 
     private void Wander()
     {
-        if (!agent.hasPath)
-        {
-            Vector3 randomDirection = Random.insideUnitSphere * wanderRange;
-            randomDirection += transform.position;
+        if (agent == null || !agent.enabled || agent.hasPath) return;
 
-            NavMeshHit navHit;
-            if (NavMesh.SamplePosition(randomDirection, out navHit, wanderRange, NavMesh.AllAreas))
-            {
-                agent.SetDestination(navHit.position);
-            }
+        Vector3 randomDirection = Random.insideUnitSphere * wanderRange + transform.position;
+
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, wanderRange, NavMesh.AllAreas))
+        {
+            agent.SetDestination(navHit.position);
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (currentState == AIState.Wandering && other.CompareTag("Item"))
-        {
-            targetItem = other.transform;
-            currentState = AIState.Seeking;
-            Debug.Log("New available item in range");
-        }
+        if (currentState != AIState.Wandering || !other.CompareTag("Item")) return;
+
+        ChainedCartManager itemManager = other.GetComponent<ChainedCartManager>();
+        if (itemManager != null && !itemManager.isAvailable) return;
+
+        targetItem = other.transform;
+        currentState = AIState.Seeking;
     }
+
     private void FindRandomTargetItem()
     {
-        var items = GameObject.FindGameObjectsWithTag("Item");
-        if (items.Length > 0)
-        {
-            targetItem = items[Random.Range(0, items.Length)].transform;
-            currentState = AIState.Seeking;
-        }
-        else
+        GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
+
+        if (items.Length == 0)
         {
             currentState = AIState.Wandering;
+            return;
         }
+
+        // Try a few random carts so pooled/collected carts are not selected.
+        int attempts = Mathf.Min(items.Length, 10);
+
+        for (int i = 0; i < attempts; i++)
+        {
+            GameObject candidate = items[Random.Range(0, items.Length)];
+            ChainedCartManager itemManager = candidate.GetComponent<ChainedCartManager>();
+
+            if (itemManager != null && !itemManager.isAvailable) continue;
+
+            targetItem = candidate.transform;
+            currentState = AIState.Seeking;
+            return;
+        }
+
+        currentState = AIState.Wandering;
     }
 
     private void FindNearestExit()
     {
-        var exits = GameObject.FindGameObjectsWithTag("Exit");
+        GameObject[] exits = GameObject.FindGameObjectsWithTag("Exit");
         float shortestDistance = Mathf.Infinity;
+        targetExit = null;
 
-        foreach (var exit in exits)
+        foreach (GameObject exit in exits)
         {
             float distance = Vector3.Distance(transform.position, exit.transform.position);
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                targetExit = exit.transform;
-            }
+
+            if (distance >= shortestDistance) continue;
+
+            shortestDistance = distance;
+            targetExit = exit.transform;
         }
     }
 
+    /// <summary>
+    /// Called once when this AI is actually taken from the pool for a new spawn.
+    /// This is the ONLY place that rolls the starting 50% cart chance.
+    /// </summary>
+    public void PrepareForSpawn()
+    {
+        ResetState();
+
+        carryingItem = Random.value < startingItemChance;
+        carryingNormalItem = false;
+        carryingExpensiveItem = false;
+
+        ApplyCarryVisuals();
+        FindRandomTargetItem();
+    }
+
+    /// <summary>
+    /// Called when hit by a player's cart.
+    /// A reward is only raised when this AI is actually carrying something.
+    /// Starting generic carry = empty cart reward.
+    /// </summary>
     public void OnKnockOut(int playerIndex)
     {
-        hittingVFX.SetActive(true);
-        normalItemVisual.SetActive(false);
-        bonusItemVisual.SetActive(false);
-        runningVFX.SetActive(false);
-        if (currentState == AIState.Escaping)
+        if (hittingVFX != null) hittingVFX.SetActive(true);
+        if (runningVFX != null) runningVFX.SetActive(false);
+
+        int arrayIndex = playerIndex - 1;
+
+        if (arrayIndex >= 0 && arrayIndex < MaxSupportedPlayers && carryingItem)
         {
-            if(playerIndex == 1)
+            if (carryingNormalItem)
             {
-                if (!itemIsBonus)
-                {
-                    p1CollectNormalItemEvent.Raise();
-                }
-                else
-                {
-                    p1CollectBonusItemEvent.Raise();
-                }
+                collectNormalGroceryItemCartEvent[arrayIndex]?.Raise();
             }
-            else if (playerIndex == 2)
+            else if (carryingExpensiveItem)
             {
-
-                if (!itemIsBonus)
-                {
-                    p2CollectNormalItemEvent.Raise();
-                }
-                else
-                {
-                    p2CollectBonusItemEvent.Raise();
-                }
+                collectExpensiveGroceryItemCartEvent[arrayIndex]?.Raise();
             }
-
-    
+            else
+            {
+                // Generic carryingItem means this AI has an empty cart.
+                collectEmptyCartEvent[arrayIndex]?.Raise();
+            }
         }
+
+        ClearCarryState();
     }
+
+    /// <summary>
+    /// Resets reusable AI state but DOES NOT roll starting equipment.
+    /// AIGenerationScript calls PrepareForSpawn() when the AI is spawned again.
+    /// </summary>
     public void ResetState()
     {
         currentState = AIState.Wandering;
-        agent.enabled = true;
-        agent.speed = baseSpeed;
+
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.speed = baseSpeed;
+            agent.ResetPath();
+        }
+
         targetItem = null;
         targetExit = null;
+
+        if (runningVFX != null) runningVFX.SetActive(false);
+        if (hittingVFX != null) hittingVFX.SetActive(false);
+
+        ClearCarryState();
     }
+
+    private void ClearCarryState()
+    {
+        carryingItem = false;
+        carryingNormalItem = false;
+        carryingExpensiveItem = false;
+
+        ApplyCarryVisuals();
+    }
+
+    private void ApplyCarryVisuals()
+    {
+        // Generic item = empty cart.
+        bool showEmptyCart = carryingItem && !carryingNormalItem && !carryingExpensiveItem;
+        bool showNormalItem = carryingItem && carryingNormalItem;
+        bool showExpensiveItem = carryingItem && carryingExpensiveItem;
+
+        if (emptyCartVisual != null) emptyCartVisual.SetActive(showEmptyCart);
+        if (itemCartVisual != null) itemCartVisual.SetActive(showNormalItem);
+        if (expensiveItemCartVisual != null) expensiveItemCartVisual.SetActive(showExpensiveItem);
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(this.transform.position, collectRange);
+        Gizmos.DrawWireSphere(transform.position, collectRange);
+
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(this.transform.position, wanderRange);
+        Gizmos.DrawWireSphere(transform.position, wanderRange);
     }
 }
