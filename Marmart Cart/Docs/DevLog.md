@@ -3,6 +3,28 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-15 20:10 (UTC-7): Architecture audit, Nov plan review, meta Round flow
+- Model: Claude Fable 5.2 (`claude-fable-5-2`), effort high
+- Summary: Read-only audit and plan review for the Dec 5 demo; agreed the 3-Round flow; drafted the Round spine code plan.
+- Changed: new `Docs/Design/architecture-audit.md`, `nov-plan-review.md` (decisions in section 8), `meta-round-flow.md`, `round-spine-plan.md` (draft, not approved). New project skills in `.claude/skills/`: `grill-me`, `grilling`, `simple-english` (typed by hand to turn on). No code, scene or prefab changes. Nothing committed.
+- Why: the code assumes one match per scene load and has no reset path, so the Round model had to be chosen before any meta feature.
+- Decisions:
+  - Demo: Dec 5, attended booth at Vancouver Game Expo, 12 to 15 minutes per group including the tutorial.
+  - One Round is one reload of the gameplay scene. Plain static Match data survives the loads. Nothing else carries over.
+  - Phases per Round map to the existing PreGame, Playing, PostGame.
+  - 3 fixed Rounds. Most Match Points wins, no tiebreaker, ties share the win. Banked value is tracked for display only.
+  - Round 1 has no Ability and no Policy. One Ability slot, replaced each Round. One Policy for the demo; Policies may stack later.
+  - Ability pick is simultaneous with a timeout; Policy pop is on a fixed timer.
+  - Staff controls are keyboard only: Restart Match, Restart Round, Skip Round. The final screen leaves on staff input.
+  - Core loop rules (self-collision, own-cart cut, vulnerable rule, 15 s expiry) are intended and stay.
+  - Tutorial rebuild is wanted, after the meta game is playable.
+- Open questions:
+  - Approval of `round-spine-plan.md` and its four decisions.
+  - Load time between Rounds (not measured), music across loads, pad order across loads.
+  - Which Sections open in which Round, the Ability Sample pool, Policies beyond Blackout.
+  - Emergency Cart Delivery: Ability or automatic system.
+  - The 14 CLAUDE.md corrections listed in the audit are not applied.
+
 ## 2026-11-14 16:16 (UTC-7): DevLog format
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort high
 - Summary: Added timestamp, model/effort and summary lines to every entry; newest entries now go on top.
