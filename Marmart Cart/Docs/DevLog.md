@@ -3,6 +3,16 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-16 16:50 (UTC-7): Unity CLI installed and smoke-tested
+- Model: Claude Fable 5.2 (`claude-fable-5-2`), effort high
+- Summary: Added the Unity CLI and Pipeline package so Claude Code can read the open Editor; added usage rules to `CLAUDE.md`.
+- Changed: `Packages/manifest.json` and `packages-lock.json` (`com.unity.pipeline` 1.0.0, pushed in `056a9f01`); `CLAUDE.md` (one Tech line, one usage rule). Unity CLI 1.0.1 and Unity's skills are installed on Liang's machine, outside the repo.
+- Why: Unity deprecated its in-Editor MCP server; the CLI is the current official route for agents.
+- Smoke test (read-only) passed on 6000.0.84f1: command list, Console (0 errors, 27 warnings, compile OK), hierarchy of Gameplay Scene 4P. Play Mode and editing commands were not tested.
+- Decisions: reading is free; Play Mode and any edit need approval, with a commit first; no `eval` changes without approval; never read a whole scene hierarchy (about 1 MB).
+- Also: `round-spine-plan.md` and its four defaults were accepted; the flow doc now says "no snapshot".
+- Open questions: does the CLI behave in Play Mode and for edits; the 14 CLAUDE.md corrections from the audit are still not applied.
+
 ## 2026-11-15 20:10 (UTC-7): Architecture audit, Nov plan review, meta Round flow
 - Model: Claude Fable 5.2 (`claude-fable-5-2`), effort high
 - Summary: Read-only audit and plan review for the Dec 5 demo; agreed the 3-Round flow; drafted the Round spine code plan.

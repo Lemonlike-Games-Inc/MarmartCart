@@ -18,6 +18,7 @@ Details live in `Docs/` (and in subfolder `CLAUDE.md` files once we add any). Th
 - Gamepad bindings (Player map): right stick Aim, LT ActivatePowerUp, RT Speedup (spends Hype), RB Drift, B MoveBackward, X CheckOut.
 - Third-party plugins live under `Assets/ImportedAssests/` (the misspelling is the real folder name), except Bakery (`Assets/Bakery/`) and TextMesh Pro. Do not edit them. Key ones: Shapes (all custom gameplay UI, leaderboards, aim previews), Feel (includes MoreMountains Tools and Nice Vibrations), UniText Folio (`ImportedAssests/UniText`, resources in `Assets/LightSide/`), VFX All In 1 (`AllIn1VfxToolkit`), Bakery. Also there: QuickOutline, vFolders, Synty, Kenney packs, Hovl Studio, Vefects, Ciathyza, Feel_URPfix, and `MercerMade` (team-made art, treated as imported assets).
 - Do not hand-edit the generated `InputSystem_Actions` class.
+- Unity CLI: the `unity` command plus the `com.unity.pipeline` package let Claude Code talk to the open Editor. Usage rules are under "How to work with me".
 - Git is used. Do not commit or push unless asked.
 
 ## Project layout
@@ -85,6 +86,7 @@ Event demo build: a short fixed 3-Round match with new meta systems: Ability Sam
 - Before editing a system, read the nearest subfolder `CLAUDE.md` (if any) and the scripts involved, and check dependents before changing shared APIs. Verify existing APIs by reading the code; new classes and APIs are welcome when justified.
 - If you need context beyond the files/folders for the task, pause and ask my permission instead of scanning widely.
 - Do not touch or search generated/local folders and files: `Library/`, `Temp/`, `Logs/`, `obj/`, `.vs/`, `UserSettings/`, `*.csproj`, `*.sln`. Do not hand-edit scene/prefab YAML unless asked. Never delete or regenerate `.meta` files; move scripts together with their `.meta`.
+- Unity CLI use. Free: reading the Console, reading scenes and assets, checking compilation. Ask first: entering Play Mode, and any command that edits a scene, prefab, asset or setting; commit before such an edit, because it skips Undo. Never use `eval` to change the project without my approval. Never read a whole scene hierarchy (about 1 MB); query one object or a filtered part.
 - DevLog entries are written only when I ask. After several big changes without an entry, remind me once: "We made several big updates; should we add a DevLog entry?" Each entry goes at the top of `Docs/DevLog.md` (newest first): local date and time with UTC offset, Claude model and effort level, a one-line summary, what changed (files/systems), why, decisions made, open questions. Get the time from the system clock, never guess it. Keep entries brief; never rewrite old ones.
 - No unrelated cleanup or refactors without discussing them first.
 
