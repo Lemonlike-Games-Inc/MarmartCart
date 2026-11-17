@@ -8456,6 +8456,56 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7982454732154688993, guid: ddf5eadfafd8ea44d8b8ef1e93c1149f, type: 3}
   m_PrefabInstance: {fileID: 487697199}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &494344405
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 494344407}
+  - component: {fileID: 494344406}
+  m_Layer: 0
+  m_Name: Meta Game Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &494344406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494344405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9bf562a63eeb5d498db0118a2df6703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resultsPresentation: {fileID: 0}
+  cashScoreManager: {fileID: 0}
+  roundResultDuration: 3
+  listenForStaffKeys: 1
+  phase: 0
+  roundNumber: 1
+--- !u!4 &494344407
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494344405}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 147.46622, y: -302.71225, z: -204.21207}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &499230986
 GameObject:
   m_ObjectHideFlags: 0
@@ -144430,6 +144480,7 @@ SceneRoots:
   - {fileID: 458853763}
   - {fileID: 1409103362}
   - {fileID: 2009015661}
+  - {fileID: 494344407}
   - {fileID: 670155218}
   - {fileID: 447031818}
   - {fileID: 524411434}

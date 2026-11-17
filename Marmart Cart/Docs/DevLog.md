@@ -3,6 +3,26 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-17 02:46 (UTC-7): Round spine Step 1, Match data and Round loop
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: A Match now runs as 3 Rounds, one gameplay-scene reload each, with Match Points kept across loads. Console logs only, no UI. Liang tested it in Play Mode.
+- Changed:
+  - New `Assets/Scripts/Meta/MatchSession.cs` (static Match data: Round number, Match Points, banked value per Round) and `MetaRoundController.cs` (scene-local Round loop; staff keys F1 Restart Match, F2 Restart Round, F3 Skip Round).
+  - `MainMenuSessionReset`: clears Match data.
+  - `GameplayDebugger`: keyboard R removed; F2 is the only reload key.
+  - `PlayerPowerupController.OnDisable`: Unity null check instead of `?.`. Fixes the `PowerupCartTarget` MissingReferenceException seen on most scene loads (an older teardown-order bug).
+  - Gameplay Scene 2P and 4P: a Meta Game Controller object with `MetaRoundController` (set up by Liang).
+  - `meta-round-flow.md`: R removed, load time filled in.
+- Why: Step 1 of `round-spine-plan.md`; proves reload-per-Round before any UI.
+- Decisions:
+  - Round 3 is never saved to Match data (no next load); F2 after the Match result replays Round 3.
+  - F3 does nothing in Round 3.
+  - Match winners: ties share; nobody wins at 0 Match Points (confirm in Step 3).
+  - Return to menu stays the gamepad hold Y (3 s) until F4 in Step 3.
+  - Branch `cl_feature_MetaGameRoundSpine`. The architecture audit session now coordinates the meta-game work; Step 2 continues in this session.
+- Tested by Liang: F1, F2, F3, a Round commit with the right Match Points, pad hold Y to the menu. Load time 0.5-0.8 s (Editor, 2P).
+- Open questions: the Console log shows 2P runs only, so 4P and pad order after loads are not confirmed there.
+
 ## 2026-11-16 16:50 (UTC-7): Unity CLI installed and smoke-tested
 - Model: Claude Fable 5.2 (`claude-fable-5-2`), effort high
 - Summary: Added the Unity CLI and Pipeline package so Claude Code can read the open Editor; added usage rules to `CLAUDE.md`.

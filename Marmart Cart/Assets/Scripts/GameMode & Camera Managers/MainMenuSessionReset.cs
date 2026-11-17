@@ -15,5 +15,6 @@ public sealed class MainMenuSessionReset : MonoBehaviour
     {
         Time.timeScale = 1f;
         GMode.DestroyPersistentInstance();
+        MatchSession.Clear();
     }
 }

@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 /// Gameplay-scene debug shortcuts.
 ///
 /// Keyboard only:
-/// - R    : reload current gameplay scene.
 /// - 1..4 : teleport/recover that player to the assigned debug point.
+/// Restart Round (scene reload) is F2 in MetaRoundController.
 ///
 /// Controller only:
 /// - Hold Y / Button North on ANY single gamepad for the configured duration
@@ -25,17 +25,8 @@ public sealed class GameplayDebugger : MonoBehaviour
     #region Feature Toggles
 
     [Header("Listeners")]
-    [SerializeField] private bool listenForSceneReload = true;
     [SerializeField] private bool listenForPlayerTeleport = true;
     [SerializeField] private bool listenForReturnToMenu = true;
-
-    #endregion
-
-    #region Scene Reload
-
-    [Header("Reload Current Scene")]
-    [Tooltip("Keyboard R only.")]
-    [SerializeField] private bool restoreTimeScaleBeforeSceneLoad = true;
 
     #endregion
 
@@ -119,9 +110,6 @@ public sealed class GameplayDebugger : MonoBehaviour
         if (sceneLoadRequested) return;
 
         HandleKeyboardDebug();
-
-        if (sceneLoadRequested) return;
-
         HandleControllerReturnToMenu();
     }
 
@@ -139,13 +127,6 @@ public sealed class GameplayDebugger : MonoBehaviour
     {
         Keyboard keyboard = Keyboard.current;
         if (keyboard == null) return;
-
-        if (listenForSceneReload &&
-            keyboard.rKey.wasPressedThisFrame)
-        {
-            ReloadCurrentScene();
-            return;
-        }
 
         if (!listenForPlayerTeleport) return;
 
@@ -165,37 +146,6 @@ public sealed class GameplayDebugger : MonoBehaviour
         {
             TeleportAndRecoverPlayer(4);
         }
-    }
-
-    private void ReloadCurrentScene()
-    {
-        Scene currentScene = SceneManager.GetActiveScene();
-
-        if (!currentScene.IsValid())
-        {
-            Debug.LogError(
-                "[GameplayDebugger] Active scene is invalid.",
-                this
-            );
-            return;
-        }
-
-        sceneLoadRequested = true;
-
-        if (restoreTimeScaleBeforeSceneLoad)
-        {
-            Time.timeScale = 1f;
-        }
-
-        Debug.Log(
-            $"[GameplayDebugger] Reloading scene '{currentScene.name}'.",
-            this
-        );
-
-        SceneManager.LoadScene(
-            currentScene.buildIndex,
-            LoadSceneMode.Single
-        );
     }
 
     #endregion

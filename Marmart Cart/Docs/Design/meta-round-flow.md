@@ -52,7 +52,7 @@ Keyboard only, included in the booth build. Pad debug shortcuts are off for the 
 | Key | Command | Result |
 |---|---|---|
 | F1 | Restart Match | Round 1, Match data cleared, no tutorial |
-| F2 | Restart Round | Back to this Round's pre-round: Match Points as they were, picks cleared. Keyboard R does the same |
+| F2 | Restart Round | Back to this Round's pre-round: Match Points as they were, picks cleared. Keyboard R was removed; F2 is the only reload key |
 | F3 | Skip Round | Next Round's pre-round, no Match Point awarded |
 | F4 | Main menu | Leaves the Match and clears Match data |
 
@@ -85,7 +85,7 @@ The two-monitor booth setup (trailer loop, live game) is operated by staff outsi
 
 ## Open
 
-- Load time between Rounds: not measured. Press R in the gameplay scene.
+- Load time between Rounds: 0.5-0.8 s in the Editor, Gameplay Scene 2P (2026-11-17). Build not measured.
 - Music restarts on each load unless its source is made to survive.
 - Pad order is read again on each load (audit B2).
 - Which Sections open in which Round.

@@ -176,7 +176,9 @@ public class PlayerPowerupController : MonoBehaviour
 
         UnsubscribeFromCartControlInput();
 
-        runtimeSystem?.UnregisterPlayer(this);
+        // Unity null check, not ?. : on scene unload the system may already be
+        // destroyed, and ?. would still raise its events to destroyed listeners.
+        if (runtimeSystem != null) runtimeSystem.UnregisterPlayer(this);
     }
 
     private void OnValidate()
