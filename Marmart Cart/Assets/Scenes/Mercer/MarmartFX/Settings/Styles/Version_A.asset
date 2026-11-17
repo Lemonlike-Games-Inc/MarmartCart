@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396747a4e6db45ea9a88ccb02ebaa2c5, type: 3}
+  m_Name: Version_A
+  m_EditorClassIdentifier: 
+  displayName: "\u6750\u8D28A"
+  note: "\u6696\u6A59\u8FB9\u7F18\u5149 + \u7D2B\u8272\u9634\u5F71 + \u91D1\u8272\u6CDB\u5149\uFF0C\u6700\u63A5\u8FD1\u7ECF\u5178\u51A5\u754C\u52A8\u4F5C\u6E38\u620F\u7684\u611F\u89C9\u3002"
+  style: 0
+  shadowColor: {r: 0.3507031, g: 0.44535732, b: 0.6698113, a: 1}
+  deepShadowColor: {r: 0.34117648, g: 0.35298333, b: 0.61960787, a: 1}
+  shadeThreshold: 0.01
+  deepShadeThreshold: -0.27
+  shadeSoftness: 0.181
+  receiveShadowStrength: 0
+  ambientStrength: 1.99
+  pointLightBands: 1.01
+  specularColor: {r: 0.7169812, g: 0.5597994, b: 0.51067996, a: 1}
+  specularSize: 0
+  specularSoftness: 0.015
+  rimColor: {r: 0.33670586, g: 0.43014485, b: 0.7675446, a: 1}
+  rimWidth: 1
+  rimSoftness: 0.066
+  rimOnlyOnLitSide: 0.755
+  meshOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+  meshOutlineWidth: 0
+  meshOutlineAlbedoMix: 0
+  toyRampSteps: 3
+  toyGloss: 0.75
+  toyReflection: 0.6
+  toySecondSpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  artScale: 6
+  artStrength: 0.8
+  artColor: {r: 0.12, g: 0.1, b: 0.18, a: 1}
+  artParam: 0.3
+  artBoilFps: 0
+  overrideMainLight: 1
+  mainLightColor: {r: 1, g: 1, b: 1, a: 1}
+  mainLightIntensity: 1.3
+  exposure: 0.81
+  contrast: 20
+  saturation: -21
+  colorFilter: {r: 1, g: 0.96, b: 0.92, a: 1}
+  splitShadows: {r: 0.07489321, g: 0.10610172, b: 0.16037738, a: 1}
+  splitHighlights: {r: 0.9056604, g: 0.8492702, b: 0.7903168, a: 1}
+  splitBalance: 0
+  bloomThreshold: 1.04
+  bloomIntensity: 2.83
+  bloomScatter: 0.719
+  bloomTint: {r: 1, g: 0.82, b: 0.6, a: 1}
+  vignetteColor: {r: 0.12, g: 0.03, b: 0.1, a: 1}
+  vignetteIntensity: 0.277
+  vignetteSmoothness: 0.656
+  inkIntensity: 0.487
+  inkColor: {r: 0, g: 0, b: 0, a: 1}
+  inkThickness: 3.21
+  inkDepthThreshold: 0.06
+  inkNormalThreshold: 0.5
+  inkFadeDistance: 80
+  posterizeSteps: 0
+  shadowHue: {r: 0.040980287, g: 0.03582235, b: 0.047169805, a: 1}
+  shadowHueStrength: 0.332
+  pixelSize: 0
+  oilBrushRadius: 0
+  watercolorBleed: 0
+  lineWobble: 1.95
+  wobbleFps: 12.18
+  wobbleScale: 60
+  paperTexture: 0
+  paperScale: 8.5
+  filmGrain: 0
+  scanlines: 0
+  misregistration: 0
+  ditherStrength: 0

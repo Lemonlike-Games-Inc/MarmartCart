@@ -1,0 +1,73 @@
+=== Play started 11/16/2026 9:49:38 PM scene ===
+[0.00] PlayerFX start: settings=True additive=True highlight=True
+[0.00] PlayerFX scan: 4 SnakeCartManager | P1 body=1 leader=Leading Cart P1(Clone) ctrl=True | P2 body=1 leader=Leading Cart P2(Clone) ctrl=True | P4 body=1 leader=Leading Cart P4(Clone) ctrl=True | P3 body=1 leader=Leading Cart P3(Clone) ctrl=True
+[0.00] ShelfSpill hooked 39 new cart rigidbodies (relays seen 55)
+[5.76] Warning: Setting linear velocity of a kinematic body is not supported.
+[5.76] Warning: Setting angular velocity of a kinematic body is not supported.
+[5.76] P2 followers changed → 1 (gained 1)
+[5.80] PlayerFX scan: 4 SnakeCartManager | P1 body=1 leader=Leading Cart P1(Clone) ctrl=True | P2 body=2 leader=Leading Cart P2(Clone) ctrl=True | P4 body=1 leader=Leading Cart P4(Clone) ctrl=True | P3 body=1 leader=Leading Cart P3(Clone) ctrl=True
+[6.50] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.50] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.50] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.50] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.50] P2 followers changed → 2 (gained 1)
+[6.52] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.52] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.54] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.54] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.56] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.56] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.58] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.58] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.60] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.60] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.62] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.62] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.64] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.64] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.66] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.66] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.68] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.68] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.70] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.70] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.72] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.72] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.80] PlayerFX scan: 4 SnakeCartManager | P1 body=1 leader=Leading Cart P1(Clone) ctrl=True | P2 body=3 leader=Leading Cart P2(Clone) ctrl=True | P4 body=1 leader=Leading Cart P4(Clone) ctrl=True | P3 body=1 leader=Leading Cart P3(Clone) ctrl=True
+[6.84] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.84] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.84] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.84] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.84] P2 followers changed → 3 (gained 1)
+[6.86] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.86] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.88] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.88] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.90] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.90] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.92] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.92] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.94] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.94] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.96] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.96] Warning: Setting angular velocity of a kinematic body is not supported.
+[6.98] Warning: Setting linear velocity of a kinematic body is not supported.
+[6.98] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.00] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.00] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.02] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.02] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.04] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.04] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.06] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.06] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.08] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.08] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.10] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.10] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.12] Warning: Setting linear velocity of a kinematic body is not supported.
+[7.12] Warning: Setting angular velocity of a kinematic body is not supported.
+[7.81] PlayerFX scan: 4 SnakeCartManager | P4 body=1 leader=Leading Cart P4(Clone) ctrl=True | P1 body=1 leader=Leading Cart P1(Clone) ctrl=True | P2 body=4 leader=Leading Cart P2(Clone) ctrl=True | P3 body=1 leader=Leading Cart P3(Clone) ctrl=True
+[7.88] Cart hit 'Collider' layer=Obstacles(9) speed=20.0 shelfLayer=True
+[7.88] ShelfSpill products of 'Collider': 0 (meshes)
+[9.62] Cart hit 'Collider' layer=Obstacles(9) speed=0.2 shelfLayer=True

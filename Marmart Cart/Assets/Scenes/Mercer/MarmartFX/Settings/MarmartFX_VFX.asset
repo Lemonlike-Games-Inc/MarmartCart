@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ffbc15165d1c74badd4f036a8763ce, type: 3}
+  m_Name: MarmartFX_VFX
+  m_EditorClassIdentifier: 
+  playerColors:
+  - {r: 0.30113026, g: 0.64359224, b: 0.9528302, a: 1}
+  - {r: 0.8392157, g: 0.36862743, b: 0.37747955, a: 1}
+  - {r: 0.40143287, g: 0.9150943, b: 0.54445237, a: 1}
+  - {r: 0.8679245, g: 0.7270915, b: 0.33980063, a: 1}
+  spill:
+    enabled: 1
+    shelfLayers:
+      serializedVersion: 2
+      m_Bits: 512
+    minImpactSpeed: 2
+    shelfCooldown: 0.6
+    minItemsPerHit: 2
+    maxItemsPerHit: 7
+    fullImpactSpeed: 18
+    maxItemsInScene: 80
+    itemLifetime: 0
+    outSpeed: {x: 2, y: 5}
+    upSpeed: {x: 2.5, y: 5}
+    spreadAngle: 70
+    spinSpeed: 10
+    popInTime: 0.12
+    hitBurst: 1
+    shelfShake: 1
+    shakeDistance: 0.08
+    shakeAngle: 3
+    shakeTime: 0.4
+    shakeFrequency: 9
+    itemLayer: 0
+    density: 40
+    massRange: {x: 0.05, y: 0.4}
+    linearDamping: 0.6
+    angularDamping: 0.6
+    productNamePrefix: Food
+    maxProductSize: 0.9
+    minProductSize: 0.06
+    itemScale: 1
+    paintHighlight: 0
+    paintWidth: 5
+    paintBlotch: 0.6
+    paintPatchScale: 6
+    dripLength: 18
+    dripDensity: 14
+    dripSpeed: 0.4
+    paintBoilFps: 6
+    paintColors:
+    - {r: 1, g: 0.15, b: 0.35, a: 1}
+    - {r: 1, g: 0.8, b: 0.05, a: 1}
+    - {r: 0.1, g: 0.85, b: 0.35, a: 1}
+    - {r: 0.15, g: 0.55, b: 1, a: 1}
+    - {r: 0.75, g: 0.25, b: 1, a: 1}
+  trail:
+    enabled: 1
+    style: 1
+    time: 0.45
+    width: 0.35
+    intensity: 2.5
+    backOffset: 0.6
+    heightOffset: 0.15
+    sideSpacing: 0.45
+    speedLineCount: 6
+    ghostInterval: 0.05
+    ghostLifetime: 0.3
+    includeColaBoost: 1
+  highlight:
+    enabled: 1
+    style: 4
+    outlineWidth: 3.68
+    sketchWobble: 0.375
+    sketchFps: 4.99
+    sketchNoiseScale: 6.25
+    sketchOffset: 1.22
+    vividOutline: 1
+    silhouetteOnly: 1
+    gapFill: 6.94
+    smoothNormals: 1
+    glowIntensity: 2
+    glowPower: 2.5
+    fillIntensity: 0.05
+    pulseAmount: 0.25
+    pulseSpeed: 3
+    boostMultiplier: 1.8
+    ringRadius: 1.3
+    includeFollowers: 1
+    keepFollowerOwnColor: 1
+  eat:
+    enabled: 0
+    burst: 1
+    burstCount: 24
+    burstSpeed: 5
+    shockRing: 1
+    ringRadius: 2.5
+    ringTime: 0.4
+    punch: 1
+    punchScale: 0.35
+    punchTime: 0.3
+    popupText: 1
+    popupHeight: 2.2
+    intensity: 3
+  bubble:
+    enabled: 1
+    useOriginalColor: 1
+    paintColor: {r: 1, g: 0.904619, b: 0, a: 1}
+    rimDarken: 0.621
+    fillAlpha: 0.18
+    rimWidth: 0.28
+    rimJitter: 0.5
+    highlightSize: 0.16
+    wobble: 0.06
+    dripLength: 0.45
+    dripColumns: 14
+    dripSpeed: 0.35
+    boilFps: 6
+    bubbleObjectName: Fresnel Sphere Outline

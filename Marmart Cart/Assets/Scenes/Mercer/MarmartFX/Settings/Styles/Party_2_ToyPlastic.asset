@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396747a4e6db45ea9a88ccb02ebaa2c5, type: 3}
+  m_Name: Party_2_ToyPlastic
+  m_EditorClassIdentifier: 
+  displayName: "\u6750\u8D28B"
+  note: "\u9636\u68AF\u660E\u6697 + \u5851\u6599\u53CD\u5149 + \u51B7\u767D\u65E5\u5149\u706F\uFF0C\u5546\u54C1\u50CF\u4EAE\u6676\u6676\u7684\u73A9\u5177\u548C\u5305\u88C5\u76D2\u3002"
+  style: 2
+  shadowColor: {r: 0.62, g: 0.68, b: 0.88, a: 1}
+  deepShadowColor: {r: 0.45, g: 0.5, b: 0.75, a: 1}
+  shadeThreshold: -0.16
+  deepShadeThreshold: -0.39
+  shadeSoftness: 0.022
+  receiveShadowStrength: 1
+  ambientStrength: 0.75
+  pointLightBands: 1
+  specularColor: {r: 0.96730214, g: 0.88973546, b: 0.88973546, a: 1}
+  specularSize: 0
+  specularSoftness: 0.033
+  rimColor: {r: 0, g: 0, b: 0, a: 1}
+  rimWidth: 1
+  rimSoftness: 0.04
+  rimOnlyOnLitSide: 0
+  meshOutlineColor: {r: 0.08, g: 0.09, b: 0.15, a: 1}
+  meshOutlineWidth: 1.39
+  meshOutlineAlbedoMix: 0.4
+  toyRampSteps: 3
+  toyGloss: 0.75
+  toyReflection: 0.6
+  toySecondSpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  artScale: 6
+  artStrength: 0.8
+  artColor: {r: 0.12, g: 0.1, b: 0.18, a: 1}
+  artParam: 0.3
+  artBoilFps: 0
+  overrideMainLight: 1
+  mainLightColor: {r: 0.94, g: 0.98, b: 1, a: 1}
+  mainLightIntensity: 1.38
+  exposure: -0.679
+  contrast: 30
+  saturation: 1.7
+  colorFilter: {r: 0.97, g: 1, b: 1, a: 1}
+  splitShadows: {r: 0.45, g: 0.55, b: 0.75, a: 1}
+  splitHighlights: {r: 1, g: 0.97, b: 0.9, a: 1}
+  splitBalance: 0
+  bloomThreshold: 1
+  bloomIntensity: 0.8
+  bloomScatter: 0.6
+  bloomTint: {r: 1, g: 1, b: 1, a: 1}
+  vignetteColor: {r: 0.05, g: 0.08, b: 0.15, a: 1}
+  vignetteIntensity: 0.2
+  vignetteSmoothness: 0.5
+  inkIntensity: 0
+  inkColor: {r: 0.07, g: 0.03, b: 0.06, a: 1}
+  inkThickness: 1.2
+  inkDepthThreshold: 0.06
+  inkNormalThreshold: 0.5
+  inkFadeDistance: 80
+  posterizeSteps: 0
+  shadowHue: {r: 0.3, g: 0.4, b: 0.7, a: 1}
+  shadowHueStrength: 0.15
+  pixelSize: 0
+  oilBrushRadius: 0
+  watercolorBleed: 0
+  lineWobble: 0
+  wobbleFps: 8
+  wobbleScale: 40
+  paperTexture: 0
+  paperScale: 6
+  filmGrain: 0
+  scanlines: 0
+  misregistration: 0
+  ditherStrength: 0
