@@ -84,12 +84,9 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
             return;
         }
 
-        if (!playerWorldHUDSystem.TryGetRenderableSlotForCameraForOverlay(
-                cam,
-                out int playerIndex,
-                out Transform hudAnchor
-            ) ||
-            hudAnchor == null)
+        // Overlay lookup: the guide stays visible during checkout.
+        if (!HudShapes.TryGetViewPlayer(cam, out int playerIndex) ||
+            !playerWorldHUDSystem.TryGetOverlayAnchor(playerIndex, out Transform hudAnchor))
         {
             return;
         }
@@ -129,17 +126,18 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         if (presentationProfile.UseNearCameraRenderPlane)
         {
-            screenDepth = Mathf.Max(
+            screenDepth = HudShapes.RenderDepth(
+                cam,
                 presentationProfile.NearCameraRenderDistance,
-                cam.nearClipPlane + presentationProfile.NearClipSafetyPadding
+                presentationProfile.NearClipSafetyPadding
             );
         }
 
-        activePlayerCount = CountActivePlayerSlots();
+        PlayerViewService views = PlayerViewService.Instance;
+        activePlayerCount = views != null ? views.ActivePlayerCount : 2;
 
-        float scale = presentationProfile.GetEffectiveScale(
-            activePlayerCount
-        );
+        // Profile scale for 2P/4P, times the UI scale.
+        float scale = presentationProfile.GetEffectiveScale(activePlayerCount) * HudShapes.Scale();
 
         Vector2 anchorScreenPoint = new Vector2(
             anchorScreen.x,
@@ -222,9 +220,9 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         // a mixed primitive batch or on draw state left by the other.
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
-            DrawRoundedScreenRectangle(
+            HudShapes.DrawRoundedScreenRectangle(
                 cam,
                 screenDepth,
                 groupCenter +
@@ -237,9 +235,9 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
-            DrawCenteredScreenText(
+            HudShapes.DrawCenteredScreenText(
                 cam,
                 screenDepth,
                 groupCenter +
@@ -346,7 +344,7 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
             DrawCompassBackground(
                 cam,
@@ -379,11 +377,11 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         {
             using (Draw.Command(cam))
             {
-                ConfigureDrawState();
+                HudShapes.ApplyHudDrawState();
 
                 Draw.Line(
-                    ScreenPointToWorld(cam, tail, screenDepth),
-                    ScreenPointToWorld(cam, headBase, screenDepth),
+                    HudShapes.ScreenToWorld(cam, tail, screenDepth),
+                    HudShapes.ScreenToWorld(cam, headBase, screenDepth),
                     shaftThickness,
                     presentationProfile.ArrowColor
                 );
@@ -398,12 +396,12 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
             Draw.Triangle(
-                ScreenPointToWorld(cam, headLeft, screenDepth),
-                ScreenPointToWorld(cam, headRight, screenDepth),
-                ScreenPointToWorld(cam, tip, screenDepth),
+                HudShapes.ScreenToWorld(cam, headLeft, screenDepth),
+                HudShapes.ScreenToWorld(cam, headRight, screenDepth),
+                HudShapes.ScreenToWorld(cam, tip, screenDepth),
                 presentationProfile.ArrowColor
             );
         }
@@ -420,7 +418,7 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
             DrawCompassBackground(
                 cam,
@@ -459,19 +457,19 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         // background -> Triangle tail -> polygon bulb/center.
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
             Draw.Triangle(
-                ScreenPointToWorld(cam, baseLeft, screenDepth),
-                ScreenPointToWorld(cam, baseRight, screenDepth),
-                ScreenPointToWorld(cam, tip, screenDepth),
+                HudShapes.ScreenToWorld(cam, baseLeft, screenDepth),
+                HudShapes.ScreenToWorld(cam, baseRight, screenDepth),
+                HudShapes.ScreenToWorld(cam, tip, screenDepth),
                 presentationProfile.RaindropColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
             DrawRaindropCirclePolygon(
                 cam,
@@ -506,7 +504,7 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         if (circleRadius <= 0f) return;
 
         Draw.Disc(
-            ScreenPointToWorld(cam, compassCenter, screenDepth),
+            HudShapes.ScreenToWorld(cam, compassCenter, screenDepth),
             cam.transform.rotation,
             circleRadius,
             presentationProfile.CompassCircleColor
@@ -538,11 +536,11 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
             }
         }
 
-        Vector3 origin = ScreenPointToWorld(cam, centerPixels, screenDepth);
-        Vector3 xAxis = ScreenPointToWorld(
+        Vector3 origin = HudShapes.ScreenToWorld(cam, centerPixels, screenDepth);
+        Vector3 xAxis = HudShapes.ScreenToWorld(
             cam, centerPixels + Vector2.right * radiusPixels, screenDepth
         ) - origin;
-        Vector3 yAxis = ScreenPointToWorld(
+        Vector3 yAxis = HudShapes.ScreenToWorld(
             cam, centerPixels + Vector2.up * radiusPixels, screenDepth
         ) - origin;
         Vector3 forward = cam.transform.forward;
@@ -565,137 +563,6 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         }
     }
 
-    private static void ConfigureDrawState()
-    {
-        Draw.ResetAllDrawStates();
-        Draw.BlendMode = ShapesBlendMode.Transparent;
-        Draw.RadiusSpace = ThicknessSpace.Pixels;
-        Draw.ThicknessSpace = ThicknessSpace.Pixels;
-        Draw.LineGeometry = LineGeometry.Billboard;
-        Draw.LineEndCaps = LineEndCap.Round;
-    }
-
-    private static void DrawRoundedScreenRectangle(
-        Camera cam,
-        float screenDepth,
-        Vector2 centerScreen,
-        Vector2 sizePixels,
-        float cornerRadiusPixels,
-        Color color)
-    {
-        float widthPixels = Mathf.Max(0.001f, sizePixels.x);
-        float heightPixels = Mathf.Max(0.001f, sizePixels.y);
-
-        float safeCornerPixels = Mathf.Clamp(
-            cornerRadiusPixels,
-            0f,
-            Mathf.Min(widthPixels, heightPixels) * 0.5f
-        );
-
-        Vector3 centerWorld = ScreenPointToWorld(
-            cam,
-            centerScreen,
-            screenDepth
-        );
-
-        float widthWorld = PixelsToWorldSizeAtDepth(
-            cam,
-            centerWorld,
-            widthPixels
-        );
-
-        float heightWorld = PixelsToWorldSizeAtDepth(
-            cam,
-            centerWorld,
-            heightPixels
-        );
-
-        float cornerRadiusWorld = PixelsToWorldSizeAtDepth(
-            cam,
-            centerWorld,
-            safeCornerPixels
-        );
-
-        Color previousColor = Draw.Color;
-
-        Draw.Matrix = Matrix4x4.TRS(
-            centerWorld,
-            cam.transform.rotation,
-            Vector3.one
-        );
-
-        Draw.Color = color;
-        Draw.Rectangle(
-            Vector3.zero,
-            widthWorld,
-            heightWorld,
-            cornerRadiusWorld
-        );
-
-        Draw.Color = previousColor;
-        Draw.Matrix = Matrix4x4.identity;
-    }
-
-    private static void DrawCenteredScreenText(
-        Camera cam,
-        float screenDepth,
-        Vector2 centerScreen,
-        string text,
-        float fontSizePixels,
-        Color color)
-    {
-        if (string.IsNullOrWhiteSpace(text)) return;
-
-        Vector3 textWorld = ScreenPointToWorld(
-            cam,
-            centerScreen,
-            screenDepth
-        );
-
-        Draw.FontSize = PixelsToWorldSizeAtDepth(
-            cam,
-            textWorld,
-            fontSizePixels
-        );
-
-        Color previousColor = Draw.Color;
-        Draw.Color = color;
-
-        Draw.Text(
-            textWorld,
-            cam.transform.rotation,
-            text,
-            TextAlign.Center
-        );
-
-        Draw.Color = previousColor;
-    }
-
-    private static Vector3 ScreenPointToWorld(
-        Camera cam,
-        Vector2 screenPoint,
-        float screenDepth)
-    {
-        return cam.ScreenToWorldPoint(
-            new Vector3(screenPoint.x, screenPoint.y, screenDepth)
-        );
-    }
-
-    private static float PixelsToWorldSizeAtDepth(
-        Camera cam,
-        Vector3 worldPosition,
-        float pixelSize)
-    {
-        Vector3 screenA = cam.WorldToScreenPoint(worldPosition);
-        Vector3 screenB = screenA;
-        screenB.y += pixelSize;
-
-        Vector3 worldA = cam.ScreenToWorldPoint(screenA);
-        Vector3 worldB = cam.ScreenToWorldPoint(screenB);
-
-        return Vector3.Distance(worldA, worldB);
-    }
-
     #endregion
 
     #region Helpers
@@ -711,24 +578,6 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
         {
             sessionGuideSystem = FindFirstObjectByType<PlayerSessionGuideSystem>();
         }
-    }
-
-    private int CountActivePlayerSlots()
-    {
-        if (playerWorldHUDSystem == null) return 0;
-
-        int count = 0;
-
-        for (int playerIndex = 1; playerIndex <= 4; playerIndex++)
-        {
-            if (playerWorldHUDSystem.IsSlotEnabled(playerIndex) &&
-                playerWorldHUDSystem.IsPlayerHUDBound(playerIndex))
-            {
-                count++;
-            }
-        }
-
-        return count;
     }
 
     #endregion

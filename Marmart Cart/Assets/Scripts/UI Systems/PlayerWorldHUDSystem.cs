@@ -315,6 +315,23 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         return hudAnchor != null;
     }
 
+    /// <summary>
+    /// The player's HUD anchor for overlay-style UI that stays visible during
+    /// checkout: slot enabled and bound, checkout suppression ignored.
+    /// </summary>
+    public bool TryGetOverlayAnchor(int playerIndex, out Transform hudAnchor)
+    {
+        hudAnchor = null;
+
+        if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return false;
+
+        PlayerSlot slot = slots[slotIndex];
+        if (!slot.enabled || !slot.IsBound) return false;
+
+        hudAnchor = slot.HUDWorldAnchor;
+        return hudAnchor != null;
+    }
+
     public bool TryGetPlayerIndexForCamera(Camera gameplayCamera, out int playerIndex)
     {
         playerIndex = 0;

@@ -69,4 +69,52 @@ public static class HudShapes
         float sin = Mathf.Sin(radians);
         return new Vector2(value.x * cos - value.y * sin, value.x * sin + value.y * cos);
     }
+
+    /// <summary>Rounded rectangle facing the camera, sized in screen pixels. Restores Draw.Color and resets Draw.Matrix.</summary>
+    public static void DrawRoundedScreenRectangle(
+        Camera cam,
+        float depth,
+        Vector2 centerScreen,
+        Vector2 sizePixels,
+        float cornerRadiusPixels,
+        Color color)
+    {
+        float widthPixels = Mathf.Max(0.001f, sizePixels.x);
+        float heightPixels = Mathf.Max(0.001f, sizePixels.y);
+        float safeCornerPixels = Mathf.Clamp(cornerRadiusPixels, 0f, Mathf.Min(widthPixels, heightPixels) * 0.5f);
+
+        Vector3 centerWorld = ScreenToWorld(cam, centerScreen, depth);
+        float widthWorld = PixelsToWorldSize(cam, centerWorld, widthPixels);
+        float heightWorld = PixelsToWorldSize(cam, centerWorld, heightPixels);
+        float cornerRadiusWorld = PixelsToWorldSize(cam, centerWorld, safeCornerPixels);
+
+        Color previousColor = Draw.Color;
+
+        Draw.Matrix = Matrix4x4.TRS(centerWorld, cam.transform.rotation, Vector3.one);
+        Draw.Color = color;
+        Draw.Rectangle(Vector3.zero, widthWorld, heightWorld, cornerRadiusWorld);
+
+        Draw.Color = previousColor;
+        Draw.Matrix = Matrix4x4.identity;
+    }
+
+    /// <summary>Centred text facing the camera, font size in screen pixels. Restores Draw.Color.</summary>
+    public static void DrawCenteredScreenText(
+        Camera cam,
+        float depth,
+        Vector2 centerScreen,
+        string text,
+        float fontSizePixels,
+        Color color)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        Vector3 textWorld = ScreenToWorld(cam, centerScreen, depth);
+        Draw.FontSize = PixelsToWorldSize(cam, textWorld, fontSizePixels);
+
+        Color previousColor = Draw.Color;
+        Draw.Color = color;
+        Draw.Text(textWorld, cam.transform.rotation, text, TextAlign.Center);
+        Draw.Color = previousColor;
+    }
 }
