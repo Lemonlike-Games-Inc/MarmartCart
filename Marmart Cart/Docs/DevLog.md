@@ -3,6 +3,33 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-19 03:00 (UTC-7): UI foundation 2a-2d: views service, dead UI removed, one canvas
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Built the base of the new UI system: one service that knows each player's view and the UI scale, and one canvas with a clipped box per player. The power-up HUD, Tomato splat and tutorial hints now use it. Dead UI was removed. Liang tested each step in the editor.
+- Changed:
+  - 2a: `Docs/Design/ui-architecture.md` (rules and migration table); `round-spine-plan.md` Step 2 split into 2a-2j; CLAUDE.md points to the doc.
+  - 2b: new `PlayerViewService` (cameras, viewport rects, `UiScale`, player count, `LayoutChanged`) on `Match Load` in all four gameplay scenes; `MatchSceneModeController` feeds it.
+  - 2c:
+    - `Leading Cart Base.prefab` lost its inactive old UI Canvas (CartUISwitcher, 2 CartControlPromptManager, 2 old PowerupUIController) and the inactive Grabber and Bowling Ball children.
+    - Unused overrides were removed from Leading Cart P1/P2 and the scenes.
+    - Dead HUD code was removed from `GameTimeManager`, and `WorldAnchorUIFollower` was deleted.
+  - 2d:
+    - New `ViewportCanvasSystem` on `Game UIs/Viewport Canvas System`: one overlay canvas scaled from 1920x1080 (Expand), a clipped root per player with Effects/HUD/Banner layers, and a full-screen root.
+    - Power-up and Tomato presenters use it; `PowerupViewportCanvasSystem` was deleted.
+    - Tutorial hints build on each player's HUD layer (hard-coded rects and the `HintsOverlay` canvas components removed).
+    - `PowerupHudProfile`: 2P held icon lowered (300 to 150), 4P layout scaled to about 56%.
+- Why: a stable UI base before the Round banner, Ability pick and Policy UI; editor and build now match for canvas UI.
+- Decisions:
+  - Never commit or push without Liang's OK for that commit. Before a CLI edit, the target files must have no uncommitted changes. Reports name every editor change (scene, GameObject, component, fields, assets). CLAUDE.md and memory updated.
+  - Scene and prefab cleanups run as one-off CLI editor scripts with a read-only report first.
+  - Canvas structure is built at runtime; presenters own their widgets; profiles hold look and layout.
+  - The scripts used by old prefabs and test scenes (CartControlPromptManager, CartUISwitcher, PowerupUIController) were kept.
+- Open questions:
+  - `LevelGreyBoxScene` (test scene) now has a missing `PowerupViewportCanvasSystem` script.
+  - `!ftraceLightmaps` (Bakery) has a missing script in the gameplay scenes (older issue).
+  - Possible leftovers on the cart: inactive Drill, Tomato, MushRoom and SimpleCrown.
+  - Display font for UniText (2e).
+
 ## 2026-11-18 02:25 (UTC-7): UI architecture review; Step 2 expanded into a UI foundation
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Reviewed every live UI/HUD system, Shapes 4.6, UniText 3.5 and the render setup, and ran Gameplay Scene 2P once in Play Mode. Agreed a long-term UI direction and expanded Step 2 to rebuild the HUD on it. No project code changed.
