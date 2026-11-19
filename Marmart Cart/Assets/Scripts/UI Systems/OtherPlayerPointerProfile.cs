@@ -4,8 +4,9 @@ using UnityEngine;
 /// Universal presentation/profile data for the Shapes-based other-player pointers.
 ///
 /// This profile owns HOW the pointers look and where they orbit around the
-/// local player's HUD anchor. Player discovery / camera ownership remains in
-/// PlayerWorldHUDSystem.
+/// local player's HUD anchor. Values are 1920x1080 reference pixels; the
+/// renderer applies UI scale and the 2P/4P factor. Player colours come from
+/// PlayerIdentityProfile.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Player HUD/Other Player Pointer Profile",
@@ -63,60 +64,21 @@ public class OtherPlayerPointerProfile : ScriptableObject
 
     #endregion
 
-
-    #region Player Colors
-
-    [Header("Target Player Colors")]
-    [SerializeField] private Color player1Color = new Color(1f, 0.27f, 0.22f, 1f);
-    [SerializeField] private Color player2Color = new Color(0.22f, 0.62f, 1f, 1f);
-    [SerializeField] private Color player3Color = new Color(0.28f, 0.90f, 0.43f, 1f);
-    [SerializeField] private Color player4Color = new Color(1f, 0.72f, 0.16f, 1f);
-
-    #endregion
-
-
-    #region Runtime Mode Adaptation
-
-    [System.NonSerialized] private float runtimeModeScaleMultiplier = 1f;
-
-    private float EffectivePointerBodyScale => pointerScale * runtimeModeScaleMultiplier;
-
-    public float RuntimeModeScaleMultiplier => runtimeModeScaleMultiplier;
-
-    public void SetRuntimeModeScaleMultiplier(float multiplier)
-    {
-        runtimeModeScaleMultiplier = Mathf.Max(0.05f, multiplier);
-    }
-
-    #endregion
-
     #region Public API
 
-    public float OrbitRadiusPixels => orbitRadiusPixels * runtimeModeScaleMultiplier;
-    public Vector2 OrbitCenterOffsetPixels => orbitCenterOffsetPixels * runtimeModeScaleMultiplier;
+    public float OrbitRadiusPixels => orbitRadiusPixels;
+    public Vector2 OrbitCenterOffsetPixels => orbitCenterOffsetPixels;
 
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
 
-    public Vector2 UpperCapsuleStartPixels => upperCapsuleStartPixels * EffectivePointerBodyScale;
-    public Vector2 UpperCapsuleEndPixels => upperCapsuleEndPixels * EffectivePointerBodyScale;
-    public Vector2 LowerCapsuleStartPixels => lowerCapsuleStartPixels * EffectivePointerBodyScale;
-    public Vector2 LowerCapsuleEndPixels => lowerCapsuleEndPixels * EffectivePointerBodyScale;
-    public float PointerCapsuleThicknessPixels => pointerCapsuleThicknessPixels * EffectivePointerBodyScale;
+    // Pointer body values include the authored pointerScale.
+    public Vector2 UpperCapsuleStartPixels => upperCapsuleStartPixels * pointerScale;
+    public Vector2 UpperCapsuleEndPixels => upperCapsuleEndPixels * pointerScale;
+    public Vector2 LowerCapsuleStartPixels => lowerCapsuleStartPixels * pointerScale;
+    public Vector2 LowerCapsuleEndPixels => lowerCapsuleEndPixels * pointerScale;
+    public float PointerCapsuleThicknessPixels => pointerCapsuleThicknessPixels * pointerScale;
     public float PointerScale => pointerScale;
-
-
-    public Color GetPlayerColor(int playerIndex)
-    {
-        switch (playerIndex)
-        {
-            case 1: return player1Color;
-            case 2: return player2Color;
-            case 3: return player3Color;
-            case 4: return player4Color;
-            default: return Color.white;
-        }
-    }
 
     #endregion
 

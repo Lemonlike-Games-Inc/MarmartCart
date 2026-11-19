@@ -6,7 +6,7 @@ using UnityEngine;
 /// players are actually visible in the current gameplay camera.
 ///
 /// For each gameplay camera:
-/// - determine which player owns that viewport;
+/// - PlayerViewService says which player owns that viewport;
 /// - never draw that player's own marker;
 /// - loop over every other currently-bound player (2/3/4-player safe);
 /// - draw a downward-pointing raindrop/map-pin marker above targets that are
@@ -15,6 +15,8 @@ using UnityEngine;
 /// This is intentionally separate from OtherPlayerPointerRenderer:
 /// - OtherPlayerPointerRenderer = directional/orbit information.
 /// - OtherPlayerVisibleMarkerRenderer = "that visible cart is Player X".
+///
+/// Sizes are 1920x1080 reference pixels times UI scale and the 2P/4P factor.
 /// </summary>
 [DisallowMultipleComponent]
 public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
@@ -23,14 +25,10 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
 
     [Header("References")]
     [SerializeField] private PlayerWorldHUDSystem hudSystem;
-
-    [Tooltip(
-        "Existing pointer profile used only as the shared P1-P4 color source, " +
-        "so orbit pointers and visible markers always match."
-    )]
-    [SerializeField] private OtherPlayerPointerProfile playerColorProfile;
-
     [SerializeField] private OtherPlayerVisibleMarkerProfile markerProfile;
+
+    [Tooltip("Player colours and labels.")]
+    [SerializeField] private PlayerIdentityProfile playerIdentity;
 
     #endregion
 
@@ -41,15 +39,15 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
-
     #region Mode Adaptation
+
+    [Header("Runtime - Read Only")]
+    [Tooltip("2P/4P size factor pushed by MatchSceneModeController.")]
+    [SerializeField] private float modeScale = 1f;
 
     public void SetModeScaleMultiplier(float multiplier)
     {
-        if (markerProfile != null)
-        {
-            markerProfile.SetRuntimeModeScaleMultiplier(multiplier);
-        }
+        modeScale = Mathf.Max(0.05f, multiplier);
     }
 
     #endregion
@@ -64,28 +62,22 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
     public override void DrawShapes(Camera cam)
     {
         if (!drawingEnabled) return;
-        if (cam == null || hudSystem == null || markerProfile == null) return;
+        if (cam == null || hudSystem == null || markerProfile == null || playerIdentity == null) return;
 
-        if (!hudSystem.TryGetRenderableSlotForCamera(cam, out int ownerPlayerIndex, out _)) return;
+        if (!HudShapes.TryGetViewPlayer(cam, out int ownerPlayerIndex)) return;
+        if (!hudSystem.TryGetRenderableAnchor(ownerPlayerIndex, out _)) return;
 
-        float renderDepth = Mathf.Max(
-            markerProfile.NearCameraRenderDistance,
-            cam.nearClipPlane + markerProfile.NearClipSafetyPadding
-        );
+        float uiScale = HudShapes.Scale();
+        float scale = uiScale * modeScale;
+        float renderDepth = HudShapes.RenderDepth(cam, markerProfile.NearCameraRenderDistance, markerProfile.NearClipSafetyPadding);
 
         using (Draw.Command(cam))
         {
-            Draw.ResetAllDrawStates();
-            Draw.BlendMode = ShapesBlendMode.Transparent;
-            Draw.ThicknessSpace = ThicknessSpace.Pixels;
-            Draw.RadiusSpace = ThicknessSpace.Pixels;
-            Draw.LineGeometry = LineGeometry.Billboard;
-            Draw.LineEndCaps = LineEndCap.Round;
+            HudShapes.ApplyHudDrawState();
 
             for (int targetPlayerIndex = 1; targetPlayerIndex <= PlayerWorldHUDSystem.MaxPlayerSlots; targetPlayerIndex++)
             {
-                // Critical behavior: never show the owning player's own marker
-                // in their own split-screen viewport.
+                // Never show the owning player's own marker in their own viewport.
                 if (targetPlayerIndex == ownerPlayerIndex) continue;
 
                 GameObject targetRoot = hudSystem.GetPlayerRoot(targetPlayerIndex);
@@ -95,15 +87,10 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
 
                 Vector3 targetScreen = cam.WorldToScreenPoint(targetAnchor.position);
 
-                if (!IsTargetOnScreen(cam, targetScreen)) continue;
+                if (!IsTargetOnScreen(cam, targetScreen, markerProfile.ScreenVisibilityPaddingPixels * uiScale)) continue;
                 if (!HasLineOfSight(cam, targetScreen, targetAnchor.position, targetRoot.transform)) continue;
 
-                DrawTargetMarker(
-                    cam,
-                    renderDepth,
-                    targetScreen,
-                    targetPlayerIndex
-                );
+                DrawTargetMarker(cam, renderDepth, scale, targetScreen, targetPlayerIndex);
             }
         }
     }
@@ -112,11 +99,10 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
 
     #region Visibility Tests
 
-    private bool IsTargetOnScreen(Camera cam, Vector3 targetScreen)
+    private static bool IsTargetOnScreen(Camera cam, Vector3 targetScreen, float padding)
     {
         if (targetScreen.z <= 0f) return false;
 
-        float padding = markerProfile.ScreenVisibilityPaddingPixels;
         Rect rect = cam.pixelRect;
 
         return targetScreen.x >= rect.xMin - padding &&
@@ -163,18 +149,17 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
     private void DrawTargetMarker(
         Camera cam,
         float renderDepth,
+        float scale,
         Vector3 targetScreen,
         int targetPlayerIndex)
     {
-        Vector2 targetScreen2D = new Vector2(targetScreen.x, targetScreen.y);
-
         // This point is the downward TIP of the raindrop marker.
-        Vector2 tip = targetScreen2D + markerProfile.MarkerTipOffsetPixels;
+        Vector2 tip = (Vector2)targetScreen + markerProfile.MarkerTipOffsetPixels * scale;
 
-        float radius = markerProfile.BodyRadiusPixels;
-        float tailHeight = markerProfile.TailHeightPixels;
-        float tailHalfWidth = markerProfile.TailWidthPixels * 0.5f;
-        float overlap = Mathf.Min(markerProfile.TailBodyOverlapPixels, radius * 1.8f);
+        float radius = markerProfile.BodyRadiusPixels * scale;
+        float tailHeight = markerProfile.TailHeightPixels * scale;
+        float tailHalfWidth = markerProfile.TailWidthPixels * scale * 0.5f;
+        float overlap = Mathf.Min(markerProfile.TailBodyOverlapPixels * scale, radius * 1.8f);
 
         Vector2 tailBaseCenter = tip + new Vector2(0f, tailHeight);
 
@@ -182,50 +167,38 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
         // base, making the two simple Shapes read as one continuous raindrop.
         Vector2 bodyCenter = tailBaseCenter + new Vector2(0f, radius - overlap);
 
-        Color playerColor = playerColorProfile != null
-            ? playerColorProfile.GetPlayerColor(targetPlayerIndex)
-            : Color.white;
+        Color playerColor = playerIdentity.GetColor(targetPlayerIndex);
 
         // Tail first, body second. Drawing the disc after the triangle hides
         // the triangle's top seam and gives a cleaner rounded silhouette.
         Draw.Triangle(
-            ScreenPointToWorld(cam, tailBaseCenter + new Vector2(-tailHalfWidth, 0f), renderDepth),
-            ScreenPointToWorld(cam, tailBaseCenter + new Vector2(tailHalfWidth, 0f), renderDepth),
-            ScreenPointToWorld(cam, tip, renderDepth),
+            HudShapes.ScreenToWorld(cam, tailBaseCenter + new Vector2(-tailHalfWidth, 0f), renderDepth),
+            HudShapes.ScreenToWorld(cam, tailBaseCenter + new Vector2(tailHalfWidth, 0f), renderDepth),
+            HudShapes.ScreenToWorld(cam, tip, renderDepth),
             playerColor
         );
 
-        Vector3 bodyWorld = ScreenPointToWorld(cam, bodyCenter, renderDepth);
-
         Draw.Disc(
-            bodyWorld,
+            HudShapes.ScreenToWorld(cam, bodyCenter, renderDepth),
             cam.transform.rotation,
             radius,
             playerColor
         );
 
-        DrawPlayerLabel(
-            cam,
-            renderDepth,
-            bodyCenter,
-            targetPlayerIndex
-        );
+        DrawPlayerLabel(cam, renderDepth, scale, bodyCenter, targetPlayerIndex);
     }
 
     private void DrawPlayerLabel(
         Camera cam,
         float renderDepth,
+        float scale,
         Vector2 bodyCenter,
         int playerIndex)
     {
-        Vector2 labelScreen = bodyCenter + markerProfile.TextOffsetPixels;
-        Vector3 labelWorld = ScreenPointToWorld(cam, labelScreen, renderDepth);
+        Vector2 labelScreen = bodyCenter + markerProfile.TextOffsetPixels * scale;
+        Vector3 labelWorld = HudShapes.ScreenToWorld(cam, labelScreen, renderDepth);
 
-        Draw.FontSize = PixelsToWorldSizeAtDepth(
-            cam,
-            labelWorld,
-            markerProfile.FontSizePixels
-        );
+        Draw.FontSize = HudShapes.PixelsToWorldSize(cam, labelWorld, markerProfile.FontSizePixels * scale);
 
         Color previousColor = Draw.Color;
         Draw.Color = markerProfile.TextColor;
@@ -233,44 +206,11 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
         Draw.Text(
             labelWorld,
             cam.transform.rotation,
-            $"P{playerIndex}",
+            playerIdentity.GetLabel(playerIndex),
             TextAlign.Center
         );
 
         Draw.Color = previousColor;
-    }
-
-    #endregion
-
-    #region Helpers
-
-    private Vector3 ScreenPointToWorld(
-        Camera cam,
-        Vector2 screenPoint,
-        float screenDepth)
-    {
-        return cam.ScreenToWorldPoint(
-            new Vector3(
-                screenPoint.x,
-                screenPoint.y,
-                screenDepth
-            )
-        );
-    }
-
-    private float PixelsToWorldSizeAtDepth(
-        Camera cam,
-        Vector3 worldPosition,
-        float pixelSize)
-    {
-        Vector3 screenA = cam.WorldToScreenPoint(worldPosition);
-        Vector3 screenB = screenA;
-        screenB.y += pixelSize;
-
-        Vector3 worldA = cam.ScreenToWorldPoint(screenA);
-        Vector3 worldB = cam.ScreenToWorldPoint(screenB);
-
-        return Vector3.Distance(worldA, worldB);
     }
 
     #endregion

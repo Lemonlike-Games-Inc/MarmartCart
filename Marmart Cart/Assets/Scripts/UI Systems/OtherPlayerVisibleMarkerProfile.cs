@@ -105,33 +105,20 @@ public class OtherPlayerVisibleMarkerProfile : ScriptableObject
     #endregion
 
 
-    #region Runtime Mode Adaptation
-
-    [System.NonSerialized] private float runtimeModeScaleMultiplier = 1f;
-
-    private float EffectiveMarkerScale => markerMasterScale * runtimeModeScaleMultiplier;
-
-    public float RuntimeModeScaleMultiplier => runtimeModeScaleMultiplier;
-
-    public void SetRuntimeModeScaleMultiplier(float multiplier)
-    {
-        runtimeModeScaleMultiplier = Mathf.Max(0.05f, multiplier);
-    }
-
-    #endregion
-
     #region Public API
 
-    public Vector2 MarkerTipOffsetPixels => markerTipOffsetPixels * EffectiveMarkerScale;
+    // Values are 1920x1080 reference pixels including the authored markerMasterScale.
+    // The renderer applies UI scale and the 2P/4P factor.
+    public Vector2 MarkerTipOffsetPixels => markerTipOffsetPixels * markerMasterScale;
     public float MarkerMasterScale => markerMasterScale;
 
-    public float BodyRadiusPixels => bodyRadiusPixels * EffectiveMarkerScale;
-    public float TailWidthPixels => tailWidthPixels * EffectiveMarkerScale;
-    public float TailHeightPixels => tailHeightPixels * EffectiveMarkerScale;
-    public float TailBodyOverlapPixels => tailBodyOverlapPixels * EffectiveMarkerScale;
+    public float BodyRadiusPixels => bodyRadiusPixels * markerMasterScale;
+    public float TailWidthPixels => tailWidthPixels * markerMasterScale;
+    public float TailHeightPixels => tailHeightPixels * markerMasterScale;
+    public float TailBodyOverlapPixels => tailBodyOverlapPixels * markerMasterScale;
 
-    public Vector2 TextOffsetPixels => textOffsetPixels * EffectiveMarkerScale;
-    public float FontSizePixels => fontSizePixels * EffectiveMarkerScale;
+    public Vector2 TextOffsetPixels => textOffsetPixels * markerMasterScale;
+    public float FontSizePixels => fontSizePixels * markerMasterScale;
     public Color TextColor => textColor;
 
     public float ScreenVisibilityPaddingPixels => screenVisibilityPaddingPixels;

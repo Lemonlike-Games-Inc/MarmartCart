@@ -7,6 +7,7 @@ using UnityEngine;
 ///
 /// World samples are projected to screen and reconstructed near the camera by
 /// default, matching the existing PlayerWorldHUD anti-occlusion approach.
+/// Pixel sizes are 1920x1080 reference pixels times the UI scale.
 /// </summary>
 [DisallowMultipleComponent]
 public class PowerupAimRenderer : ImmediateModeShapeDrawer
@@ -18,6 +19,9 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
 
     [Header("Visibility")]
     [SerializeField] private bool drawingEnabled = true;
+
+    // UI scale for the camera currently being drawn.
+    private float drawScale = 1f;
 
     private void Awake()
     {
@@ -40,20 +44,16 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
 
         if (hudSystem == null || aimStateSystem == null) return;
 
-        // The ordinary renderable lookup is intentional: targeting previews
+        // The renderable anchor lookup is intentional: targeting previews
         // disappear with the Player HUD during checkout, while the separate
         // match viewport overlay remains unaffected.
-        if (!hudSystem.TryGetRenderableSlotForCamera(
-            cam,
-            out int playerIndex,
-            out Transform unusedHudAnchor
-        ))
+        if (!HudShapes.TryGetViewPlayer(cam, out int playerIndex) ||
+            !hudSystem.TryGetRenderableAnchor(playerIndex, out _))
         {
             return;
         }
 
-        if (unusedHudAnchor == null ||
-            !aimStateSystem.TryGetState(
+        if (!aimStateSystem.TryGetState(
                 playerIndex,
                 out PowerupAimState aimState
             ) ||
@@ -63,14 +63,11 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
             return;
         }
 
+        drawScale = HudShapes.Scale();
+
         using (Draw.Command(cam))
         {
-            Draw.ResetAllDrawStates();
-            Draw.BlendMode = ShapesBlendMode.Transparent;
-            Draw.RadiusSpace = ThicknessSpace.Pixels;
-            Draw.ThicknessSpace = ThicknessSpace.Pixels;
-            Draw.LineGeometry = LineGeometry.Billboard;
-            Draw.LineEndCaps = LineEndCap.Round;
+            HudShapes.ApplyHudDrawState();
 
             Color mainColor = aimProfile.GetMainColor(
                 aimState.TrajectoryObstructed
@@ -87,9 +84,9 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
         PowerupAimState aimState,
         Color mainColor)
     {
-        float mainThickness = aimProfile.TrajectoryThicknessPixels;
+        float mainThickness = aimProfile.TrajectoryThicknessPixels * drawScale;
         float underlayThickness =
-            mainThickness + aimProfile.TrajectoryUnderlayExtraPixels;
+            mainThickness + aimProfile.TrajectoryUnderlayExtraPixels * drawScale;
 
         if (underlayThickness > mainThickness)
         {
@@ -219,9 +216,9 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
             Draw.Triangle(renderCenter, renderA, renderB, fillColor);
         }
 
-        float mainThickness = aimProfile.LandingOutlineThicknessPixels;
+        float mainThickness = aimProfile.LandingOutlineThicknessPixels * drawScale;
         float underlayThickness =
-            mainThickness + aimProfile.LandingUnderlayExtraPixels;
+            mainThickness + aimProfile.LandingUnderlayExtraPixels * drawScale;
 
         if (underlayThickness > mainThickness)
         {
@@ -299,31 +296,14 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
         }
 
         Vector3 centerScreen = cam.WorldToScreenPoint(renderCenter);
-        float halfSize = aimProfile.CenterCrossSizePixels * 0.5f;
+        Vector2 center = centerScreen;
+        float depth = centerScreen.z;
+        float halfSize = aimProfile.CenterCrossSizePixels * drawScale * 0.5f;
 
-        Vector3 lowerLeft = ScreenOffsetToWorld(
-            cam,
-            centerScreen,
-            new Vector2(-halfSize, -halfSize)
-        );
-
-        Vector3 upperRight = ScreenOffsetToWorld(
-            cam,
-            centerScreen,
-            new Vector2(halfSize, halfSize)
-        );
-
-        Vector3 upperLeft = ScreenOffsetToWorld(
-            cam,
-            centerScreen,
-            new Vector2(-halfSize, halfSize)
-        );
-
-        Vector3 lowerRight = ScreenOffsetToWorld(
-            cam,
-            centerScreen,
-            new Vector2(halfSize, -halfSize)
-        );
+        Vector3 lowerLeft = HudShapes.ScreenToWorld(cam, center + new Vector2(-halfSize, -halfSize), depth);
+        Vector3 upperRight = HudShapes.ScreenToWorld(cam, center + new Vector2(halfSize, halfSize), depth);
+        Vector3 upperLeft = HudShapes.ScreenToWorld(cam, center + new Vector2(-halfSize, halfSize), depth);
+        Vector3 lowerRight = HudShapes.ScreenToWorld(cam, center + new Vector2(halfSize, -halfSize), depth);
 
         // A true screen-space X keeps both strokes exactly equal and prevents
         // Tomato/Ice impact-radius differences from resizing the marker.
@@ -333,16 +313,16 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
         Draw.Disc(
             renderCenter,
             cam.transform.rotation,
-            aimProfile.CenterDotRadiusPixels,
+            aimProfile.CenterDotRadiusPixels * drawScale,
             mainColor
         );
     }
 
     private void DrawCrossLine(Vector3 start, Vector3 end, Color mainColor)
     {
-        float mainThickness = aimProfile.CenterCrossThicknessPixels;
+        float mainThickness = aimProfile.CenterCrossThicknessPixels * drawScale;
         float underlayThickness =
-            mainThickness + aimProfile.LandingUnderlayExtraPixels;
+            mainThickness + aimProfile.LandingUnderlayExtraPixels * drawScale;
 
         if (underlayThickness > mainThickness)
         {
@@ -369,20 +349,6 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
 
         return aimState.PreviewEndPosition +
                radialDirection * aimState.ImpactPreviewRadius;
-    }
-
-    private static Vector3 ScreenOffsetToWorld(
-        Camera cam,
-        Vector3 centerScreen,
-        Vector2 offsetPixels)
-    {
-        return cam.ScreenToWorldPoint(
-            new Vector3(
-                centerScreen.x + offsetPixels.x,
-                centerScreen.y + offsetPixels.y,
-                centerScreen.z
-            )
-        );
     }
 
     private static bool TryBuildSurfaceBasis(
@@ -441,9 +407,10 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
             return false;
         }
 
-        screenPoint.z = Mathf.Max(
+        screenPoint.z = HudShapes.RenderDepth(
+            cam,
             aimProfile.NearCameraRenderDistance,
-            cam.nearClipPlane + aimProfile.NearClipSafetyPadding
+            aimProfile.NearClipSafetyPadding
         );
 
         renderPoint = cam.ScreenToWorldPoint(screenPoint);

@@ -5,17 +5,13 @@ using UnityEngine;
 /// Scene-level Shapes renderer for pointing from each local player toward every
 /// OTHER currently-bound player.
 ///
-/// Important architecture:
 /// - ONE scene-level renderer, not one GameObject per pointer.
-/// - PlayerWorldHUDSystem remains the source of truth for player roots,
-///   gameplay cameras, and local HUD anchors.
-/// - DrawShapes(Camera) is called once per gameplay camera; that camera tells
-///   us which player owns the viewport.
-/// - The renderer then loops P1..P4 and draws only the OTHER players that
-///   currently exist.
+/// - PlayerViewService says which player owns each camera; PlayerWorldHUDSystem
+///   supplies player roots and HUD anchors.
+/// - DrawShapes(Camera) is called once per gameplay camera, then loops P1..P4 and
+///   draws only the OTHER players that currently exist.
 /// - Pointers are shape-only; no player text labels are drawn.
-///
-/// Therefore the exact same script supports 2, 3, or 4 players automatically.
+/// - Sizes are 1920x1080 reference pixels times UI scale and the 2P/4P factor.
 /// </summary>
 [DisallowMultipleComponent]
 public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
@@ -25,6 +21,7 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
     [Header("References")]
     [SerializeField] private PlayerWorldHUDSystem hudSystem;
     [SerializeField] private OtherPlayerPointerProfile profile;
+    [SerializeField] private PlayerIdentityProfile playerIdentity;
 
     #endregion
 
@@ -36,15 +33,15 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
-
     #region Mode Adaptation
+
+    [Header("Runtime - Read Only")]
+    [Tooltip("2P/4P size factor pushed by MatchSceneModeController.")]
+    [SerializeField] private float modeScale = 1f;
 
     public void SetModeScaleMultiplier(float multiplier)
     {
-        if (profile != null)
-        {
-            profile.SetRuntimeModeScaleMultiplier(multiplier);
-        }
+        modeScale = Mathf.Max(0.05f, multiplier);
     }
 
     #endregion
@@ -59,10 +56,10 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
     public override void DrawShapes(Camera cam)
     {
         if (!drawingEnabled) return;
-        if (cam == null || hudSystem == null || profile == null) return;
+        if (cam == null || hudSystem == null || profile == null || playerIdentity == null) return;
 
-        if (!hudSystem.TryGetRenderableSlotForCamera(cam, out int ownerPlayerIndex, out Transform ownerHUDAnchor)) return;
-        if (ownerHUDAnchor == null) return;
+        if (!HudShapes.TryGetViewPlayer(cam, out int ownerPlayerIndex)) return;
+        if (!hudSystem.TryGetRenderableAnchor(ownerPlayerIndex, out Transform ownerHUDAnchor)) return;
 
         GameObject ownerRoot = hudSystem.GetPlayerRoot(ownerPlayerIndex);
         if (ownerRoot == null) return;
@@ -70,21 +67,13 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         Vector3 ownerAnchorScreen = cam.WorldToScreenPoint(ownerHUDAnchor.position);
         if (skipWhenOwnerBehindCamera && ownerAnchorScreen.z <= 0f) return;
 
-        float renderDepth = Mathf.Max(
-            profile.NearCameraRenderDistance,
-            cam.nearClipPlane + profile.NearClipSafetyPadding
-        );
-
-        Vector2 orbitCenter = new Vector2(ownerAnchorScreen.x, ownerAnchorScreen.y) + profile.OrbitCenterOffsetPixels;
+        float scale = HudShapes.Scale(modeScale);
+        float renderDepth = HudShapes.RenderDepth(cam, profile.NearCameraRenderDistance, profile.NearClipSafetyPadding);
+        Vector2 orbitCenter = (Vector2)ownerAnchorScreen + profile.OrbitCenterOffsetPixels * scale;
 
         using (Draw.Command(cam))
         {
-            Draw.ResetAllDrawStates();
-            Draw.BlendMode = ShapesBlendMode.Transparent;
-            Draw.ThicknessSpace = ThicknessSpace.Pixels;
-            Draw.RadiusSpace = ThicknessSpace.Pixels;
-            Draw.LineGeometry = LineGeometry.Billboard;
-            Draw.LineEndCaps = LineEndCap.Round;
+            HudShapes.ApplyHudDrawState();
 
             for (int targetPlayerIndex = 1; targetPlayerIndex <= PlayerWorldHUDSystem.MaxPlayerSlots; targetPlayerIndex++)
             {
@@ -96,6 +85,7 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
                 DrawPointerToTarget(
                     cam,
                     renderDepth,
+                    scale,
                     orbitCenter,
                     ownerRoot.transform,
                     targetRoot.transform,
@@ -112,6 +102,7 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
     private void DrawPointerToTarget(
         Camera cam,
         float renderDepth,
+        float scale,
         Vector2 orbitCenter,
         Transform owner,
         Transform target,
@@ -119,16 +110,15 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
     {
         Vector3 worldDirection = target.position - owner.position;
 
-        // The old mesh pointer intentionally ignored vertical difference.
-        // Preserve that behavior so pointers communicate horizontal player direction.
+        // Pointers show horizontal direction only, so ignore height differences.
         worldDirection.y = 0f;
 
         if (worldDirection.sqrMagnitude < 0.0001f) return;
         worldDirection.Normalize();
 
-        // Convert the horizontal world direction into this gameplay camera's
-        // screen-space basis. This remains stable for split-screen and tilted /
-        // isometric gameplay cameras without needing to project the target itself.
+        // Convert the horizontal world direction into this camera's screen basis.
+        // Stable for split-screen and tilted / isometric cameras without
+        // projecting the target itself.
         Vector2 screenDirection = new Vector2(
             Vector3.Dot(worldDirection, cam.transform.right),
             Vector3.Dot(worldDirection, cam.transform.up)
@@ -137,76 +127,47 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         if (screenDirection.sqrMagnitude < 0.0001f) return;
         screenDirection.Normalize();
 
-        Vector2 pointerCenter = orbitCenter + screenDirection * profile.OrbitRadiusPixels;
+        Vector2 pointerCenter = orbitCenter + screenDirection * (profile.OrbitRadiusPixels * scale);
         float pointerAngleRadians = Mathf.Atan2(screenDirection.y, screenDirection.x);
-        Color pointerColor = profile.GetPlayerColor(targetPlayerIndex);
 
         DrawRoundedPointerBody(
             cam,
             renderDepth,
+            scale,
             pointerCenter,
             pointerAngleRadians,
-            pointerColor
+            playerIdentity.GetColor(targetPlayerIndex)
         );
-
     }
 
     private void DrawRoundedPointerBody(
         Camera cam,
         float renderDepth,
+        float scale,
         Vector2 pointerCenter,
         float pointerAngleRadians,
         Color color)
     {
-        Vector2 upperStart = pointerCenter + Rotate2D(profile.UpperCapsuleStartPixels, pointerAngleRadians);
-        Vector2 upperEnd = pointerCenter + Rotate2D(profile.UpperCapsuleEndPixels, pointerAngleRadians);
-        Vector2 lowerStart = pointerCenter + Rotate2D(profile.LowerCapsuleStartPixels, pointerAngleRadians);
-        Vector2 lowerEnd = pointerCenter + Rotate2D(profile.LowerCapsuleEndPixels, pointerAngleRadians);
+        Vector2 upperStart = pointerCenter + HudShapes.Rotate(profile.UpperCapsuleStartPixels * scale, pointerAngleRadians);
+        Vector2 upperEnd = pointerCenter + HudShapes.Rotate(profile.UpperCapsuleEndPixels * scale, pointerAngleRadians);
+        Vector2 lowerStart = pointerCenter + HudShapes.Rotate(profile.LowerCapsuleStartPixels * scale, pointerAngleRadians);
+        Vector2 lowerEnd = pointerCenter + HudShapes.Rotate(profile.LowerCapsuleEndPixels * scale, pointerAngleRadians);
+        float thickness = profile.PointerCapsuleThicknessPixels * scale;
 
         Draw.Line(
-            ScreenPointToWorld(cam, upperStart, renderDepth),
-            ScreenPointToWorld(cam, upperEnd, renderDepth),
-            profile.PointerCapsuleThicknessPixels,
+            HudShapes.ScreenToWorld(cam, upperStart, renderDepth),
+            HudShapes.ScreenToWorld(cam, upperEnd, renderDepth),
+            thickness,
             color
         );
 
         Draw.Line(
-            ScreenPointToWorld(cam, lowerStart, renderDepth),
-            ScreenPointToWorld(cam, lowerEnd, renderDepth),
-            profile.PointerCapsuleThicknessPixels,
+            HudShapes.ScreenToWorld(cam, lowerStart, renderDepth),
+            HudShapes.ScreenToWorld(cam, lowerEnd, renderDepth),
+            thickness,
             color
         );
     }
-
-    #endregion
-
-    #region Helpers
-
-    private Vector2 Rotate2D(Vector2 value, float radians)
-    {
-        float cos = Mathf.Cos(radians);
-        float sin = Mathf.Sin(radians);
-
-        return new Vector2(
-            value.x * cos - value.y * sin,
-            value.x * sin + value.y * cos
-        );
-    }
-
-    private Vector3 ScreenPointToWorld(
-        Camera cam,
-        Vector2 screenPoint,
-        float screenDepth)
-    {
-        return cam.ScreenToWorldPoint(
-            new Vector3(
-                screenPoint.x,
-                screenPoint.y,
-                screenDepth
-            )
-        );
-    }
-
 
     #endregion
 }

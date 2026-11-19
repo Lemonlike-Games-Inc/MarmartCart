@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4bc7e30748997243ad453b88f9e9fa5, type: 3}
   m_Name: OtherPlayerPointerProfile
   m_EditorClassIdentifier: 
-  orbitRadiusPixels: 90
+  orbitRadiusPixels: 50
   orbitCenterOffsetPixels: {x: 0, y: 0}
   nearCameraRenderDistance: 0.5
   nearClipSafetyPadding: 0.03
@@ -20,9 +20,5 @@ MonoBehaviour:
   upperCapsuleEndPixels: {x: 7, y: 0}
   lowerCapsuleStartPixels: {x: 0, y: -9}
   lowerCapsuleEndPixels: {x: 7, y: 0}
-  pointerCapsuleThicknessPixels: 9
-  pointerScale: 1.25
-  player1Color: {r: 0.21960784, g: 0.61960787, b: 1, a: 1}
-  player2Color: {r: 1, g: 0.27203655, b: 0.21960783, a: 1}
-  player3Color: {r: 0.28, g: 0.9, b: 0.43, a: 1}
-  player4Color: {r: 1, g: 0.72, b: 0.16, a: 1}
+  pointerCapsuleThicknessPixels: 7
+  pointerScale: 1

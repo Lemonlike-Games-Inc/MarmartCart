@@ -146530,8 +146530,10 @@ MonoBehaviour:
   useCullingMasks: 0
   hudSystem: {fileID: 261547857}
   profile: {fileID: 11400000, guid: 56f0da379fee4f749ac8b0ce235e5567, type: 2}
+  playerIdentity: {fileID: 11400000, guid: 9db96f6f8347eaf4baaa6a0c29af28b8, type: 2}
   drawingEnabled: 1
   skipWhenOwnerBehindCamera: 1
+  modeScale: 1
 --- !u!43 &1522461263
 Mesh:
   m_ObjectHideFlags: 0
@@ -155888,9 +155890,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useCullingMasks: 0
   hudSystem: {fileID: 261547857}
-  playerColorProfile: {fileID: 11400000, guid: 56f0da379fee4f749ac8b0ce235e5567, type: 2}
   markerProfile: {fileID: 11400000, guid: 0e61dca3ef271124da3e9c6f36615146, type: 2}
+  playerIdentity: {fileID: 11400000, guid: 9db96f6f8347eaf4baaa6a0c29af28b8, type: 2}
   drawingEnabled: 1
+  modeScale: 1
 --- !u!1001 &1829825946
 PrefabInstance:
   m_ObjectHideFlags: 0

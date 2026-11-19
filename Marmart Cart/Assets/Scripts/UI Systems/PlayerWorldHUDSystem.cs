@@ -297,6 +297,24 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         return slots[slotIndex].HUDWorldAnchor;
     }
 
+    /// <summary>
+    /// The player's HUD anchor when their world HUD should draw: slot enabled,
+    /// bound and not checkout-suppressed. Drawers find the player for a camera
+    /// through PlayerViewService, then ask for the anchor here.
+    /// </summary>
+    public bool TryGetRenderableAnchor(int playerIndex, out Transform hudAnchor)
+    {
+        hudAnchor = null;
+
+        if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return false;
+
+        PlayerSlot slot = slots[slotIndex];
+        if (!slot.enabled || slot.checkoutSuppressed || !slot.IsBound) return false;
+
+        hudAnchor = slot.HUDWorldAnchor;
+        return hudAnchor != null;
+    }
+
     public bool TryGetPlayerIndexForCamera(Camera gameplayCamera, out int playerIndex)
     {
         playerIndex = 0;
