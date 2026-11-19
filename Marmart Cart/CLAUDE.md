@@ -41,7 +41,7 @@ Details live in `Docs/` (and in subfolder `CLAUDE.md` files once we add any). Th
 - Confirmed obsolete: `MapEventManager` and `Scripts/MapEvents/` (design moved into MatchFlowDirector/Profile), `MatchBalanceManager` and `Scripts/BalancingCartPickupEntry/` (abandoned with the new level design), `Scripts/LeaderboardUIs/` (replaced by the Shapes overlay), `Scripts/Powerups/Old/` and `Scripts/PowerupsSystem/Old/`.
 - `teamBattle4P` is not wanted; only 2P and 4P free-for-all. Its references in `GMode`, `CashScoreManager` and the old leaderboards are to be removed later.
 - Many other scripts are leftovers from older scenes (for example `Protoprototype/`, `AI Shoppers/`, `ComboDealSystem/`, `Assets/Cart/`, the old tutorial task scripts). Before relying on or extending a script, check that a build scene or prefab uses it.
-- Known leftover on the live cart: `Prefabs/Leading Carts/Leading Cart Base.prefab` still has 2 old `PowerupUIController` components (no-op) and inactive old Bowling Ball and Grabber children.
+- Possible leftovers on the live cart: `Prefabs/Leading Carts/Leading Cart Base.prefab` has inactive nested prefabs Drill, Tomato and MushRoom under `Cart Model/Attached Models/In Cart Models` (from the legacy `Assets/Cart/Prefab/`), and an inactive SimpleCrown elsewhere (a `CrownSpin` script exists). Check before removing. Its old UI canvas and the Bowling Ball and Grabber children were removed on 2026-11-19.
 
 ## Design rules (full detail in Docs/GDD_v4.md)
 - Driving, drifting, blocking and positioning stay the main skill expression. New systems must not make driving irrelevant.

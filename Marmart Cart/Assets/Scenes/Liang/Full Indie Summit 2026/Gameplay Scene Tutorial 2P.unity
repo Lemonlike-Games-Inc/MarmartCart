@@ -162752,10 +162752,6 @@ PrefabInstance:
       propertyPath: cartBody
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 2720598709366786668, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
-      propertyPath: cartBody
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 2764490589071785716, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
       propertyPath: cartBody
       value: 
@@ -162812,10 +162808,6 @@ PrefabInstance:
       propertyPath: powerupsManager
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 7450120162039776356, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
-      propertyPath: powerupManager
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8009443748923827324, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
       propertyPath: m_Name
       value: Leading Cart Base
@@ -162830,10 +162822,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9068241723809322355, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
       propertyPath: debugText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 9112514936849835792, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
-      propertyPath: powerupManager
       value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []

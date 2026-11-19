@@ -76,10 +76,6 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player1
       objectReference: {fileID: 0}
-    - target: {fileID: 7898123897464521293, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8009443748923827324, guid: d7c4ee1bf4e644d40bd801fee639c3dd, type: 3}
       propertyPath: m_Name
       value: Leading Cart P1

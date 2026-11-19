@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -128,18 +127,7 @@ public class GameTimeManager : MonoBehaviour
 
     private void Start()
     {
-        ConfigurePlayerHudReferences();
-        ResetCartHud();
-
         EnterPreGame();
-    }
-
-    private void Update()
-    {
-        if (sessionState != GameSessionState.Playing) return;
-
-        UpdateTimerDisplay();
-        UpdateCartHud();
     }
 
     #endregion
@@ -153,9 +141,6 @@ public class GameTimeManager : MonoBehaviour
         matchFlowDirector?.StopFlow();
 
         SetWorldPaused(pauseWorldDuringPreGame);
-
-
-        UpdateTimerDisplay();
 
         OnPreGameEntered?.Invoke();
 
@@ -218,7 +203,6 @@ public class GameTimeManager : MonoBehaviour
 
         musicManager?.PlayMusic("BackgroundMusic");
 
-        UpdateTimerDisplay();
         OnMatchStarted?.Invoke();
     }
 
@@ -237,8 +221,6 @@ public class GameTimeManager : MonoBehaviour
 
         SetWorldPaused(pauseWorldDuringPostGame);
 
-        UpdateTimerDisplay();
-
         OnPostGameEntered?.Invoke();
     }
 
@@ -250,22 +232,6 @@ public class GameTimeManager : MonoBehaviour
     #endregion
 
     #region Timer
-
-    private void UpdateTimerDisplay()
-    {
-        float timeRemaining = matchFlowDirector != null ? matchFlowDirector.RemainingFlowTime : 0f;
-
-        if (sessionState == GameSessionState.PreGame && matchFlowDirector != null)
-        {
-            timeRemaining = matchFlowDirector.PlannedProfileDuration;
-        }
-
-        int totalSeconds = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-
-        string formatted = $"{minutes:D2}:{seconds:D2}";
-    }
 
     public float GetCurrentGameTime()
     {
@@ -283,28 +249,4 @@ public class GameTimeManager : MonoBehaviour
     }
 
     #endregion
-
-    #region Cart HUD
-
-    private void ConfigurePlayerHudReferences()
-    {
-        int playerCount = GMode.Instance != null ? GMode.Instance.PlayerCount() : 2;
-    }
-
-    private void ResetCartHud()
-    {
-    }
-
-    private void UpdateCartHud()
-    {
-      
-    }
-
-    private void SetTextIfAssigned(TextMeshProUGUI text, string value)
-    {
-        if (text != null) text.text = value;
-    }
-
-    #endregion
-
 }
