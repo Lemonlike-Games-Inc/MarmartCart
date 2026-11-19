@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c462a215d824769a04b6e8060809d3b, type: 3}
+  m_Name: Marmart Text Styles
+  m_EditorClassIdentifier: 
+  styles:
+    items:
+    - modifier:
+        rid: 6266108407671160909
+      source:
+        rid: 6266108407671160910
+      defaultParameter: 
+      disabled: 0
+    - modifier:
+        rid: 6266108407671160911
+      source:
+        rid: 6266108407671160912
+      defaultParameter: 
+      disabled: 0
+    - modifier:
+        rid: 6266108407671160913
+      source:
+        rid: 6266108407671160914
+      defaultParameter: 
+      disabled: 0
+    - modifier:
+        rid: 6266108407671160915
+      source:
+        rid: 6266108407671160916
+      defaultParameter: 
+      disabled: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 6266108407671160909
+      type: {class: BoldModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 5194702083835452238
+          low: 5931325981973666995
+        weight: 0
+        mode: 0
+    - rid: 6266108407671160910
+      type: {class: TagRule, ns: LightSide, asm: LightSide.UniText}
+      data:
+        tag: b
+        defaultParameter: 
+    - rid: 6266108407671160911
+      type: {class: ItalicModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 5626372303719945117
+          low: 15247818030247922860
+        style:
+          mode: 0
+          slant: 0
+    - rid: 6266108407671160912
+      type: {class: TagRule, ns: LightSide, asm: LightSide.UniText}
+      data:
+        tag: i
+        defaultParameter: 
+    - rid: 6266108407671160913
+      type: {class: ColorModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 5511022883341482965
+          low: 426413245385365637
+        color:
+          serializedVersion: 2
+          rgba: 4294967295
+    - rid: 6266108407671160914
+      type: {class: TagRule, ns: LightSide, asm: LightSide.UniText}
+      data:
+        tag: color
+        defaultParameter: 
+    - rid: 6266108407671160915
+      type: {class: SizeModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 5313728659881536453
+          low: 13583035674484777124
+        size:
+          value: 24
+          unit: 0
+    - rid: 6266108407671160916
+      type: {class: TagRule, ns: LightSide, asm: LightSide.UniText}
+      data:
+        tag: size
+        defaultParameter: 
