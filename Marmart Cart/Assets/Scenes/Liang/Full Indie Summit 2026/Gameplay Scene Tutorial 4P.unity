@@ -27810,6 +27810,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1077148110}
   - component: {fileID: 1077148109}
+  - component: {fileID: 1077148111}
   m_Layer: 0
   m_Name: Match Load
   m_TagString: Untagged
@@ -27833,6 +27834,7 @@ MonoBehaviour:
   modeProfile: {fileID: 11400000, guid: 793853a061774574492a47e348c94070, type: 2}
   playerInputManager: {fileID: 447031817}
   cameraManager: {fileID: 1653367397}
+  playerViewService: {fileID: 0}
   playerWorldHUDSystem: {fileID: 261547857}
   playerWorldHUDRenderer: {fileID: 610152314}
   otherPlayerPointerRenderer: {fileID: 1521505816}
@@ -27856,6 +27858,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1077148111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077148108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4308a6b34d7004b41a4e4843ae4e1ca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraManager: {fileID: 0}
+  configured: 0
+  activePlayerCount: 0
+  uiScale: 1
+  screenSize: {x: 0, y: 0}
 --- !u!4 &1080338169 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5072365620659187395, guid: 5520472b7a703fe4dae6d07181697a5b, type: 3}

@@ -139169,10 +139169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d0aa7362ce3fc343b6430f774b52367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listenForSceneReload: 1
   listenForPlayerTeleport: 1
   listenForReturnToMenu: 1
-  restoreTimeScaleBeforeSceneLoad: 1
   playerInputManager: {fileID: 447031817}
   p1TeleportPoint: {fileID: 1868063542}
   p2TeleportPoint: {fileID: 147579080}
@@ -142560,6 +142558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2009015661}
   - component: {fileID: 2009015660}
+  - component: {fileID: 2009015662}
   m_Layer: 0
   m_Name: Match Load
   m_TagString: Untagged
@@ -142583,6 +142582,7 @@ MonoBehaviour:
   modeProfile: {fileID: 11400000, guid: 793853a061774574492a47e348c94070, type: 2}
   playerInputManager: {fileID: 447031817}
   cameraManager: {fileID: 1653367397}
+  playerViewService: {fileID: 0}
   playerWorldHUDSystem: {fileID: 261547857}
   playerWorldHUDRenderer: {fileID: 610152314}
   otherPlayerPointerRenderer: {fileID: 1521505816}
@@ -142606,6 +142606,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2009015662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009015659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4308a6b34d7004b41a4e4843ae4e1ca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraManager: {fileID: 0}
+  configured: 0
+  activePlayerCount: 0
+  uiScale: 1
+  screenSize: {x: 0, y: 0}
 --- !u!4 &2013919226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8717174921458112630, guid: 978272a6a3e523d41969394a5594aa0f, type: 3}
