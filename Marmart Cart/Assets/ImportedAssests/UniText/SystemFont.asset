@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d993da439e04a4b9da5e0cfc34be86, type: 3}
   m_Name: SystemFont
   m_EditorClassIdentifier: LightSide.UniText::LightSide.UniTextSystemFont
+  payload: {fileID: 0}
   fontDataHash: 316311009
+  payloadSourceHash: 
+  payloadRawLength: 0
   italicStyle: 30
   spacingOffset: 0
   spaceAdvance: -100
@@ -51,6 +54,8 @@ MonoBehaviour:
   tileSizeOffset: 0
   glyphOverrides: []
   axisDefaults: []
+  variableAxes: []
+  faceCount: 0
   sourceFont: {fileID: 0}
   common:
     fontName: 

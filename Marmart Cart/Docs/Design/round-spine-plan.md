@@ -37,7 +37,7 @@ The cheapest proof that reload-per-Round works, with Console logs only.
 
 ### Step 2: UI foundation and pre-round countdown
 
-Expanded on 2026-11-18 so the existing HUD is rebuilt on the rules in `ui-architecture.md` before new UI is added. Each sub-step stops for Liang to test. Detail questions are asked at the start of each sub-step. Standing OK for this step: Play Mode for before/after HUD captures, and scene/prefab edits through the CLI after a commit.
+Expanded on 2026-11-18 so the existing HUD is rebuilt on the rules in `ui-architecture.md` before new UI is added. Each sub-step stops for Liang to test. Detail questions are asked at the start of each sub-step. Standing OK for this step: Play Mode for checks and before/after HUD captures, and scene/prefab edits through the CLI when the target files have no uncommitted changes. No commit without Liang's OK for that commit (rule changed 2026-11-19).
 
 - **2a. Docs:** `ui-architecture.md` and this update.
 - **2b. `PlayerViewService`:** per-player camera, viewport rect and active flag; `UiScale`; the active player count and layout; a `LayoutChanged` event. `MatchSceneModeController` feeds it. Nothing uses it yet.
