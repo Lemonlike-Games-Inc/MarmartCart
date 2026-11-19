@@ -64,6 +64,9 @@ public class GameTimeManager : MonoBehaviour
     [Header("Runtime - Read Only")]
     [SerializeField] private GameSessionState sessionState = GameSessionState.PreGame;
 
+    [Tooltip("True when a scene controller (MetaRoundController) starts the match instead of the auto-begin.")]
+    [SerializeField] private bool matchStartTakenOver;
+
     private Coroutine preGameRoutine;
 
     public GameSessionState SessionState => sessionState;
@@ -144,7 +147,7 @@ public class GameTimeManager : MonoBehaviour
 
         OnPreGameEntered?.Invoke();
 
-        if (autoBeginAfterPreGamePause)
+        if (autoBeginAfterPreGamePause && !matchStartTakenOver)
         {
             if (preGameRoutine != null) StopCoroutine(preGameRoutine);
             preGameRoutine = StartCoroutine(AutoBeginMatchAfterDelay());
@@ -163,14 +166,40 @@ public class GameTimeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Starts the playable match.
-    ///
-    /// Current prototype:
-    /// GameTimeManager calls this automatically after preGamePauseDuration.
-    ///
-    /// Future:
-    /// Disable Auto Begin After PreGame Pause and let a camera intro/countdown
-    /// controller call BeginMatch() when its presentation is complete.
+    /// For this scene load only, a controller (MetaRoundController) will call
+    /// BeginMatch() itself, so PreGame does not start the match automatically.
+    /// The Inspector toggle is not changed; scenes without such a controller
+    /// keep auto-starting. Call it in Awake, before PreGame begins.
+    /// </summary>
+    public void TakeOverMatchStart()
+    {
+        matchStartTakenOver = true;
+
+        if (preGameRoutine != null)
+        {
+            StopCoroutine(preGameRoutine);
+            preGameRoutine = null;
+        }
+    }
+
+    /// <summary>
+    /// Restores normal time before a scene load. Use this instead of writing
+    /// Time.timeScale directly.
+    /// </summary>
+    public void PrepareForSceneLoad()
+    {
+        if (preGameRoutine != null)
+        {
+            StopCoroutine(preGameRoutine);
+            preGameRoutine = null;
+        }
+
+        Time.timeScale = 1f;
+    }
+
+    /// <summary>
+    /// Starts the playable match. Called after the PreGame pause, either by the
+    /// auto-begin or by the controller that took over the match start.
     /// </summary>
     public void BeginMatch()
     {

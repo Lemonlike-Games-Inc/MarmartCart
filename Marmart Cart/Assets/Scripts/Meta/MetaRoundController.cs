@@ -8,6 +8,9 @@ using UnityEngine.SceneManagement;
 /// Scene-local Round loop. One Round is one load of the gameplay scene.
 ///
 /// - On load it logs the Round held in MatchSession.
+/// - Pre-round: it takes over the match start from GameTimeManager, shows the
+///   Round title and a countdown in real time while PreGame keeps the world
+///   frozen, then starts the match. Presentation listens to the pre-round events.
 /// - When the score reveal ends it works out the Round winners, holds the
 ///   result for a set time, then commits the Round and reloads the active scene.
 /// - The final Round is not committed, because no next Round loads. The
@@ -23,10 +26,19 @@ public sealed class MetaRoundController : MonoBehaviour
 
     private enum RoundPhase
     {
+        PreRound,
         InRound,
         RoundResult,
         MatchOver,
         Loading
+    }
+
+    public enum PreRoundBeat
+    {
+        None,
+        RoundTitle,
+        Countdown,
+        Go
     }
 
     [Header("References")]
@@ -35,6 +47,24 @@ public sealed class MetaRoundController : MonoBehaviour
 
     [Tooltip("Auto-found if left empty.")]
     [SerializeField] private CashScoreManager cashScoreManager;
+
+    [Tooltip("Auto-found if left empty.")]
+    [SerializeField] private GameTimeManager gameTimeManager;
+
+    [Header("Pre-Round (real-time seconds)")]
+    [Min(0f)]
+    [SerializeField] private float roundTitleDuration = 2.5f;
+
+    [Tooltip("First countdown number. 0 skips the countdown.")]
+    [Min(0)]
+    [SerializeField] private int countdownFrom = 3;
+
+    [Min(0.1f)]
+    [SerializeField] private float countdownStepDuration = 1f;
+
+    [Tooltip("How long the start text stays after the match has started.")]
+    [Min(0f)]
+    [SerializeField] private float goDuration = 1.5f;
 
     [Header("Round Flow")]
     [Tooltip(
@@ -51,6 +81,27 @@ public sealed class MetaRoundController : MonoBehaviour
     [Header("Runtime - Read Only")]
     [SerializeField] private RoundPhase phase = RoundPhase.InRound;
     [SerializeField] private int roundNumber = 1;
+    [SerializeField] private PreRoundBeat currentBeat = PreRoundBeat.None;
+    [SerializeField] private int countdownValue;
+
+    private float nextBeatTime;
+
+    /// <summary>Round title shown: Round number, and whether it is the final Round.</summary>
+    public event Action<int, bool> RoundTitleShown;
+
+    /// <summary>Countdown number shown (for example 3, 2, 1).</summary>
+    public event Action<int> CountdownTicked;
+
+    /// <summary>The match has started; the start text shows.</summary>
+    public event Action RoundStarted;
+
+    /// <summary>The pre-round is over; presentation can hide.</summary>
+    public event Action PreRoundFinished;
+
+    public int RoundNumber => roundNumber;
+    public bool IsFinalRound => MatchSession.IsFinalRound;
+    public PreRoundBeat CurrentBeat => currentBeat;
+    public int CurrentCountdownValue => countdownValue;
 
     private readonly int[] roundBanked = new int[MaxPlayers];
     private readonly bool[] roundWinners = new bool[MaxPlayers];
@@ -82,8 +133,23 @@ public sealed class MetaRoundController : MonoBehaviour
         if (cashScoreManager == null)
             cashScoreManager = FindFirstObjectByType<CashScoreManager>();
 
+        if (gameTimeManager == null)
+            gameTimeManager = FindFirstObjectByType<GameTimeManager>();
+
         roundNumber = MatchSession.RoundNumber;
-        phase = RoundPhase.InRound;
+        currentBeat = PreRoundBeat.None;
+        countdownValue = 0;
+
+        if (gameTimeManager != null)
+        {
+            gameTimeManager.TakeOverMatchStart();
+            phase = RoundPhase.PreRound;
+        }
+        else
+        {
+            Debug.LogError("[Meta] GameTimeManager not found. No pre-round; the match starts on its own if it can.", this);
+            phase = RoundPhase.InRound;
+        }
     }
 
     private void OnEnable()
@@ -139,8 +205,84 @@ public sealed class MetaRoundController : MonoBehaviour
 
         if (listenForStaffKeys) HandleStaffKeys();
 
-        if (phase == RoundPhase.RoundResult && Time.unscaledTime >= roundResultEndTime)
+        if (phase == RoundPhase.PreRound)
+            UpdatePreRound();
+        else if (phase == RoundPhase.RoundResult && Time.unscaledTime >= roundResultEndTime)
             FinishRound();
+    }
+
+    #endregion
+
+    #region Pre-Round
+
+    private void UpdatePreRound()
+    {
+        if (currentBeat == PreRoundBeat.None)
+        {
+            // GameTimeManager enters PreGame in its Start; wait for it so the world is frozen.
+            if (!gameTimeManager.IsPreGame) return;
+
+            SetBeat(PreRoundBeat.RoundTitle, roundTitleDuration);
+            Debug.Log($"[Meta] Pre-round | Round {roundNumber}{(MatchSession.IsFinalRound ? " (final)" : string.Empty)}", this);
+            RoundTitleShown?.Invoke(roundNumber, MatchSession.IsFinalRound);
+            return;
+        }
+
+        if (Time.unscaledTime < nextBeatTime) return;
+
+        switch (currentBeat)
+        {
+            case PreRoundBeat.RoundTitle:
+                if (countdownFrom > 0) ShowCountdown(countdownFrom);
+                else StartRound();
+                break;
+
+            case PreRoundBeat.Countdown:
+                if (countdownValue > 1) ShowCountdown(countdownValue - 1);
+                else StartRound();
+                break;
+
+            case PreRoundBeat.Go:
+                EndPreRound();
+                break;
+        }
+    }
+
+    private void ShowCountdown(int value)
+    {
+        countdownValue = value;
+        SetBeat(PreRoundBeat.Countdown, countdownStepDuration);
+        CountdownTicked?.Invoke(value);
+    }
+
+    private void StartRound()
+    {
+        countdownValue = 0;
+        gameTimeManager.BeginMatch();
+
+        if (!gameTimeManager.IsPlaying)
+        {
+            Debug.LogError($"[Meta] Round {roundNumber} could not start. F2 restarts the Round.", this);
+            EndPreRound();
+            return;
+        }
+
+        SetBeat(PreRoundBeat.Go, goDuration);
+        Debug.Log($"[Meta] Round {roundNumber} started", this);
+        RoundStarted?.Invoke();
+    }
+
+    private void EndPreRound()
+    {
+        currentBeat = PreRoundBeat.None;
+        phase = RoundPhase.InRound;
+        PreRoundFinished?.Invoke();
+    }
+
+    private void SetBeat(PreRoundBeat beat, float duration)
+    {
+        currentBeat = beat;
+        nextBeatTime = Time.unscaledTime + duration;
     }
 
     #endregion
@@ -283,7 +425,12 @@ public sealed class MetaRoundController : MonoBehaviour
     private void LoadThisScene()
     {
         phase = RoundPhase.Loading;
-        Time.timeScale = 1f;
+
+        if (gameTimeManager != null)
+            gameTimeManager.PrepareForSceneLoad();
+        else
+            Time.timeScale = 1f;
+
         loadRequestedRealtime = Time.realtimeSinceStartup;
         SceneManager.LoadScene(sceneBuildIndex, LoadSceneMode.Single);
     }

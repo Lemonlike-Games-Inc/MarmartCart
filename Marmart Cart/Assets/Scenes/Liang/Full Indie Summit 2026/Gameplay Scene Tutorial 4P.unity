@@ -8257,7 +8257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowDebugText: 0
   ShowCameraFrustum: 1
-  IgnoreTimeScale: 0
+  IgnoreTimeScale: 1
   WorldUpOverride: {fileID: 0}
   ChannelMask: 16
   UpdateMethod: 2
@@ -22690,7 +22690,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowDebugText: 0
   ShowCameraFrustum: 1
-  IgnoreTimeScale: 0
+  IgnoreTimeScale: 1
   WorldUpOverride: {fileID: 0}
   ChannelMask: 4
   UpdateMethod: 2
@@ -22999,7 +22999,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowDebugText: 0
   ShowCameraFrustum: 1
-  IgnoreTimeScale: 0
+  IgnoreTimeScale: 1
   WorldUpOverride: {fileID: 0}
   ChannelMask: 2
   UpdateMethod: 2
@@ -147042,7 +147042,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowDebugText: 0
   ShowCameraFrustum: 1
-  IgnoreTimeScale: 0
+  IgnoreTimeScale: 1
   WorldUpOverride: {fileID: 0}
   ChannelMask: 8
   UpdateMethod: 2
@@ -154764,6 +154764,7 @@ MonoBehaviour:
   pauseWorldDuringPreGame: 1
   pauseWorldDuringPostGame: 0
   sessionState: 0
+  matchStartTakenOver: 0
   cameraManager: {fileID: 1653367397}
   musicManager: {fileID: 11400000, guid: 370ec8eaf8ad6fd469325ba6c5e2850f, type: 2}
 --- !u!114 &1773933217
