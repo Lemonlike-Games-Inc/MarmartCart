@@ -29,7 +29,6 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     #region References
 
     [Header("References")]
-    [SerializeField] private PlayerWorldHUDSystem hudSystem;
     [SerializeField] private MatchViewportOverlayStateSystem stateSystem;
     [SerializeField] private MatchViewportOverlayProfile profile;
 
@@ -38,23 +37,11 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     #region Mode Presentation
 
     [Header("Mode Presentation - Runtime Read Only")]
-    [SerializeField] private int configuredPlayerCount = 2;
+    [Tooltip("Active player count from PlayerViewService; picks the 2P or 4P layout.")]
+    [SerializeField] private int viewPlayerCount = 2;
 
-    public int ConfiguredPlayerCount => configuredPlayerCount;
-
-    /// <summary>
-    /// Selects the 2P or 4P root offset and master scale authored in the
-    /// viewport-overlay profile. MatchSceneModeController owns this choice.
-    /// </summary>
-    public void SetModePlayerCount(int playerCount)
-    {
-        configuredPlayerCount =
-            playerCount <= 2
-                ? 2
-                : 4;
-
-        ApplyModeProfileSelection();
-    }
+    // Per draw: the profile's 2P/4P master scale times the UI scale.
+    private float drawScale = 1f;
 
     #endregion
 
@@ -162,7 +149,6 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     private void Awake()
     {
         ResolveReferences();
-        ApplyModeProfileSelection();
     }
 
     public override void DrawShapes(Camera cam)
@@ -170,35 +156,28 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         if (!drawingEnabled) return;
 
         if (cam == null ||
-            hudSystem == null ||
             stateSystem == null ||
             profile == null)
         {
             return;
         }
 
-        // Reassert the renderer's selected layout before reading any scaled
-        // profile values. This remains safe if the same profile asset is ever
-        // referenced by another runtime overlay renderer.
-        ApplyModeProfileSelection();
-
-        // This gives us both:
-        // 1. a hard filter to active gameplay cameras;
-        // 2. the local player index for the YOU label.
-        if (!hudSystem.TryGetRenderableSlotForCameraForOverlay(
-                cam,
-                out int localPlayerIndex,
-                out _))
+        // Only player-view cameras draw the overlay. The view's player index
+        // also gives the YOU label. Nothing here waits for the cart to spawn.
+        if (!HudShapes.TryGetViewPlayer(cam, out int localPlayerIndex))
         {
             return;
         }
 
-        float renderDepth =
-            Mathf.Max(
-                profile.NearCameraRenderDistance,
-                cam.nearClipPlane +
-                profile.NearClipSafetyPadding
-            );
+        PlayerViewService views = PlayerViewService.Instance;
+        viewPlayerCount = views != null ? views.ActivePlayerCount : 2;
+        drawScale = profile.GetMasterScale(viewPlayerCount) * HudShapes.Scale();
+
+        float renderDepth = HudShapes.RenderDepth(
+            cam,
+            profile.NearCameraRenderDistance,
+            profile.NearClipSafetyPadding
+        );
 
         Vector2 rootScreen =
             GetViewportAnchorScreenPosition(
@@ -208,28 +187,14 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         UpdateCachedTimerText();
         UpdateLeaderboardPresentation();
 
+        DrawViewportDividers(
+            cam,
+            renderDepth
+        );
+
         using (Draw.Command(cam))
         {
-            Draw.ResetAllDrawStates();
-            Draw.BlendMode =
-                ShapesBlendMode.Transparent;
-
-            Draw.RadiusSpace =
-                ThicknessSpace.Pixels;
-
-            Draw.ThicknessSpace =
-                ThicknessSpace.Pixels;
-
-            Draw.LineGeometry =
-                LineGeometry.Billboard;
-
-            Draw.LineEndCaps =
-                LineEndCap.Round;
-
-            DrawSplitScreenDividers(
-                cam,
-                renderDepth
-            );
+            HudShapes.ApplyHudDrawState();
 
             if (!resultsMode)
             {
@@ -254,11 +219,13 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     #region Split-Screen Dividers
 
     /// <summary>
-    /// Every gameplay camera draws the portion of the same screen-space
-    /// divider rectangles that falls inside its pixelRect. Camera viewport
-    /// clipping joins those pieces into one continuous full-screen cross.
+    /// Each player camera draws its half of the divider along every edge of
+    /// its viewport that touches another viewport (not the screen border).
+    /// Neighbouring cameras draw the other half, so each divider is centred
+    /// on the boundary. Works for any layout; a single full-screen view gets
+    /// no divider. Width and height follow the UI scale only.
     /// </summary>
-    private void DrawSplitScreenDividers(
+    private void DrawViewportDividers(
         Camera cam,
         float renderDepth)
     {
@@ -267,50 +234,51 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             return;
         }
 
-        float screenWidth = Screen.width;
-        float screenHeight = Screen.height;
+        Rect rect = cam.pixelRect;
+        float targetWidth = cam.targetTexture != null ? cam.targetTexture.width : Screen.width;
+        float targetHeight = cam.targetTexture != null ? cam.targetTexture.height : Screen.height;
+        const float EdgeTolerance = 0.5f;
 
-        if (screenWidth <= 0f || screenHeight <= 0f)
+        float uiScale = HudShapes.Scale();
+        float halfVertical = profile.VerticalDividerWidthPixels * uiScale * 0.5f;
+        float halfHorizontal = profile.HorizontalDividerHeightPixels * uiScale * 0.5f;
+
+        if (halfVertical > 0f)
         {
-            return;
+            if (rect.xMin > EdgeTolerance)
+                DrawDividerStrip(cam, renderDepth, rect.xMin, rect.xMin + halfVertical, rect.center.y, rect.height, profile.VerticalDividerColor);
+
+            if (rect.xMax < targetWidth - EdgeTolerance)
+                DrawDividerStrip(cam, renderDepth, rect.xMax - halfVertical, rect.xMax, rect.center.y, rect.height, profile.VerticalDividerColor);
         }
 
-        float centerX = screenWidth * 0.5f;
-        float centerY = screenHeight * 0.5f;
-        float verticalWidth = profile.VerticalDividerWidthPixels;
-
-        if (verticalWidth > 0f)
+        if (halfHorizontal > 0f)
         {
-            DrawRoundedScreenRectangle(
-                cam,
-                renderDepth,
-                centerX - verticalWidth * 0.5f,
-                centerX + verticalWidth * 0.5f,
-                centerY,
-                screenHeight,
-                0f,
-                profile.VerticalDividerColor
-            );
+            if (rect.yMin > EdgeTolerance)
+                DrawDividerStrip(cam, renderDepth, rect.xMin, rect.xMax, rect.yMin + halfHorizontal * 0.5f, halfHorizontal, profile.HorizontalDividerColor);
+
+            if (rect.yMax < targetHeight - EdgeTolerance)
+                DrawDividerStrip(cam, renderDepth, rect.xMin, rect.xMax, rect.yMax - halfHorizontal * 0.5f, halfHorizontal, profile.HorizontalDividerColor);
         }
+    }
 
-        if (configuredPlayerCount >= 4)
+    // One draw command per strip. Two flat rectangles drawn back to back in
+    // one command are merged into one instanced Shapes batch, which does not
+    // render here (in 4P each camera draws two strips; that is why the 4P
+    // dividers never showed and Bar_tempfix existed).
+    private static void DrawDividerStrip(
+        Camera cam,
+        float renderDepth,
+        float leftX,
+        float rightX,
+        float centerY,
+        float height,
+        Color color)
+    {
+        using (Draw.Command(cam))
         {
-            float horizontalHeight =
-                profile.HorizontalDividerHeightPixels;
-
-            if (horizontalHeight > 0f)
-            {
-                DrawRoundedScreenRectangle(
-                    cam,
-                    renderDepth,
-                    0f,
-                    screenWidth,
-                    centerY,
-                    horizontalHeight,
-                    0f,
-                    profile.HorizontalDividerColor
-                );
-            }
+            HudShapes.ApplyHudDrawState();
+            DrawRoundedScreenRectangle(cam, renderDepth, leftX, rightX, centerY, height, 0f, color);
         }
     }
 
@@ -343,7 +311,7 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     {
         Vector2 timerCenterScreen =
             rootScreen +
-            profile.TimerOffsetPixels;
+            (profile.TimerOffsetPixels * drawScale);
 
         DrawTimerRoundedBackground(
             cam,
@@ -353,14 +321,14 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
         Vector2 textScreen =
             timerCenterScreen +
-            profile.TimerTextOffsetPixels;
+            (profile.TimerTextOffsetPixels * drawScale);
 
-        DrawCenteredText(
+        HudShapes.DrawCenteredScreenText(
             cam,
             renderDepth,
             textScreen,
             cachedTimerText,
-            profile.TimerFontSizePixels,
+            (profile.TimerFontSizePixels * drawScale),
             profile.TimerTextColor
         );
     }
@@ -371,10 +339,10 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         Vector2 centerScreen)
     {
         float width =
-            profile.TimerBackgroundWidthPixels;
+            (profile.TimerBackgroundWidthPixels * drawScale);
 
         float height =
-            profile.TimerBackgroundHeightPixels;
+            (profile.TimerBackgroundHeightPixels * drawScale);
 
         float halfInnerLength =
             Mathf.Max(
@@ -384,23 +352,23 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
         Vector2 left =
             centerScreen +
-            profile.TimerBackgroundOffsetPixels +
+            (profile.TimerBackgroundOffsetPixels * drawScale) +
             Vector2.left *
             halfInnerLength;
 
         Vector2 right =
             centerScreen +
-            profile.TimerBackgroundOffsetPixels +
+            (profile.TimerBackgroundOffsetPixels * drawScale) +
             Vector2.right *
             halfInnerLength;
 
         Draw.Line(
-            ScreenPointToWorld(
+            HudShapes.ScreenToWorld(
                 cam,
                 left,
                 renderDepth
             ),
-            ScreenPointToWorld(
+            HudShapes.ScreenToWorld(
                 cam,
                 right,
                 renderDepth
@@ -825,21 +793,21 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             // not retain an unexplained timer-sized gap.
             firstRowCenter =
                 rootScreen +
-                profile.ResultsLeaderboardOffsetPixels;
+                (profile.GetResultsLeaderboardOffsetPixels(viewPlayerCount) * drawScale);
         }
         else
         {
             Vector2 timerCenter =
                 rootScreen +
-                profile.TimerOffsetPixels;
+                (profile.TimerOffsetPixels * drawScale);
 
             Vector2 timerBackgroundCenter =
                 timerCenter +
-                profile.TimerBackgroundOffsetPixels;
+                (profile.TimerBackgroundOffsetPixels * drawScale);
 
             float timerBottomY =
                 timerBackgroundCenter.y -
-                profile.TimerBackgroundHeightPixels *
+                (profile.TimerBackgroundHeightPixels * drawScale) *
                 0.5f;
 
             // The first row is automatically placed below the timer.
@@ -848,16 +816,16 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
                 new Vector2(
                     timerCenter.x,
                     timerBottomY -
-                    profile.TimerToLeaderboardPaddingPixels -
-                    profile.LeaderboardRowHeightPixels *
+                    (profile.TimerToLeaderboardPaddingPixels * drawScale) -
+                    (profile.LeaderboardRowHeightPixels * drawScale) *
                     0.5f
                 ) +
-                profile.LeaderboardOffsetPixels;
+                (profile.LeaderboardOffsetPixels * drawScale);
         }
 
         float rowStep =
-            profile.LeaderboardRowHeightPixels +
-            profile.LeaderboardRowSpacingPixels;
+            (profile.LeaderboardRowHeightPixels * drawScale) +
+            (profile.LeaderboardRowSpacingPixels * drawScale);
 
         // Draw stationary and downward-moving entries first.
         for (int targetRow = 0;
@@ -970,7 +938,7 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
         Vector2 barCenter =
             rowCenter +
-            profile.LeaderboardBarOffsetPixels;
+            (profile.LeaderboardBarOffsetPixels * drawScale);
 
         DrawLeaderboardBar(
             cam,
@@ -988,71 +956,64 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
                 );
 
         Vector2 playerLabelBackgroundSize =
-            profile
-                .LeaderboardPlayerLabelBackgroundSizePixels;
+            (profile.LeaderboardPlayerLabelBackgroundSizePixels * drawScale);
 
         Vector2 playerLabelGroupCenter =
             barCenter +
             Vector2.left *
             (
-                profile.LeaderboardBarWidthPixels *
+                (profile.LeaderboardBarWidthPixels * drawScale) *
                 0.5f +
                 playerLabelBackgroundSize.x *
                 0.5f +
-                profile.LeaderboardPlayerLabelGapPixels
+                (profile.LeaderboardPlayerLabelGapPixels * drawScale)
             ) +
-            profile
-                .LeaderboardPlayerLabelGroupOffsetPixels;
+            (profile.LeaderboardPlayerLabelGroupOffsetPixels * drawScale);
 
         DrawRoundedTextGroup(
             cam,
             renderDepth,
             playerLabelGroupCenter,
             playerLabelBackgroundSize,
-            profile
-                .LeaderboardPlayerLabelBackgroundCornerRadiusPixels,
+            (profile.LeaderboardPlayerLabelBackgroundCornerRadiusPixels * drawScale),
             profile
                 .GetLeaderboardPlayerLabelBackgroundColor(
                     playerState.PlayerIndex,
                     isLocalPlayer
                 ),
             playerLabel,
-            profile
-                .LeaderboardPlayerLabelFontSizePixels,
+            (profile.LeaderboardPlayerLabelFontSizePixels * drawScale),
             profile.GetLeaderboardTextColor(
                 isLocalPlayer
             )
         );
 
         Vector2 rankBackgroundSize =
-            profile
-                .LeaderboardRankBackgroundSizePixels;
+            (profile.LeaderboardRankBackgroundSizePixels * drawScale);
 
         Vector2 rankGroupCenter =
             barCenter +
             Vector2.right *
             (
-                profile.LeaderboardBarWidthPixels *
+                (profile.LeaderboardBarWidthPixels * drawScale) *
                 0.5f +
                 rankBackgroundSize.x *
                 0.5f +
-                profile.LeaderboardRankTextGapPixels
+                (profile.LeaderboardRankTextGapPixels * drawScale)
             ) +
-            profile
-                .LeaderboardRankGroupOffsetPixels;
+            (profile.LeaderboardRankGroupOffsetPixels * drawScale);
 
         DrawRoundedTextGroup(
             cam,
             renderDepth,
             rankGroupCenter,
             rankBackgroundSize,
-            profile
-                .LeaderboardRankBackgroundCornerRadiusPixels,
+            (profile.LeaderboardRankBackgroundCornerRadiusPixels * drawScale),
             profile.GetLeaderboardRankBackgroundColor(
                 isLocalPlayer
             ),
             GetRankLabel(playerState.Rank),
-            profile.LeaderboardRankFontSizePixels,
+            (profile.LeaderboardRankFontSizePixels * drawScale),
             profile.GetLeaderboardTextColor(
                 isLocalPlayer
             )
@@ -1075,27 +1036,22 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         );
 
         float width =
-            profile.LeaderboardBarWidthPixels;
+            (profile.LeaderboardBarWidthPixels * drawScale);
 
         float backgroundHeight =
-            profile
-                .LeaderboardBarBackgroundHeightPixels;
+            (profile.LeaderboardBarBackgroundHeightPixels * drawScale);
 
         float fillHeight =
-            profile
-                .LeaderboardBarFillHeightPixels;
+            (profile.LeaderboardBarFillHeightPixels * drawScale);
 
         float cornerRadius =
-            profile
-                .LeaderboardBarCornerRadiusPixels;
+            (profile.LeaderboardBarCornerRadiusPixels * drawScale);
 
         float horizontalPadding =
-            profile
-                .LeaderboardBarHorizontalPaddingPixels;
+            (profile.LeaderboardBarHorizontalPaddingPixels * drawScale);
 
         float fillOutlineThickness =
-            profile
-                .LeaderboardBarFillOutlineThicknessPixels;
+            (profile.LeaderboardBarFillOutlineThicknessPixels * drawScale);
 
         float fullLeftX =
             center.x -
@@ -1319,20 +1275,16 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         int playerIndex)
     {
         float lineThickness =
-            profile
-                .LeaderboardPotentialPatternLineThicknessPixels;
+            (profile.LeaderboardPotentialPatternLineThicknessPixels * drawScale);
 
         float chevronWidth =
-            profile
-                .LeaderboardPotentialPatternWidthPixels;
+            (profile.LeaderboardPotentialPatternWidthPixels * drawScale);
 
         float chevronSpacing =
-            profile
-                .LeaderboardPotentialPatternSpacingPixels;
+            (profile.LeaderboardPotentialPatternSpacingPixels * drawScale);
 
         float verticalPadding =
-            profile
-                .LeaderboardPotentialPatternVerticalPaddingPixels;
+            (profile.LeaderboardPotentialPatternVerticalPaddingPixels * drawScale);
 
         // Round line caps extend by roughly half the stroke thickness. Keep
         // their endpoints inside the visible potential interval so even a
@@ -1533,12 +1485,12 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         }
 
         Draw.Line(
-            ScreenPointToWorld(
+            HudShapes.ScreenToWorld(
                 cam,
                 clippedStart,
                 renderDepth
             ),
-            ScreenPointToWorld(
+            HudShapes.ScreenToWorld(
                 cam,
                 clippedEnd,
                 renderDepth
@@ -1619,13 +1571,10 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     }
 
     /// <summary>
-    /// Draws a filled Shapes rectangle in screen-pixel authored dimensions.
-    ///
-    /// Rectangle width/height/corner radius are converted from pixels to
-    /// world units at the fixed near-camera render depth. The rectangle is
-    /// rotated into the camera plane so it remains a viewport HUD element.
+    /// Rectangle given by its left/right screen X, centre Y and height in
+    /// screen pixels. Skips empty rectangles; drawing is in HudShapes.
     /// </summary>
-    private void DrawRoundedScreenRectangle(
+    private static void DrawRoundedScreenRectangle(
         Camera cam,
         float renderDepth,
         float visibleLeftX,
@@ -1635,93 +1584,17 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         float cornerRadiusPixels,
         Color color)
     {
-        float widthPixels =
-            visibleRightX -
-            visibleLeftX;
+        float widthPixels = visibleRightX - visibleLeftX;
+        if (widthPixels <= 0.001f || heightPixels <= 0.001f) return;
 
-        if (widthPixels <= 0.001f ||
-            heightPixels <= 0.001f)
-        {
-            return;
-        }
-
-        float safeHeightPixels =
-            Mathf.Max(
-                0.001f,
-                heightPixels
-            );
-
-        float safeCornerPixels =
-            Mathf.Clamp(
-                cornerRadiusPixels,
-                0f,
-                Mathf.Min(
-                    widthPixels,
-                    safeHeightPixels
-                ) * 0.5f
-            );
-
-        Vector2 centerScreen =
-            new Vector2(
-                (visibleLeftX + visibleRightX) *
-                0.5f,
-                centerY
-            );
-
-        Vector3 centerWorld =
-            ScreenPointToWorld(
-                cam,
-                centerScreen,
-                renderDepth
-            );
-
-        float widthWorld =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                centerWorld,
-                widthPixels
-            );
-
-        float heightWorld =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                centerWorld,
-                safeHeightPixels
-            );
-
-        float cornerRadiusWorld =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                centerWorld,
-                safeCornerPixels
-            );
-
-        Color previousColor =
-            Draw.Color;
-
-        // Shapes rectangles live in their local XY plane. Put that plane on the
-        // current camera's near plane, draw, then restore the default matrix.
-        Draw.Matrix =
-            Matrix4x4.TRS(
-                centerWorld,
-                cam.transform.rotation,
-                Vector3.one
-            );
-
-        Draw.Color = color;
-
-        Draw.Rectangle(
-            Vector3.zero,
-            widthWorld,
-            heightWorld,
-            cornerRadiusWorld
+        HudShapes.DrawRoundedScreenRectangle(
+            cam,
+            renderDepth,
+            new Vector2((visibleLeftX + visibleRightX) * 0.5f, centerY),
+            new Vector2(widthPixels, heightPixels),
+            cornerRadiusPixels,
+            color
         );
-
-        Draw.Color =
-            previousColor;
-
-        Draw.Matrix =
-            Matrix4x4.identity;
     }
 
     private static string GetPlayerLabel(
@@ -1773,7 +1646,7 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
         return
             anchor +
-            profile.RootOffsetPixels;
+            (profile.GetRootOffsetPixels(viewPlayerCount) * drawScale);
     }
 
     #endregion
@@ -1782,14 +1655,6 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
     private void ResolveReferences()
     {
-        if (hudSystem == null)
-        {
-            hudSystem =
-                FindFirstObjectByType<
-                    PlayerWorldHUDSystem
-                >();
-        }
-
         if (stateSystem == null)
         {
             stateSystem =
@@ -1804,53 +1669,6 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
                     MatchViewportOverlayStateSystem
                 >();
         }
-    }
-
-    private void ApplyModeProfileSelection()
-    {
-        if (profile == null) return;
-
-        profile.SetRuntimePlayerCount(
-            configuredPlayerCount
-        );
-    }
-
-    private void DrawCenteredText(
-        Camera cam,
-        float renderDepth,
-        Vector2 screenPosition,
-        string text,
-        float fontSizePixels,
-        Color color)
-    {
-        Vector3 textWorld =
-            ScreenPointToWorld(
-                cam,
-                screenPosition,
-                renderDepth
-            );
-
-        Draw.FontSize =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                textWorld,
-                fontSizePixels
-            );
-
-        Color previousColor =
-            Draw.Color;
-
-        Draw.Color = color;
-
-        Draw.Text(
-            textWorld,
-            cam.transform.rotation,
-            text,
-            TextAlign.Center
-        );
-
-        Draw.Color =
-            previousColor;
     }
 
     private void DrawRoundedTextGroup(
@@ -1881,59 +1699,13 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             backgroundColor
         );
 
-        DrawCenteredText(
+        HudShapes.DrawCenteredScreenText(
             cam,
             renderDepth,
             groupCenterScreen,
             text,
             fontSizePixels,
             textColor
-        );
-    }
-
-    private Vector3 ScreenPointToWorld(
-        Camera cam,
-        Vector2 screenPoint,
-        float screenDepth)
-    {
-        return cam.ScreenToWorldPoint(
-            new Vector3(
-                screenPoint.x,
-                screenPoint.y,
-                screenDepth
-            )
-        );
-    }
-
-    private float PixelsToWorldSizeAtDepth(
-        Camera cam,
-        Vector3 worldPosition,
-        float pixelSize)
-    {
-        Vector3 screenA =
-            cam.WorldToScreenPoint(
-                worldPosition
-            );
-
-        Vector3 screenB =
-            screenA;
-
-        screenB.y +=
-            pixelSize;
-
-        Vector3 worldA =
-            cam.ScreenToWorldPoint(
-                screenA
-            );
-
-        Vector3 worldB =
-            cam.ScreenToWorldPoint(
-                screenB
-            );
-
-        return Vector3.Distance(
-            worldA,
-            worldB
         );
     }
 

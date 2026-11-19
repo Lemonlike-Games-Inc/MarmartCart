@@ -70,7 +70,12 @@ public static class HudShapes
         return new Vector2(value.x * cos - value.y * sin, value.x * sin + value.y * cos);
     }
 
-    /// <summary>Rounded rectangle facing the camera, sized in screen pixels. Restores Draw.Color and resets Draw.Matrix.</summary>
+    /// <summary>
+    /// Rounded rectangle facing the camera, sized in screen pixels. Restores Draw.Color and resets Draw.Matrix.
+    /// Known pitfall: two or more rectangles drawn back to back in one Draw.Command are merged into one
+    /// instanced Shapes batch, which does not render in this project. Put other draws between them or give
+    /// each its own command (see MatchViewportOverlayRenderer dividers).
+    /// </summary>
     public static void DrawRoundedScreenRectangle(
         Camera cam,
         float depth,

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewportAnchorNormalized: {x: 0.5, y: 1}
   twoPlayerRootOffsetPixels: {x: 0, y: -180}
-  twoPlayerMasterScale: 1
+  twoPlayerMasterScale: 0.6
   fourPlayerRootOffsetPixels: {x: 0, y: -33}
-  fourPlayerMasterScale: 0.75
+  fourPlayerMasterScale: 0.3
   modeSpecificRootLayoutVersion: 1
   nearCameraRenderDistance: 0.001
   nearClipSafetyPadding: 0.03
@@ -35,6 +35,8 @@ MonoBehaviour:
   timerTextColor: {r: 1, g: 1, b: 1, a: 1}
   leaderboardMasterScale: 1.5
   leaderboardOffsetPixels: {x: 0, y: 0}
+  twoPlayerResultsLeaderboardOffsetPixels: {x: 0, y: -20}
+  fourPlayerResultsLeaderboardOffsetPixels: {x: 0, y: -20}
   timerToLeaderboardPaddingPixels: 5
   leaderboardRowHeightPixels: 35
   leaderboardRowSpacingPixels: 2

@@ -56,8 +56,6 @@ public class MatchViewportOverlayProfile : ScriptableObject
     [HideInInspector]
     [SerializeField] private int modeSpecificRootLayoutVersion;
 
-    [System.NonSerialized] private int runtimePlayerCount = 2;
-
     #endregion
 
     #region Render Plane
@@ -521,16 +519,11 @@ public class MatchViewportOverlayProfile : ScriptableObject
 
     #region Public API
 
+    // Pixel values below are 1920x1080 reference pixels including the authored
+    // leaderboard/label/rank sub-scales. The renderer multiplies them by
+    // GetMasterScale(playerCount) and the UI scale.
+
     public Vector2 ViewportAnchorNormalized => viewportAnchorNormalized;
-
-    public Vector2 RootOffsetPixels =>
-        GetRootOffsetPixels(runtimePlayerCount) *
-        MasterScale;
-
-    public float MasterScale =>
-        GetMasterScale(runtimePlayerCount);
-
-    public int RuntimePlayerCount => runtimePlayerCount;
 
     public Vector2 GetRootOffsetPixels(int playerCount)
     {
@@ -551,18 +544,6 @@ public class MatchViewportOverlayProfile : ScriptableObject
             );
     }
 
-    /// <summary>
-    /// Selects which serialized 2P/4P layout pair all scaled profile getters
-    /// expose. The scene-mode controller owns when this runtime choice changes.
-    /// </summary>
-    public void SetRuntimePlayerCount(int playerCount)
-    {
-        runtimePlayerCount =
-            playerCount <= 2
-                ? 2
-                : 4;
-    }
-
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
 
@@ -573,29 +554,29 @@ public class MatchViewportOverlayProfile : ScriptableObject
     public Color HorizontalDividerColor => horizontalDividerColor;
 
     public Vector2 TimerOffsetPixels =>
-        timerOffsetPixels * MasterScale;
+        timerOffsetPixels;
 
     public Vector2 TimerBackgroundOffsetPixels =>
-        timerBackgroundOffsetPixels * MasterScale;
+        timerBackgroundOffsetPixels;
 
     public float TimerBackgroundWidthPixels =>
-        timerBackgroundWidthPixels * MasterScale;
+        timerBackgroundWidthPixels;
 
     public float TimerBackgroundHeightPixels =>
-        timerBackgroundHeightPixels * MasterScale;
+        timerBackgroundHeightPixels;
 
     public Color TimerBackgroundColor => timerBackgroundColor;
 
     public Vector2 TimerTextOffsetPixels =>
-        timerTextOffsetPixels * MasterScale;
+        timerTextOffsetPixels;
 
     public float TimerFontSizePixels =>
-        timerFontSizePixels * MasterScale;
+        timerFontSizePixels;
 
     public Color TimerTextColor => timerTextColor;
 
     private float EffectiveLeaderboardScale =>
-        MasterScale * leaderboardMasterScale;
+        leaderboardMasterScale;
 
     public float LeaderboardMasterScale =>
         leaderboardMasterScale;
@@ -603,9 +584,9 @@ public class MatchViewportOverlayProfile : ScriptableObject
     public Vector2 LeaderboardOffsetPixels =>
         leaderboardOffsetPixels * EffectiveLeaderboardScale;
 
-    public Vector2 ResultsLeaderboardOffsetPixels =>
+    public Vector2 GetResultsLeaderboardOffsetPixels(int playerCount) =>
         (
-            runtimePlayerCount <= 2
+            playerCount <= 2
                 ? twoPlayerResultsLeaderboardOffsetPixels
                 : fourPlayerResultsLeaderboardOffsetPixels
         ) * EffectiveLeaderboardScale;

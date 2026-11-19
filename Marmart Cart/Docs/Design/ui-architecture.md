@@ -59,7 +59,8 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
   - Gameplay publishes state and events.
   - Presenters (a Shapes drawer or a canvas view) only display them.
   - ScriptableObject profiles hold style and layout only, never runtime values.
-- **One player-identity profile** holds each player's colours and labels.
+- **One player-identity profile** (`PlayerIdentityProfile`) holds each player's main colour and label, used by single-colour UI (pointers, markers, later ability or banner tints).
+  - Exception, on purpose: the leaderboard keeps its own designed per-player palette in `MatchViewportOverlayProfile` (bar fill, name tag, two potential-pattern colours). When a player's colour changes, update both.
 - **Shapes drawers** use one shared toolkit:
   - What it does: projects onto the near-camera plane, converts pixels to world units with `UiScale`, draws rounded rectangles and centred text, and resets draw state.
   - Each drawer checks the camera before opening its one draw command for that camera.
@@ -98,7 +99,7 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 2. Only `PlayerViewService` finds a player's camera or decides 2P vs 4P for UI.
 3. Every Shapes drawer uses the toolkit.
 4. Profiles hold style only; nothing writes to a shared profile at runtime.
-5. Player colours live in one place.
+5. Player main colours live in `PlayerIdentityProfile`; only the leaderboard keeps its own matching palette.
 6. Canvas UI goes only through `ViewportCanvasSystem`.
 7. No dead UI is left.
 
