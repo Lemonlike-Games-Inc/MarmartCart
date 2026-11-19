@@ -25,7 +25,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
-    [SerializeField] private PowerupViewportCanvasSystem viewportCanvasSystem;
+    [SerializeField] private ViewportCanvasSystem viewportCanvasSystem;
     [SerializeField] private PowerupHudProfile hudProfile;
 
     [Header("Late Binding")]
@@ -66,7 +66,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
     private readonly bool[] missingIconLogged = new bool[4];
 
     private PowerupRuntimeSystem subscribedRuntimeSystem;
-    private PowerupViewportCanvasSystem subscribedViewportCanvasSystem;
+    private ViewportCanvasSystem subscribedViewportCanvasSystem;
     private Coroutine bindingRoutine;
     private bool missingProfileLogged;
 
@@ -255,9 +255,9 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         {
             if (widgetRoots[i] != null) continue;
 
-            if (!viewportCanvasSystem.TryGetLayerRoot(
+            if (!viewportCanvasSystem.TryGetPlayerLayer(
                     i + 1,
-                    PowerupViewportCanvasSystem.ViewportLayer.Hud,
+                    ViewportCanvasSystem.PlayerLayer.Hud,
                     out RectTransform hudRoot
                 ))
             {
@@ -398,7 +398,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
             : hudProfile.EmptySlotIcon;
 
         bool shouldShow =
-            viewportCanvasSystem.IsViewportActive(slotIndex + 1) &&
+            viewportCanvasSystem.IsPlayerViewActive(slotIndex + 1) &&
             (
                 hasStoredPowerup[slotIndex] ||
                 hudProfile.ShowSlotWhenEmpty
@@ -558,7 +558,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         if (viewportCanvasSystem == null)
         {
             viewportCanvasSystem =
-                FindFirstObjectByType<PowerupViewportCanvasSystem>();
+                FindFirstObjectByType<ViewportCanvasSystem>();
         }
     }
 
@@ -589,7 +589,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         {
             if (subscribedViewportCanvasSystem != null)
             {
-                subscribedViewportCanvasSystem.OnViewportLayoutRefreshed -=
+                subscribedViewportCanvasSystem.LayoutChanged -=
                     HandleViewportLayoutRefreshed;
             }
 
@@ -597,7 +597,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
             if (subscribedViewportCanvasSystem != null)
             {
-                subscribedViewportCanvasSystem.OnViewportLayoutRefreshed +=
+                subscribedViewportCanvasSystem.LayoutChanged +=
                     HandleViewportLayoutRefreshed;
             }
         }
@@ -615,7 +615,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
         if (subscribedViewportCanvasSystem != null)
         {
-            subscribedViewportCanvasSystem.OnViewportLayoutRefreshed -=
+            subscribedViewportCanvasSystem.LayoutChanged -=
                 HandleViewportLayoutRefreshed;
         }
 

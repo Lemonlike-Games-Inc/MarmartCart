@@ -4,7 +4,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Renders authoritative TomatoBlindState inside the struck player's shared
 /// fullscreen-effect layer. Viewport ownership and 2P/4P camera alignment live
-/// in PowerupViewportCanvasSystem, so this presenter creates no Canvas.
+/// in ViewportCanvasSystem, so this presenter creates no Canvas.
 /// </summary>
 [DisallowMultipleComponent]
 public class TomatoBlindCanvasPresenter : MonoBehaviour
@@ -13,7 +13,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private TomatoBlindEffectSystem blindEffectSystem;
-    [SerializeField] private PowerupViewportCanvasSystem viewportCanvasSystem;
+    [SerializeField] private ViewportCanvasSystem viewportCanvasSystem;
     [SerializeField] private TomatoPresentationProfile presentationProfile;
 
     [Header("Diagnostics")]
@@ -29,7 +29,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
     private readonly float[] visualStartedAtTime = new float[MaxPlayerSlots];
 
     private TomatoBlindEffectSystem subscribedBlindEffectSystem;
-    private PowerupViewportCanvasSystem subscribedViewportCanvasSystem;
+    private ViewportCanvasSystem subscribedViewportCanvasSystem;
     private bool missingBlindSystemLogged;
     private bool missingCanvasSystemLogged;
     private bool missingProfileLogged;
@@ -179,7 +179,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
         for (int i = 0; i < MaxPlayerSlots; i++)
         {
             bool viewportCanRender =
-                viewportCanvasSystem.IsViewportActive(i + 1);
+                viewportCanvasSystem.IsPlayerViewActive(i + 1);
 
             if (!viewportCanRender ||
                 !hasDisplayedState[i] ||
@@ -269,9 +269,9 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
         {
             if (viewportImages[i] != null) continue;
 
-            if (!viewportCanvasSystem.TryGetLayerRoot(
+            if (!viewportCanvasSystem.TryGetPlayerLayer(
                     i + 1,
-                    PowerupViewportCanvasSystem.ViewportLayer.FullscreenEffect,
+                    ViewportCanvasSystem.PlayerLayer.Effects,
                     out RectTransform effectRoot
                 ))
             {
@@ -355,7 +355,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
         if (viewportCanvasSystem == null)
         {
             viewportCanvasSystem =
-                FindFirstObjectByType<PowerupViewportCanvasSystem>();
+                FindFirstObjectByType<ViewportCanvasSystem>();
         }
 
         if (logMissingReferences &&
@@ -377,7 +377,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
             missingCanvasSystemLogged = true;
             Debug.LogWarning(
                 "[TomatoBlindCanvasPresenter] Add one " +
-                "PowerupViewportCanvasSystem to the scene.",
+                "ViewportCanvasSystem to the scene.",
                 this
             );
         }
@@ -413,7 +413,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
         {
             if (subscribedViewportCanvasSystem != null)
             {
-                subscribedViewportCanvasSystem.OnViewportLayoutRefreshed -=
+                subscribedViewportCanvasSystem.LayoutChanged -=
                     HandleViewportLayoutRefreshed;
             }
 
@@ -421,7 +421,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
 
             if (subscribedViewportCanvasSystem != null)
             {
-                subscribedViewportCanvasSystem.OnViewportLayoutRefreshed +=
+                subscribedViewportCanvasSystem.LayoutChanged +=
                     HandleViewportLayoutRefreshed;
             }
         }
@@ -439,7 +439,7 @@ public class TomatoBlindCanvasPresenter : MonoBehaviour
 
         if (subscribedViewportCanvasSystem != null)
         {
-            subscribedViewportCanvasSystem.OnViewportLayoutRefreshed -=
+            subscribedViewportCanvasSystem.LayoutChanged -=
                 HandleViewportLayoutRefreshed;
         }
 

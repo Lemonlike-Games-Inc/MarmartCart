@@ -3,8 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// Tutorial-only owner of per-player ControlsOverlayUI instances.
-/// Uses one normal Screen Space Overlay Canvas and creates one normalized
-/// viewport root per active local player.
+/// Builds each active player's hints on that player's HUD layer of
+/// ViewportCanvasSystem, which matches and clips the player's viewport.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class TutorialControlHintsManager : MonoBehaviour
@@ -12,7 +12,8 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
     public const int MaxPlayers = 4;
 
     [Header("Overlay")]
-    [SerializeField] private Canvas overlayCanvas;
+    [Tooltip("Auto-found if left empty.")]
+    [SerializeField] private ViewportCanvasSystem viewportCanvas;
 
     [Tooltip(
         "Prefab containing ControlsOverlayUI and rows ordered: " +
@@ -21,7 +22,6 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
     [SerializeField] private GameObject controlHintsPrefab;
 
     [Header("Scene Systems")]
-    [SerializeField] private MatchSceneModeController matchSceneModeController;
     [SerializeField] private PlayerInputManager playerInputManager;
     [SerializeField] private tutorialGatesController tutorialGates;
 
@@ -42,9 +42,6 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
 
     private readonly ControlsOverlayUI[] playerOverlays =
         new ControlsOverlayUI[MaxPlayers];
-
-    private readonly RectTransform[] viewportRoots =
-        new RectTransform[MaxPlayers];
 
     private Coroutine setupRoutine;
     private Coroutine bindingRoutine;
@@ -94,47 +91,18 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
     {
         ResolveReferences();
 
-        while (true)
+        while (viewportCanvas == null || !viewportCanvas.IsReady)
         {
-            int count = ResolveConfiguredPlayerCount();
-
-            if (count == 2 || count == 4)
-            {
-                activePlayerCount = count;
-                break;
-            }
-
             yield return null;
+            ResolveReferences();
         }
 
+        activePlayerCount = viewportCanvas.ActivePlayerCount;
         BuildOverlays(activePlayerCount);
         ApplyCurrentGateVisibility();
 
         setupRoutine = null;
         StartBindingIfNeeded();
-    }
-
-    private int ResolveConfiguredPlayerCount()
-    {
-        if (matchSceneModeController != null &&
-            matchSceneModeController.IsConfigured)
-        {
-            return matchSceneModeController.ConfiguredPlayerCount;
-        }
-
-        if (playerInputManager != null)
-        {
-            int count = playerInputManager.ConfiguredPlayerCount;
-            if (count == 2 || count == 4) return count;
-        }
-
-        if (GMode.Instance != null)
-        {
-            int count = GMode.Instance.PlayerCount();
-            if (count == 2 || count == 4) return count;
-        }
-
-        return 0;
     }
 
     private void BuildOverlays(int playerCount)
@@ -143,10 +111,10 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
 
         ResolveReferences();
 
-        if (overlayCanvas == null)
+        if (viewportCanvas == null)
         {
             Debug.LogError(
-                "[TutorialControlHintsManager] Overlay Canvas is missing.",
+                "[TutorialControlHintsManager] ViewportCanvasSystem is missing.",
                 this
             );
             return;
@@ -163,22 +131,17 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
 
         for (int playerIndex = 1; playerIndex <= playerCount; playerIndex++)
         {
-            Rect viewport = GetHardcodedViewport(playerCount, playerIndex);
-
-            GameObject viewportObject = new GameObject(
-                $"Tutorial Control Hints - P{playerIndex}",
-                typeof(RectTransform)
-            );
-
-            RectTransform viewportRoot =
-                viewportObject.GetComponent<RectTransform>();
-
-            viewportRoot.SetParent(overlayCanvas.transform, false);
-            ApplyViewportRect(viewportRoot, viewport);
+            if (!viewportCanvas.TryGetPlayerLayer(
+                    playerIndex,
+                    ViewportCanvasSystem.PlayerLayer.Hud,
+                    out RectTransform hudLayer))
+            {
+                continue;
+            }
 
             ControlsOverlayUI overlay = Instantiate(
                 controlHintsPrefab,
-                viewportRoot,
+                hudLayer,
                 false
             ).GetComponent<ControlsOverlayUI>();
 
@@ -187,44 +150,10 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
             overlay.ApplyInitialVisibility();
             overlay.EnforceRowOrder();
 
-            viewportRoots[playerIndex - 1] = viewportRoot;
             playerOverlays[playerIndex - 1] = overlay;
         }
 
         overlaysBuilt = true;
-    }
-
-    private static Rect GetHardcodedViewport(
-        int playerCount,
-        int playerIndex)
-    {
-        if (playerCount <= 2)
-        {
-            return playerIndex == 1
-                ? new Rect(0f, 0f, 0.5f, 1f)
-                : new Rect(0.5f, 0f, 0.5f, 1f);
-        }
-
-        return playerIndex switch
-        {
-            1 => new Rect(0f, 0.5f, 0.5f, 0.5f),
-            2 => new Rect(0.5f, 0.5f, 0.5f, 0.5f),
-            3 => new Rect(0f, 0f, 0.5f, 0.5f),
-            4 => new Rect(0.5f, 0f, 0.5f, 0.5f),
-            _ => new Rect(0f, 0f, 1f, 1f)
-        };
-    }
-
-    private static void ApplyViewportRect(
-        RectTransform root,
-        Rect viewport)
-    {
-        root.anchorMin = new Vector2(viewport.xMin, viewport.yMin);
-        root.anchorMax = new Vector2(viewport.xMax, viewport.yMax);
-        root.offsetMin = Vector2.zero;
-        root.offsetMax = Vector2.zero;
-        root.localScale = Vector3.one;
-        root.localRotation = Quaternion.identity;
     }
 
     private void StartBindingIfNeeded()
@@ -399,12 +328,10 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
 
     private void ResolveReferences()
     {
-        if (overlayCanvas == null)
-            overlayCanvas = GetComponentInParent<Canvas>();
-
-        if (matchSceneModeController == null)
-            matchSceneModeController =
-                FindFirstObjectByType<MatchSceneModeController>();
+        if (viewportCanvas == null)
+            viewportCanvas = ViewportCanvasSystem.Instance != null
+                ? ViewportCanvasSystem.Instance
+                : FindFirstObjectByType<ViewportCanvasSystem>();
 
         if (playerInputManager == null)
             playerInputManager =
@@ -440,12 +367,11 @@ public sealed class TutorialControlHintsManager : MonoBehaviour
 
     private void DestroyGeneratedOverlays()
     {
-        for (int i = 0; i < viewportRoots.Length; i++)
+        for (int i = 0; i < playerOverlays.Length; i++)
         {
-            if (viewportRoots[i] != null)
-                Destroy(viewportRoots[i].gameObject);
+            if (playerOverlays[i] != null)
+                Destroy(playerOverlays[i].gameObject);
 
-            viewportRoots[i] = null;
             playerOverlays[i] = null;
         }
 

@@ -45,30 +45,30 @@ MonoBehaviour:
   iconTint: {r: 1, g: 1, b: 1, a: 1}
   preserveIconAspect: 1
   twoPlayerAnchor: {x: 0.5, y: 0}
-  twoPlayerBackgroundPositionPixels: {x: 0, y: 300}
-  twoPlayerIconPositionPixels: {x: 0, y: 300}
+  twoPlayerBackgroundPositionPixels: {x: 0, y: 150}
+  twoPlayerIconPositionPixels: {x: 0, y: 150}
   twoPlayerBackgroundSizePixels: {x: 225, y: 225}
   twoPlayerIconSizePixels: {x: 125, y: 125}
   twoPlayerPromptSlot1:
-    positionPixels: {x: -50, y: 415}
+    positionPixels: {x: -50, y: 265}
     sizePixels: {x: 70, y: 70}
   twoPlayerPromptSlot2:
-    positionPixels: {x: 0, y: 415}
+    positionPixels: {x: 0, y: 265}
     sizePixels: {x: 50, y: 50}
   twoPlayerPromptSlot3:
-    positionPixels: {x: 50, y: 415}
+    positionPixels: {x: 50, y: 265}
     sizePixels: {x: 70, y: 70}
   fourPlayerAnchor: {x: 0.5, y: 0}
-  fourPlayerBackgroundPositionPixels: {x: 0, y: 90}
-  fourPlayerIconPositionPixels: {x: 0, y: 90}
-  fourPlayerBackgroundSizePixels: {x: 225, y: 225}
-  fourPlayerIconSizePixels: {x: 125, y: 125}
+  fourPlayerBackgroundPositionPixels: {x: 0, y: 50.625}
+  fourPlayerIconPositionPixels: {x: 0, y: 50.625}
+  fourPlayerBackgroundSizePixels: {x: 126.5625, y: 126.5625}
+  fourPlayerIconSizePixels: {x: 70.3125, y: 70.3125}
   fourPlayerPromptSlot1:
-    positionPixels: {x: -50, y: 205}
-    sizePixels: {x: 70, y: 70}
+    positionPixels: {x: -28.125, y: 115.3125}
+    sizePixels: {x: 39.375, y: 39.375}
   fourPlayerPromptSlot2:
-    positionPixels: {x: 0, y: 205}
-    sizePixels: {x: 50, y: 50}
+    positionPixels: {x: 0, y: 115.3125}
+    sizePixels: {x: 28.125, y: 28.125}
   fourPlayerPromptSlot3:
-    positionPixels: {x: 50, y: 205}
-    sizePixels: {x: 70, y: 70}
+    positionPixels: {x: 28.125, y: 115.3125}
+    sizePixels: {x: 39.375, y: 39.375}

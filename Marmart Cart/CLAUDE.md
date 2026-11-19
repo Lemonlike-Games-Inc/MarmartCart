@@ -33,7 +33,7 @@ Details live in `Docs/` (and in subfolder `CLAUDE.md` files once we add any). Th
 - Leading cart: `CartControlScript` (input, control state, Hype), `LeadingCartBehaviour` (per-wheel drive, 4 per cart), `CartDriftController`, `CartSteering`, `CartMovementProfile` (SO), `CartDriftHypeReward` (drifting earns Hype), `LeadingCartBattleController` (crash rules).
 - Follower carts and cargo: `ChainedCartManager` (one cart: owned/loose/vulnerable), `ChainCartCargo` (authoritative cargo), `GroceryLootPickup`.
 - Powerups (`Scripts/PowerupsSystem/`, not its `Old/` folder): `PlayerPowerupController`, `PowerupTargetingController`, `PowerupAimRenderer`, plus the Tomato, Ice Cube and Cola Mentos effect systems.
-- UI (all Shapes): `PlayerWorldHUD*` + `CartWorldHUD*Adapter` (player-attached), `MatchViewportOverlay*` (per-camera timer and live leaderboard), `PlayerSessionGuide*`, other-player pointers and markers.
+- UI (rules in `Docs/Design/ui-architecture.md`): `PlayerViewService` (on `Match Load`: player cameras, viewports, UI scale) and `ViewportCanvasSystem` (`Game UIs/Viewport Canvas System`: the one canvas, a clipped root per player with Effects/HUD/Banner layers, plus a full-screen root). Shapes HUD: `PlayerWorldHUD*` + `CartWorldHUD*Adapter` (player-attached), `MatchViewportOverlay*` (per-camera timer and live leaderboard), `PlayerSessionGuide*`, other-player pointers and markers. Canvas UI: power-up held item, Tomato splat, tutorial control hints.
 - Tutorial: separate 2P and 4P scenes, `TutorialSceneManager` and `Scripts/Tutorial/NewForSummit/`. Debug: `GameplayDebugger`.
 - Map areas: code says Zone (`ArenaZoneId`), design docs say Section. Section definitions will be reworked for Hypermarket expansion.
 
