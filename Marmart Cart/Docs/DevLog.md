@@ -3,6 +3,26 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-18 02:25 (UTC-7): UI architecture review; Step 2 expanded into a UI foundation
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Reviewed every live UI/HUD system, Shapes 4.6, UniText 3.5 and the render setup, and ran Gameplay Scene 2P once in Play Mode. Agreed a long-term UI direction and expanded Step 2 to rebuild the HUD on it. No project code changed.
+- Findings:
+  - All six live Shapes drawers (world HUD, viewport overlay, pointers, markers, session guide, aim) size everything in fixed screen pixels. Builds run at native resolution, so the HUD shrinks on bigger screens: the cart ring is 36% of viewport height in the 1348x759 editor view, 25% at 1080p, 12.5% at 4K.
+  - The power-up canvas keeps its CanvasScaler at Constant Pixel Size.
+  - Helper code is copied across the drawers; "2P or 4P" is decided in about eight places; player colours live in three profiles; four HUD profiles hold runtime values on shared assets; 4P scenes draw the divider twice (`Bar_tempfix`).
+  - UniText needs a Canvas (or its own world-text batcher), has no console support, and is not used in any scene yet. It comes from the Asset Store.
+- Decisions:
+  - Two layers. Shapes for procedural HUD (meters, rings, bars, pointers, aim, timer, leaderboard), treated as prototype UI until the art direction is settled. A per-player canvas with UniText for art, real text, cards, results and menus. A widget lives in one layer.
+  - Draw order: world, Shapes HUD inside each camera, per-player canvas, full-screen canvas.
+  - One reference resolution, 1920x1080; scale = min(width/1920, height/1080) for Shapes and every CanvasScaler. Tune with a fixed 1920x1080 Game view.
+  - One `PlayerViewService` for cameras, viewport rects, UI scale and player count, with views separate from players.
+  - Profiles hold style only. One player-identity profile. Presentation animations use real time. `GameTimeManager` owns game time.
+  - The Round banner is canvas + UniText.
+  - Step 2 now runs as 2a-2j: docs, view service, dead-UI removal, viewport canvas, UniText setup, Round banner, Shapes toolkit and the three small drawers, session guide and overlay, player world HUD, final retune. Each sub-step stops for testing.
+  - Standing OK for this work: Play Mode for before/after HUD captures, and scene/prefab edits through the CLI after a commit.
+- Out of scope: spawn-time player tags, results cameras, keyboard aim from screen centre, a one-view layout for online.
+- Open questions: display font for UniText (CarterOne or Kids Magazine); the schedule impact on the remaining meta features (about 6-9 days for Step 2).
+
 ## 2026-11-17 02:46 (UTC-7): Round spine Step 1, Match data and Round loop
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: A Match now runs as 3 Rounds, one gameplay-scene reload each, with Match Points kept across loads. Console logs only, no UI. Liang tested it in Play Mode.

@@ -92,5 +92,6 @@ Event demo build: a short fixed 3-Round match with new meta systems: Ability Sam
 
 ## Docs (read only when relevant)
 - `Docs/GDD_v4.md`: design vision, pillars, resource flow, meta-game direction.
+- `Docs/Design/ui-architecture.md`: UI rules (Shapes HUD + per-player canvas with UniText, 1920x1080 scale, PlayerViewService). Read before any UI work.
 - `Docs/DevLog.md`: running log of changes and decisions, newest first. Skim the top few entries once at the start of a new session; after that, read it only when I ask or when you need it (say so first).
 - Design decisions for specific features go in `Docs/Design/<feature>.md` once we agree on them.

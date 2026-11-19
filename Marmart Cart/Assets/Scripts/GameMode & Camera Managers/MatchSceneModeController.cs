@@ -31,6 +31,9 @@ public class MatchSceneModeController : MonoBehaviour
     [SerializeField] private PlayerInputManager playerInputManager;
     [SerializeField] private CameraManager cameraManager;
 
+    [Tooltip("Receives the player count once CameraManager has applied the viewports. Auto-found if left empty.")]
+    [SerializeField] private PlayerViewService playerViewService;
+
     [Tooltip(
         "Optional but recommended. When assigned, inactive P3/P4 HUD slots are disabled " +
         "and each slot is given the same physical Camera used by CameraManager."
@@ -204,6 +207,15 @@ public class MatchSceneModeController : MonoBehaviour
             Debug.LogError("[MatchSceneModeController] CameraManager is missing.", this);
         }
 
+        if (playerViewService != null)
+        {
+            playerViewService.Configure(configuredPlayerCount);
+        }
+        else
+        {
+            Debug.LogWarning("[MatchSceneModeController] PlayerViewService is missing. UI cannot find player views.", this);
+        }
+
         ConfigureWorldHUDSlots();
         ConfigureAdaptiveShapesPresentation();
 
@@ -291,6 +303,11 @@ public class MatchSceneModeController : MonoBehaviour
         if (cameraManager == null)
         {
             cameraManager = FindFirstObjectByType<CameraManager>();
+        }
+
+        if (playerViewService == null)
+        {
+            playerViewService = FindFirstObjectByType<PlayerViewService>();
         }
 
         if (playerWorldHUDSystem == null)
