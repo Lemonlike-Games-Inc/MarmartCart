@@ -41,7 +41,7 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 - 2P and 4P differences are authored values on top of `UiScale`, kept in each widget's own profile (its 2P / 4P fields).
   - Drawers get the active view count from `PlayerViewService` (`HudShapes.ViewCount()`) and ask their profile.
   - `MatchSceneModeProfile` holds camera settings only (viewports, lens).
-- Tune with the Game view fixed at 1920x1080.
+- Tune with the Game view fixed at 1920x1080. Where each value lives: `ui-tuning.md`.
 - Booth: a 4K 16:9 monitor, exclusive fullscreen at 4K or 1080p, so `UiScale` is exactly 2 or 1. Check both. Other aspect ratios are not needed for the demo.
 
 ## Player views
