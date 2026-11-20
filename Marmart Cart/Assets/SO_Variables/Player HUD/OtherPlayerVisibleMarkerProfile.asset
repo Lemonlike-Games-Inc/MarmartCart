@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   markerTipOffsetPixels: {x: 0, y: 20}
   markerMasterScale: 1.5
+  twoPlayerScaleMultiplier: 1
+  fourPlayerScaleMultiplier: 1
   bodyRadiusPixels: 18
   tailWidthPixels: 20
   tailHeightPixels: 14

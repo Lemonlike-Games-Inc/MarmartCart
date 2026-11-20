@@ -22,3 +22,5 @@ MonoBehaviour:
   lowerCapsuleEndPixels: {x: 7, y: 0}
   pointerCapsuleThicknessPixels: 7
   pointerScale: 1
+  twoPlayerScaleMultiplier: 1
+  fourPlayerScaleMultiplier: 0.85

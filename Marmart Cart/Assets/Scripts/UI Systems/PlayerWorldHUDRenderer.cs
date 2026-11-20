@@ -71,17 +71,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
     #region Mode Adaptation
 
-    [Header("Runtime - Read Only")]
-    [Tooltip("2P/4P size factor pushed by MatchSceneModeController.")]
-    [SerializeField] private float modeScale = 1f;
-
-    // UiScale times modeScale for the camera being drawn. Every profile pixel value is multiplied by it.
+    // UiScale times the profile's 2P/4P factor for the camera being drawn.
+    // Every profile pixel value is multiplied by it.
     private float drawScale = 1f;
-
-    public void SetModeScaleMultiplier(float multiplier)
-    {
-        modeScale = Mathf.Max(0.05f, multiplier);
-    }
 
     #endregion
 
@@ -117,7 +109,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector3 anchorScreen = cam.WorldToScreenPoint(hudAnchor.position);
         if (skipWhenBehindCamera && anchorScreen.z <= 0f) return;
 
-        drawScale = HudShapes.Scale(modeScale);
+        drawScale = HudShapes.Scale(layoutProfile.GetModeScale(HudShapes.ViewCount()));
 
         // Optionally reconstruct that same screen X/Y on a fixed plane close to
         // this gameplay camera. The HUD still tracks the cart visually, but it

@@ -7733,33 +7733,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slots:
-  - enabled: 1
-    gameplayCamera: {fileID: 797802259}
-    bindingStatus: 1
-    boundPlayerRoot: {fileID: 0}
+  - boundPlayerRoot: {fileID: 0}
     hudWorldAnchor: {fileID: 0}
-    wasDirectlyRegistered: 0
-  - enabled: 1
-    gameplayCamera: {fileID: 797538519}
-    bindingStatus: 1
-    boundPlayerRoot: {fileID: 0}
+  - boundPlayerRoot: {fileID: 0}
     hudWorldAnchor: {fileID: 0}
-    wasDirectlyRegistered: 0
-  - enabled: 0
-    gameplayCamera: {fileID: 1531898269}
-    bindingStatus: 1
-    boundPlayerRoot: {fileID: 0}
+  - boundPlayerRoot: {fileID: 0}
     hudWorldAnchor: {fileID: 0}
-    wasDirectlyRegistered: 0
-  - enabled: 0
-    gameplayCamera: {fileID: 300062270}
-    bindingStatus: 1
-    boundPlayerRoot: {fileID: 0}
+  - boundPlayerRoot: {fileID: 0}
     hudWorldAnchor: {fileID: 0}
-    wasDirectlyRegistered: 0
-  enableTagBindingFallback: 1
-  hudAnchorName: HUDWorldAnchor
-  bindingRetryInterval: 0.5
   logSuccessfulBindings: 0
 --- !u!224 &261547858
 RectTransform:
@@ -27675,11 +27656,6 @@ MonoBehaviour:
   playerInputManager: {fileID: 447031817}
   cameraManager: {fileID: 1653367397}
   playerViewService: {fileID: 0}
-  playerWorldHUDSystem: {fileID: 261547857}
-  playerWorldHUDRenderer: {fileID: 610152314}
-  otherPlayerPointerRenderer: {fileID: 1521505816}
-  otherPlayerVisibleMarkerRenderer: {fileID: 1829110474}
-  matchViewportOverlayRenderer: {fileID: 1098845340}
   configuredMode: 0
   configuredPlayerCount: 0
   configured: 0
@@ -28138,10 +28114,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useCullingMasks: 0
-  hudSystem: {fileID: 261547857}
   stateSystem: {fileID: 418111801}
   profile: {fileID: 11400000, guid: 64942dae9bb297d4993c585e716e313b, type: 2}
-  configuredPlayerCount: 2
+  viewPlayerCount: 2
   drawingEnabled: 1
   resultsMode: 0
 --- !u!1001 &1100423414
@@ -146290,7 +146265,6 @@ MonoBehaviour:
   playerIdentity: {fileID: 11400000, guid: 9db96f6f8347eaf4baaa6a0c29af28b8, type: 2}
   drawingEnabled: 1
   skipWhenOwnerBehindCamera: 1
-  modeScale: 1
 --- !u!43 &1522461263
 Mesh:
   m_ObjectHideFlags: 0
@@ -155570,7 +155544,6 @@ MonoBehaviour:
   markerProfile: {fileID: 11400000, guid: 0e61dca3ef271124da3e9c6f36615146, type: 2}
   playerIdentity: {fileID: 11400000, guid: 9db96f6f8347eaf4baaa6a0c29af28b8, type: 2}
   drawingEnabled: 1
-  modeScale: 1
 --- !u!1001 &1829825946
 PrefabInstance:
   m_ObjectHideFlags: 0

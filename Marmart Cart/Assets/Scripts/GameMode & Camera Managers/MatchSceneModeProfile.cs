@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Scene-presentation settings that differ between 2-player and 4-player modes.
+/// Camera settings that differ between 2-player and 4-player modes: viewports
+/// and lens. UI widgets keep their own 2P/4P values in their own profiles.
 ///
 /// This profile intentionally owns PRESENTATION only. GMode still owns which
 /// game mode is active, and CameraManager owns applying these rectangles to
@@ -66,35 +67,6 @@ public class MatchSceneModeProfile : ScriptableObject
 
     #endregion
 
-    #region Adaptive Shapes Presentation
-
-    [Header("2 Player Shapes Presentation")]
-    [Tooltip("Runtime multiplier applied on top of the tuned PlayerWorldHUDLayoutProfile master scale.")]
-    [Min(0.05f)]
-    [SerializeField] private float twoPlayerWorldHUDScaleMultiplier = 1f;
-
-    [Tooltip("Runtime multiplier for the complete other-player orbit-pointer presentation.")]
-    [Min(0.05f)]
-    [SerializeField] private float twoPlayerOtherPlayerPointerScaleMultiplier = 1f;
-
-    [Tooltip("Runtime multiplier for the complete visible-player raindrop marker presentation.")]
-    [Min(0.05f)]
-    [SerializeField] private float twoPlayerVisiblePlayerMarkerScaleMultiplier = 1f;
-
-    [Header("4 Player Shapes Presentation")]
-    [Tooltip("Runtime multiplier applied on top of the tuned PlayerWorldHUDLayoutProfile master scale.")]
-    [Min(0.05f)]
-    [SerializeField] private float fourPlayerWorldHUDScaleMultiplier = 1f;
-
-    [Tooltip("Runtime multiplier for the complete other-player orbit-pointer presentation.")]
-    [Min(0.05f)]
-    [SerializeField] private float fourPlayerOtherPlayerPointerScaleMultiplier = 1f;
-
-    [Tooltip("Runtime multiplier for the complete visible-player raindrop marker presentation.")]
-    [Min(0.05f)]
-    [SerializeField] private float fourPlayerVisiblePlayerMarkerScaleMultiplier = 1f;
-
-    #endregion
 
     public Rect GetViewportRect(int playerCount, int playerIndex)
     {
@@ -140,27 +112,6 @@ public class MatchSceneModeProfile : ScriptableObject
         return Mathf.Clamp(targetSize, baseSize, maxSize);
     }
 
-    public float GetWorldHUDScaleMultiplier(int playerCount)
-    {
-        return playerCount <= 2
-            ? twoPlayerWorldHUDScaleMultiplier
-            : fourPlayerWorldHUDScaleMultiplier;
-    }
-
-    public float GetOtherPlayerPointerScaleMultiplier(int playerCount)
-    {
-        return playerCount <= 2
-            ? twoPlayerOtherPlayerPointerScaleMultiplier
-            : fourPlayerOtherPlayerPointerScaleMultiplier;
-    }
-
-    public float GetVisiblePlayerMarkerScaleMultiplier(int playerCount)
-    {
-        return playerCount <= 2
-            ? twoPlayerVisiblePlayerMarkerScaleMultiplier
-            : fourPlayerVisiblePlayerMarkerScaleMultiplier;
-    }
-
     [ContextMenu("Reset 2P Viewports To Left / Right")]
     private void ResetTwoPlayerViewportsToLeftRight()
     {
@@ -179,17 +130,6 @@ public class MatchSceneModeProfile : ScriptableObject
         maxAdditionalOrthographicSize = 4f;
     }
 
-    [ContextMenu("Reset Shapes Presentation Multipliers To 1")]
-    private void ResetShapesPresentationMultipliersToOne()
-    {
-        twoPlayerWorldHUDScaleMultiplier = 1f;
-        twoPlayerOtherPlayerPointerScaleMultiplier = 1f;
-        twoPlayerVisiblePlayerMarkerScaleMultiplier = 1f;
-        fourPlayerWorldHUDScaleMultiplier = 1f;
-        fourPlayerOtherPlayerPointerScaleMultiplier = 1f;
-        fourPlayerVisiblePlayerMarkerScaleMultiplier = 1f;
-    }
-
     private void OnValidate()
     {
         twoPlayerBaseOrthographicSize = Mathf.Max(0.01f, twoPlayerBaseOrthographicSize);
@@ -197,13 +137,6 @@ public class MatchSceneModeProfile : ScriptableObject
         cartsPerZoomIncrement = Mathf.Max(1, cartsPerZoomIncrement);
         orthographicSizeIncrement = Mathf.Max(0f, orthographicSizeIncrement);
         maxAdditionalOrthographicSize = Mathf.Max(0f, maxAdditionalOrthographicSize);
-
-        twoPlayerWorldHUDScaleMultiplier = Mathf.Max(0.05f, twoPlayerWorldHUDScaleMultiplier);
-        twoPlayerOtherPlayerPointerScaleMultiplier = Mathf.Max(0.05f, twoPlayerOtherPlayerPointerScaleMultiplier);
-        twoPlayerVisiblePlayerMarkerScaleMultiplier = Mathf.Max(0.05f, twoPlayerVisiblePlayerMarkerScaleMultiplier);
-        fourPlayerWorldHUDScaleMultiplier = Mathf.Max(0.05f, fourPlayerWorldHUDScaleMultiplier);
-        fourPlayerOtherPlayerPointerScaleMultiplier = Mathf.Max(0.05f, fourPlayerOtherPlayerPointerScaleMultiplier);
-        fourPlayerVisiblePlayerMarkerScaleMultiplier = Mathf.Max(0.05f, fourPlayerVisiblePlayerMarkerScaleMultiplier);
     }
 
 }

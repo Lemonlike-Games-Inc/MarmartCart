@@ -27,6 +27,15 @@ public class OtherPlayerVisibleMarkerProfile : ScriptableObject
     [Min(0.05f)]
     [SerializeField] private float markerMasterScale = 1f;
 
+    [Header("2P / 4P")]
+    [Tooltip("Size factor with one or two player views.")]
+    [Min(0.05f)]
+    [SerializeField] private float twoPlayerScaleMultiplier = 1f;
+
+    [Tooltip("Size factor with three or four player views.")]
+    [Min(0.05f)]
+    [SerializeField] private float fourPlayerScaleMultiplier = 1f;
+
     #endregion
 
     #region Shape
@@ -128,6 +137,10 @@ public class OtherPlayerVisibleMarkerProfile : ScriptableObject
 
     public float NearCameraRenderDistance => nearCameraRenderDistance;
     public float NearClipSafetyPadding => nearClipSafetyPadding;
+
+    /// <summary>2P/4P size factor for the active view count (PlayerViewService).</summary>
+    public float GetModeScale(int activePlayerCount) =>
+        activePlayerCount >= 3 ? fourPlayerScaleMultiplier : twoPlayerScaleMultiplier;
 
     #endregion
 

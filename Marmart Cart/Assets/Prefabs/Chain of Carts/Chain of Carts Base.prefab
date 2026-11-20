@@ -320,9 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cargoCapacityController: {fileID: 8337426284634087441}
-  hudSystem: {fileID: 0}
   stateSystem: {fileID: 0}
-  playerIndexOverride: 0
   resolvedPlayerIndex: 0
 --- !u!114 &1721464837927437150
 MonoBehaviour:

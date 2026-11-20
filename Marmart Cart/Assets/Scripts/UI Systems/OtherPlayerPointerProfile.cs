@@ -64,7 +64,25 @@ public class OtherPlayerPointerProfile : ScriptableObject
 
     #endregion
 
+    #region 2P / 4P
+
+    [Header("2P / 4P")]
+    [Tooltip("Size factor for the whole pointer (orbit and body) with one or two player views.")]
+    [Min(0.05f)]
+    [SerializeField] private float twoPlayerScaleMultiplier = 1f;
+
+    [Tooltip("Size factor for the whole pointer (orbit and body) with three or four player views.")]
+    [Min(0.05f)]
+    [SerializeField] private float fourPlayerScaleMultiplier = 0.85f;
+
+    #endregion
+
     #region Public API
+
+    /// <summary>2P/4P size factor for the active view count (PlayerViewService).</summary>
+    public float GetModeScale(int activePlayerCount) =>
+        activePlayerCount >= 3 ? fourPlayerScaleMultiplier : twoPlayerScaleMultiplier;
+
 
     public float OrbitRadiusPixels => orbitRadiusPixels;
     public Vector2 OrbitCenterOffsetPixels => orbitCenterOffsetPixels;

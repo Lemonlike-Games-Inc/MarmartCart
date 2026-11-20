@@ -6,7 +6,8 @@ using UnityEngine;
 ///
 /// The Shapes HUD is drawn on a plane just in front of each player camera.
 /// Sizes and offsets are authored in 1920x1080 reference pixels and multiplied
-/// by Scale(): the UI scale from PlayerViewService times the drawer's 2P/4P factor.
+/// by Scale(): the UI scale from PlayerViewService times the drawer's 2P/4P factor,
+/// which each drawer reads from its own profile using ViewCount().
 /// </summary>
 public static class HudShapes
 {
@@ -22,6 +23,16 @@ public static class HudShapes
         }
 
         return views.TryGetPlayerIndex(cam, out playerIndex);
+    }
+
+    /// <summary>
+    /// Number of active player views (2 without a PlayerViewService). Drawers pass it
+    /// to their own profile to get its 2P/4P values.
+    /// </summary>
+    public static int ViewCount()
+    {
+        PlayerViewService views = PlayerViewService.Instance;
+        return views != null ? views.ActivePlayerCount : 2;
     }
 
     /// <summary>UI scale times a drawer's 2P/4P factor. The UI scale is 1 without a PlayerViewService.</summary>

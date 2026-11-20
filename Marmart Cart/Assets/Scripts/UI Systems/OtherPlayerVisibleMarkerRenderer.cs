@@ -39,19 +39,6 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
-    #region Mode Adaptation
-
-    [Header("Runtime - Read Only")]
-    [Tooltip("2P/4P size factor pushed by MatchSceneModeController.")]
-    [SerializeField] private float modeScale = 1f;
-
-    public void SetModeScaleMultiplier(float multiplier)
-    {
-        modeScale = Mathf.Max(0.05f, multiplier);
-    }
-
-    #endregion
-
     #region Unity
 
     private void Awake()
@@ -68,7 +55,7 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
         if (!hudSystem.TryGetRenderableAnchor(ownerPlayerIndex, out _)) return;
 
         float uiScale = HudShapes.Scale();
-        float scale = uiScale * modeScale;
+        float scale = uiScale * markerProfile.GetModeScale(HudShapes.ViewCount());
         float renderDepth = HudShapes.RenderDepth(cam, markerProfile.NearCameraRenderDistance, markerProfile.NearClipSafetyPadding);
 
         using (Draw.Command(cam))

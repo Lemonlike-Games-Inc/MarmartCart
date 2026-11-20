@@ -34,16 +34,6 @@ public class MatchSceneModeController : MonoBehaviour
     [Tooltip("Receives the player count once CameraManager has applied the viewports. Auto-found if left empty.")]
     [SerializeField] private PlayerViewService playerViewService;
 
-    [Header("Adaptive Shapes Presentation")]
-    [Tooltip("Optional. Receives the 2P/4P runtime scale multiplier without changing the tuned layout asset values.")]
-    [SerializeField] private PlayerWorldHUDRenderer playerWorldHUDRenderer;
-
-    [Tooltip("Optional. Receives the 2P/4P runtime scale multiplier for the orbit pointers.")]
-    [SerializeField] private OtherPlayerPointerRenderer otherPlayerPointerRenderer;
-
-    [Tooltip("Optional. Receives the 2P/4P runtime scale multiplier for visible-player raindrop markers.")]
-    [SerializeField] private OtherPlayerVisibleMarkerRenderer otherPlayerVisibleMarkerRenderer;
-
     #endregion
 
     #region Runtime
@@ -205,8 +195,6 @@ public class MatchSceneModeController : MonoBehaviour
             Debug.LogWarning("[MatchSceneModeController] PlayerViewService is missing. UI cannot find player views.", this);
         }
 
-        ConfigureAdaptiveShapesPresentation();
-
         configured = true;
 
         Debug.Log(
@@ -214,36 +202,6 @@ public class MatchSceneModeController : MonoBehaviour
             $"({configuredPlayerCount} players).",
             this
         );
-    }
-
-    private void ConfigureAdaptiveShapesPresentation()
-    {
-        float worldHUDScale = modeProfile != null
-            ? modeProfile.GetWorldHUDScaleMultiplier(configuredPlayerCount)
-            : 1f;
-
-        float pointerScale = modeProfile != null
-            ? modeProfile.GetOtherPlayerPointerScaleMultiplier(configuredPlayerCount)
-            : 1f;
-
-        float visibleMarkerScale = modeProfile != null
-            ? modeProfile.GetVisiblePlayerMarkerScaleMultiplier(configuredPlayerCount)
-            : 1f;
-
-        if (playerWorldHUDRenderer != null)
-        {
-            playerWorldHUDRenderer.SetModeScaleMultiplier(worldHUDScale);
-        }
-
-        if (otherPlayerPointerRenderer != null)
-        {
-            otherPlayerPointerRenderer.SetModeScaleMultiplier(pointerScale);
-        }
-
-        if (otherPlayerVisibleMarkerRenderer != null)
-        {
-            otherPlayerVisibleMarkerRenderer.SetModeScaleMultiplier(visibleMarkerScale);
-        }
     }
 
     #endregion
@@ -265,21 +223,6 @@ public class MatchSceneModeController : MonoBehaviour
         if (playerViewService == null)
         {
             playerViewService = FindFirstObjectByType<PlayerViewService>();
-        }
-
-        if (playerWorldHUDRenderer == null)
-        {
-            playerWorldHUDRenderer = FindFirstObjectByType<PlayerWorldHUDRenderer>();
-        }
-
-        if (otherPlayerPointerRenderer == null)
-        {
-            otherPlayerPointerRenderer = FindFirstObjectByType<OtherPlayerPointerRenderer>();
-        }
-
-        if (otherPlayerVisibleMarkerRenderer == null)
-        {
-            otherPlayerVisibleMarkerRenderer = FindFirstObjectByType<OtherPlayerVisibleMarkerRenderer>();
         }
     }
 

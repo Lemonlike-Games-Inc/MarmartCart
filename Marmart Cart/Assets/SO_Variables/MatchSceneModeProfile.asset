@@ -53,9 +53,3 @@ MonoBehaviour:
   cartsPerZoomIncrement: 1
   orthographicSizeIncrement: 0.25
   maxAdditionalOrthographicSize: 10
-  twoPlayerWorldHUDScaleMultiplier: 1
-  twoPlayerOtherPlayerPointerScaleMultiplier: 1
-  twoPlayerVisiblePlayerMarkerScaleMultiplier: 1
-  fourPlayerWorldHUDScaleMultiplier: 0.85
-  fourPlayerOtherPlayerPointerScaleMultiplier: 0.85
-  fourPlayerVisiblePlayerMarkerScaleMultiplier: 1

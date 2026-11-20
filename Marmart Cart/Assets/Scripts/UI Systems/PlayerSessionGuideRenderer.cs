@@ -133,8 +133,7 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        PlayerViewService views = PlayerViewService.Instance;
-        activePlayerCount = views != null ? views.ActivePlayerCount : 2;
+        activePlayerCount = HudShapes.ViewCount();
 
         // Profile scale for 2P/4P, times the UI scale.
         float scale = presentationProfile.GetEffectiveScale(activePlayerCount) * HudShapes.Scale();

@@ -15,6 +15,8 @@ MonoBehaviour:
   masterScale: 1.5
   horizontalSeparationPixels: 24
   verticalOffsetPixels: 0
+  twoPlayerScaleMultiplier: 1
+  fourPlayerScaleMultiplier: 0.85
   showMoveBackwardPrompt: 1
   moveBackwardPromptOffsetPixels: {x: 0, y: -140}
   moveBackwardPromptMasterScale: 1

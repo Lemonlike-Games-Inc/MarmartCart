@@ -33,19 +33,6 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
 
     #endregion
 
-    #region Mode Adaptation
-
-    [Header("Runtime - Read Only")]
-    [Tooltip("2P/4P size factor pushed by MatchSceneModeController.")]
-    [SerializeField] private float modeScale = 1f;
-
-    public void SetModeScaleMultiplier(float multiplier)
-    {
-        modeScale = Mathf.Max(0.05f, multiplier);
-    }
-
-    #endregion
-
     #region Unity
 
     private void Awake()
@@ -67,7 +54,7 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         Vector3 ownerAnchorScreen = cam.WorldToScreenPoint(ownerHUDAnchor.position);
         if (skipWhenOwnerBehindCamera && ownerAnchorScreen.z <= 0f) return;
 
-        float scale = HudShapes.Scale(modeScale);
+        float scale = HudShapes.Scale(profile.GetModeScale(HudShapes.ViewCount()));
         float renderDepth = HudShapes.RenderDepth(cam, profile.NearCameraRenderDistance, profile.NearClipSafetyPadding);
         Vector2 orbitCenter = (Vector2)ownerAnchorScreen + profile.OrbitCenterOffsetPixels * scale;
 

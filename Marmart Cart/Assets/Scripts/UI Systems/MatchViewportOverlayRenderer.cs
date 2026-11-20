@@ -169,8 +169,7 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             return;
         }
 
-        PlayerViewService views = PlayerViewService.Instance;
-        viewPlayerCount = views != null ? views.ActivePlayerCount : 2;
+        viewPlayerCount = HudShapes.ViewCount();
         drawScale = profile.GetMasterScale(viewPlayerCount) * HudShapes.Scale();
 
         float renderDepth = HudShapes.RenderDepth(
@@ -234,9 +233,12 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             return;
         }
 
+        // Render-target size: the camera's texture, else the screen as PlayerViewService
+        // sees it (the service exists, since TryGetViewPlayer found this camera).
         Rect rect = cam.pixelRect;
-        float targetWidth = cam.targetTexture != null ? cam.targetTexture.width : Screen.width;
-        float targetHeight = cam.targetTexture != null ? cam.targetTexture.height : Screen.height;
+        Vector2Int screen = PlayerViewService.Instance.ScreenSize;
+        float targetWidth = cam.targetTexture != null ? cam.targetTexture.width : screen.x;
+        float targetHeight = cam.targetTexture != null ? cam.targetTexture.height : screen.y;
         const float EdgeTolerance = 0.5f;
 
         float uiScale = HudShapes.Scale();

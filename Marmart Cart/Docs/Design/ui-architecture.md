@@ -38,7 +38,9 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 - `UiScale = min(screenWidth / 1920, screenHeight / 1080)`.
   - Every Shapes pixel value is multiplied by it.
   - Every CanvasScaler uses Scale With Screen Size, 1920x1080, Expand, which is the same rule.
-- 2P and 4P size differences are authored multipliers on top of `UiScale`, kept in one place.
+- 2P and 4P differences are authored values on top of `UiScale`, kept in each widget's own profile (its 2P / 4P fields).
+  - Drawers get the active view count from `PlayerViewService` (`HudShapes.ViewCount()`) and ask their profile.
+  - `MatchSceneModeProfile` holds camera settings only (viewports, lens).
 - Tune with the Game view fixed at 1920x1080.
 - Booth: a 4K 16:9 monitor, exclusive fullscreen at 4K or 1080p, so `UiScale` is exactly 2 or 1. Check both. Other aspect ratios are not needed for the demo.
 

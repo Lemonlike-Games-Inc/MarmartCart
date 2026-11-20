@@ -32,6 +32,15 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
 
     [SerializeField] private float verticalOffsetPixels = 0f;
 
+    [Header("2P / 4P")]
+    [Tooltip("Size factor with one or two player views.")]
+    [Min(0.05f)]
+    [SerializeField] private float twoPlayerScaleMultiplier = 1f;
+
+    [Tooltip("Size factor with three or four player views.")]
+    [Min(0.05f)]
+    [SerializeField] private float fourPlayerScaleMultiplier = 0.85f;
+
     #endregion
 
     #region Move Backward Prompt
@@ -593,6 +602,11 @@ public class PlayerWorldHUDLayoutProfile : ScriptableObject
     // the 2P/4P factor; nothing here changes at runtime.
 
     public float MasterScale => masterScale;
+
+    /// <summary>2P/4P size factor for the active view count (PlayerViewService).</summary>
+    public float GetModeScale(int activePlayerCount) =>
+        activePlayerCount >= 3 ? fourPlayerScaleMultiplier : twoPlayerScaleMultiplier;
+
     public float HorizontalSeparationPixels => horizontalSeparationPixels * masterScale;
     public float VerticalOffsetPixels => verticalOffsetPixels * masterScale;
 
