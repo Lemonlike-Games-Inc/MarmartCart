@@ -2,7 +2,7 @@
 
 Drafted 2026-11-15. Liang accepted the plan and its four defaults on 2026-11-16 ("sounds solid"). It implements `meta-round-flow.md` up to a playable 3-Round Match. No Abilities, Policies or Sections yet.
 
-Status: Step 1 done (2026-11-17, commit f3086217, branch `cl_feature_MetaGameRoundSpine`). On 2026-11-18 Step 2 was expanded into a UI foundation step; the rules are in `ui-architecture.md`. Step 2 done 2026-11-20 (commits aa687990 to 0a8c0fbe); its final retune was deferred by Liang. Step 3 done 2026-11-20 (commits b31d987c, c5dbfb20). Next: Step 4 (Liang, no code).
+Status: Step 1 done (2026-11-17, commit f3086217, branch `cl_feature_MetaGameRoundSpine`). On 2026-11-18 Step 2 was expanded into a UI foundation step; the rules are in `ui-architecture.md`. Step 2 done 2026-11-20 (commits aa687990 to 0a8c0fbe); its final retune was deferred by Liang. Step 3 done 2026-11-20 (commits b31d987c, c5dbfb20). Per-Round flow profiles added (fbc3ec40). The code is complete; Step 4 (Liang, no code) and the look polish come later.
 
 ## Decisions (defaults accepted)
 
@@ -86,13 +86,26 @@ Expanded on 2026-11-18 so the existing HUD is rebuilt on the rules in `ui-archit
   - All result texts and rank lines live in `RoundResultTextProfile`, editable in the Inspector (added at Liang's request).
   - Liang's `MatchFlowProfile_ShortForTest` (about 2 s per Round) makes a full Match testable in under 30 s.
 
-### Step 4: Booth Round length and settings
+### Step 4: Booth Round lengths and settings
 
-No code expected.
+No code expected. Liang does this later, after the more important features (agreed 2026-11-20).
 
-- **Round profile:** Liang duplicates the 2P and 4P profile assets in Unity and trims them to about 170 s: start, cart restock, two loot-then-checkout cycles, EndGameWrap last. Assign them in the gameplay scenes.
-- **Booth setting:** untick `Listen For Return To Menu` on `GameplayDebugger`.
+- **Round profiles:** Rounds no longer share one length. `MatchFlowDirector` has a Round Profiles slot per Round (commit fbc3ec40); an empty slot uses the scene's Profile.
+  - Liang designs one flow profile per Round for 2P and for 4P, starting around 2:00 (Round 1), 3:00 (Round 2) and 5:00 (Round 3), each with EndGameWrap last.
+  - Assign them in Gameplay Scene 2P and 4P (`Match Flow Director` > Round Profiles).
+  - Gameplay Scene 2P currently holds Liang's test setup (Profile = `MatchFlowProfile_ShortForTest`, Round 3 slot = `MatchFlowProfile_2Players`). Reset it when the real profiles go in.
+- **Booth setting:** untick `Listen For Return To Menu` on `GameplayDebugger` (on `Game Time & Score Manager` in both gameplay scenes).
 - **Checks:** time a full Match with the tutorial against the 12 to 15 minute budget.
+  - Each Round adds about 20 s outside play (title and countdown, podium, result, fades, load).
+  - At 2:00 + 3:00 + 5:00 that is about 11 min for the Match; with the tutorial (150 s today) and the menu, close to the top of the budget.
+
+## Later: look and polish
+
+The Round spine code is complete. Liang will come back to this work session to finish the look of these once the more important features are done:
+
+- Round start banner and result banner: final look and animation (label prefabs, `RoundResultTextProfile` lines).
+- Final screen: game title and QR link.
+- The deferred 4P retune (see 2j) and a 4K check in a real booth build.
 
 ## Not in this plan
 

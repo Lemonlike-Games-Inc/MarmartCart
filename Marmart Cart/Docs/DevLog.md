@@ -3,6 +3,21 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-20 05:22 (UTC-7): Per-Round flow profiles; Round spine code complete
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Each Round can now have its own length. With that, the Round spine (Match data and Round loop) is code-complete: Steps 1 to 3 plus per-Round profiles. Step 4 and the look polish come later.
+- Changed:
+  - `MatchFlowDirector` (fbc3ec40): new Round Profiles slots (Round 1, 2, 3). In Awake the director swaps in the Round's profile before anything reads it, so the timer, session guide and debug HUD follow. An empty slot uses Profile; with no slots assigned nothing changes. It logs which profile each Round uses. Tested in 4P (short, fallback 400 s, short); the scene was restored afterwards.
+  - `round-spine-plan.md`: Step 4 rewritten for per-Round lengths; new "Later: look and polish" list.
+  - Liang's test setup in Gameplay Scene 2P (82c725ee): Profile = `MatchFlowProfile_ShortForTest`, Round 3 slot = `MatchFlowProfile_2Players`.
+- Why: Liang wants Rounds to grow longer (about 2:00, 3:00, 5:00) rather than all being the same length.
+- Decisions:
+  - Per-Round profiles live on `MatchFlowDirector`, since a flow profile is a Round's level design (its loot sessions already name the zones).
+  - Step 4 (Round profile design, booth toggle, timing) is deferred until the more important features are done.
+  - This work session stays open: Liang will come back to it to finish the look of the Round banners, the final screen and the 4P retune.
+- Open questions:
+  - At 2:00 + 3:00 + 5:00, plus about 20 s per Round outside play, the Match is about 11 min. With the tutorial and the menu that is close to the top of the 12 to 15 minute budget.
+
 ## 2026-11-20 04:27 (UTC-7): Round spine Step 3, Round results and end of Match
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: A Match now plays end to end on screen. Rounds fade between loads, every player sees who won each Round and the Match Points, and after Round 3 each player gets their own rank line. F4 leaves to the main menu. Liang tested both parts.
