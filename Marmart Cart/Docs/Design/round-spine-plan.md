@@ -2,7 +2,7 @@
 
 Drafted 2026-11-15. Liang accepted the plan and its four defaults on 2026-11-16 ("sounds solid"). It implements `meta-round-flow.md` up to a playable 3-Round Match. No Abilities, Policies or Sections yet.
 
-Status: Step 1 done (2026-11-17, commit f3086217, branch `cl_feature_MetaGameRoundSpine`). On 2026-11-18 Step 2 was expanded into a UI foundation step; the rules are in `ui-architecture.md`. Step 2 done 2026-11-20 (commits aa687990 to 0a8c0fbe); its final retune was deferred by Liang. Next: Step 3.
+Status: Step 1 done (2026-11-17, commit f3086217, branch `cl_feature_MetaGameRoundSpine`). On 2026-11-18 Step 2 was expanded into a UI foundation step; the rules are in `ui-architecture.md`. Step 2 done 2026-11-20 (commits aa687990 to 0a8c0fbe); its final retune was deferred by Liang. Step 3 done 2026-11-20 (commits b31d987c, c5dbfb20). Next: Step 4 (Liang, no code).
 
 ## Decisions (defaults accepted)
 
@@ -75,11 +75,16 @@ Expanded on 2026-11-18 so the existing HUD is rebuilt on the rules in `ui-archit
     - The results leaderboard sits against the top edge of each view.
   - Not yet done: a check in a real 4K exclusive-fullscreen build on the booth monitor.
 
-### Step 3: Post-round result and end of Match
+### Step 3: Post-round result and end of Match (done 2026-11-20)
 
 - **`MetaRoundController`:** after the score reveal, the banner shows the Round winners and the Match Point totals. Rounds 1 and 2 fade to black (full-screen canvas root) and load the next Round. Round 3 shows the Match winners and waits for F4.
 - The existing ceremony is not changed.
 - **Checks:** a tied Round, a Round nobody banks in, a shared Match win, F4 to the menu and a fresh Match after it.
+- Done:
+  - 3a (b31d987c): every gameplay-scene load fades in; every load the controller starts fades out first (`ScreenFadeView` on the full-screen root). F4 fades out, clears Match data and loads MainMenu.
+  - 3b (c5dbfb20): `RoundResultView` shows, per player view, who won the Round and the Match Points ("YOU" for the view's player). After Round 3 each player gets a rank line; ties share a rank (1, 1, 2), like the podium.
+  - All result texts and rank lines live in `RoundResultTextProfile`, editable in the Inspector (added at Liang's request).
+  - Liang's `MatchFlowProfile_ShortForTest` (about 2 s per Round) makes a full Match testable in under 30 s.
 
 ### Step 4: Booth Round length and settings
 
