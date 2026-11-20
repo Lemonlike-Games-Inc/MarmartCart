@@ -16,8 +16,11 @@ using UnityEngine.SceneManagement;
 /// - The final Round is not committed, because no next Round loads. The
 ///   controller logs the Match result and waits for staff; a reload replays
 ///   that Round.
+/// - Screen fade: every load of this scene fades in from black, and every load
+///   it starts fades out first. ScreenFadeAlpha is the state; ScreenFadeView shows it.
 ///
-/// Staff keys, keyboard only: F1 Restart Match, F2 Restart Round, F3 Skip Round.
+/// Staff keys, keyboard only: F1 Restart Match, F2 Restart Round, F3 Skip Round,
+/// F4 Main Menu (leaves the Match).
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class MetaRoundController : MonoBehaviour
@@ -31,6 +34,13 @@ public sealed class MetaRoundController : MonoBehaviour
         RoundResult,
         MatchOver,
         Loading
+    }
+
+    private enum LoadTarget
+    {
+        None,
+        ThisScene,
+        MainMenu
     }
 
     public enum PreRoundBeat
@@ -74,9 +84,21 @@ public sealed class MetaRoundController : MonoBehaviour
     [Min(0f)]
     [SerializeField] private float roundResultDuration = 3f;
 
+    [Header("Screen Fade (real-time seconds)")]
+    [Tooltip("Fade from black when this scene loads.")]
+    [Min(0f)]
+    [SerializeField] private float fadeInDuration = 0.5f;
+
+    [Tooltip("Fade to black before any load this controller starts (next Round, staff keys, main menu).")]
+    [Min(0f)]
+    [SerializeField] private float fadeOutDuration = 0.5f;
+
     [Header("Staff Keys")]
-    [Tooltip("Keyboard F1 Restart Match, F2 Restart Round, F3 Skip Round.")]
+    [Tooltip("Keyboard F1 Restart Match, F2 Restart Round, F3 Skip Round, F4 Main Menu.")]
     [SerializeField] private bool listenForStaffKeys = true;
+
+    [Tooltip("Scene F4 loads. Must be in Build Settings.")]
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     [Header("Runtime - Read Only")]
     [SerializeField] private RoundPhase phase = RoundPhase.InRound;
@@ -110,6 +132,32 @@ public sealed class MetaRoundController : MonoBehaviour
 
     private int sceneBuildIndex = -1;
     private float roundResultEndTime;
+
+    // Fades advance by at most this per frame, so a hitch (the first frames
+    // after a load are slow) never skips them.
+    private const float MaxFadeStep = 1f / 30f;
+
+    private float fadeInElapsed;
+    private float fadeOutElapsed;
+    private LoadTarget pendingLoad = LoadTarget.None;
+
+    /// <summary>
+    /// 0 = clear, 1 = black. Fades in after this scene loads and out before a
+    /// load this controller starts. Real time.
+    /// </summary>
+    public float ScreenFadeAlpha
+    {
+        get
+        {
+            // A disabled controller (for example a scene outside Build Settings) never fades.
+            if (!isActiveAndEnabled) return 0f;
+
+            if (phase == RoundPhase.Loading)
+                return fadeOutDuration > 0f ? Mathf.Clamp01(fadeOutElapsed / fadeOutDuration) : 1f;
+
+            return fadeInDuration > 0f ? 1f - Mathf.Clamp01(fadeInElapsed / fadeInDuration) : 0f;
+        }
+    }
 
     // Diagnostic only: when this controller requested a load, so the next load can log its duration.
     private static float loadRequestedRealtime = -1f;
@@ -201,7 +249,19 @@ public sealed class MetaRoundController : MonoBehaviour
 
     private void Update()
     {
-        if (phase == RoundPhase.Loading) return;
+        float fadeStep = Mathf.Min(Time.unscaledDeltaTime, MaxFadeStep);
+
+        if (phase == RoundPhase.Loading)
+        {
+            fadeOutElapsed += fadeStep;
+
+            if (pendingLoad != LoadTarget.None && fadeOutElapsed >= fadeOutDuration)
+                CompletePendingLoad();
+
+            return;
+        }
+
+        fadeInElapsed += fadeStep;
 
         if (listenForStaffKeys) HandleStaffKeys();
 
@@ -391,6 +451,8 @@ public sealed class MetaRoundController : MonoBehaviour
             RestartRound();
         else if (keyboard.f3Key.wasPressedThisFrame)
             SkipRound();
+        else if (keyboard.f4Key.wasPressedThisFrame)
+            ReturnToMainMenu();
     }
 
     private void RestartMatch()
@@ -404,6 +466,18 @@ public sealed class MetaRoundController : MonoBehaviour
     {
         Debug.Log($"[Meta] F2 Restart Round {roundNumber}. Nothing awarded.", this);
         LoadThisScene();
+    }
+
+    private void ReturnToMainMenu()
+    {
+        if (string.IsNullOrWhiteSpace(mainMenuSceneName) || !Application.CanStreamedLevelBeLoaded(mainMenuSceneName))
+        {
+            Debug.LogError($"[Meta] F4 ignored: main menu scene '{mainMenuSceneName}' is not in Build Settings.", this);
+            return;
+        }
+
+        Debug.Log($"[Meta] F4 Main Menu. Leaving the Match in Round {roundNumber}.", this);
+        BeginLoad(LoadTarget.MainMenu);
     }
 
     private void SkipRound()
@@ -424,12 +498,35 @@ public sealed class MetaRoundController : MonoBehaviour
 
     private void LoadThisScene()
     {
+        BeginLoad(LoadTarget.ThisScene);
+    }
+
+    // Fades out first; Update completes the load when the fade ends.
+    private void BeginLoad(LoadTarget target)
+    {
         phase = RoundPhase.Loading;
+        pendingLoad = target;
+        fadeOutElapsed = 0f;
+    }
+
+    private void CompletePendingLoad()
+    {
+        LoadTarget target = pendingLoad;
+        pendingLoad = LoadTarget.None;
 
         if (gameTimeManager != null)
             gameTimeManager.PrepareForSceneLoad();
         else
             Time.timeScale = 1f;
+
+        if (target == LoadTarget.MainMenu)
+        {
+            // Leaving the Match: clear Match data and the mode choice, as the main menu expects.
+            MatchSession.Clear();
+            GMode.DestroyPersistentInstance();
+            SceneManager.LoadScene(mainMenuSceneName, LoadSceneMode.Single);
+            return;
+        }
 
         loadRequestedRealtime = Time.realtimeSinceStartup;
         SceneManager.LoadScene(sceneBuildIndex, LoadSceneMode.Single);
