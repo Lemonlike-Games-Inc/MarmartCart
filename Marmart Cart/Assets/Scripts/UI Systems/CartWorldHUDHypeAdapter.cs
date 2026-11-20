@@ -3,12 +3,8 @@ using UnityEngine;
 /// <summary>
 /// Pushes REAL cart Hype + drift risk/reward preview into PlayerWorldHUDStateSystem.
 ///
-/// Attach once under the leading-cart/player hierarchy.
-///
-/// Player slot resolution:
-/// - Player Index Override 1..4 = explicit.
-/// - 0 = automatically resolve by checking which PlayerWorldHUDSystem
-///       bound player root contains this component.
+/// Attach once under the leading-cart hierarchy. The player number comes from
+/// the parent SnakeCartManager; a cart outside a player's chain pushes nothing.
 ///
 /// This adapter intentionally owns ONLY:
 /// - Hype
@@ -29,25 +25,9 @@ public class CartWorldHUDHypeAdapter : MonoBehaviour
     [SerializeField]
     private CartDriftHypeReward driftHypeReward;
 
-    [Header("HUD Systems")]
-    [SerializeField]
-    private PlayerWorldHUDSystem hudSystem;
-
+    [Header("HUD State")]
     [SerializeField]
     private PlayerWorldHUDStateSystem stateSystem;
-
-    #endregion
-
-    #region Player Resolution
-
-    [Header("Player Slot")]
-    [Tooltip(
-        "0 = automatically resolve from PlayerWorldHUDSystem binding. " +
-        "1..4 = force a specific player slot."
-    )]
-    [Range(0, PlayerWorldHUDStateSystem.MaxPlayerSlots)]
-    [SerializeField]
-    private int playerIndexOverride = 0;
 
     [Header("Runtime - Read Only")]
     [SerializeField]
@@ -61,47 +41,25 @@ public class CartWorldHUDHypeAdapter : MonoBehaviour
     {
         if (cartController == null)
         {
-            cartController =
-                GetComponentInParent<
-                    CartControlScript
-                >();
+            cartController = GetComponentInParent<CartControlScript>();
         }
 
         if (driftHypeReward == null)
         {
-            driftHypeReward =
-                GetComponentInParent<
-                    CartDriftHypeReward
-                >();
-        }
-
-        if (hudSystem == null)
-        {
-            hudSystem =
-                FindFirstObjectByType<
-                    PlayerWorldHUDSystem
-                >();
+            driftHypeReward = GetComponentInParent<CartDriftHypeReward>();
         }
 
         if (stateSystem == null)
         {
-            stateSystem =
-                FindFirstObjectByType<
-                    PlayerWorldHUDStateSystem
-                >();
+            stateSystem = FindFirstObjectByType<PlayerWorldHUDStateSystem>();
         }
-    }
 
-    private void OnEnable()
-    {
-        SubscribeHUDBinding();
-        ResolvePlayerIndex();
+        SnakeCartManager owner = GetComponentInParent<SnakeCartManager>();
+        resolvedPlayerIndex = owner != null ? owner.GetPlayerId() : 0;
     }
 
     private void OnDisable()
     {
-        UnsubscribeHUDBinding();
-
         if (stateSystem != null &&
             resolvedPlayerIndex > 0)
         {
@@ -111,156 +69,17 @@ public class CartWorldHUDHypeAdapter : MonoBehaviour
         }
     }
 
-    private void OnValidate()
-    {
-        playerIndexOverride =
-            Mathf.Clamp(
-                playerIndexOverride,
-                0,
-                PlayerWorldHUDStateSystem.MaxPlayerSlots
-            );
-    }
-
     private void LateUpdate()
     {
         if (stateSystem == null ||
-            cartController == null)
+            cartController == null ||
+            resolvedPlayerIndex <= 0)
         {
             return;
-        }
-
-        if (resolvedPlayerIndex <= 0)
-        {
-            ResolvePlayerIndex();
-
-            if (resolvedPlayerIndex <= 0)
-            {
-                return;
-            }
         }
 
         PushHypeState();
         PushDriftPreviewState();
-    }
-
-    #endregion
-
-    #region HUD Binding
-
-    private void SubscribeHUDBinding()
-    {
-        if (hudSystem == null)
-        {
-            return;
-        }
-
-        hudSystem.OnPlayerHUDBound +=
-            HandlePlayerHUDBound;
-
-        hudSystem.OnPlayerHUDUnbound +=
-            HandlePlayerHUDUnbound;
-    }
-
-    private void UnsubscribeHUDBinding()
-    {
-        if (hudSystem == null)
-        {
-            return;
-        }
-
-        hudSystem.OnPlayerHUDBound -=
-            HandlePlayerHUDBound;
-
-        hudSystem.OnPlayerHUDUnbound -=
-            HandlePlayerHUDUnbound;
-    }
-
-    private void HandlePlayerHUDBound(
-        int playerIndex,
-        GameObject playerRoot,
-        Transform hudAnchor)
-    {
-        if (playerIndexOverride > 0)
-        {
-            resolvedPlayerIndex =
-                playerIndexOverride;
-
-            return;
-        }
-
-        if (IsInsidePlayerRoot(playerRoot))
-        {
-            resolvedPlayerIndex =
-                playerIndex;
-        }
-    }
-
-    private void HandlePlayerHUDUnbound(
-        int playerIndex)
-    {
-        if (playerIndexOverride > 0)
-        {
-            return;
-        }
-
-        if (resolvedPlayerIndex == playerIndex)
-        {
-            resolvedPlayerIndex = 0;
-        }
-    }
-
-    private void ResolvePlayerIndex()
-    {
-        if (playerIndexOverride > 0)
-        {
-            resolvedPlayerIndex =
-                playerIndexOverride;
-
-            return;
-        }
-
-        resolvedPlayerIndex = 0;
-
-        if (hudSystem == null)
-        {
-            return;
-        }
-
-        for (
-            int playerIndex = 1;
-            playerIndex <= PlayerWorldHUDSystem.MaxPlayerSlots;
-            playerIndex++)
-        {
-            GameObject playerRoot =
-                hudSystem.GetPlayerRoot(
-                    playerIndex
-                );
-
-            if (!IsInsidePlayerRoot(playerRoot))
-            {
-                continue;
-            }
-
-            resolvedPlayerIndex =
-                playerIndex;
-
-            return;
-        }
-    }
-
-    private bool IsInsidePlayerRoot(
-        GameObject playerRoot)
-    {
-        if (playerRoot == null)
-        {
-            return false;
-        }
-
-        Transform rootTransform =
-            playerRoot.transform;
-
-        return transform == rootTransform ||
-               transform.IsChildOf(rootTransform);
     }
 
     #endregion

@@ -731,9 +731,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cartController: {fileID: 5901886544005484465}
   driftHypeReward: {fileID: 8264941289741221997}
-  hudSystem: {fileID: 0}
   stateSystem: {fileID: 0}
-  playerIndexOverride: 0
   resolvedPlayerIndex: 0
 --- !u!114 &3594244716909788299
 MonoBehaviour:
@@ -748,9 +746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cartController: {fileID: 5901886544005484465}
-  hudSystem: {fileID: 0}
   stateSystem: {fileID: 0}
-  playerIndexOverride: 0
   resolvedPlayerIndex: 0
 --- !u!114 &704003045199173649
 MonoBehaviour:
@@ -11945,6 +11941,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4558566087749841647}
+  - component: {fileID: 6674050450186081380}
   m_Layer: 7
   m_Name: HUDWorldAnchor
   m_TagString: Untagged
@@ -11967,6 +11964,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4620355965022374236}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6674050450186081380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7545854726128706478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c7193b1d0c29d1449a375c0a49f519a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8009443748923827324
 GameObject:
   m_ObjectHideFlags: 0

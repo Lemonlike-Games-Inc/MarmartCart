@@ -34,12 +34,6 @@ public class MatchSceneModeController : MonoBehaviour
     [Tooltip("Receives the player count once CameraManager has applied the viewports. Auto-found if left empty.")]
     [SerializeField] private PlayerViewService playerViewService;
 
-    [Tooltip(
-        "Optional but recommended. When assigned, inactive P3/P4 HUD slots are disabled " +
-        "and each slot is given the same physical Camera used by CameraManager."
-    )]
-    [SerializeField] private PlayerWorldHUDSystem playerWorldHUDSystem;
-
     [Header("Adaptive Shapes Presentation")]
     [Tooltip("Optional. Receives the 2P/4P runtime scale multiplier without changing the tuned layout asset values.")]
     [SerializeField] private PlayerWorldHUDRenderer playerWorldHUDRenderer;
@@ -211,7 +205,6 @@ public class MatchSceneModeController : MonoBehaviour
             Debug.LogWarning("[MatchSceneModeController] PlayerViewService is missing. UI cannot find player views.", this);
         }
 
-        ConfigureWorldHUDSlots();
         ConfigureAdaptiveShapesPresentation();
 
         configured = true;
@@ -221,29 +214,6 @@ public class MatchSceneModeController : MonoBehaviour
             $"({configuredPlayerCount} players).",
             this
         );
-    }
-
-    private void ConfigureWorldHUDSlots()
-    {
-        if (playerWorldHUDSystem == null || cameraManager == null) return;
-
-        for (int playerIndex = 1; playerIndex <= PlayerWorldHUDSystem.MaxPlayerSlots; playerIndex++)
-        {
-            bool active = playerIndex <= configuredPlayerCount;
-
-            playerWorldHUDSystem.SetSlotEnabled(playerIndex, active);
-            playerWorldHUDSystem.SetGameplayCamera(
-                playerIndex,
-                cameraManager.GetOutputCamera(playerIndex)
-            );
-
-            if (!active)
-            {
-                playerWorldHUDSystem.UnregisterPlayer(playerIndex);
-            }
-        }
-
-        playerWorldHUDSystem.RetryAllBindingsNow();
     }
 
     private void ConfigureAdaptiveShapesPresentation()
@@ -295,11 +265,6 @@ public class MatchSceneModeController : MonoBehaviour
         if (playerViewService == null)
         {
             playerViewService = FindFirstObjectByType<PlayerViewService>();
-        }
-
-        if (playerWorldHUDSystem == null)
-        {
-            playerWorldHUDSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
         }
 
         if (playerWorldHUDRenderer == null)

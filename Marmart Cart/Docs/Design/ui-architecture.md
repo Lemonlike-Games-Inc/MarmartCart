@@ -52,6 +52,7 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 - `CameraManager` and `MatchSceneModeProfile` stay the authority for the viewport rects; the service reads them.
 - Views are separate from players. A player can exist without a view (future online).
 - No other UI code finds cameras, reads the screen size or decides 2P vs 4P.
+- Player binding: `SnakeCartManager` owns the player number. Each leading cart's `PlayerHUDAnchor` registers its anchor with `PlayerWorldHUDSystem`, and the HUD adapters read the number from their `SnakeCartManager`. UI never searches tags or object names.
 
 ## Code structure
 
@@ -90,7 +91,7 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 | Round banner | New | 2f: canvas + UniText |
 | OtherPlayerPointer, OtherPlayerVisibleMarker, PowerupAim | Shapes, fixed pixels | 2g: toolkit + identity profile |
 | PlayerSessionGuide, MatchViewportOverlay | Shapes, fixed pixels; dividers at screen centre; `Bar_tempfix` draws the 4P divider again | 2h: dividers from viewport rects; `Bar_tempfix` removed |
-| PlayerWorldHUD (+ system and adapters) | Shapes, fixed pixels; tag polling; adapters re-find their player | 2i |
+| PlayerWorldHUD (+ system and adapters) | Shapes, fixed pixels; tag polling; adapters re-find their player | 2i: toolkit + `UiScale`; carts register through `PlayerHUDAnchor`; adapters read `SnakeCartManager` |
 | All of it | Tuned in a Free Aspect Game view | 2j: retuned at 1920x1080, checked at 1080p and 4K |
 
 ## Done when

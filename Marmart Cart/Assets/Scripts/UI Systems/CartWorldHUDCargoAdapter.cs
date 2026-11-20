@@ -4,7 +4,8 @@ using UnityEngine;
 /// Pushes REAL cargo/load + overload movement-speed consequence into
 /// PlayerWorldHUDStateSystem.
 ///
-/// Attach once under the leading-cart/player hierarchy.
+/// Attach once under the player's chain hierarchy. The player number comes from
+/// the parent SnakeCartManager.
 ///
 /// This adapter owns ONLY:
 /// - Load / safe capacity / overload
@@ -20,21 +21,8 @@ public class CartWorldHUDCargoAdapter : MonoBehaviour
     [Header("Cargo")]
     [SerializeField] private CargoCapacityController cargoCapacityController;
 
-    [Header("HUD Systems")]
-    [SerializeField] private PlayerWorldHUDSystem hudSystem;
+    [Header("HUD State")]
     [SerializeField] private PlayerWorldHUDStateSystem stateSystem;
-
-    #endregion
-
-    #region Player Resolution
-
-    [Header("Player Slot")]
-    [Tooltip(
-        "0 = automatically resolve from PlayerWorldHUDSystem binding. " +
-        "1..4 = force a specific player slot."
-    )]
-    [Range(0, PlayerWorldHUDStateSystem.MaxPlayerSlots)]
-    [SerializeField] private int playerIndexOverride = 0;
 
     [Header("Runtime - Read Only")]
     [SerializeField] private int resolvedPlayerIndex;
@@ -50,22 +38,18 @@ public class CartWorldHUDCargoAdapter : MonoBehaviour
             cargoCapacityController = GetComponentInParent<CargoCapacityController>();
         }
 
-        if (hudSystem == null)
-        {
-            hudSystem = FindFirstObjectByType<PlayerWorldHUDSystem>();
-        }
-
         if (stateSystem == null)
         {
             stateSystem = FindFirstObjectByType<PlayerWorldHUDStateSystem>();
         }
+
+        SnakeCartManager owner = GetComponentInParent<SnakeCartManager>();
+        resolvedPlayerIndex = owner != null ? owner.GetPlayerId() : 0;
     }
 
     private void OnEnable()
     {
-        SubscribeHUDBinding();
         SubscribeCargo();
-        ResolvePlayerIndex();
     }
 
     private void Start()
@@ -78,100 +62,7 @@ public class CartWorldHUDCargoAdapter : MonoBehaviour
 
     private void OnDisable()
     {
-        UnsubscribeHUDBinding();
         UnsubscribeCargo();
-    }
-
-    private void OnValidate()
-    {
-        playerIndexOverride = Mathf.Clamp(
-            playerIndexOverride,
-            0,
-            PlayerWorldHUDStateSystem.MaxPlayerSlots
-        );
-    }
-
-    #endregion
-
-    #region HUD Binding
-
-    private void SubscribeHUDBinding()
-    {
-        if (hudSystem == null) return;
-
-        hudSystem.OnPlayerHUDBound -= HandlePlayerHUDBound;
-        hudSystem.OnPlayerHUDUnbound -= HandlePlayerHUDUnbound;
-
-        hudSystem.OnPlayerHUDBound += HandlePlayerHUDBound;
-        hudSystem.OnPlayerHUDUnbound += HandlePlayerHUDUnbound;
-    }
-
-    private void UnsubscribeHUDBinding()
-    {
-        if (hudSystem == null) return;
-
-        hudSystem.OnPlayerHUDBound -= HandlePlayerHUDBound;
-        hudSystem.OnPlayerHUDUnbound -= HandlePlayerHUDUnbound;
-    }
-
-    private void HandlePlayerHUDBound(
-        int playerIndex,
-        GameObject playerRoot,
-        Transform hudAnchor)
-    {
-        if (playerIndexOverride > 0)
-        {
-            resolvedPlayerIndex = playerIndexOverride;
-            PushAllCargoState();
-            return;
-        }
-
-        if (!IsInsidePlayerRoot(playerRoot)) return;
-
-        resolvedPlayerIndex = playerIndex;
-        PushAllCargoState();
-    }
-
-    private void HandlePlayerHUDUnbound(int playerIndex)
-    {
-        if (playerIndexOverride > 0) return;
-        if (resolvedPlayerIndex != playerIndex) return;
-
-        resolvedPlayerIndex = 0;
-    }
-
-    private void ResolvePlayerIndex()
-    {
-        if (playerIndexOverride > 0)
-        {
-            resolvedPlayerIndex = playerIndexOverride;
-            return;
-        }
-
-        resolvedPlayerIndex = 0;
-
-        if (hudSystem == null) return;
-
-        for (int playerIndex = 1;
-             playerIndex <= PlayerWorldHUDSystem.MaxPlayerSlots;
-             playerIndex++)
-        {
-            GameObject playerRoot = hudSystem.GetPlayerRoot(playerIndex);
-
-            if (!IsInsidePlayerRoot(playerRoot)) continue;
-
-            resolvedPlayerIndex = playerIndex;
-            return;
-        }
-    }
-
-    private bool IsInsidePlayerRoot(GameObject playerRoot)
-    {
-        if (playerRoot == null) return false;
-
-        Transform rootTransform = playerRoot.transform;
-
-        return transform == rootTransform || transform.IsChildOf(rootTransform);
     }
 
     #endregion
@@ -229,13 +120,7 @@ public class CartWorldHUDCargoAdapter : MonoBehaviour
 
     private void PushAllCargoState()
     {
-        if (cargoCapacityController == null || stateSystem == null) return;
-
-        if (resolvedPlayerIndex <= 0)
-        {
-            ResolvePlayerIndex();
-            if (resolvedPlayerIndex <= 0) return;
-        }
+        if (cargoCapacityController == null || stateSystem == null || resolvedPlayerIndex <= 0) return;
 
         stateSystem.SetLoad(
             resolvedPlayerIndex,
