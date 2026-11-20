@@ -1,0 +1,189 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7493946923483149031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5808609163785486008}
+  - component: {fileID: 5705483057949093524}
+  - component: {fileID: 1091274326107055509}
+  m_Layer: 0
+  m_Name: Round Result Title
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5808609163785486008
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493946923483149031}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.04, y: 0.13}
+  m_AnchorMax: {x: 0.96, y: 0.4}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5705483057949093524
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493946923483149031}
+  m_CullTransparentMesh: 1
+--- !u!114 &1091274326107055509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493946923483149031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: beaa34cb0e58d624bb3a264b28600785, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LightSide.UniText::LightSide.UniText
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  text: 
+  font: {fileID: 0}
+  fontStack: {fileID: 0}
+  fontSize: 120
+  wordWrap: 0
+  padding: {x: 0, y: 0, z: 0, w: 0}
+  horizontalAlignment: 1
+  verticalAlignment: 1
+  autoSize: 1
+  minFontSize: 24
+  maxFontSize: 120
+  fitSteps:
+    items: []
+  styles:
+    items:
+    - modifier:
+        rid: 6266108407671160917
+      source:
+        rid: -2
+      defaultParameter: 
+      disabled: 0
+    - modifier:
+        rid: 6266108407671160918
+      source:
+        rid: -2
+      defaultParameter: 
+      disabled: 0
+    - modifier:
+        rid: 6266108407671160919
+      source:
+        rid: -2
+      defaultParameter: 
+      disabled: 0
+  stylePresets:
+    items: []
+  useGlobalStylePreset: 1
+  renderMode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 6266108407671160917
+      type: {class: BoldModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 4704094632641150730
+          low: 16044173001913910958
+        weight: 0
+        mode: 0
+    - rid: 6266108407671160918
+      type: {class: StrokeModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 4677340927264580866
+          low: 5224171615413301410
+        blend: -1
+        paintSpread: -1
+        colorGlyphs: -1
+        provider:
+          rid: -2
+        mapping: 0
+        shape: -1
+        fit: -1
+        angle: NaN
+        scale: NaN
+        paintOffset: {x: NaN, y: NaN}
+        corners: 0
+        miterLimit: 2
+        tint:
+          serializedVersion: 2
+          rgba: 4294967295
+        paint:
+          kind: 0
+          color:
+            serializedVersion: 2
+            rgba: 0
+          swatch: 
+        width:
+          value: 0.12
+          unit: 2
+        align: 1
+        softness:
+          value: 0
+          unit: 2
+    - rid: 6266108407671160919
+      type: {class: ShadowModifier, ns: LightSide, asm: LightSide.UniText}
+      data:
+        modifierNodeId:
+          high: 5234331108756326126
+          low: 10255479418144356757
+        blend: -1
+        paintSpread: -1
+        colorGlyphs: -1
+        provider:
+          rid: -2
+        mapping: 0
+        shape: -1
+        fit: -1
+        angle: NaN
+        scale: NaN
+        paintOffset: {x: NaN, y: NaN}
+        corners: 0
+        miterLimit: 2
+        tint:
+          serializedVersion: 2
+          rgba: 4294967295
+        paint:
+          kind: 0
+          color:
+            serializedVersion: 2
+            rgba: 0
+          swatch: 
+        offset:
+          value: {x: 0.1, y: -0.1}
+          unit: 2
+        blur:
+          value: 0.1
+          unit: 2
+        spread:
+          value: 0.1
+          unit: 2

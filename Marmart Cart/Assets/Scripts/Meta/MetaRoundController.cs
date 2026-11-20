@@ -120,15 +120,37 @@ public sealed class MetaRoundController : MonoBehaviour
     /// <summary>The pre-round is over; presentation can hide.</summary>
     public event Action PreRoundFinished;
 
+    /// <summary>
+    /// The score reveal ended and the Round result is decided. Read it with
+    /// IsRoundWinner, RoundHasWinner and GetMatchPointsAfterRound.
+    /// </summary>
+    public event Action RoundResultShown;
+
+    /// <summary>
+    /// After the final Round's result: the Match result is decided and stays until
+    /// staff input. Read it with IsMatchWinner, MatchHasWinner and GetMatchRank.
+    /// </summary>
+    public event Action MatchResultShown;
+
     public int RoundNumber => roundNumber;
     public bool IsFinalRound => MatchSession.IsFinalRound;
     public PreRoundBeat CurrentBeat => currentBeat;
     public int CurrentCountdownValue => countdownValue;
 
+    /// <summary>Players in the result (the active player count when the Round ended).</summary>
+    public int ResultPlayerCount => resultPlayerCount;
+    public bool RoundHasWinner => roundHasWinner;
+    public bool MatchHasWinner => matchHasWinner;
+
     private readonly int[] roundBanked = new int[MaxPlayers];
     private readonly bool[] roundWinners = new bool[MaxPlayers];
-    private readonly int[] finalMatchPoints = new int[MaxPlayers];
+    private readonly int[] matchPointsAfterRound = new int[MaxPlayers];
     private readonly bool[] matchWinners = new bool[MaxPlayers];
+    private readonly int[] matchRanks = new int[MaxPlayers];
+
+    private int resultPlayerCount;
+    private bool roundHasWinner;
+    private bool matchHasWinner;
 
     private int sceneBuildIndex = -1;
     private float roundResultEndTime;
@@ -362,7 +384,16 @@ public sealed class MetaRoundController : MonoBehaviour
                 : 0;
         }
 
-        WorkOutWinners(roundBanked, playerCount, roundWinners);
+        roundHasWinner = WorkOutWinners(roundBanked, playerCount, roundWinners);
+        resultPlayerCount = playerCount;
+
+        // Stored once: MatchSession gains this Round's points only when it is committed.
+        for (int i = 0; i < MaxPlayers; i++)
+        {
+            matchPointsAfterRound[i] = i < playerCount
+                ? MatchSession.GetMatchPoints(i + 1) + (roundWinners[i] ? 1 : 0)
+                : 0;
+        }
 
         roundResultEndTime = Time.unscaledTime + roundResultDuration;
         phase = RoundPhase.RoundResult;
@@ -374,6 +405,8 @@ public sealed class MetaRoundController : MonoBehaviour
             $"Winners {FormatWinners(roundWinners, playerCount)} | {next} in {roundResultDuration:0.#} s",
             this
         );
+
+        RoundResultShown?.Invoke();
     }
 
     private void FinishRound()
@@ -401,27 +434,25 @@ public sealed class MetaRoundController : MonoBehaviour
     {
         phase = RoundPhase.MatchOver;
 
-        int playerCount = ActivePlayerCount;
+        int playerCount = resultPlayerCount;
 
-        for (int i = 0; i < MaxPlayers; i++)
-        {
-            finalMatchPoints[i] = i < playerCount
-                ? MatchSession.GetMatchPoints(i + 1) + (roundWinners[i] ? 1 : 0)
-                : 0;
-        }
-
-        WorkOutWinners(finalMatchPoints, playerCount, matchWinners);
+        matchHasWinner = WorkOutWinners(matchPointsAfterRound, playerCount, matchWinners);
+        WorkOutDenseRanks(matchPointsAfterRound, playerCount, matchRanks);
 
         Debug.Log(
-            $"[Meta] Match over | Match Points {FormatPerPlayer(playerCount, p => finalMatchPoints[p - 1])} | " +
+            $"[Meta] Match over | Match Points {FormatPerPlayer(playerCount, p => matchPointsAfterRound[p - 1])} | " +
+            $"Ranks {FormatPerPlayer(playerCount, p => matchRanks[p - 1])} | " +
             $"Match winners {FormatWinners(matchWinners, playerCount)} | " +
-            $"Round {roundNumber} is not saved: F1 starts a new Match, F2 replays this Round.",
+            $"Round {roundNumber} is not saved: F1 starts a new Match, F2 replays this Round, F4 main menu.",
             this
         );
+
+        MatchResultShown?.Invoke();
     }
 
     // Every player tied on the highest value wins. Nobody wins when that value is 0.
-    private static void WorkOutWinners(int[] values, int playerCount, bool[] winners)
+    // Returns whether anyone won.
+    private static bool WorkOutWinners(int[] values, int playerCount, bool[] winners)
     {
         int best = 0;
 
@@ -434,6 +465,70 @@ public sealed class MetaRoundController : MonoBehaviour
         {
             winners[i] = best > 0 && i < playerCount && values[i] == best;
         }
+
+        return best > 0;
+    }
+
+    // Dense ranks, like the results podium: equal values share a rank, the next value gets the next rank (1, 1, 2).
+    private static void WorkOutDenseRanks(int[] values, int playerCount, int[] ranks)
+    {
+        for (int i = 0; i < ranks.Length; i++)
+        {
+            if (i >= playerCount)
+            {
+                ranks[i] = 0;
+                continue;
+            }
+
+            // Rank = 1 + number of distinct values above this one.
+            int rank = 1;
+
+            for (int j = 0; j < playerCount; j++)
+            {
+                if (values[j] <= values[i]) continue;
+
+                bool counted = false;
+                for (int k = 0; k < j; k++)
+                {
+                    if (values[k] == values[j]) { counted = true; break; }
+                }
+
+                if (!counted) rank++;
+            }
+
+            ranks[i] = rank;
+        }
+    }
+
+    #endregion
+
+    #region Result Queries
+
+    public bool IsRoundWinner(int playerIndex)
+    {
+        return IsResultPlayer(playerIndex) && roundWinners[playerIndex - 1];
+    }
+
+    /// <summary>Match Points including this Round's result, before it is committed.</summary>
+    public int GetMatchPointsAfterRound(int playerIndex)
+    {
+        return IsResultPlayer(playerIndex) ? matchPointsAfterRound[playerIndex - 1] : 0;
+    }
+
+    public bool IsMatchWinner(int playerIndex)
+    {
+        return IsResultPlayer(playerIndex) && matchWinners[playerIndex - 1];
+    }
+
+    /// <summary>Dense Match rank (1 = best, ties share a rank). 0 before the Match result.</summary>
+    public int GetMatchRank(int playerIndex)
+    {
+        return IsResultPlayer(playerIndex) ? matchRanks[playerIndex - 1] : 0;
+    }
+
+    private bool IsResultPlayer(int playerIndex)
+    {
+        return playerIndex >= 1 && playerIndex <= resultPlayerCount;
     }
 
     #endregion

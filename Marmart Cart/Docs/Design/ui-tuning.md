@@ -28,6 +28,8 @@ Where each in-game UI element's size, position and 2P/4P values live. Rules are 
 | Power-up held icon and button prompts | `Powerup/PowerupHudProfile` | 2 Player Layout and 4 Player Layout hold all sizes and positions |
 | Tomato splat | `Powerup/Tomato/TomatoPresentationProfile` | Blind Canvas section |
 | Round banner ("ROUND 1", countdown, "SHOP!") | `Assets/Prefabs/UI/Round Banner Label.prefab` | Position: the RectTransform anchors. Size: UniText font size and auto size. Timing: `Meta Game Controller` in each gameplay scene (Round Title Duration, Countdown Step Duration, Go Duration) |
+| Round and Match result banner | Texts: `RoundResultTextProfile` (every Round line, the rank lines, the Match Points line). Look: `Assets/Prefabs/UI/Round Result Title.prefab` and `Round Result Detail.prefab` | Shown by `Game UIs/Round Result`. Lines take `<color=#RRGGBB>` and `<size=55%>` tags; a line break starts a smaller second line. How long it shows: `Meta Game Controller` > Round Result Duration |
+| Screen fade between Rounds | Timing: `Meta Game Controller` > Fade In / Fade Out Duration. Colour: `Game UIs/Screen Fade` > Fade Color | Gameplay scenes only |
 | Tutorial control hints | `Assets/Prefabs/Tutorial/Control Hints.prefab` | Built on each player's HUD layer by `HintsOverlay/manager` |
 
 ## Shared
