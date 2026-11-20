@@ -3,6 +3,39 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-20 03:12 (UTC-7): UI foundation 2e-2j; Round spine Step 2 closed
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Finished the UI foundation. The Round banner and pre-round countdown were added. Every Shapes HUD drawer now uses one toolkit, the UI scale and the view service. HUD player binding lives in one place, and 2P/4P values live in each widget's profile. Checked at 1080p and 4K in all four gameplay scenes. Liang tested each sub-step.
+- Changed:
+  - 2e: UniText global style preset `Assets/Fonts/UniText/Marmart Text Styles.asset`, set in `UniTextSettings`. No custom font yet (OS font).
+  - 2f:
+    - `MetaRoundController` pre-round: "ROUND N" ("FINAL ROUND"), 3-2-1, "SHOP!", in unscaled time, with events.
+    - `GameTimeManager.TakeOverMatchStart` and `PrepareForSceneLoad`.
+    - New `RoundBannerView` and `Round Banner Label.prefab` on each player's banner layer.
+    - Player cameras ignore time scale (Liang).
+  - 2g: `HudShapes` toolkit and `PlayerIdentityProfile` (player colours and labels). The pointer, marker and aim drawers were migrated.
+  - 2h: The session guide and viewport overlay were migrated. 4P dividers fixed (one draw command per strip) and `Bar_tempfix` removed. Liang retuned the overlay's master scale and root offset.
+  - 2i:
+    - World HUD drawer migrated: UI scale, toolkit, no runtime state on its profile. P4's hype fill now animates.
+    - New `PlayerHUDAnchor` on `Leading Cart Base/HUDWorldAnchor` registers each cart with `PlayerWorldHUDSystem`. Tag polling and the HUD camera map were removed.
+    - The three HUD adapters read the player from `SnakeCartManager`.
+  - 2j:
+    - The world HUD, pointer and marker 2P/4P factors moved from `MatchSceneModeProfile` into their own profiles. `MatchSceneModeProfile` keeps cameras only.
+    - Stale serialized fields were removed from the build scenes and chain prefabs.
+    - New `Docs/Design/ui-tuning.md` (where each UI value lives).
+- Why: one consistent UI base (scale, views, binding, profiles) before Step 3's result banner and the meta features.
+- Decisions:
+  - The leaderboard keeps its own colour palette; other single-colour UI uses `PlayerIdentityProfile`.
+  - Each widget's profile holds its 2P/4P values; drawers get the view count from `PlayerViewService`.
+  - `SnakeCartManager` owns the player number; UI never searches tags or object names.
+  - Shapes pitfall: back-to-back flat rectangles in one draw command don't render. Give each its own command.
+  - The final retune was deferred by Liang.
+- Open questions:
+  - Deferred 4P layout items: the guide arrow over the cart ring, the power-up icon over the "B to Reverse" prompt, timer and leaderboard contrast over the dark area outside the map, the results leaderboard against the top edge.
+  - A 4K check in a real exclusive-fullscreen build on the booth monitor.
+  - The UniText display font is still not chosen.
+  - Older: `LevelGreyBoxScene` missing script; Bakery missing-script warning.
+
 ## 2026-11-19 03:00 (UTC-7): UI foundation 2a-2d: views service, dead UI removed, one canvas
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Built the base of the new UI system: one service that knows each player's view and the UI scale, and one canvas with a clipped box per player. The power-up HUD, Tomato splat and tutorial hints now use it. Dead UI was removed. Liang tested each step in the editor.
