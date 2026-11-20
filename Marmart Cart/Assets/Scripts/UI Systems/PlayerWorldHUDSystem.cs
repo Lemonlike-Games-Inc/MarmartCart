@@ -332,6 +332,24 @@ public class PlayerWorldHUDSystem : MonoBehaviour
         return hudAnchor != null;
     }
 
+    /// <summary>
+    /// The player's HUD anchor while checkout suppresses their normal world HUD:
+    /// slot enabled, bound and checkout-suppressed. PlayerWorldHUDRenderer then
+    /// draws only the checkout prompt.
+    /// </summary>
+    public bool TryGetCheckoutAnchor(int playerIndex, out Transform hudAnchor)
+    {
+        hudAnchor = null;
+
+        if (!TryGetSlotArrayIndex(playerIndex, out int slotIndex)) return false;
+
+        PlayerSlot slot = slots[slotIndex];
+        if (!slot.enabled || !slot.checkoutSuppressed || !slot.IsBound) return false;
+
+        hudAnchor = slot.HUDWorldAnchor;
+        return hudAnchor != null;
+    }
+
     public bool TryGetPlayerIndexForCamera(Camera gameplayCamera, out int playerIndex)
     {
         playerIndex = 0;

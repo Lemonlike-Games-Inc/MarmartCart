@@ -71,12 +71,16 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
     #region Mode Adaptation
 
+    [Header("Runtime - Read Only")]
+    [Tooltip("2P/4P size factor pushed by MatchSceneModeController.")]
+    [SerializeField] private float modeScale = 1f;
+
+    // UiScale times modeScale for the camera being drawn. Every profile pixel value is multiplied by it.
+    private float drawScale = 1f;
+
     public void SetModeScaleMultiplier(float multiplier)
     {
-        if (layoutProfile != null)
-        {
-            layoutProfile.SetRuntimeModeScaleMultiplier(multiplier);
-        }
+        modeScale = Mathf.Max(0.05f, multiplier);
     }
 
     #endregion
@@ -102,28 +106,18 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         if (!drawingEnabled) return;
         if (cam == null || hudSystem == null || layoutProfile == null) return;
 
-        bool checkoutPromptOnly =
-            hudSystem.TryGetCheckoutSuppressedSlotForCamera(
-                cam,
-                out int playerIndex,
-                out Transform hudAnchor
-            );
+        if (!HudShapes.TryGetViewPlayer(cam, out int playerIndex)) return;
 
-        if (!checkoutPromptOnly &&
-            !hudSystem.TryGetRenderableSlotForCamera(
-                cam,
-                out playerIndex,
-                out hudAnchor
-            ))
-        {
-            return;
-        }
+        // During checkout the normal meters are suppressed and only the checkout prompt draws.
+        bool checkoutPromptOnly = hudSystem.TryGetCheckoutAnchor(playerIndex, out Transform hudAnchor);
 
-        if (hudAnchor == null) return;
+        if (!checkoutPromptOnly && !hudSystem.TryGetRenderableAnchor(playerIndex, out hudAnchor)) return;
 
         // The REAL cart anchor determines only where the HUD belongs on-screen.
         Vector3 anchorScreen = cam.WorldToScreenPoint(hudAnchor.position);
         if (skipWhenBehindCamera && anchorScreen.z <= 0f) return;
+
+        drawScale = HudShapes.Scale(modeScale);
 
         // Optionally reconstruct that same screen X/Y on a fixed plane close to
         // this gameplay camera. The HUD still tracks the cart visually, but it
@@ -132,12 +126,12 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         if (layoutProfile.UseNearCameraRenderPlane)
         {
-            float renderDepth = Mathf.Max(
+            anchorScreen.z = HudShapes.RenderDepth(
+                cam,
                 layoutProfile.NearCameraRenderDistance,
-                cam.nearClipPlane + layoutProfile.NearClipSafetyPadding
+                layoutProfile.NearClipSafetyPadding
             );
 
-            anchorScreen.z = renderDepth;
             renderAnchorWorld = cam.ScreenToWorldPoint(anchorScreen);
         }
 
@@ -172,13 +166,13 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         }
 
         Vector2 loadCenterOffset = new Vector2(
-            -layoutProfile.HorizontalSeparationPixels,
-            layoutProfile.VerticalOffsetPixels
+            -(layoutProfile.HorizontalSeparationPixels * drawScale),
+            (layoutProfile.VerticalOffsetPixels * drawScale)
         );
 
         Vector2 hypeCenterOffset = new Vector2(
-            layoutProfile.HorizontalSeparationPixels,
-            layoutProfile.VerticalOffsetPixels
+            (layoutProfile.HorizontalSeparationPixels * drawScale),
+            (layoutProfile.VerticalOffsetPixels * drawScale)
         );
 
         Vector3 loadCenterWorld = ScreenOffsetToWorld(
@@ -197,7 +191,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
 
             // This command contains only the Hype arc primitives.
             DrawHypeMeter(
@@ -226,18 +220,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         DrawMoveBackwardPrompt(cam, renderAnchorWorld, hudState);
     }
 
-    private static void ConfigureDrawState()
-    {
-        Draw.ResetAllDrawStates();
-        Draw.BlendMode = ShapesBlendMode.Transparent;
-
-        // Preserve normal depth testing and the existing near-camera plane.
-        Draw.RadiusSpace = ThicknessSpace.Pixels;
-        Draw.ThicknessSpace = ThicknessSpace.Pixels;
-        Draw.LineGeometry = LineGeometry.Billboard;
-        Draw.LineEndCaps = LineEndCap.Round;
-    }
-
     #endregion
 
     #region Checkout Prompt
@@ -258,42 +240,42 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 anchorScreen.x,
                 anchorScreen.y
             ) +
-            layoutProfile.CheckoutPromptOffsetPixels;
+            (layoutProfile.CheckoutPromptOffsetPixels * drawScale);
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
-            DrawRoundedScreenRectangle(
+            HudShapes.ApplyHudDrawState();
+            HudShapes.DrawRoundedScreenRectangle(
                 cam,
                 anchorScreen.z,
-                groupCenter + layoutProfile.CheckoutPromptBackgroundOffsetPixels,
-                layoutProfile.CheckoutPromptBackgroundSizePixels,
-                layoutProfile.CheckoutPromptCornerRadiusPixels,
+                groupCenter + (layoutProfile.CheckoutPromptBackgroundOffsetPixels * drawScale),
+                (layoutProfile.CheckoutPromptBackgroundSizePixels * drawScale),
+                (layoutProfile.CheckoutPromptCornerRadiusPixels * drawScale),
                 layoutProfile.CheckoutPromptBackgroundColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawPromptCircle(
                 cam,
                 anchorScreen.z,
-                groupCenter + layoutProfile.CheckoutPromptCircleOffsetPixels,
-                layoutProfile.CheckoutPromptCircleRadiusPixels,
+                groupCenter + (layoutProfile.CheckoutPromptCircleOffsetPixels * drawScale),
+                (layoutProfile.CheckoutPromptCircleRadiusPixels * drawScale),
                 layoutProfile.CheckoutPromptCircleColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
-            DrawCenteredScreenText(
+            HudShapes.ApplyHudDrawState();
+            HudShapes.DrawCenteredScreenText(
                 cam,
                 anchorScreen.z,
-                groupCenter + layoutProfile.CheckoutPromptTextOffsetPixels,
+                groupCenter + (layoutProfile.CheckoutPromptTextOffsetPixels * drawScale),
                 layoutProfile.CheckoutPromptText,
-                layoutProfile.CheckoutPromptFontSizePixels,
+                (layoutProfile.CheckoutPromptFontSizePixels * drawScale),
                 layoutProfile.CheckoutPromptTextColor
             );
         }
@@ -325,113 +307,45 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 anchorScreen.x,
                 anchorScreen.y
             ) +
-            layoutProfile.MoveBackwardPromptOffsetPixels;
+            (layoutProfile.MoveBackwardPromptOffsetPixels * drawScale);
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
-            DrawRoundedScreenRectangle(
+            HudShapes.ApplyHudDrawState();
+            HudShapes.DrawRoundedScreenRectangle(
                 cam,
                 anchorScreen.z,
-                groupCenter + layoutProfile.MoveBackwardPromptBackgroundOffsetPixels,
-                layoutProfile.MoveBackwardPromptBackgroundSizePixels,
-                layoutProfile.MoveBackwardPromptCornerRadiusPixels,
+                groupCenter + (layoutProfile.MoveBackwardPromptBackgroundOffsetPixels * drawScale),
+                (layoutProfile.MoveBackwardPromptBackgroundSizePixels * drawScale),
+                (layoutProfile.MoveBackwardPromptCornerRadiusPixels * drawScale),
                 layoutProfile.MoveBackwardPromptBackgroundColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawPromptCircle(
                 cam,
                 anchorScreen.z,
-                groupCenter + layoutProfile.MoveBackwardPromptCircleOffsetPixels,
-                layoutProfile.MoveBackwardPromptCircleRadiusPixels,
+                groupCenter + (layoutProfile.MoveBackwardPromptCircleOffsetPixels * drawScale),
+                (layoutProfile.MoveBackwardPromptCircleRadiusPixels * drawScale),
                 layoutProfile.MoveBackwardPromptCircleColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
-            DrawCenteredScreenText(
+            HudShapes.ApplyHudDrawState();
+            HudShapes.DrawCenteredScreenText(
                 cam,
                 anchorScreen.z,
-                groupCenter + layoutProfile.MoveBackwardPromptTextOffsetPixels,
+                groupCenter + (layoutProfile.MoveBackwardPromptTextOffsetPixels * drawScale),
                 layoutProfile.MoveBackwardPromptText,
-                layoutProfile.MoveBackwardPromptFontSizePixels,
+                (layoutProfile.MoveBackwardPromptFontSizePixels * drawScale),
                 layoutProfile.MoveBackwardPromptTextColor
             );
         }
-    }
-
-    private void DrawRoundedScreenRectangle(
-        Camera cam,
-        float screenDepth,
-        Vector2 centerScreen,
-        Vector2 sizePixels,
-        float cornerRadiusPixels,
-        Color color)
-    {
-        float widthPixels = Mathf.Max(0.001f, sizePixels.x);
-        float heightPixels = Mathf.Max(0.001f, sizePixels.y);
-
-        float safeCornerPixels =
-            Mathf.Clamp(
-                cornerRadiusPixels,
-                0f,
-                Mathf.Min(widthPixels, heightPixels) * 0.5f
-            );
-
-        Vector3 centerWorld =
-            ScreenPointToWorld(
-                cam,
-                centerScreen,
-                screenDepth
-            );
-
-        float widthWorld =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                centerWorld,
-                widthPixels
-            );
-
-        float heightWorld =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                centerWorld,
-                heightPixels
-            );
-
-        float cornerRadiusWorld =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                centerWorld,
-                safeCornerPixels
-            );
-
-        Color previousColor = Draw.Color;
-
-        Draw.Matrix =
-            Matrix4x4.TRS(
-                centerWorld,
-                cam.transform.rotation,
-                Vector3.one
-            );
-
-        Draw.Color = color;
-
-        Draw.Rectangle(
-            Vector3.zero,
-            widthWorld,
-            heightWorld,
-            cornerRadiusWorld
-        );
-
-        Draw.Color = previousColor;
-        Draw.Matrix = Matrix4x4.identity;
     }
 
     private void DrawPromptCircle(
@@ -444,7 +358,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         if (radiusPixels <= 0f) return;
 
         Draw.Disc(
-            ScreenPointToWorld(
+            HudShapes.ScreenToWorld(
                 cam,
                 centerScreen,
                 screenDepth
@@ -453,46 +367,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             radiusPixels,
             color
         );
-    }
-
-    private void DrawCenteredScreenText(
-        Camera cam,
-        float screenDepth,
-        Vector2 centerScreen,
-        string text,
-        float fontSizePixels,
-        Color color)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return;
-        }
-
-        Vector3 textWorld =
-            ScreenPointToWorld(
-                cam,
-                centerScreen,
-                screenDepth
-            );
-
-        Draw.FontSize =
-            PixelsToWorldSizeAtDepth(
-                cam,
-                textWorld,
-                fontSizePixels
-            );
-
-        Color previousColor = Draw.Color;
-        Draw.Color = color;
-
-        Draw.Text(
-            textWorld,
-            cam.transform.rotation,
-            text,
-            TextAlign.Center
-        );
-
-        Draw.Color = previousColor;
     }
 
     #endregion
@@ -509,13 +383,13 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawFullRoundedArc(
                 cam,
                 centerWorld,
                 rotation,
-                layoutProfile.LoadRadiusPixels,
-                layoutProfile.LoadTrackThicknessPixels,
+                (layoutProfile.LoadRadiusPixels * drawScale),
+                (layoutProfile.LoadTrackThicknessPixels * drawScale),
                 layoutProfile.LoadCenterAngleDegrees,
                 layoutProfile.LoadSpanDegrees,
                 layoutProfile.LoadTrackColor
@@ -537,9 +411,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         float capsuleThickness = layoutProfile.GetLoadCapsuleThicknessPixels(
             visibleSlotCount
-        );
+        ) * drawScale;
 
-        float capsuleLength = layoutProfile.LoadCapsuleLengthPixels;
+        float capsuleLength = (layoutProfile.LoadCapsuleLengthPixels * drawScale);
         float halfSpan = layoutProfile.LoadSpanDegrees * 0.5f;
 
         float bottomDegrees =
@@ -600,7 +474,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         // Capsule lines stay together, before the separate tick/text passes.
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             for (int i = 0; i < visibleSlotCount; i++)
             {
                 float angleDegrees = GetSlotAngleDegrees(
@@ -658,7 +532,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                     cam,
                     centerScreen,
                     angleDegrees * Mathf.Deg2Rad,
-                    layoutProfile.LoadRadiusPixels,
+                    (layoutProfile.LoadRadiusPixels * drawScale),
                     capsuleLength,
                     capsuleThickness,
                     capsuleColor
@@ -862,12 +736,12 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 rotation,
                 centerScreen,
                 angleDegrees,
-                layoutProfile.LoadMilestoneTickLengthPixels,
-                layoutProfile.LoadMilestoneTickThicknessPixels,
+                (layoutProfile.LoadMilestoneTickLengthPixels * drawScale),
+                (layoutProfile.LoadMilestoneTickThicknessPixels * drawScale),
                 layoutProfile.LoadMilestoneTickColor,
                 layoutProfile.LoadMilestoneTextColor,
-                layoutProfile.LoadMilestoneFontSizePixels,
-                layoutProfile.LoadMilestoneLabelOffsetPixels,
+                (layoutProfile.LoadMilestoneFontSizePixels * drawScale),
+                (layoutProfile.LoadMilestoneLabelOffsetPixels * drawScale),
                 milestone.ToString()
             );
         }
@@ -980,12 +854,12 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             rotation,
             centerScreen,
             angleDegrees,
-            layoutProfile.CurrentLoadTickLengthPixels,
-            layoutProfile.CurrentLoadTickThicknessPixels,
+            (layoutProfile.CurrentLoadTickLengthPixels * drawScale),
+            (layoutProfile.CurrentLoadTickThicknessPixels * drawScale),
             tickColor,
             layoutProfile.CurrentLoadTextColor,
-            layoutProfile.CurrentLoadFontSizePixels,
-            layoutProfile.CurrentLoadLabelOffsetPixels,
+            (layoutProfile.CurrentLoadFontSizePixels * drawScale),
+            (layoutProfile.CurrentLoadLabelOffsetPixels * drawScale),
             currentLoadCount.ToString()
         );
     }
@@ -1011,8 +885,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             ShapesMath.AngToDir(angleRadians);
 
         float outerRadius =
-            layoutProfile.LoadRadiusPixels +
-            layoutProfile.LoadTrackThicknessPixels * 0.5f;
+            (layoutProfile.LoadRadiusPixels * drawScale) +
+            (layoutProfile.LoadTrackThicknessPixels * drawScale) * 0.5f;
 
         Vector2 tickStartScreen =
             new Vector2(
@@ -1040,7 +914,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             Draw.Line(
                 cam.ScreenToWorldPoint(startScreen3),
                 cam.ScreenToWorldPoint(endScreen3),
@@ -1065,8 +939,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
-            Draw.FontSize = PixelsToWorldSizeAtDepth(
+            HudShapes.ApplyHudDrawState();
+            Draw.FontSize = HudShapes.PixelsToWorldSize(
                 cam,
                 labelWorld,
                 fontSizePixels
@@ -1097,8 +971,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             cam,
             centerWorld,
             rotation,
-            layoutProfile.HypeRadiusPixels,
-            layoutProfile.HypeTrackThicknessPixels,
+            (layoutProfile.HypeRadiusPixels * drawScale),
+            (layoutProfile.HypeTrackThicknessPixels * drawScale),
             layoutProfile.HypeCenterAngleDegrees,
             layoutProfile.HypeSpanDegrees,
             layoutProfile.HypeTrackColor
@@ -1163,9 +1037,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                     cam,
                     centerWorld,
                     rotation,
-                    layoutProfile.HypeRadiusPixels +
-                    layoutProfile.HypeRewardPreviewRadiusOffsetPixels,
-                    layoutProfile.HypeRewardPreviewThicknessPixels,
+                    (layoutProfile.HypeRadiusPixels * drawScale) +
+                    (layoutProfile.HypeRewardPreviewRadiusOffsetPixels * drawScale),
+                    (layoutProfile.HypeRewardPreviewThicknessPixels * drawScale),
                     currentDegrees,
                     rewardEndDegrees,
                     layoutProfile.HypeRewardPreviewColor
@@ -1185,8 +1059,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 cam,
                 centerWorld,
                 rotation,
-                layoutProfile.HypeRadiusPixels,
-                layoutProfile.HypeFillThicknessPixels,
+                (layoutProfile.HypeRadiusPixels * drawScale),
+                (layoutProfile.HypeFillThicknessPixels * drawScale),
                 bottomDegrees,
                 currentDegrees,
                 currentFillColor
@@ -1218,9 +1092,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                     cam,
                     centerWorld,
                     rotation,
-                    layoutProfile.HypeRadiusPixels +
-                    layoutProfile.HypePenaltyPreviewRadiusOffsetPixels,
-                    layoutProfile.HypePenaltyPreviewThicknessPixels,
+                    (layoutProfile.HypeRadiusPixels * drawScale) +
+                    (layoutProfile.HypePenaltyPreviewRadiusOffsetPixels * drawScale),
+                    (layoutProfile.HypePenaltyPreviewThicknessPixels * drawScale),
                     penaltyStartDegrees,
                     currentDegrees,
                     layoutProfile.HypePenaltyPreviewColor
@@ -1266,27 +1140,30 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         targetNormalized = Mathf.Clamp01(targetNormalized);
 
-        if (playerIndex < 0 ||
-            playerIndex >= displayedHypeNormalized.Length)
+        // playerIndex is 1..4; the arrays are 0-based.
+        int slot = playerIndex - 1;
+
+        if (slot < 0 ||
+            slot >= displayedHypeNormalized.Length)
         {
             return targetNormalized;
         }
 
         if (!layoutProfile.AnimateHypeGainFill)
         {
-            displayedHypeNormalized[playerIndex] = targetNormalized;
-            hypeFillInitialized[playerIndex] = true;
+            displayedHypeNormalized[slot] = targetNormalized;
+            hypeFillInitialized[slot] = true;
             return targetNormalized;
         }
 
-        if (!hypeFillInitialized[playerIndex])
+        if (!hypeFillInitialized[slot])
         {
-            displayedHypeNormalized[playerIndex] = targetNormalized;
-            hypeFillInitialized[playerIndex] = true;
+            displayedHypeNormalized[slot] = targetNormalized;
+            hypeFillInitialized[slot] = true;
             return targetNormalized;
         }
 
-        float displayed = displayedHypeNormalized[playerIndex];
+        float displayed = displayedHypeNormalized[slot];
 
         // Loss/spending is intentionally immediate. This keeps Hype burn,
         // failed actions, and other reductions responsive and truthful.
@@ -1299,11 +1176,11 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             displayed = Mathf.MoveTowards(
                 displayed,
                 targetNormalized,
-                layoutProfile.HypeGainFillSpeedNormalizedPerSecond * Time.deltaTime
+                layoutProfile.HypeGainFillSpeedNormalizedPerSecond * Time.unscaledDeltaTime
             );
         }
 
-        displayedHypeNormalized[playerIndex] = displayed;
+        displayedHypeNormalized[slot] = displayed;
         return displayed;
     }
 
@@ -1331,7 +1208,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 anchorScreen.x,
                 anchorScreen.y
             ) +
-            layoutProfile.HypeBurnWarningOffsetPixels;
+            (layoutProfile.HypeBurnWarningOffsetPixels * drawScale);
 
         // One severity-mapped color drives the ENTIRE icon so ring, arrow,
         // and bolt always read as one visual warning unit.
@@ -1342,25 +1219,25 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawWarningBackgroundCircle(
                 cam,
                 anchorScreen.z,
-                iconCenter + layoutProfile.HypeBurnWarningBackgroundOffsetPixels,
-                layoutProfile.HypeBurnWarningBackgroundRadiusPixels,
+                iconCenter + (layoutProfile.HypeBurnWarningBackgroundOffsetPixels * drawScale),
+                (layoutProfile.HypeBurnWarningBackgroundRadiusPixels * drawScale),
                 layoutProfile.HypeBurnWarningBackgroundColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawHypeBurnWarningRing(cam, anchorScreen.z, iconCenter, warningColor);
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawHypeBurnWarningArrowShaft(cam, anchorScreen.z, iconCenter, warningColor);
         }
 
@@ -1368,7 +1245,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         // pieces while preserving their original profile-authored vertices.
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawHypeBurnWarningArrowHead(cam, anchorScreen.z, iconCenter, warningColor);
             DrawHypeBurnWarningBolt(cam, anchorScreen.z, iconCenter, warningColor);
         }
@@ -1410,7 +1287,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             gapCenterDegrees + 360f - gapHalfDegrees;
 
         Vector3 centerWorld =
-            ScreenPointToWorld(
+            HudShapes.ScreenToWorld(
                 cam,
                 iconCenter,
                 screenDepth
@@ -1419,8 +1296,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Draw.Arc(
             centerWorld,
             cam.transform.rotation,
-            layoutProfile.HypeBurnWarningRingRadiusPixels,
-            layoutProfile.HypeBurnWarningRingThicknessPixels,
+            (layoutProfile.HypeBurnWarningRingRadiusPixels * drawScale),
+            (layoutProfile.HypeBurnWarningRingThicknessPixels * drawScale),
             arcStartDegrees * Mathf.Deg2Rad,
             arcEndDegrees * Mathf.Deg2Rad,
             ArcEndCap.Round,
@@ -1436,10 +1313,10 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         Vector2 arrowCenter =
             iconCenter +
-            layoutProfile.HypeBurnWarningArrowOffsetPixels;
+            (layoutProfile.HypeBurnWarningArrowOffsetPixels * drawScale);
 
         float shaftLength =
-            layoutProfile.HypeBurnWarningArrowShaftLengthPixels;
+            (layoutProfile.HypeBurnWarningArrowShaftLengthPixels * drawScale);
 
         float shaftHalf =
             shaftLength * 0.5f;
@@ -1453,9 +1330,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             new Vector2(0f, -shaftHalf);
 
         Draw.Line(
-            ScreenPointToWorld(cam, shaftTop, screenDepth),
-            ScreenPointToWorld(cam, shaftBottom, screenDepth),
-            layoutProfile.HypeBurnWarningArrowShaftThicknessPixels,
+            HudShapes.ScreenToWorld(cam, shaftTop, screenDepth),
+            HudShapes.ScreenToWorld(cam, shaftBottom, screenDepth),
+            (layoutProfile.HypeBurnWarningArrowShaftThicknessPixels * drawScale),
             color
         );
     }
@@ -1466,17 +1343,17 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 iconCenter,
         Color color)
     {
-        Vector2 arrowCenter = iconCenter + layoutProfile.HypeBurnWarningArrowOffsetPixels;
+        Vector2 arrowCenter = iconCenter + (layoutProfile.HypeBurnWarningArrowOffsetPixels * drawScale);
         Vector2 shaftBottom = arrowCenter + new Vector2(
             0f,
-            -layoutProfile.HypeBurnWarningArrowShaftLengthPixels * 0.5f
+            -(layoutProfile.HypeBurnWarningArrowShaftLengthPixels * drawScale) * 0.5f
         );
 
         float headWidthHalf =
-            layoutProfile.HypeBurnWarningArrowHeadWidthPixels * 0.5f;
+            (layoutProfile.HypeBurnWarningArrowHeadWidthPixels * drawScale) * 0.5f;
 
         float headHeight =
-            layoutProfile.HypeBurnWarningArrowHeadHeightPixels;
+            (layoutProfile.HypeBurnWarningArrowHeadHeightPixels * drawScale);
 
         Vector2 headBaseCenter = shaftBottom;
 
@@ -1503,15 +1380,15 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         Vector2 boltCenter =
             iconCenter +
-            layoutProfile.HypeBurnWarningBoltOffsetPixels;
+            (layoutProfile.HypeBurnWarningBoltOffsetPixels * drawScale);
 
         DrawObtuseBoltTriangle(
             cam,
             screenDepth,
-            boltCenter + layoutProfile.HypeBurnWarningBoltTriangleAOffsetPixels,
-            layoutProfile.HypeBurnWarningBoltTriangleAWidthPixels,
-            layoutProfile.HypeBurnWarningBoltTriangleAHeightPixels,
-            layoutProfile.HypeBurnWarningBoltTriangleASkewPixels,
+            boltCenter + (layoutProfile.HypeBurnWarningBoltTriangleAOffsetPixels * drawScale),
+            (layoutProfile.HypeBurnWarningBoltTriangleAWidthPixels * drawScale),
+            (layoutProfile.HypeBurnWarningBoltTriangleAHeightPixels * drawScale),
+            (layoutProfile.HypeBurnWarningBoltTriangleASkewPixels * drawScale),
             layoutProfile.HypeBurnWarningBoltTriangleARotationDegrees,
             color
         );
@@ -1519,10 +1396,10 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         DrawObtuseBoltTriangle(
             cam,
             screenDepth,
-            boltCenter + layoutProfile.HypeBurnWarningBoltTriangleBOffsetPixels,
-            layoutProfile.HypeBurnWarningBoltTriangleBWidthPixels,
-            layoutProfile.HypeBurnWarningBoltTriangleBHeightPixels,
-            layoutProfile.HypeBurnWarningBoltTriangleBSkewPixels,
+            boltCenter + (layoutProfile.HypeBurnWarningBoltTriangleBOffsetPixels * drawScale),
+            (layoutProfile.HypeBurnWarningBoltTriangleBWidthPixels * drawScale),
+            (layoutProfile.HypeBurnWarningBoltTriangleBHeightPixels * drawScale),
+            (layoutProfile.HypeBurnWarningBoltTriangleBSkewPixels * drawScale),
             layoutProfile.HypeBurnWarningBoltTriangleBRotationDegrees,
             color
         );
@@ -1554,20 +1431,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         DrawScreenTrianglePolygon(cam, screenDepth, a, b, c, color);
     }
 
-    private Vector3 ScreenPointToWorld(
-        Camera cam,
-        Vector2 screenPoint,
-        float screenDepth)
-    {
-        return cam.ScreenToWorldPoint(
-            new Vector3(
-                screenPoint.x,
-                screenPoint.y,
-                screenDepth
-            )
-        );
-    }
-
     #endregion
 
     #region Low Speed Warning Icon
@@ -1584,36 +1447,36 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         Vector3 anchorScreen = cam.WorldToScreenPoint(renderAnchorWorld);
 
-        Vector2 iconCenter = new Vector2(anchorScreen.x, anchorScreen.y) + layoutProfile.LowSpeedWarningOffsetPixels;
+        Vector2 iconCenter = new Vector2(anchorScreen.x, anchorScreen.y) + (layoutProfile.LowSpeedWarningOffsetPixels * drawScale);
 
         Color warningColor = layoutProfile.GetLowSpeedWarningColor(state.MaxSpeedPenaltyNormalized);
 
-        Vector2 cartCenter = iconCenter + layoutProfile.LowSpeedWarningCartOffsetPixels;
-        Vector2 weightCenter = iconCenter + layoutProfile.LowSpeedWarningWeightOffsetPixels;
-        Vector2 arrowCenter = iconCenter + layoutProfile.LowSpeedWarningArrowOffsetPixels;
+        Vector2 cartCenter = iconCenter + (layoutProfile.LowSpeedWarningCartOffsetPixels * drawScale);
+        Vector2 weightCenter = iconCenter + (layoutProfile.LowSpeedWarningWeightOffsetPixels * drawScale);
+        Vector2 arrowCenter = iconCenter + (layoutProfile.LowSpeedWarningArrowOffsetPixels * drawScale);
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawWarningBackgroundCircle(
                 cam,
                 anchorScreen.z,
-                iconCenter + layoutProfile.LowSpeedWarningBackgroundOffsetPixels,
-                layoutProfile.LowSpeedWarningBackgroundRadiusPixels,
+                iconCenter + (layoutProfile.LowSpeedWarningBackgroundOffsetPixels * drawScale),
+                (layoutProfile.LowSpeedWarningBackgroundRadiusPixels * drawScale),
                 layoutProfile.LowSpeedWarningBackgroundColor
             );
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningCart(cam, anchorScreen.z, cartCenter, warningColor);
             DrawLowSpeedWarningArrowShaft(cam, anchorScreen.z, arrowCenter, warningColor);
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningWheels(cam, anchorScreen.z, cartCenter, warningColor);
         }
 
@@ -1621,20 +1484,20 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         // working low-speed arrowhead on its original Triangle draw path.
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningWeight(cam, anchorScreen.z, weightCenter, warningColor);
         }
 
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningArrowHead(cam, anchorScreen.z, arrowCenter, warningColor);
         }
 
         // Keep the handle above the filled weight body if they overlap.
         using (Draw.Command(cam))
         {
-            ConfigureDrawState();
+            HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningWeightHandle(cam, anchorScreen.z, weightCenter, warningColor);
         }
     }
@@ -1661,12 +1524,12 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 iconCenter,
         Color color)
     {
-        float thickness = layoutProfile.LowSpeedWarningCartStrokeThicknessPixels;
+        float thickness = (layoutProfile.LowSpeedWarningCartStrokeThicknessPixels * drawScale);
 
-        Vector2 basketTopLeft = iconCenter + layoutProfile.LowSpeedWarningCartBasketTopLeftOffsetPixels;
-        Vector2 basketTopRight = iconCenter + layoutProfile.LowSpeedWarningCartBasketTopRightOffsetPixels;
-        Vector2 basketBottomRight = iconCenter + layoutProfile.LowSpeedWarningCartBasketBottomRightOffsetPixels;
-        Vector2 basketBottomLeft = iconCenter + layoutProfile.LowSpeedWarningCartBasketBottomLeftOffsetPixels;
+        Vector2 basketTopLeft = iconCenter + (layoutProfile.LowSpeedWarningCartBasketTopLeftOffsetPixels * drawScale);
+        Vector2 basketTopRight = iconCenter + (layoutProfile.LowSpeedWarningCartBasketTopRightOffsetPixels * drawScale);
+        Vector2 basketBottomRight = iconCenter + (layoutProfile.LowSpeedWarningCartBasketBottomRightOffsetPixels * drawScale);
+        Vector2 basketBottomLeft = iconCenter + (layoutProfile.LowSpeedWarningCartBasketBottomLeftOffsetPixels * drawScale);
 
         // 1) Basket trapezoid.
         DrawScreenLine(cam, screenDepth, basketTopLeft, basketTopRight, thickness, color);
@@ -1675,16 +1538,16 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         DrawScreenLine(cam, screenDepth, basketBottomLeft, basketTopLeft, thickness, color);
 
         // 2) + 3) Two-segment handle.
-        Vector2 handleJoint = iconCenter + layoutProfile.LowSpeedWarningCartHandleJointOffsetPixels;
-        Vector2 handleEnd = iconCenter + layoutProfile.LowSpeedWarningCartHandleEndOffsetPixels;
+        Vector2 handleJoint = iconCenter + (layoutProfile.LowSpeedWarningCartHandleJointOffsetPixels * drawScale);
+        Vector2 handleEnd = iconCenter + (layoutProfile.LowSpeedWarningCartHandleEndOffsetPixels * drawScale);
         DrawScreenLine(cam, screenDepth, basketTopLeft, handleJoint, thickness, color);
         DrawScreenLine(cam, screenDepth, handleJoint, handleEnd, thickness, color);
 
         // Two base segments sharing one middle point. The wheel arcs have
         // their own pass so this method only emits Lines.
-        Vector2 baseLeftEnd = iconCenter + layoutProfile.LowSpeedWarningCartBaseLeftEndOffsetPixels;
-        Vector2 baseMid = iconCenter + layoutProfile.LowSpeedWarningCartBaseMidOffsetPixels;
-        Vector2 baseRightEnd = iconCenter + layoutProfile.LowSpeedWarningCartBaseRightEndOffsetPixels;
+        Vector2 baseLeftEnd = iconCenter + (layoutProfile.LowSpeedWarningCartBaseLeftEndOffsetPixels * drawScale);
+        Vector2 baseMid = iconCenter + (layoutProfile.LowSpeedWarningCartBaseMidOffsetPixels * drawScale);
+        Vector2 baseRightEnd = iconCenter + (layoutProfile.LowSpeedWarningCartBaseRightEndOffsetPixels * drawScale);
         DrawScreenLine(cam, screenDepth, baseLeftEnd, baseMid, thickness, color);
         DrawScreenLine(cam, screenDepth, baseMid, baseRightEnd, thickness, color);
     }
@@ -1695,11 +1558,11 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 iconCenter,
         Color color)
     {
-        float thickness = layoutProfile.LowSpeedWarningCartStrokeThicknessPixels;
-        Vector2 leftWheelCenter = iconCenter + layoutProfile.LowSpeedWarningCartLeftWheelOffsetPixels;
-        Vector2 rightWheelCenter = iconCenter + layoutProfile.LowSpeedWarningCartRightWheelOffsetPixels;
-        DrawScreenCircleStroke(cam, screenDepth, leftWheelCenter, layoutProfile.LowSpeedWarningCartWheelRadiusPixels, thickness, color);
-        DrawScreenCircleStroke(cam, screenDepth, rightWheelCenter, layoutProfile.LowSpeedWarningCartWheelRadiusPixels, thickness, color);
+        float thickness = (layoutProfile.LowSpeedWarningCartStrokeThicknessPixels * drawScale);
+        Vector2 leftWheelCenter = iconCenter + (layoutProfile.LowSpeedWarningCartLeftWheelOffsetPixels * drawScale);
+        Vector2 rightWheelCenter = iconCenter + (layoutProfile.LowSpeedWarningCartRightWheelOffsetPixels * drawScale);
+        DrawScreenCircleStroke(cam, screenDepth, leftWheelCenter, (layoutProfile.LowSpeedWarningCartWheelRadiusPixels * drawScale), thickness, color);
+        DrawScreenCircleStroke(cam, screenDepth, rightWheelCenter, (layoutProfile.LowSpeedWarningCartWheelRadiusPixels * drawScale), thickness, color);
     }
 
     private void DrawLowSpeedWarningWeight(
@@ -1708,9 +1571,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 center,
         Color color)
     {
-        float widthTop = layoutProfile.LowSpeedWarningWeightTopWidthPixels;
-        float widthBottom = layoutProfile.LowSpeedWarningWeightBottomWidthPixels;
-        float height = layoutProfile.LowSpeedWarningWeightBodyHeightPixels;
+        float widthTop = (layoutProfile.LowSpeedWarningWeightTopWidthPixels * drawScale);
+        float widthBottom = (layoutProfile.LowSpeedWarningWeightBottomWidthPixels * drawScale);
+        float height = (layoutProfile.LowSpeedWarningWeightBodyHeightPixels * drawScale);
         if (widthTop <= 0f || widthBottom <= 0f || height <= 0f) return;
 
         float topWidthRatio = widthTop / widthBottom;
@@ -1744,13 +1607,13 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 center,
         Color color)
     {
-        Vector2 ringCenter = center + layoutProfile.LowSpeedWarningWeightRingOffsetPixels;
+        Vector2 ringCenter = center + (layoutProfile.LowSpeedWarningWeightRingOffsetPixels * drawScale);
         DrawScreenCircleStroke(
             cam,
             screenDepth,
             ringCenter,
-            layoutProfile.LowSpeedWarningWeightRingRadiusPixels,
-            layoutProfile.LowSpeedWarningWeightRingThicknessPixels,
+            (layoutProfile.LowSpeedWarningWeightRingRadiusPixels * drawScale),
+            (layoutProfile.LowSpeedWarningWeightRingThicknessPixels * drawScale),
             color
         );
     }
@@ -1761,7 +1624,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 center,
         Color color)
     {
-        float shaftLength = layoutProfile.LowSpeedWarningArrowShaftLengthPixels;
+        float shaftLength = (layoutProfile.LowSpeedWarningArrowShaftLengthPixels * drawScale);
         float shaftHalf = shaftLength * 0.5f;
 
         Vector2 top = center + new Vector2(0f, shaftHalf);
@@ -1772,7 +1635,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             screenDepth,
             top,
             bottom,
-            layoutProfile.LowSpeedWarningArrowShaftThicknessPixels,
+            (layoutProfile.LowSpeedWarningArrowShaftThicknessPixels * drawScale),
             color
         );
     }
@@ -1785,11 +1648,11 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         Vector2 bottom = center + new Vector2(
             0f,
-            -layoutProfile.LowSpeedWarningArrowShaftLengthPixels * 0.5f
+            -(layoutProfile.LowSpeedWarningArrowShaftLengthPixels * drawScale) * 0.5f
         );
 
-        float headWidthHalf = layoutProfile.LowSpeedWarningArrowHeadWidthPixels * 0.5f;
-        float headHeight = layoutProfile.LowSpeedWarningArrowHeadHeightPixels;
+        float headWidthHalf = (layoutProfile.LowSpeedWarningArrowHeadWidthPixels * drawScale) * 0.5f;
+        float headHeight = (layoutProfile.LowSpeedWarningArrowHeadHeightPixels * drawScale);
 
         Vector2 a = bottom + new Vector2(-headWidthHalf, 0f);
         Vector2 b = bottom + new Vector2(headWidthHalf, 0f);
@@ -1807,8 +1670,8 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Color color)
     {
         Draw.Line(
-            ScreenPointToWorld(cam, a, screenDepth),
-            ScreenPointToWorld(cam, b, screenDepth),
+            HudShapes.ScreenToWorld(cam, a, screenDepth),
+            HudShapes.ScreenToWorld(cam, b, screenDepth),
             thicknessPixels,
             color
         );
@@ -1823,9 +1686,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Color color)
     {
         Draw.Triangle(
-            ScreenPointToWorld(cam, a, screenDepth),
-            ScreenPointToWorld(cam, b, screenDepth),
-            ScreenPointToWorld(cam, c, screenDepth),
+            HudShapes.ScreenToWorld(cam, a, screenDepth),
+            HudShapes.ScreenToWorld(cam, b, screenDepth),
+            HudShapes.ScreenToWorld(cam, c, screenDepth),
             color
         );
     }
@@ -1881,9 +1744,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     {
         // Polygon vertices use local XY coordinates. Project the pixel basis
         // onto this camera's render plane so size/offset stay correct in 2P/4P.
-        Vector3 origin = ScreenPointToWorld(cam, originPixels, screenDepth);
-        Vector3 xAxis = ScreenPointToWorld(cam, originPixels + xAxisPixels, screenDepth) - origin;
-        Vector3 yAxis = ScreenPointToWorld(cam, originPixels + yAxisPixels, screenDepth) - origin;
+        Vector3 origin = HudShapes.ScreenToWorld(cam, originPixels, screenDepth);
+        Vector3 xAxis = HudShapes.ScreenToWorld(cam, originPixels + xAxisPixels, screenDepth) - origin;
+        Vector3 yAxis = HudShapes.ScreenToWorld(cam, originPixels + yAxisPixels, screenDepth) - origin;
         Vector3 forward = cam.transform.forward;
 
         Matrix4x4 matrix = Matrix4x4.identity;
@@ -1913,7 +1776,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Color color)
     {
         Draw.Arc(
-            ScreenPointToWorld(cam, center, screenDepth),
+            HudShapes.ScreenToWorld(cam, center, screenDepth),
             cam.transform.rotation,
             radiusPixels,
             thicknessPixels,
@@ -1936,7 +1799,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Color color)
     {
         Draw.Disc(
-            ScreenPointToWorld(cam, center, screenDepth),
+            HudShapes.ScreenToWorld(cam, center, screenDepth),
             cam.transform.rotation,
             radiusPixels,
             color
@@ -2057,31 +1920,6 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         return cam.ScreenToWorldPoint(
             screenPoint
-        );
-    }
-
-    private float PixelsToWorldSizeAtDepth(
-        Camera cam,
-        Vector3 worldPosition,
-        float pixelSize)
-    {
-        Vector3 screenA =
-            cam.WorldToScreenPoint(worldPosition);
-
-        Vector3 screenB =
-            screenA;
-
-        screenB.y += pixelSize;
-
-        Vector3 worldA =
-            cam.ScreenToWorldPoint(screenA);
-
-        Vector3 worldB =
-            cam.ScreenToWorldPoint(screenB);
-
-        return Vector3.Distance(
-            worldA,
-            worldB
         );
     }
 
