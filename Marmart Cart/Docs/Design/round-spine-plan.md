@@ -2,7 +2,7 @@
 
 Drafted 2026-11-15. Liang accepted the plan and its four defaults on 2026-11-16 ("sounds solid"). It implements `meta-round-flow.md` up to a playable 3-Round Match. No Abilities, Policies or Sections yet.
 
-Status: Step 1 done (2026-11-17, commit f3086217, branch `cl_feature_MetaGameRoundSpine`). On 2026-11-18 Step 2 was expanded into a UI foundation step; the rules are in `ui-architecture.md`.
+Status: Step 1 done (2026-11-17, commit f3086217, branch `cl_feature_MetaGameRoundSpine`). On 2026-11-18 Step 2 was expanded into a UI foundation step; the rules are in `ui-architecture.md`. Step 2 done 2026-11-20 (commits aa687990 to 0a8c0fbe); its final retune was deferred by Liang. Next: Step 3.
 
 ## Decisions (defaults accepted)
 
@@ -35,7 +35,7 @@ The cheapest proof that reload-per-Round works, with Console logs only.
 - **Inspector:** add `MetaRoundController` to one object in Gameplay Scene 2P and 4P.
 - **Checks:** F3 walks Round 1, 2, 3. A full Round ends, reveals scores and loads Round 2 with the right Match Points in the Console. R during the reveal awards nothing. Pads keep their players after a load. Returning to the menu clears the data. Note the load time.
 
-### Step 2: UI foundation and pre-round countdown
+### Step 2: UI foundation and pre-round countdown (done 2026-11-20)
 
 Expanded on 2026-11-18 so the existing HUD is rebuilt on the rules in `ui-architecture.md` before new UI is added. Each sub-step stops for Liang to test. Detail questions are asked at the start of each sub-step. Standing OK for this step: Play Mode for checks and before/after HUD captures, and scene/prefab edits through the CLI when the target files have no uncommitted changes. No commit without Liang's OK for that commit (rule changed 2026-11-19).
 
@@ -67,6 +67,13 @@ Expanded on 2026-11-18 so the existing HUD is rebuilt on the rules in `ui-archit
   - Checks: same look at 1920x1080; HUD follows the right cart in 2P and 4P.
 - **2j. Final pass:** retune at 1920x1080.
   - Checks: same proportions at 1080p and 4K in all four gameplay scenes (both tutorials too), 2P and 4P.
+  - Done: 2j-1 moved every 2P/4P factor into its widget's profile and removed stale serialized data; 2j-2 added `ui-tuning.md`. The 1080p/4K check passed in all four scenes and on the results screen.
+  - Deferred by Liang (the retune), all 4P:
+    - The session guide's arrow circle covers the top of the cart HUD ring.
+    - The power-up held icon covers the "B to Reverse" prompt.
+    - Over the dark area outside the map, the timer pill and leaderboard bars lose contrast.
+    - The results leaderboard sits against the top edge of each view.
+  - Not yet done: a check in a real 4K exclusive-fullscreen build on the booth monitor.
 
 ### Step 3: Post-round result and end of Match
 

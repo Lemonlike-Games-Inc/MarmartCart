@@ -83,6 +83,8 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 
 ## Migration (Round spine Step 2, see `round-spine-plan.md`)
 
+Done 2026-11-20. Every "Done when" item below is met; only the final retune is deferred.
+
 | System | Today | Step |
 |---|---|---|
 | Player views | Camera lookups in PlayerWorldHUDSystem, PowerupViewportCanvasSystem, the results controller and tutorial hints | 2b: `PlayerViewService` |
@@ -94,7 +96,7 @@ Canvas UI always draws over the Shapes HUD. A text label over a Shapes shape is 
 | OtherPlayerPointer, OtherPlayerVisibleMarker, PowerupAim | Shapes, fixed pixels | 2g: toolkit + identity profile |
 | PlayerSessionGuide, MatchViewportOverlay | Shapes, fixed pixels; dividers at screen centre; `Bar_tempfix` draws the 4P divider again | 2h: dividers from viewport rects; `Bar_tempfix` removed |
 | PlayerWorldHUD (+ system and adapters) | Shapes, fixed pixels; tag polling; adapters re-find their player | 2i: toolkit + `UiScale`; carts register through `PlayerHUDAnchor`; adapters read `SnakeCartManager` |
-| All of it | Tuned in a Free Aspect Game view | 2j: retuned at 1920x1080, checked at 1080p and 4K |
+| All of it | Tuned in a Free Aspect Game view | 2j: 2P/4P values in each widget's profile; checked at 1080p and 4K. The retune at 1920x1080 is deferred (open 4P items in `round-spine-plan.md`, 2j) |
 
 ## Done when
 
