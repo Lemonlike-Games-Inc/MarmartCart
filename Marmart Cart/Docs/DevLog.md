@@ -3,6 +3,31 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-20 04:27 (UTC-7): Round spine Step 3, Round results and end of Match
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: A Match now plays end to end on screen. Rounds fade between loads, every player sees who won each Round and the Match Points, and after Round 3 each player gets their own rank line. F4 leaves to the main menu. Liang tested both parts.
+- Changed:
+  - 3a (b31d987c):
+    - `MetaRoundController`: every gameplay-scene load fades in; every load it starts (next Round, F1/F2/F3) fades out first. Fades advance at most 1/30 s per frame so the slow first frames after a load can't skip them.
+    - New F4: fade out, clear Match data, end `GMode`, load MainMenu.
+    - New `ScreenFadeView` on `Game UIs/Screen Fade` (2P and 4P scenes), drawing on the full-screen canvas root.
+  - 3b (c5dbfb20):
+    - `MetaRoundController`: `RoundResultShown` and `MatchResultShown` events; Round winners, Match Points after the Round (stored once, so the fade can't double-count), Match winners and dense ranks.
+    - New `RoundResultView` on `Game UIs/Round Result`: per-player UniText title and detail labels on the Banner layer, built like the Round start banner.
+    - New `RoundResultTextProfile` asset with every result text and rank line, editable in the Inspector; new `Round Result Title` and `Round Result Detail` label prefabs.
+  - Liang added `MatchFlowProfile_ShortForTest` (0ae557ae): about 2 s per Round, a full Match in under 30 s.
+  - `ui-tuning.md` lists the result banner and fade settings; `round-spine-plan.md` marks Step 3 done.
+- Why: the booth needs a complete 3-Round Match with clear results and a clean exit for staff.
+- Decisions:
+  - Result banner per player view, in the lower part of the view; winners see "YOU WIN" or "YOU SHARE", others see the winners' names in player colours.
+  - After Round 3 each player gets a rank line (winner, tied 1st, 2nd, 3rd, 4th, no winner); ties share a rank (1, 1, 2), like the podium. Lines are playful and shop-themed, and Liang can edit them in one asset.
+  - Plain numbers for Match Points for now; game title and QR link on the final screen wait for art.
+  - F4 works any time in a gameplay scene, keyboard only.
+- Open questions:
+  - With tall score towers, the result title can sit over them; move it in the prefab if needed.
+  - QuickOutline logs errors on two meshes ('Box299', 'Object124') without Read/Write enabled (unrelated, seen in a long test run).
+  - Still open from Step 2: the deferred 4P retune and a 4K check in a real booth build.
+
 ## 2026-11-20 03:12 (UTC-7): UI foundation 2e-2j; Round spine Step 2 closed
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Finished the UI foundation. The Round banner and pre-round countdown were added. Every Shapes HUD drawer now uses one toolkit, the UI scale and the view service. HUD player binding lives in one place, and 2P/4P values live in each widget's profile. Checked at 1080p and 4K in all four gameplay scenes. Liang tested each sub-step.
