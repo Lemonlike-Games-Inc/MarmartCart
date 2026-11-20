@@ -128863,7 +128863,7 @@ MonoBehaviour:
   countdownFrom: 3
   countdownStepDuration: 1
   goDuration: 1.5
-  roundResultDuration: 3
+  roundResultDuration: 5
   listenForStaffKeys: 1
   phase: 0
   roundNumber: 1
