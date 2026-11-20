@@ -29,7 +29,14 @@ public class MatchFlowDirector : MonoBehaviour
     #region Configuration
 
     [Header("Flow")]
+    [Tooltip("Used by any Round whose slot below is empty, and in scenes without Rounds (tutorial).")]
     [SerializeField] private MatchFlowProfile profile;
+
+    [Tooltip(
+        "One profile per Round of the Match: Element 0 = Round 1, 1 = Round 2, 2 = Round 3. " +
+        "Each Round is one load of this scene and uses its slot. An empty slot uses Profile above."
+    )]
+    [SerializeField] private MatchFlowProfile[] roundProfiles = new MatchFlowProfile[MatchSession.RoundsPerMatch];
 
     [Header("Arena Bindings")]
     [SerializeField] private CartRestockSpawner cartRestockSpawner;
@@ -119,10 +126,17 @@ public class MatchFlowDirector : MonoBehaviour
         if (cartRestockSpawner == null) cartRestockSpawner = FindFirstObjectByType<CartRestockSpawner>();
         if (areaIndicatorController == null) areaIndicatorController = FindFirstObjectByType<MatchFlowAreaIndicatorController>();
 
+        ApplyRoundProfile();
         plannedProfileDuration = profile != null ? profile.GetPlannedDuration() : 0f;
 
         ResetArenaMacroState();
         areaIndicatorController?.ShowPreGame();
+    }
+
+    private void OnValidate()
+    {
+        if (roundProfiles == null || roundProfiles.Length != MatchSession.RoundsPerMatch)
+            Array.Resize(ref roundProfiles, MatchSession.RoundsPerMatch);
     }
 
     private void Update()
@@ -135,6 +149,32 @@ public class MatchFlowDirector : MonoBehaviour
     private void OnDisable()
     {
         StopFlowInternal(false);
+    }
+
+    #endregion
+
+    #region Round Profiles
+
+    // Each Round is one load of this scene (MetaRoundController), so the Round's
+    // profile is chosen once, here in Awake, before anything reads Profile or the
+    // planned duration. Without any Round slots assigned nothing changes.
+    private void ApplyRoundProfile()
+    {
+        if (roundProfiles == null || Array.TrueForAll(roundProfiles, p => p == null)) return;
+
+        int round = MatchSession.RoundNumber;
+        int slot = round - 1;
+        MatchFlowProfile roundProfile = slot >= 0 && slot < roundProfiles.Length ? roundProfiles[slot] : null;
+
+        if (roundProfile != null)
+        {
+            profile = roundProfile;
+            Debug.Log($"[MatchFlow] Round {round} uses {profile.name} ({profile.GetPlannedDuration():0} s).", this);
+        }
+        else
+        {
+            Debug.Log($"[MatchFlow] Round {round} has no Round profile; uses Profile {(profile != null ? profile.name : "none")}.", this);
+        }
     }
 
     #endregion
