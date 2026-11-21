@@ -3,6 +3,26 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-21 05:14 (UTC-7): Ability Samples plan; Item library and hand before the Abilities
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh. The first code read was done with Claude Fable 5.2 (`claude-fable-5-2`).
+- Summary: Read the live powerup system (code, the 2P/4P/tutorial scene setup and the cart prefabs) for Ability Samples Step 1. Agreed to refactor it into a shared Item library and a per-player hand before any Ability code. No project code changed.
+- Changed:
+  - New `Docs/Design/item-library.md`: terms, layers, the Item asset shape, variants, the passive, the hand, refactor steps R1-R3 and risks.
+  - `Docs/Design/ability-samples.md`: Item/Powerup terms, swap on LB, revised 9-step build order, Open list updated.
+- Why: `PowerupId` means both "what the player holds" and "what the map hands out", per-item data is spread over several profiles keyed by it, and the blockers sit on the map-slot controller although they describe the player. Abilities should not reach into the map powerup code; both sources should point at one library.
+- Decisions:
+  - Terms: Item = what a player holds and uses; Powerup = a map pickup that gives an Item; Ability Sample = gives an Item on a charge. "Product" is not a code term.
+  - New per-player hand (`PlayerItemHand`, proposed): equipped Item, swap, LT, aim permission and the blockers.
+  - Item assets are built from one use part (throw, instant, cone) and a list of effect parts; each scene system handles only Items with its effect. A variant (Rolling Tomato, Really Really Cold Ice Cube) is its own asset that reuses the base Item's parts.
+  - Adjective passive = an Item replacement on that player's map pickups.
+  - Swap on LB, as a new action in the input asset. LT fires both slots; un-aimed Items fire at once.
+  - R1 (hand), R2 (Item library), R3 (map side on Items, `PowerupId` retired) all come before the Ability steps; each keeps today's behaviour and is tested with map Items.
+  - The Ability HUD and the powerup icon changes are their own later step, on Liang's instructions.
+- Open questions:
+  - Rolling Tomato: the whole volley rolls, or one big tomato?
+  - R1-R3 plus six Samples, the HUD and the pick screen before the content freeze (about 2026-12-02) is tight.
+  - Gameplay Scene Tutorial 4P setup not checked yet; check in R1.
+
 ## 2026-11-20 05:22 (UTC-7): Per-Round flow profiles; Round spine code complete
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Each Round can now have its own length. With that, the Round spine (Match data and Round loop) is code-complete: Steps 1 to 3 plus per-Round profiles. Step 4 and the look polish come later.

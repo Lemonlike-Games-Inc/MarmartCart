@@ -6,8 +6,9 @@ The goal is long-run design value, not only the event demo: the demo is a playte
 
 ## What an Ability Sample is
 
-- **Powerup:** what a player holds. It comes from the map and is tied to a Section.
-- **Ability Sample:** picked between Rounds, lasts one Round, and is replaced at the next pick. It never stacks.
+- **Item:** what a player holds and uses (Tomato, Ice Cube, Cola, Rolling Tomato, U-shape Magnet...). Items live in one shared library; see `item-library.md`.
+- **Powerup:** a map pickup that gives an Item. It is tied to a Section.
+- **Ability Sample:** picked between Rounds, lasts one Round, and is replaced at the next pick. It never stacks. It gives an Item on a charge.
 
 There are three kinds of Sample:
 
@@ -48,8 +49,8 @@ An adjective should change a rule or a behaviour. A pure stat change ("bigger", 
 - A player can hold a map powerup and an Ability charge at the same time.
 - One aim (right stick) and one fire button (LT), as today.
 - The item that became ready last is equipped. When one slot is empty, the other is equipped.
-- A swap button changes the equipped item when both are loaded. It is LB or Y; not decided.
-- Samples that are not aimed fire at once.
+- LB swaps the equipped item when both are loaded (decided 2026-11-21). It is a new action in the input asset.
+- Samples that are not aimed fire at once on LT.
 - The cooldown starts when the charge is used. The first charge is ready about 10 s after "SHOP!".
 
 This is the first version to test. It replaces the open aim-input question in `CLAUDE.md` until a playtest says otherwise.
@@ -107,16 +108,21 @@ Anything that puts a force on a leading cart (Fan, perhaps the Cola trail) waits
 
 ## Build order for the first set
 
-1. The Ability charge, the two slots and the swap, tested with one baseline assigned without a pick screen. The input is the riskiest part.
-2. The other two baselines.
-3. Really Really Cold Ice Cube: the passive on pickups.
-4. Rolling Tomato.
-5. U-shape Magnet.
-6. The pick screen, as the last pre-round stage, with room for the Policy pop and Section reveal before it.
+Revised 2026-11-21. Each step stops for Liang to test in Unity.
+
+1. Read the powerup code and agree the plan (done).
+2. R1, R2, R3: the hand and the Item library, keeping today's behaviour (`item-library.md`).
+3. Ability core: the swap action, the Sample definition, the charge and cooldown, the two slots and the swap, tested with Tomato supply assigned without a pick screen. No HUD yet; logs and the Inspector.
+4. Ice Cube supply and Cola supply.
+5. Really Really Cold Ice Cube, with the passive on map pickups.
+6. Rolling Tomato.
+7. U-shape Magnet.
+8. Ability HUD and the changes to the powerup icons, on Liang's detailed instructions. Can move to any point after step 3.
+9. The pick screen, as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
 
 ## Open
 
-- The swap button: LB or Y.
+- Rolling Tomato: does the whole volley roll, or one big tomato?
 - The rule of at most one baseline in a hand.
 - Tier weights in the random offer.
 - Whether three cards stay readable in a 4P view. Check early.
