@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// One item slot of a PlayerItemHand. Runtime state only.
-/// A source (a map Powerup pickup) loads it; the hand spends it.
+/// A source (a map Powerup pickup, the Ability charge) loads it; the hand spends it.
 /// </summary>
 [Serializable]
 public sealed class HandSlot
@@ -31,4 +31,12 @@ public sealed class HandSlot
         item = null;
         loadedAtTime = 0f;
     }
+}
+
+/// <summary>Which slot of a PlayerItemHand is equipped.</summary>
+public enum HandSlotId
+{
+    None,
+    Map,
+    Ability
 }

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1721464837927437150}
   - component: {fileID: 2247272871967667016}
   - component: {fileID: 1830793791781320991}
+  - component: {fileID: 5382320639808303397}
   m_Layer: 0
   m_Name: Chain of Carts Base
   m_TagString: Untagged
@@ -343,11 +344,19 @@ MonoBehaviour:
   cartBindingWarningDelay: 3
   logAcceptedUseRequests: 1
   logRejectedUseRequests: 1
+  logEquipChanges: 1
   boundPlayerObject: {fileID: 0}
-  hasStoredPowerup: 0
-  storedPowerup: 0
+  mapSlot:
+    loaded: 0
+    item: {fileID: 0}
+    loadedAtTime: 0
+  abilitySlot:
+    loaded: 0
+    item: {fileID: 0}
+    loadedAtTime: 0
+  equippedSlot: 0
   activeBlockReasons: 0
-  canUseStoredPowerup: 0
+  canUseEquippedItem: 0
   acceptedUseRequestVersion: 0
 --- !u!114 &2247272871967667016
 MonoBehaviour:
@@ -371,7 +380,7 @@ MonoBehaviour:
   currentAimState:
     PlayerIndex: 0
     Visible: 0
-    PowerupId: 0
+    Item: {fileID: 0}
     RawAimInput: {x: 0, y: 0}
     RawAimMagnitude: 0
     AdjustedAimMagnitude: 0
@@ -393,7 +402,7 @@ MonoBehaviour:
   lastAcceptedAimSnapshot:
     PlayerIndex: 0
     Visible: 0
-    PowerupId: 0
+    Item: {fileID: 0}
     RawAimInput: {x: 0, y: 0}
     RawAimMagnitude: 0
     AdjustedAimMagnitude: 0
@@ -433,6 +442,25 @@ MonoBehaviour:
   logLaunchFailures: 1
   warnWhenPatternExceedsPreview: 1
   launchedShotVersion: 0
-  lastLaunchedPowerup: 0
+  lastLaunchedItem: {fileID: 0}
   lastLaunchedActorCount: 0
   lastFailureReason: 0
+--- !u!114 &5382320639808303397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e7db12be68a8bd4babadbe9e4490729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hand: {fileID: 1721464837927437150}
+  debugStartingSample: {fileID: 11400000, guid: 6d16ee56ac5f38c49b6cf21db2cc6cf6, type: 2}
+  logStateChanges: 1
+  sample: {fileID: 0}
+  state: 0
+  remainingChargeSeconds: 0
+  chargeDurationSeconds: 0

@@ -6,8 +6,9 @@ using UnityEngine;
 /// Per-player hand: everything about using an item, whichever source gave it.
 ///
 /// - Owns the item slots. Map Powerup pickups load the map slot (a new pickup
-///   replaces an unused item). Only the map slot exists so far.
-/// - The equipped item is the one LT uses and the aim preview shows.
+///   replaces an unused item); the Ability charge loads the ability slot.
+/// - The equipped item is the one LT uses and the aim preview shows. The slot
+///   loaded last is equipped; LB swaps when both are loaded.
 /// - Binds the runtime-spawned leading cart by Player1..Player4 tag.
 /// - Derives Aim/Activate input permissions.
 /// - Combines independent blocker reasons (match inactive, checkout, frozen...).
@@ -60,10 +61,13 @@ public class PlayerItemHand : MonoBehaviour
     [Header("Diagnostics")]
     [SerializeField] private bool logAcceptedUseRequests = true;
     [SerializeField] private bool logRejectedUseRequests = true;
+    [SerializeField] private bool logEquipChanges = true;
 
     [Header("Runtime - Read Only")]
     [SerializeField] private GameObject boundPlayerObject;
     [SerializeField] private HandSlot mapSlot = new HandSlot();
+    [SerializeField] private HandSlot abilitySlot = new HandSlot();
+    [SerializeField] private HandSlotId equippedSlot;
     [SerializeField] private PowerupUseBlockReason activeBlockReasons;
     [SerializeField] private bool canUseEquippedItem;
     [SerializeField] private uint acceptedUseRequestVersion;
@@ -85,6 +89,11 @@ public class PlayerItemHand : MonoBehaviour
     /// <summary>The slot map Powerup pickups load.</summary>
     public HandSlot MapSlot => mapSlot;
 
+    /// <summary>The slot the Ability charge loads.</summary>
+    public HandSlot AbilitySlot => abilitySlot;
+
+    public HandSlotId EquippedSlotId => EquippedSlot != null ? equippedSlot : HandSlotId.None;
+
     public bool HasEquippedItem => EquippedSlot != null;
 
     /// <summary>The item LT uses, or null.</summary>
@@ -98,8 +107,14 @@ public class PlayerItemHand : MonoBehaviour
 
     public uint AcceptedUseRequestVersion => acceptedUseRequestVersion;
 
-    // Only the map slot exists so far.
-    private HandSlot EquippedSlot => mapSlot.IsLoaded ? mapSlot : null;
+    private HandSlot EquippedSlot
+    {
+        get
+        {
+            HandSlot slot = GetSlot(equippedSlot);
+            return slot != null && slot.IsLoaded ? slot : null;
+        }
+    }
 
     #endregion
 
@@ -110,6 +125,14 @@ public class PlayerItemHand : MonoBehaviour
 
     /// <summary>A pickup replaced an unused map item: previous, new.</summary>
     public event Action<PlayerItemHand, ItemDefinition, ItemDefinition> OnMapItemReplaced;
+
+    /// <summary>The Ability slot was loaded or emptied (null).</summary>
+    public event Action<PlayerItemHand, ItemDefinition> OnAbilityItemChanged;
+
+    /// <summary>The Ability slot's item was used. The Ability starts its cooldown.</summary>
+    public event Action<PlayerItemHand, ItemDefinition> OnAbilityItemUsed;
+
+    public event Action<PlayerItemHand, HandSlotId> OnEquippedSlotChanged;
 
     public event Action<PlayerItemHand, PowerupUseBlockReason> OnBlockReasonsChanged;
 
@@ -209,6 +232,10 @@ public class PlayerItemHand : MonoBehaviour
 
     #region Slots
 
+    // Equip rule: the slot loaded last is equipped. When the equipped slot
+    // empties, the other slot is equipped if it is loaded. Swap toggles when
+    // both are loaded.
+
     /// <summary>
     /// Loads a map Powerup item. A new pickup intentionally replaces an
     /// unused map item.
@@ -225,7 +252,7 @@ public class PlayerItemHand : MonoBehaviour
         ItemDefinition previousItem = mapSlot.Item;
 
         mapSlot.Load(item, Time.time);
-        RefreshInputPermissions();
+        Equip(HandSlotId.Map);
 
         if (replacedExistingItem)
         {
@@ -243,8 +270,42 @@ public class PlayerItemHand : MonoBehaviour
         if (!mapSlot.IsLoaded) return;
 
         mapSlot.Clear();
-        RefreshInputPermissions();
+        EquipAfterEmptied(HandSlotId.Map);
         OnMapItemChanged?.Invoke(this, null);
+    }
+
+    /// <summary>Loads the Ability charge's item.</summary>
+    public bool TryLoadAbilityItem(ItemDefinition item)
+    {
+        if (item == null)
+        {
+            Debug.LogError("[PlayerItemHand] Cannot load a missing Ability item.", this);
+            return false;
+        }
+
+        abilitySlot.Load(item, Time.time);
+        Equip(HandSlotId.Ability);
+        OnAbilityItemChanged?.Invoke(this, item);
+        return true;
+    }
+
+    /// <summary>Removes an unused Ability item without starting a cooldown.</summary>
+    public void ClearAbilityItem()
+    {
+        if (!abilitySlot.IsLoaded) return;
+
+        abilitySlot.Clear();
+        EquipAfterEmptied(HandSlotId.Ability);
+        OnAbilityItemChanged?.Invoke(this, null);
+    }
+
+    /// <summary>Equips the other slot when both are loaded. Returns whether it swapped.</summary>
+    public bool TrySwapEquipped()
+    {
+        if (!mapSlot.IsLoaded || !abilitySlot.IsLoaded) return false;
+
+        Equip(equippedSlot == HandSlotId.Map ? HandSlotId.Ability : HandSlotId.Map);
+        return true;
     }
 
     /// <summary>
@@ -261,16 +322,69 @@ public class PlayerItemHand : MonoBehaviour
             return false;
         }
 
+        HandSlotId usedSlot = equippedSlot;
         consumedItem = slot.Item;
         slot.Clear();
-        RefreshInputPermissions();
+        EquipAfterEmptied(usedSlot);
 
-        if (slot == mapSlot)
+        if (usedSlot == HandSlotId.Map)
         {
             OnMapItemChanged?.Invoke(this, null);
         }
+        else
+        {
+            OnAbilityItemChanged?.Invoke(this, null);
+            OnAbilityItemUsed?.Invoke(this, consumedItem);
+        }
 
         return true;
+    }
+
+    private HandSlot GetSlot(HandSlotId id)
+    {
+        return id == HandSlotId.Map ? mapSlot
+            : id == HandSlotId.Ability ? abilitySlot
+            : null;
+    }
+
+    private void EquipAfterEmptied(HandSlotId emptiedSlot)
+    {
+        if (equippedSlot != emptiedSlot)
+        {
+            RefreshInputPermissions();
+            return;
+        }
+
+        HandSlotId other = emptiedSlot == HandSlotId.Map ? HandSlotId.Ability : HandSlotId.Map;
+        Equip(GetSlot(other).IsLoaded ? other : HandSlotId.None);
+    }
+
+    private void Equip(HandSlotId slot)
+    {
+        if (equippedSlot == slot)
+        {
+            RefreshInputPermissions();
+            return;
+        }
+
+        equippedSlot = slot;
+        RefreshInputPermissions();
+
+        if (logEquipChanges)
+        {
+            Debug.Log(
+                $"[PlayerItemHand] P{playerIndex} equipped {slot}" +
+                $"{(EquippedItem != null ? $" ({EquippedItem.name})" : string.Empty)}.",
+                this
+            );
+        }
+
+        OnEquippedSlotChanged?.Invoke(this, slot);
+    }
+
+    private void HandleSwapPressed()
+    {
+        TrySwapEquipped();
     }
 
     #endregion
@@ -519,6 +633,7 @@ public class PlayerItemHand : MonoBehaviour
         UnsubscribeFromCartControlInput();
         subscribedCartControlInput = cartControlInput;
         subscribedCartControlInput.OnPowerupUsePressed += HandlePowerupUsePressed;
+        subscribedCartControlInput.OnSwapItemPressed += HandleSwapPressed;
     }
 
     private void UnsubscribeFromCartControlInput()
@@ -526,6 +641,7 @@ public class PlayerItemHand : MonoBehaviour
         if (subscribedCartControlInput != null)
         {
             subscribedCartControlInput.OnPowerupUsePressed -= HandlePowerupUsePressed;
+            subscribedCartControlInput.OnSwapItemPressed -= HandleSwapPressed;
         }
 
         subscribedCartControlInput = null;

@@ -224,6 +224,12 @@ public class CartControlScript : MonoBehaviour
     public event System.Action OnPowerupUsePressed;
 
     /// <summary>
+    /// Raised by this player's Swap Item press (LB). PlayerItemHand decides
+    /// whether there is anything to swap.
+    /// </summary>
+    public event System.Action OnSwapItemPressed;
+
+    /// <summary>
     /// Raised only when the stored raw aim value actually changes.
     /// </summary>
     public event System.Action<Vector2> OnAimInputChanged;
@@ -337,6 +343,11 @@ public class CartControlScript : MonoBehaviour
             }
         };
 
+        _inputActions.Player.SwapItem.performed += ctx =>
+        {
+            if (ctx.control.device == device) OnSwapItemPressed?.Invoke();
+        };
+
         _inputActions.Player.MoveBackward.performed += ctx =>
         {
             if (ctx.control.device == device && CanMoveBackward)
@@ -448,6 +459,11 @@ public class CartControlScript : MonoBehaviour
             {
                 ActivatePowerUp();
             }
+        };
+
+        _inputActions.Player.SwapItem.performed += ctx =>
+        {
+            if (ctx.control.device == Keyboard.current) OnSwapItemPressed?.Invoke();
         };
 
         _inputActions.Player.MoveBackward.performed += ctx =>

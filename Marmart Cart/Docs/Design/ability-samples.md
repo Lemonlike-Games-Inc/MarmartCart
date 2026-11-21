@@ -49,7 +49,7 @@ An adjective should change a rule or a behaviour. A pure stat change ("bigger", 
 - A player can hold a map powerup and an Ability charge at the same time.
 - One aim (right stick) and one fire button (LT), as today.
 - The item that became ready last is equipped. When one slot is empty, the other is equipped.
-- LB swaps the equipped item when both are loaded (decided 2026-11-21). It is a new action in the input asset.
+- LB swaps the equipped item when both are loaded (decided 2026-11-21). It is the `SwapItem` action in the input asset: LB on the pad, R on the keyboard. Swapping is allowed while use is blocked (frozen, checkout); it fires nothing.
 - Samples that are not aimed fire at once on LT.
 - A duration effect decides per effect whether it blocks using the other slot while it runs (see `item-library.md`). Cola does not block.
 - The cooldown starts when the charge is used. The first charge is ready about 10 s after "SHOP!".
@@ -112,8 +112,8 @@ Anything that puts a force on a leading cart (Fan, perhaps the Cola trail) waits
 Revised 2026-11-21. Each step stops for Liang to test in Unity.
 
 1. Read the powerup code and agree the plan (done).
-2. R1, R2, R3: the hand and the Item library, keeping today's behaviour (`item-library.md`).
-3. Ability core: the swap action, the Sample definition, the charge and cooldown, the two slots and the swap, tested with Tomato supply assigned without a pick screen. No HUD yet; logs and the Inspector.
+2. R1, R2, R3: the hand and the Item library, keeping today's behaviour (`item-library.md`). Done 2026-11-21.
+3. Ability core: the swap action, the Sample definition, the charge and cooldown, the two slots and the swap, tested with Tomato supply assigned without a pick screen. No HUD yet; logs and the Inspector. Done 2026-11-21: `AbilitySampleDefinition` assets in `SO_Variables/AbilitySamples`, `PlayerAbilityController` on `Chain of Carts Base` with a Debug Starting Sample (Tomato Supply) that must be cleared before the booth build.
 4. Ice Cube supply and Cola supply.
 5. Really Really Cold Ice Cube, with the passive on map pickups.
 6. Rolling Tomato.
