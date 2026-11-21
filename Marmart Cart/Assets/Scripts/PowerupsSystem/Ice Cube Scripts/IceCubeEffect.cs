@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Ice gameplay tuning. Projectile flight, spread, and in-air collision policy
-/// remain in PowerupProjectileProfile.
+/// Item effect: a leading cart hit by this item freezes, and the item leaves an
+/// ice cube on the ground where it lands. Throw details live in the item's ThrowItemUse.
 /// </summary>
 [CreateAssetMenu(
-    menuName = "Marmart Carts/Powerups/Ice Profile",
-    fileName = "IcePowerupProfile"
+    menuName = "Marmart Carts/Items/Effects/Ice Cube",
+    fileName = "IceCubeEffect"
 )]
-public class IcePowerupProfile : ScriptableObject
+public class IceCubeEffect : ItemEffectDefinition
 {
     [Header("Freeze Effect")]
     [Tooltip(

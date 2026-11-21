@@ -78,7 +78,7 @@ public class TomatoPresentationProfile : ScriptableObject
 
     [Tooltip(
         "Opacity added by each additional hit while the same blind effect is " +
-        "active. SplashCount is capped by TomatoPowerupProfile."
+        "active. SplashCount is capped by TomatoBlindEffect."
     )]
     [Range(0f, 1f)]
     [SerializeField] private float additionalHitOpacity = 0.08f;

@@ -11,7 +11,7 @@ using UnityEngine;
 public class IceGroundHazardPool : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private IcePowerupProfile iceProfile;
+    [SerializeField] private IceCubeEffect iceProfile;
     [SerializeField] private IcePresentationProfile icePresentationProfile;
     [SerializeField] private IceFreezeEffectSystem freezeEffectSystem;
     [SerializeField] private PowerupProjectilePool projectilePool;
@@ -148,7 +148,7 @@ public class IceGroundHazardPool : MonoBehaviour
             Debug.LogWarning(
                 "[IceGroundHazardPool] The Ice ground-hazard pool is " +
                 "exhausted. Increase Maximum Ground Hazard Instances or " +
-                "enable growth in IcePowerupProfile.",
+                "enable growth in IceCubeEffect.",
                 this
             );
             return false;
@@ -662,7 +662,7 @@ public class IceGroundHazardPool : MonoBehaviour
         invalidSetupLogged = true;
         Debug.LogError(
             "[IceGroundHazardPool] Ice hazard setup is incomplete. Assign " +
-            "IcePowerupProfile, IceFreezeEffectSystem, PowerupProjectilePool, " +
+            "IceCubeEffect, IceFreezeEffectSystem, PowerupProjectilePool, " +
             "a Cart target mask, and a hazard prefab with IceGroundHazard plus " +
             "a BoxCollider.",
             this

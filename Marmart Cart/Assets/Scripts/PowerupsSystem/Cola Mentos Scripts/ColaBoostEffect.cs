@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Gameplay-only tuning for the non-projectile Cola Mentos duration effect.
+/// Item effect: a fixed-speed boost on the user's own leading cart for a duration.
 /// Presentation assets live in ColaMentosPresentationProfile.
 /// </summary>
 [CreateAssetMenu(
-    menuName = "Marmart Carts/Powerups/Cola Mentos Profile",
-    fileName = "ColaMentosPowerupProfile"
+    menuName = "Marmart Carts/Items/Effects/Cola Boost",
+    fileName = "ColaBoostEffect"
 )]
-public class ColaMentosPowerupProfile : ScriptableObject
+public class ColaBoostEffect : ItemEffectDefinition
 {
     [Header("Duration Boost")]
     [Tooltip(

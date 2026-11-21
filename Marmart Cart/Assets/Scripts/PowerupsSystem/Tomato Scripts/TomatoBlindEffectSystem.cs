@@ -14,7 +14,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
-    [SerializeField] private TomatoPowerupProfile tomatoProfile;
+    [SerializeField] private TomatoBlindEffect tomatoProfile;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logStateChanges = true;
@@ -31,7 +31,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
     private PowerupRuntimeSystem subscribedRuntimeSystem;
     private bool missingProfileLogged;
 
-    public TomatoPowerupProfile TomatoProfile => tomatoProfile;
+    public TomatoBlindEffect TomatoProfile => tomatoProfile;
 
     public event Action<int, TomatoBlindState> OnBlindStateChanged;
     public event Action<
@@ -129,7 +129,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
                 missingProfileLogged = true;
                 Debug.LogError(
                     "[TomatoBlindEffectSystem] Assign a " +
-                    "TomatoPowerupProfile. Valid impacts cannot create a " +
+                    "TomatoBlindEffect. Valid impacts cannot create a " +
                     "blind state without effect tuning.",
                     this
                 );

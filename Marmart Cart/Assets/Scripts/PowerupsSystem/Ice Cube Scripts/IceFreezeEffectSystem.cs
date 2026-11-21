@@ -35,7 +35,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
-    [SerializeField] private IcePowerupProfile iceProfile;
+    [SerializeField] private IceCubeEffect iceProfile;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logStateChanges = true;
@@ -52,7 +52,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
     private PowerupRuntimeSystem subscribedRuntimeSystem;
     private bool missingProfileLogged;
 
-    public IcePowerupProfile IceProfile => iceProfile;
+    public IceCubeEffect IceProfile => iceProfile;
 
     public event Action<int, IceFreezeState> OnFreezeStateChanged;
     public event Action<
@@ -969,7 +969,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
 
         missingProfileLogged = true;
         Debug.LogError(
-            "[IceFreezeEffectSystem] Assign an IcePowerupProfile. " +
+            "[IceFreezeEffectSystem] Assign an IceCubeEffect. " +
             "Ice impacts cannot create Freeze without effect tuning.",
             this
         );

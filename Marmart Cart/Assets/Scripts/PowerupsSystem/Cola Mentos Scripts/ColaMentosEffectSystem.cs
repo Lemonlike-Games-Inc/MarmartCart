@@ -25,7 +25,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
-    [SerializeField] private ColaMentosPowerupProfile colaProfile;
+    [SerializeField] private ColaBoostEffect colaProfile;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logStateChanges = true;
@@ -46,7 +46,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     private PowerupRuntimeSystem subscribedRuntimeSystem;
     private uint fallbackEffectInstanceId;
 
-    public ColaMentosPowerupProfile ColaProfile => colaProfile;
+    public ColaBoostEffect ColaProfile => colaProfile;
     public ColaMentosActivationFailureReason LastFailureReason =>
         lastFailureReason;
 

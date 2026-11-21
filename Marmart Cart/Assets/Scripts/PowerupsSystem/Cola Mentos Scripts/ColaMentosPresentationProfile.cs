@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Presentation-only tuning for the standalone Cola Mentos cart attachment.
-/// The duration and target speed remain in ColaMentosPowerupProfile.
+/// The duration and target speed remain in ColaBoostEffect.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Powerups/Cola Mentos Presentation Profile",

@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Tomato gameplay-effect tuning. Projectile count, spread, flight, and
-/// collision policy remain in PowerupProjectileProfile.
+/// Item effect: a leading cart hit by this item is blinded. Throw details
+/// (projectile, pattern, preview) live in the item's ThrowItemUse.
 /// </summary>
 [CreateAssetMenu(
-    menuName = "Marmart Carts/Powerups/Tomato Profile",
-    fileName = "TomatoPowerupProfile"
+    menuName = "Marmart Carts/Items/Effects/Tomato Blind",
+    fileName = "TomatoBlindEffect"
 )]
-public class TomatoPowerupProfile : ScriptableObject
+public class TomatoBlindEffect : ItemEffectDefinition
 {
     [Header("Blind Effect")]
     [Tooltip("Scaled gameplay seconds before the target's Tomato blind state ends.")]
