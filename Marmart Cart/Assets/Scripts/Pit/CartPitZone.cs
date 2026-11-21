@@ -116,7 +116,7 @@ public class CartPitZone : MonoBehaviour
     private GameObject enteredLeader;
     private Rigidbody enteredLeaderBody;
     private CartControlScript enteredCartController;
-    private PlayerPowerupController enteredPowerupController;
+    private PlayerItemHand enteredPowerupController;
     private LeadingCartBehaviour[] enteredWheelBehaviours;
     private LeadingCartBattleController enteredBattleController;
     private SnakeMoveBackwardController enteredMoveBackwardController;
@@ -222,8 +222,8 @@ public class CartPitZone : MonoBehaviour
         if (!PassesEntryDirection(leader.transform, leaderBody)) return;
 
         CartControlScript cartControl = leader.GetComponentInChildren<CartControlScript>(true);
-        PlayerPowerupController powerupController =
-            snakeManager.GetComponentInChildren<PlayerPowerupController>(true);
+        PlayerItemHand powerupController =
+            snakeManager.GetComponentInChildren<PlayerItemHand>(true);
         LeadingCartBehaviour[] wheelBehaviours = leader.GetComponentsInChildren<LeadingCartBehaviour>(true);
         LeadingCartBattleController battleController = leader.GetComponentInChildren<LeadingCartBattleController>(true);
         SnakeMoveBackwardController moveBackwardController = snakeManager.GetComponent<SnakeMoveBackwardController>();

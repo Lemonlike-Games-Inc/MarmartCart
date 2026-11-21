@@ -43,7 +43,7 @@ public class IceGroundHazard : MonoBehaviour
     private IceGroundHazardPool owningPool;
     private IceFreezeEffectSystem freezeEffectSystem;
     private IceVisualFadeController visualFadeController;
-    private PlayerPowerupController ownerController;
+    private PlayerItemHand ownerController;
     private LayerMask cartTargetMask;
     private Vector3 authoredLocalScale = Vector3.one;
     private bool authoredScaleCaptured;
@@ -67,7 +67,7 @@ public class IceGroundHazard : MonoBehaviour
     public uint EffectVersion => effectVersion;
     public int SourcePatternEntryIndex => sourcePatternEntryIndex;
     public int OwnerPlayerIndex => ownerPlayerIndex;
-    public PlayerPowerupController OwnerController => ownerController;
+    public PlayerItemHand OwnerController => ownerController;
     public float DurationSeconds => durationSeconds;
     public float StartedAtTime => startedAtTime;
     public float EndsAtTime => endsAtTime;
@@ -121,7 +121,7 @@ public class IceGroundHazard : MonoBehaviour
         uint hazardEffectInstanceId,
         int patternEntryIndex,
         int sourcePlayerIndex,
-        PlayerPowerupController sourceController,
+        PlayerItemHand sourceController,
         Vector3 position,
         Quaternion rotation,
         Vector3 scaleMultiplier,

@@ -51,7 +51,7 @@ public struct PowerupProjectileCompletion
     public PowerupCartTargetKind HitCartKind;
     public int HitPlayerIndex;
     public Collider HitCollider;
-    public PlayerPowerupController HitOwnerController;
+    public PlayerItemHand HitOwnerController;
     public CartControlScript HitLeadingCartControl;
     public ChainedCartManager HitChainedCartManager;
 }

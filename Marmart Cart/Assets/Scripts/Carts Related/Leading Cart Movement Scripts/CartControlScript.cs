@@ -194,7 +194,7 @@ public class CartControlScript : MonoBehaviour
 
     [Tooltip(
         "Temporary migration fallback for the legacy power-up system. " +
-        "The new PlayerPowerupController receives OnPowerupUsePressed instead."
+        "The new PlayerItemHand receives OnPowerupUsePressed instead."
     )]
     [SerializeField] private PowerupsManager powerupsManager;
 
@@ -219,7 +219,7 @@ public class CartControlScript : MonoBehaviour
 
     /// <summary>
     /// Raised after the Activate Power-up action passes this input gateway.
-    /// PlayerPowerupController owns all inventory and blocker validation.
+    /// PlayerItemHand owns the item slots and blocker validation.
     /// </summary>
     public event System.Action OnPowerupUsePressed;
 
@@ -822,7 +822,7 @@ public class CartControlScript : MonoBehaviour
     {
         if (!GetCanActivatePowerUp()) return;
 
-        // During migration, a subscribed PlayerPowerupController is always
+        // During migration, a subscribed PlayerItemHand is always
         // authoritative. The legacy manager is used only when no replacement
         // listener exists yet, which keeps the project compile-safe while old
         // prefab components are removed one step at a time.

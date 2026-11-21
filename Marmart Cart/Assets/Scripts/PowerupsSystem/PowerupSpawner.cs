@@ -123,7 +123,7 @@ public class PowerupSpawner : MonoBehaviour
     public event Action<PowerupSpawner, PowerupId> OnPickupSpawned;
     public event Action<
         PowerupSpawner,
-        PlayerPowerupController,
+        PlayerItemHand,
         PowerupId> OnPickupCollected;
     public event Action<
         PowerupSpawner,
@@ -414,7 +414,7 @@ public class PowerupSpawner : MonoBehaviour
 
     private void HandlePickupCollected(
         PowerupPickup collectedPickup,
-        PlayerPowerupController collector,
+        PlayerItemHand collector,
         PowerupId collectedPowerup)
     {
         if (collectedPickup != pickup) return;

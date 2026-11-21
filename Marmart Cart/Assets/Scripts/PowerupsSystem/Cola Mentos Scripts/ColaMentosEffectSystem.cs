@@ -14,7 +14,7 @@ public enum ColaMentosActivationFailureReason
 /// <summary>
 /// Scene-level executor and authoritative duration owner for Cola Mentos.
 ///
-/// It subscribes to every registered PlayerPowerupController, validates the
+/// It subscribes to every registered PlayerItemHand, validates the
 /// immediate-use request, consumes inventory only after all required runtime
 /// references exist, then applies one refreshable fixed-speed state.
 /// </summary>
@@ -40,8 +40,8 @@ public class ColaMentosEffectSystem : MonoBehaviour
         lastFailureReason;
     [SerializeField] private int lastFailurePlayerIndex;
 
-    private readonly PlayerPowerupController[] subscribedPlayers =
-        new PlayerPowerupController[PowerupRuntimeSystem.MaxPlayerSlots];
+    private readonly PlayerItemHand[] subscribedPlayers =
+        new PlayerItemHand[PowerupRuntimeSystem.MaxPlayerSlots];
 
     private PowerupRuntimeSystem subscribedRuntimeSystem;
     private uint fallbackEffectInstanceId;
@@ -173,7 +173,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     }
 
     private bool ValidatePowerupUse(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId requestedPowerup)
     {
         if (requestedPowerup != PowerupId.ColaMentos) return true;
@@ -211,7 +211,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     }
 
     private void HandlePowerupUseRequested(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId requestedPowerup)
     {
         if (requestedPowerup != PowerupId.ColaMentos) return;
@@ -219,7 +219,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     }
 
     private bool TryActivateOrRefresh(
-        PlayerPowerupController controller)
+        PlayerItemHand controller)
     {
         if (!ValidatePowerupUse(controller, PowerupId.ColaMentos))
         {
@@ -229,8 +229,8 @@ public class ColaMentosEffectSystem : MonoBehaviour
         int slotIndex = controller.PlayerIndex - 1;
         CartControlScript cartControl = controller.CartControlInput;
 
-        if (!controller.HasStoredPowerup ||
-            controller.StoredPowerup != PowerupId.ColaMentos)
+        if (!controller.HasEquippedItem ||
+            controller.EquippedItem != PowerupId.ColaMentos)
         {
             RecordFailure(
                 controller,
@@ -254,7 +254,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
             previousState = playerStates[slotIndex];
         }
 
-        if (!controller.TryConsumeStoredPowerup(
+        if (!controller.TryConsumeEquippedItem(
                 out PowerupId consumedPowerup) ||
             consumedPowerup != PowerupId.ColaMentos)
         {
@@ -449,7 +449,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
 
     private void HandlePlayerRegistered(
         int playerIndex,
-        PlayerPowerupController controller)
+        PlayerItemHand controller)
     {
         SubscribePlayer(playerIndex, controller);
     }
@@ -526,7 +526,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
         {
             if (subscribedRuntimeSystem.TryGetPlayer(
                     playerIndex,
-                    out PlayerPowerupController controller))
+                    out PlayerItemHand controller))
             {
                 SubscribePlayer(playerIndex, controller);
             }
@@ -539,7 +539,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
 
     private void SubscribePlayer(
         int playerIndex,
-        PlayerPowerupController controller)
+        PlayerItemHand controller)
     {
         int slotIndex = playerIndex - 1;
 
@@ -562,7 +562,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= subscribedPlayers.Length) return;
 
-        PlayerPowerupController controller = subscribedPlayers[slotIndex];
+        PlayerItemHand controller = subscribedPlayers[slotIndex];
 
         if (controller != null)
         {
@@ -617,7 +617,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
     }
 
     private void RecordFailure(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         ColaMentosActivationFailureReason reason)
     {
         lastFailureReason = reason;

@@ -408,10 +408,10 @@ public sealed class MatchResultsPresentationController : MonoBehaviour
             control.SetActiveCheckoutHandler(null);
         }
 
-        PlayerPowerupController powerupController =
+        PlayerItemHand powerupController =
             stage.snakeCartManager != null
-                ? stage.snakeCartManager.GetComponentInChildren<PlayerPowerupController>(true)
-                : leadingCart.GetComponentInChildren<PlayerPowerupController>(true);
+                ? stage.snakeCartManager.GetComponentInChildren<PlayerItemHand>(true)
+                : leadingCart.GetComponentInChildren<PlayerItemHand>(true);
 
         if (powerupController != null)
         {

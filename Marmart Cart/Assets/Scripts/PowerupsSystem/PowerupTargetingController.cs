@@ -15,7 +15,7 @@ public class PowerupTargetingController : MonoBehaviour
     #region References
 
     [Header("References")]
-    [SerializeField] private PlayerPowerupController playerPowerupController;
+    [SerializeField] private PlayerItemHand playerPowerupController;
     [SerializeField] private PowerupAimStateSystem aimStateSystem;
     [SerializeField] private PowerupGameplayProfile gameplayProfile;
 
@@ -39,7 +39,7 @@ public class PowerupTargetingController : MonoBehaviour
     [SerializeField] private PowerupAimState lastAcceptedAimSnapshot;
     [SerializeField] private uint acceptedAimSnapshotVersion;
 
-    private PlayerPowerupController subscribedPowerupController;
+    private PlayerItemHand subscribedPowerupController;
     private bool missingControllerLogged;
     private bool missingStateSystemLogged;
     private bool missingGameplayProfileLogged;
@@ -52,7 +52,7 @@ public class PowerupTargetingController : MonoBehaviour
     public PowerupAimState CurrentAimState => currentAimState;
     public PowerupAimState LastAcceptedAimSnapshot => lastAcceptedAimSnapshot;
     public uint AcceptedAimSnapshotVersion => acceptedAimSnapshotVersion;
-    public PlayerPowerupController PlayerPowerupController =>
+    public PlayerItemHand PlayerItemHand =>
         playerPowerupController;
     public PowerupGameplayProfile GameplayProfile => gameplayProfile;
     public PowerupProjectileProfile ProjectileProfile => projectileProfile;
@@ -150,9 +150,9 @@ public class PowerupTargetingController : MonoBehaviour
 
         missingProjectileProfileLogged = false;
 
-        if (!playerPowerupController.CanUseStoredPowerup ||
+        if (!playerPowerupController.CanUseEquippedItem ||
             !PowerupIdRules.RequiresProjectileAim(
-                playerPowerupController.StoredPowerup
+                playerPowerupController.EquippedItem
             ))
         {
             ClearAimState();
@@ -221,7 +221,7 @@ public class PowerupTargetingController : MonoBehaviour
             PowerupTrajectory.PlanarDistance(rangeOrigin, landingPosition);
 
         float flightDuration = projectileProfile.EvaluateFlightTime(
-            playerPowerupController.StoredPowerup,
+            playerPowerupController.EquippedItem,
             resolvedDistance,
             gameplayProfile.MinimumThrowRange,
             gameplayProfile.MaximumThrowRange
@@ -246,7 +246,7 @@ public class PowerupTargetingController : MonoBehaviour
         {
             PlayerIndex = playerPowerupController.PlayerIndex,
             Visible = true,
-            PowerupId = playerPowerupController.StoredPowerup,
+            PowerupId = playerPowerupController.EquippedItem,
             RawAimInput = rawAimInput,
             RawAimMagnitude = rawMagnitude,
             AdjustedAimMagnitude = adjustedMagnitude,
@@ -264,7 +264,7 @@ public class PowerupTargetingController : MonoBehaviour
             FlightDuration = flightDuration,
             ArcHeight = arcHeight,
             ImpactPreviewRadius = gameplayProfile.GetImpactPreviewRadius(
-                playerPowerupController.StoredPowerup
+                playerPowerupController.EquippedItem
             )
         };
 
@@ -445,7 +445,7 @@ public class PowerupTargetingController : MonoBehaviour
     #region Activation Validation / Snapshot
 
     private bool ValidatePowerupUse(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId requestedPowerup)
     {
         if (!PowerupIdRules.RequiresProjectileAim(requestedPowerup))
@@ -474,7 +474,7 @@ public class PowerupTargetingController : MonoBehaviour
     }
 
     private void HandleAcceptedUse(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId requestedPowerup)
     {
         if (controller != playerPowerupController ||
@@ -514,9 +514,9 @@ public class PowerupTargetingController : MonoBehaviour
         if (playerPowerupController == null)
         {
             playerPowerupController =
-                GetComponent<PlayerPowerupController>() ??
-                GetComponentInParent<PlayerPowerupController>() ??
-                GetComponentInChildren<PlayerPowerupController>(true);
+                GetComponent<PlayerItemHand>() ??
+                GetComponentInParent<PlayerItemHand>() ??
+                GetComponentInChildren<PlayerItemHand>(true);
         }
 
         if (aimStateSystem == null)
@@ -615,7 +615,7 @@ public class PowerupTargetingController : MonoBehaviour
 
         missingControllerLogged = true;
         Debug.LogError(
-            "[PowerupTargetingController] No PlayerPowerupController could be resolved.",
+            "[PowerupTargetingController] No PlayerItemHand could be resolved.",
             this
         );
     }

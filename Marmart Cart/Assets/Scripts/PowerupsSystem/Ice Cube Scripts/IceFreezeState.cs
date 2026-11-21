@@ -16,8 +16,8 @@ public struct IceFreezeState
     public uint SourceActivationVersion;
     public int SourcePatternEntryIndex;
     public int SourcePlayerIndex;
-    public PlayerPowerupController SourceController;
-    public PlayerPowerupController TargetController;
+    public PlayerItemHand SourceController;
+    public PlayerItemHand TargetController;
     public CartControlScript TargetCartControl;
 
     public bool AppliedFromGroundHazard;
@@ -53,10 +53,10 @@ public struct IceFreezeRequest
     public uint ActivationVersion;
     public int SourcePatternEntryIndex;
     public int SourcePlayerIndex;
-    public PlayerPowerupController SourceController;
+    public PlayerItemHand SourceController;
 
     public int TargetPlayerIndex;
-    public PlayerPowerupController TargetController;
+    public PlayerItemHand TargetController;
     public CartControlScript TargetCartControl;
 
     public bool FromGroundHazard;

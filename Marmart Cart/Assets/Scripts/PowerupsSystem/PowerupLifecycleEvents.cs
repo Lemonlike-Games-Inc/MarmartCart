@@ -61,7 +61,7 @@ public struct PowerupActivationEvent
     public PowerupActivationMode Mode;
     public uint ActivationVersion;
     public int OwnerPlayerIndex;
-    public PlayerPowerupController OwnerController;
+    public PlayerItemHand OwnerController;
     public Vector3 Position;
     public Vector3 Direction;
     public int ProjectileCount;
@@ -102,8 +102,8 @@ public struct PowerupEffectEvent
 
     public int OwnerPlayerIndex;
     public int TargetPlayerIndex;
-    public PlayerPowerupController OwnerController;
-    public PlayerPowerupController TargetController;
+    public PlayerItemHand OwnerController;
+    public PlayerItemHand TargetController;
 
     public Vector3 Position;
     public float DurationSeconds;

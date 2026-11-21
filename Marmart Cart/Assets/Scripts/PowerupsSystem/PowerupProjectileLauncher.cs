@@ -26,7 +26,7 @@ public enum PowerupProjectileLaunchFailureReason
 public class PowerupProjectileLauncher : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private PlayerPowerupController playerPowerupController;
+    [SerializeField] private PlayerItemHand playerPowerupController;
     [SerializeField] private PowerupTargetingController targetingController;
 
     [Tooltip("Optional explicit scene reference. Automatically resolved when left empty.")]
@@ -54,7 +54,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
     private readonly List<FakeArcProjectile> rentedProjectiles =
         new List<FakeArcProjectile>(8);
 
-    private PlayerPowerupController subscribedPowerupController;
+    private PlayerItemHand subscribedPowerupController;
     private PowerupTargetingController subscribedTargetingController;
     private bool patternPreviewWarningLogged;
 
@@ -107,7 +107,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
     }
 
     private bool ValidateProjectileExecution(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId requestedPowerup)
     {
         if (!PowerupIdRules.RequiresProjectileAim(requestedPowerup))
@@ -224,8 +224,8 @@ public class PowerupProjectileLauncher : MonoBehaviour
             return false;
         }
 
-        if (!playerPowerupController.HasStoredPowerup ||
-            playerPowerupController.StoredPowerup != snapshot.PowerupId)
+        if (!playerPowerupController.HasEquippedItem ||
+            playerPowerupController.EquippedItem != snapshot.PowerupId)
         {
             RecordFailure(
                 snapshot.PowerupId,
@@ -346,7 +346,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         // Nothing capable of invalidating the volley remains after this point.
         // Consume only after the complete volley has been resolved, rented,
         // and prepared.
-        if (!playerPowerupController.TryConsumeStoredPowerup(
+        if (!playerPowerupController.TryConsumeEquippedItem(
             out PowerupId consumedPowerup
         ) || consumedPowerup != snapshot.PowerupId)
         {
@@ -641,9 +641,9 @@ public class PowerupProjectileLauncher : MonoBehaviour
         if (playerPowerupController == null)
         {
             playerPowerupController =
-                GetComponent<PlayerPowerupController>() ??
-                GetComponentInParent<PlayerPowerupController>() ??
-                GetComponentInChildren<PlayerPowerupController>(true);
+                GetComponent<PlayerItemHand>() ??
+                GetComponentInParent<PlayerItemHand>() ??
+                GetComponentInChildren<PlayerItemHand>(true);
         }
 
         if (targetingController == null)

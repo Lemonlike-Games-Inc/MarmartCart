@@ -264,7 +264,7 @@ public class ColaMentosCartVisualPresenter : MonoBehaviour
         out Transform cartTransform)
     {
         cartTransform = null;
-        PlayerPowerupController controller =
+        PlayerItemHand controller =
             effectEvent.TargetController != null
                 ? effectEvent.TargetController
                 : effectEvent.OwnerController;

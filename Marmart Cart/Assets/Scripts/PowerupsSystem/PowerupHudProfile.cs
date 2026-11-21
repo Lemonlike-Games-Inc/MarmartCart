@@ -75,7 +75,7 @@ public struct PowerupHudPromptSlotLayout
 
 /// <summary>
 /// Designer-authored icon assets and per-viewport layout for the held power-up
-/// HUD. Gameplay inventory remains entirely in PlayerPowerupController.
+/// HUD. The item slots themselves live in PlayerItemHand.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Powerups/HUD Profile",

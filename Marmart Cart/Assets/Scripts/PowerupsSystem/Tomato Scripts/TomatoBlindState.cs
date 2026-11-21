@@ -17,8 +17,8 @@ public struct TomatoBlindState
     public uint SourceActivationVersion;
     public int SourcePatternEntryIndex;
     public int SourcePlayerIndex;
-    public PlayerPowerupController SourceController;
-    public PlayerPowerupController TargetController;
+    public PlayerItemHand SourceController;
+    public PlayerItemHand TargetController;
 
     public int SplashCount;
     public float DurationSeconds;

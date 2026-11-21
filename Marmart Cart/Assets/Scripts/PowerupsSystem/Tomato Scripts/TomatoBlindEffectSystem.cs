@@ -145,8 +145,8 @@ public class TomatoBlindEffectSystem : MonoBehaviour
 
         if (slotIndex < 0 || slotIndex >= playerStates.Length) return;
 
-        PlayerPowerupController sourceController = null;
-        PlayerPowerupController targetController =
+        PlayerItemHand sourceController = null;
+        PlayerItemHand targetController =
             completion.HitOwnerController;
 
         if (runtimeSystem != null)
@@ -176,8 +176,8 @@ public class TomatoBlindEffectSystem : MonoBehaviour
     private void ApplyBlindState(
         int slotIndex,
         PowerupProjectileCompletion completion,
-        PlayerPowerupController sourceController,
-        PlayerPowerupController targetController)
+        PlayerItemHand sourceController,
+        PlayerItemHand targetController)
     {
         float now = Time.time;
         TomatoBlindState previousState = playerStates[slotIndex];

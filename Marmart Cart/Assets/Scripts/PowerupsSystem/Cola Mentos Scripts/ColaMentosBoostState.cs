@@ -14,7 +14,7 @@ public struct ColaMentosBoostState
     public uint EffectInstanceId;
     public uint ActivationVersion;
 
-    public PlayerPowerupController PlayerController;
+    public PlayerItemHand PlayerController;
     public CartControlScript CartControl;
 
     public bool BlocksOtherPowerupUse;

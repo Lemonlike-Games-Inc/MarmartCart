@@ -21,7 +21,7 @@ public struct PowerupCartTargetSnapshot
     public PowerupCartTargetKind Kind;
     public int PlayerIndex;
     public bool IsInCheckout;
-    public PlayerPowerupController OwnerController;
+    public PlayerItemHand OwnerController;
     public CartControlScript LeadingCartControl;
     public ChainedCartManager ChainedCartManager;
 }
@@ -60,7 +60,7 @@ public class PowerupCartTarget : MonoBehaviour
     [SerializeField] private PowerupCartTargetKind currentKind;
     [SerializeField] private int playerIndex;
     [SerializeField] private bool inCheckout;
-    [SerializeField] private PlayerPowerupController ownerController;
+    [SerializeField] private PlayerItemHand ownerController;
     [SerializeField] private int registeredColliderCount;
 
     private bool localReferencesResolved;
@@ -484,7 +484,7 @@ public class PowerupCartTarget : MonoBehaviour
 
     private void HandlePlayerRegistered(
         int registeredPlayerIndex,
-        PlayerPowerupController registeredController)
+        PlayerItemHand registeredController)
     {
         RefreshRuntimeState();
     }
@@ -494,24 +494,24 @@ public class PowerupCartTarget : MonoBehaviour
         RefreshRuntimeState();
     }
 
-    private PlayerPowerupController ResolveOwnerControllerFromHierarchy()
+    private PlayerItemHand ResolveOwnerControllerFromHierarchy()
     {
-        PlayerPowerupController resolved = null;
+        PlayerItemHand resolved = null;
 
         if (chainedCartManager != null)
         {
             resolved = chainedCartManager.GetComponentInParent<
-                PlayerPowerupController>();
+                PlayerItemHand>();
         }
         else if (leadingCartControl != null)
         {
             resolved = leadingCartControl.GetComponentInParent<
-                PlayerPowerupController>();
+                PlayerItemHand>();
         }
 
         return resolved != null
             ? resolved
-            : GetComponentInParent<PlayerPowerupController>();
+            : GetComponentInParent<PlayerItemHand>();
     }
 
     private int ResolvePlayerIndexFromHierarchy()

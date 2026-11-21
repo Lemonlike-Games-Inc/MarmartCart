@@ -3,21 +3,21 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Per-player owner of the replacement power-up lifecycle.
+/// Per-player hand: everything about using an item, whichever source gave it.
 ///
-/// Current implementation stage:
-/// - owns a one-slot, newest-pickup-wins inventory;
-/// - binds the runtime-spawned leading cart by Player1..Player4 tag;
-/// - derives Aim/Activate input permissions;
-/// - combines independent blocker reasons;
-/// - validates targeted requests against the targeting layer;
-/// - publishes accepted use requests without consuming the item itself.
+/// - Owns the item slots. Map Powerup pickups load the map slot (a new pickup
+///   replaces an unused item). Only the map slot exists so far.
+/// - The equipped item is the one LT uses and the aim preview shows.
+/// - Binds the runtime-spawned leading cart by Player1..Player4 tag.
+/// - Derives Aim/Activate input permissions.
+/// - Combines independent blocker reasons (match inactive, checkout, frozen...).
+/// - Validates use requests, then publishes accepted ones without consuming.
 ///
-/// Effect executors listen to accepted requests and explicitly consume the
-/// stored item only after they successfully reserve/create their runtime work.
+/// The system that runs the item listens to accepted requests and consumes the
+/// equipped item only after it has successfully created its runtime work.
 /// </summary>
 [DisallowMultipleComponent]
-public class PlayerPowerupController : MonoBehaviour
+public class PlayerItemHand : MonoBehaviour
 {
     #region Identity
 
@@ -63,10 +63,9 @@ public class PlayerPowerupController : MonoBehaviour
 
     [Header("Runtime - Read Only")]
     [SerializeField] private GameObject boundPlayerObject;
-    [SerializeField] private bool hasStoredPowerup;
-    [SerializeField] private PowerupId storedPowerup;
+    [SerializeField] private HandSlot mapSlot = new HandSlot();
     [SerializeField] private PowerupUseBlockReason activeBlockReasons;
-    [SerializeField] private bool canUseStoredPowerup;
+    [SerializeField] private bool canUseEquippedItem;
     [SerializeField] private uint acceptedUseRequestVersion;
 
     private bool missingRuntimeSystemLogged;
@@ -81,44 +80,56 @@ public class PlayerPowerupController : MonoBehaviour
 
     public int PlayerIndex => playerIndex;
     public CartControlScript CartControlInput => cartControlInput;
-    public bool HasStoredPowerup => hasStoredPowerup;
-    public PowerupId StoredPowerup => storedPowerup;
     public PowerupUseBlockReason ActiveBlockReasons => activeBlockReasons;
-    // A newly collected item intentionally replaces an unused stored item.
-    public bool CanStorePowerup => true;
-    public bool CanUseStoredPowerup =>
-        hasStoredPowerup &&
+
+    /// <summary>The slot map Powerup pickups load.</summary>
+    public HandSlot MapSlot => mapSlot;
+
+    public bool HasEquippedItem => EquippedSlot != null;
+
+    /// <summary>The item LT uses. Only meaningful while HasEquippedItem.</summary>
+    public PowerupId EquippedItem => EquippedSlot != null ? EquippedSlot.Item : default;
+
+    public bool CanUseEquippedItem =>
+        HasEquippedItem &&
         playerIndex >= 1 &&
         playerIndex <= PowerupRuntimeSystem.MaxPlayerSlots &&
         activeBlockReasons == PowerupUseBlockReason.None;
 
     public uint AcceptedUseRequestVersion => acceptedUseRequestVersion;
 
+    // Only the map slot exists so far.
+    private HandSlot EquippedSlot => mapSlot.IsLoaded ? mapSlot : null;
+
     #endregion
 
     #region Events
 
-    public event Action<PlayerPowerupController, PowerupId?> OnStoredPowerupChanged;
-    public event Action<PlayerPowerupController, PowerupId, PowerupId> OnStoredPowerupReplaced;
-    public event Action<PlayerPowerupController, PowerupUseBlockReason> OnBlockReasonsChanged;
+    /// <summary>The map slot was loaded (also with the same item again) or emptied (null).</summary>
+    public event Action<PlayerItemHand, PowerupId?> OnMapItemChanged;
+
+    /// <summary>A pickup replaced an unused map item: previous, new.</summary>
+    public event Action<PlayerItemHand, PowerupId, PowerupId> OnMapItemReplaced;
+
+    public event Action<PlayerItemHand, PowerupUseBlockReason> OnBlockReasonsChanged;
 
     /// <summary>
-    /// Optional execution-layer gate evaluated after inventory/blocker checks
+    /// Optional execution-layer gate evaluated after slot/blocker checks
     /// but before a request is accepted. Projectile power-ups require at least
     /// one validator so a neutral or invalid target can never become a launch.
     /// Every subscribed validator must return true.
     /// </summary>
-    public event Func<PlayerPowerupController, PowerupId, bool>
+    public event Func<PlayerItemHand, PowerupId, bool>
         OnPowerupUseValidationRequested;
 
-    public event Action<PlayerPowerupController, PowerupId> OnPowerupUseRejected;
+    public event Action<PlayerItemHand, PowerupId> OnPowerupUseRejected;
 
     /// <summary>
-    /// Raised only after the input press passes inventory and blocker checks.
-    /// A future executor decides whether the request can launch/activate and
-    /// consumes the item only after successful acceptance.
+    /// Raised only after the input press passes slot, blocker and validation
+    /// checks. The system that runs the item consumes the equipped item only
+    /// after its work succeeded.
     /// </summary>
-    public event Action<PlayerPowerupController, PowerupId> OnPowerupUseRequested;
+    public event Action<PlayerItemHand, PowerupId> OnPowerupUseRequested;
 
     #endregion
 
@@ -196,70 +207,73 @@ public class PlayerPowerupController : MonoBehaviour
 
     #endregion
 
-    #region Inventory
+    #region Slots
 
-    public bool TryStorePowerup(PowerupId powerupId)
+    /// <summary>
+    /// Loads a map Powerup item. A new pickup intentionally replaces an
+    /// unused map item.
+    /// </summary>
+    public bool TryLoadMapItem(PowerupId item)
     {
-        if (!PowerupIdRules.IsDefined(powerupId))
+        if (!PowerupIdRules.IsDefined(item))
         {
             Debug.LogError(
-                $"[PlayerPowerupController] Cannot store undefined power-up value '{powerupId}'.",
+                $"[PlayerItemHand] Cannot load undefined item value '{item}'.",
                 this
             );
             return false;
         }
 
-        bool replacedExistingPowerup = hasStoredPowerup;
-        PowerupId previousPowerup = storedPowerup;
+        bool replacedExistingItem = mapSlot.IsLoaded;
+        PowerupId previousItem = mapSlot.Item;
 
-        storedPowerup = powerupId;
-        hasStoredPowerup = true;
-
+        mapSlot.Load(item, Time.time);
         RefreshInputPermissions();
 
-        if (replacedExistingPowerup)
+        if (replacedExistingItem)
         {
-            OnStoredPowerupReplaced?.Invoke(
-                this,
-                previousPowerup,
-                storedPowerup
-            );
+            OnMapItemReplaced?.Invoke(this, previousItem, item);
         }
 
-        // Always publish the newly stored value, including same-item
-        // replacement, so future pickup feedback can react to every collect.
-        OnStoredPowerupChanged?.Invoke(this, storedPowerup);
+        // Always publish the newly loaded value, including same-item
+        // replacement, so pickup feedback can react to every collect.
+        OnMapItemChanged?.Invoke(this, item);
         return true;
+    }
+
+    public void ClearMapItem()
+    {
+        if (!mapSlot.IsLoaded) return;
+
+        mapSlot.Clear();
+        RefreshInputPermissions();
+        OnMapItemChanged?.Invoke(this, null);
     }
 
     /// <summary>
-    /// Reserved for future effect executors. Input alone never calls this.
+    /// Spends the equipped item. Called by the system that runs the item, only
+    /// after its work succeeded. Input alone never calls this.
     /// </summary>
-    public bool TryConsumeStoredPowerup(out PowerupId consumedPowerup)
+    public bool TryConsumeEquippedItem(out PowerupId consumedItem)
     {
-        if (!hasStoredPowerup)
+        HandSlot slot = EquippedSlot;
+
+        if (slot == null)
         {
-            consumedPowerup = default;
+            consumedItem = default;
             return false;
         }
 
-        consumedPowerup = storedPowerup;
-        hasStoredPowerup = false;
-        storedPowerup = default;
-
+        consumedItem = slot.Item;
+        slot.Clear();
         RefreshInputPermissions();
-        OnStoredPowerupChanged?.Invoke(this, null);
+
+        if (slot == mapSlot)
+        {
+            OnMapItemChanged?.Invoke(this, null);
+        }
+
         return true;
-    }
-
-    public void ClearStoredPowerup()
-    {
-        if (!hasStoredPowerup) return;
-
-        hasStoredPowerup = false;
-        storedPowerup = default;
-        RefreshInputPermissions();
-        OnStoredPowerupChanged?.Invoke(this, null);
     }
 
     #endregion
@@ -303,33 +317,33 @@ public class PlayerPowerupController : MonoBehaviour
 
     public void RefreshInputPermissions()
     {
-        canUseStoredPowerup = CanUseStoredPowerup;
+        canUseEquippedItem = CanUseEquippedItem;
 
         if (cartControlInput == null) return;
 
-        cartControlInput.SetPowerupInputEnabled(canUseStoredPowerup);
+        cartControlInput.SetPowerupInputEnabled(canUseEquippedItem);
 
         bool allowProjectileAim =
-            canUseStoredPowerup &&
-            PowerupIdRules.RequiresProjectileAim(storedPowerup);
+            canUseEquippedItem &&
+            PowerupIdRules.RequiresProjectileAim(EquippedItem);
 
         cartControlInput.SetAimInputEnabled(allowProjectileAim);
     }
 
     private void HandlePowerupUsePressed()
     {
-        if (!CanUseStoredPowerup) return;
+        if (!CanUseEquippedItem) return;
 
-        PowerupId requestedPowerup = storedPowerup;
+        PowerupId requestedPowerup = EquippedItem;
 
         if (!ValidateUseRequest(requestedPowerup))
         {
             if (logRejectedUseRequests)
             {
                 Debug.Log(
-                    $"[PlayerPowerupController] P{playerIndex} rejected use request " +
+                    $"[PlayerItemHand] P{playerIndex} rejected use request " +
                     $"for {requestedPowerup}: no valid target is currently available. " +
-                    "The stored power-up was retained.",
+                    "The equipped item was kept.",
                     this
                 );
             }
@@ -343,7 +357,7 @@ public class PlayerPowerupController : MonoBehaviour
         if (logAcceptedUseRequests)
         {
             Debug.Log(
-                $"[PlayerPowerupController] P{playerIndex} accepted use request " +
+                $"[PlayerItemHand] P{playerIndex} accepted use request " +
                 $"#{acceptedUseRequestVersion} for {requestedPowerup}. " +
                 "The responsible executor now owns launch and consumption.",
                 this
@@ -355,7 +369,7 @@ public class PlayerPowerupController : MonoBehaviour
 
     private bool ValidateUseRequest(PowerupId requestedPowerup)
     {
-        Func<PlayerPowerupController, PowerupId, bool> validators =
+        Func<PlayerItemHand, PowerupId, bool> validators =
             OnPowerupUseValidationRequested;
 
         if (validators == null)
@@ -370,7 +384,7 @@ public class PlayerPowerupController : MonoBehaviour
         for (int i = 0; i < invocationList.Length; i++)
         {
             var validator =
-                (Func<PlayerPowerupController, PowerupId, bool>)invocationList[i];
+                (Func<PlayerItemHand, PowerupId, bool>)invocationList[i];
 
             if (!validator(this, requestedPowerup)) return false;
         }
@@ -430,7 +444,7 @@ public class PlayerPowerupController : MonoBehaviour
             {
                 delayedCartBindingWarningLogged = true;
                 Debug.LogWarning(
-                    $"[PlayerPowerupController] Still waiting for runtime Player{playerIndex} " +
+                    $"[PlayerItemHand] Still waiting for runtime Player{playerIndex} " +
                     "and its CartControlScript. Binding will continue retrying.",
                     this
                 );
@@ -547,8 +561,8 @@ public class PlayerPowerupController : MonoBehaviour
             {
                 missingRuntimeSystemLogged = true;
                 Debug.LogWarning(
-                    "[PlayerPowerupController] No PowerupRuntimeSystem was found. " +
-                    "Inventory can still be tested, but match lifecycle blocking is unavailable.",
+                    "[PlayerItemHand] No PowerupRuntimeSystem was found. " +
+                    "Item slots can still be tested, but match lifecycle blocking is unavailable.",
                     this
                 );
             }
@@ -604,7 +618,7 @@ public class PlayerPowerupController : MonoBehaviour
 
         invalidPlayerIndexLogged = true;
         Debug.LogError(
-            "[PlayerPowerupController] Could not resolve a valid player index (expected 1..4). " +
+            "[PlayerItemHand] Could not resolve a valid player index (expected 1..4). " +
             "Assign its Identity value or place it inside the correct SnakeCartManager hierarchy.",
             this
         );

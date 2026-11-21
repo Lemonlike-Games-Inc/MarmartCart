@@ -327,8 +327,8 @@ public class IceFreezeEffectSystem : MonoBehaviour
             return;
         }
 
-        PlayerPowerupController sourceController = null;
-        PlayerPowerupController targetController =
+        PlayerItemHand sourceController = null;
+        PlayerItemHand targetController =
             completion.HitOwnerController;
 
         if (runtimeSystem != null)
@@ -468,7 +468,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
 
     private bool ApplyFreezeOwnership(
         FreezeBinding binding,
-        PlayerPowerupController targetController)
+        PlayerItemHand targetController)
     {
         if (binding == null ||
             binding.CartControl == null ||
@@ -633,7 +633,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
 
     private static void ReleaseFreezeOwnership(
         FreezeBinding binding,
-        PlayerPowerupController targetController)
+        PlayerItemHand targetController)
     {
         if (binding == null)
         {
@@ -714,7 +714,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
             {
                 if (runtimeSystem.TryGetPlayer(
                     request.SourcePlayerIndex,
-                    out PlayerPowerupController sourceController))
+                    out PlayerItemHand sourceController))
                 {
                     request.SourceController = sourceController;
                 }
@@ -725,7 +725,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
             {
                 if (runtimeSystem.TryGetPlayer(
                     request.TargetPlayerIndex,
-                    out PlayerPowerupController targetController))
+                    out PlayerItemHand targetController))
                 {
                     request.TargetController = targetController;
                 }
@@ -745,7 +745,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
     }
 
     private static bool IsTargetInCheckout(
-        PlayerPowerupController targetController,
+        PlayerItemHand targetController,
         CartControlScript cartControl)
     {
         return (cartControl != null && cartControl.GetIsInPit()) ||

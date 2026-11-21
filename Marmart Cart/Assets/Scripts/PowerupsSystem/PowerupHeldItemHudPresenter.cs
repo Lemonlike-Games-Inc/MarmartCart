@@ -40,8 +40,8 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
     private SlotDiagnostics[] slotDiagnostics =
         new SlotDiagnostics[MaxPlayerSlots];
 
-    private readonly PlayerPowerupController[] boundControllers =
-        new PlayerPowerupController[MaxPlayerSlots];
+    private readonly PlayerItemHand[] boundControllers =
+        new PlayerItemHand[MaxPlayerSlots];
     private readonly RectTransform[] widgetRoots =
         new RectTransform[MaxPlayerSlots];
     private readonly RectTransform[] backgroundRects =
@@ -129,7 +129,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
     private void HandlePlayerRegistered(
         int playerIndex,
-        PlayerPowerupController controller)
+        PlayerItemHand controller)
     {
         BindPlayer(playerIndex, controller);
         RefreshSlot(playerIndex - 1);
@@ -147,7 +147,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
     }
 
     private void HandleStoredPowerupChanged(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId? powerupId)
     {
         if (controller == null) return;
@@ -186,7 +186,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         {
             if (runtimeSystem.TryGetPlayer(
                     playerIndex,
-                    out PlayerPowerupController controller
+                    out PlayerItemHand controller
                 ))
             {
                 BindPlayer(playerIndex, controller);
@@ -201,7 +201,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
     private void BindPlayer(
         int playerIndex,
-        PlayerPowerupController controller)
+        PlayerItemHand controller)
     {
         int slotIndex = playerIndex - 1;
 
@@ -215,24 +215,24 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         {
             UnbindPlayer(slotIndex);
             boundControllers[slotIndex] = controller;
-            controller.OnStoredPowerupChanged +=
+            controller.OnMapItemChanged +=
                 HandleStoredPowerupChanged;
         }
 
-        hasStoredPowerup[slotIndex] = controller.HasStoredPowerup;
-        storedPowerups[slotIndex] = controller.StoredPowerup;
+        hasStoredPowerup[slotIndex] = controller.MapSlot.IsLoaded;
+        storedPowerups[slotIndex] = controller.MapSlot.Item;
     }
 
     private void UnbindPlayer(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= MaxPlayerSlots) return;
 
-        PlayerPowerupController controller =
+        PlayerItemHand controller =
             boundControllers[slotIndex];
 
         if (controller != null)
         {
-            controller.OnStoredPowerupChanged -=
+            controller.OnMapItemChanged -=
                 HandleStoredPowerupChanged;
         }
 

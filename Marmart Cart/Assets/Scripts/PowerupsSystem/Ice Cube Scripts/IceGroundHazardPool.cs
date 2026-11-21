@@ -154,7 +154,7 @@ public class IceGroundHazardPool : MonoBehaviour
             return false;
         }
 
-        PlayerPowerupController ownerController = null;
+        PlayerItemHand ownerController = null;
 
         if (runtimeSystem != null)
         {
@@ -434,7 +434,7 @@ public class IceGroundHazardPool : MonoBehaviour
     private PowerupEffectEvent BuildHazardEffectEvent(
         IceGroundHazard hazard,
         int targetPlayerIndex,
-        PlayerPowerupController targetController,
+        PlayerItemHand targetController,
         Vector3 position)
     {
         return new PowerupEffectEvent

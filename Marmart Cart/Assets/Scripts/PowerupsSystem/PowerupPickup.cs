@@ -77,7 +77,7 @@ public class PowerupPickup : MonoBehaviour
 
     public event Action<
         PowerupPickup,
-        PlayerPowerupController,
+        PlayerItemHand,
         PowerupId> OnCollected;
 
     #endregion
@@ -147,7 +147,7 @@ public class PowerupPickup : MonoBehaviour
 
         if (!TryResolvePlayerController(
                 other,
-                out PlayerPowerupController controller))
+                out PlayerItemHand controller))
         {
             return;
         }
@@ -278,7 +278,7 @@ public class PowerupPickup : MonoBehaviour
 
     #region Collection
 
-    public bool TryCollect(PlayerPowerupController controller)
+    public bool TryCollect(PlayerItemHand controller)
     {
         if (!available ||
             collected ||
@@ -298,8 +298,8 @@ public class PowerupPickup : MonoBehaviour
 
         PowerupId grantedPowerup = preparedPowerup;
 
-        // TryStorePowerup intentionally replaces an existing unused item.
-        if (!controller.TryStorePowerup(grantedPowerup)) return false;
+        // TryLoadMapItem intentionally replaces an unused map item.
+        if (!controller.TryLoadMapItem(grantedPowerup)) return false;
 
         CompleteCollection(controller, grantedPowerup);
         return true;
@@ -330,7 +330,7 @@ public class PowerupPickup : MonoBehaviour
     }
 
     private void CompleteCollection(
-        PlayerPowerupController controller,
+        PlayerItemHand controller,
         PowerupId grantedPowerup)
     {
         collected = true;
@@ -355,7 +355,7 @@ public class PowerupPickup : MonoBehaviour
 
     private bool TryResolvePlayerController(
         Collider other,
-        out PlayerPowerupController controller)
+        out PlayerItemHand controller)
     {
         controller = null;
         if (other == null) return false;
@@ -380,7 +380,7 @@ public class PowerupPickup : MonoBehaviour
         if (cartControl == null) return false;
 
         controller =
-            cartControl.GetComponentInParent<PlayerPowerupController>();
+            cartControl.GetComponentInParent<PlayerItemHand>();
 
         if (controller != null) return true;
 

@@ -61,6 +61,8 @@ An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tom
 
 ## The hand
 
+- `PlayerItemHand` is the former `PlayerPowerupController`, renamed in R1 (same script GUID, so the component on `Chain of Carts Base` kept its values). It was already the per-player handle that every effect, blocker and the player registry used.
+- The hand owns both slots (`HandSlot`); sources only load them.
 - Two slots: map (filled by Powerups) and ability (filled by the Ability charge).
 - The Item that became ready last is equipped. When one slot is empty, the other is equipped. LB swaps when both are loaded.
 - LT uses the equipped Item. An Item that needs no aim fires at once on LT.
@@ -71,7 +73,7 @@ An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tom
 
 Each step is tested with map Items in Gameplay Scene 2P, 4P and the tutorial scenes before the next one starts.
 
-1. **R1, the hand.** `PlayerItemHand` takes over LT, aim permission, the blockers and the use check. The map slot stays in `PlayerPowerupController`.
+1. **R1, the hand.** `PlayerPowerupController` becomes `PlayerItemHand` (LT, aim permission, blockers, use check, player registration). Its stored item becomes the hand's map slot; pickups load it, and item systems read and consume the equipped item. `PowerupId`, `PowerupUseBlockReason`, `PowerupRuntimeSystem`, the use event names and serialized field names stay until R2/R3.
 2. **R2, the Item library.** Item, use and effect assets for Tomato, Ice Cube and Cola, built from today's profiles (values copied by an editor script, with Liang's OK first). Projectiles carry the Item; effect systems check their own effect. The map side still uses `PowerupId` through a lookup asset.
 3. **R3, map side on Items.** Pickups, random pools, the pickup visual catalog and spawners use Items; `PowerupId` is retired.
 

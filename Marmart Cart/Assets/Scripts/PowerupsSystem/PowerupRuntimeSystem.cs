@@ -37,8 +37,8 @@ public class PowerupRuntimeSystem : MonoBehaviour
     [SerializeField] private bool matchPlaying;
     [SerializeField] private int registeredPlayerCount;
 
-    private readonly PlayerPowerupController[] registeredPlayers =
-        new PlayerPowerupController[MaxPlayerSlots];
+    private readonly PlayerItemHand[] registeredPlayers =
+        new PlayerItemHand[MaxPlayerSlots];
 
     private GameTimeManager subscribedGameTimeManager;
     private bool missingGameTimeManagerLogged;
@@ -46,7 +46,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
     public bool MatchPlaying => matchPlaying;
     public int RegisteredPlayerCount => registeredPlayerCount;
 
-    public event Action<int, PlayerPowerupController> OnPlayerRegistered;
+    public event Action<int, PlayerItemHand> OnPlayerRegistered;
     public event Action<int> OnPlayerUnregistered;
     public event Action<bool> OnMatchPlayingChanged;
 
@@ -87,7 +87,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
     #region Player Registry
 
-    public bool RegisterPlayer(PlayerPowerupController controller)
+    public bool RegisterPlayer(PlayerItemHand controller)
     {
         if (controller == null) return false;
 
@@ -103,7 +103,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
             return false;
         }
 
-        PlayerPowerupController existing = registeredPlayers[slotIndex];
+        PlayerItemHand existing = registeredPlayers[slotIndex];
 
         if (existing != null && existing != controller)
         {
@@ -143,7 +143,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
         return true;
     }
 
-    public void UnregisterPlayer(PlayerPowerupController controller)
+    public void UnregisterPlayer(PlayerItemHand controller)
     {
         if (controller == null) return;
 
@@ -164,7 +164,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
     public bool TryGetPlayer(
         int playerIndex,
-        out PlayerPowerupController controller)
+        out PlayerItemHand controller)
     {
         int slotIndex = playerIndex - 1;
 
@@ -180,7 +180,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
     public bool TryGetPlayerForCartControl(
         CartControlScript cartControlInput,
-        out PlayerPowerupController controller)
+        out PlayerItemHand controller)
     {
         if (cartControlInput == null)
         {
@@ -190,7 +190,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
         for (int i = 0; i < registeredPlayers.Length; i++)
         {
-            PlayerPowerupController candidate = registeredPlayers[i];
+            PlayerItemHand candidate = registeredPlayers[i];
 
             if (candidate != null &&
                 candidate.CartControlInput == cartControlInput)
@@ -253,7 +253,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
         for (int i = 0; i < registeredPlayers.Length; i++)
         {
-            PlayerPowerupController controller = registeredPlayers[i];
+            PlayerItemHand controller = registeredPlayers[i];
             if (controller == null) continue;
 
             controller.SetUseBlocked(

@@ -9,9 +9,9 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class PowerupCollector : MonoBehaviour
 {
-    [SerializeField] private PlayerPowerupController powerupController;
+    [SerializeField] private PlayerItemHand powerupController;
 
-    public PlayerPowerupController PowerupController => powerupController;
+    public PlayerItemHand PowerupController => powerupController;
     public bool CanAcceptPowerup => powerupController != null;
 
     private void Reset()
@@ -26,7 +26,7 @@ public class PowerupCollector : MonoBehaviour
         if (powerupController == null)
         {
             Debug.LogError(
-                "[PowerupCollector] PlayerPowerupController was not found in this hierarchy.",
+                "[PowerupCollector] PlayerItemHand was not found in this hierarchy.",
                 this
             );
         }
@@ -35,18 +35,18 @@ public class PowerupCollector : MonoBehaviour
     public bool TryCollect(PowerupId powerupId)
     {
         return powerupController != null &&
-               powerupController.TryStorePowerup(powerupId);
+               powerupController.TryLoadMapItem(powerupId);
     }
 
     private void ResolveController()
     {
         if (powerupController != null) return;
 
-        powerupController = GetComponentInParent<PlayerPowerupController>();
+        powerupController = GetComponentInParent<PlayerItemHand>();
 
         if (powerupController == null)
         {
-            powerupController = GetComponentInChildren<PlayerPowerupController>(true);
+            powerupController = GetComponentInChildren<PlayerItemHand>(true);
         }
     }
 }
