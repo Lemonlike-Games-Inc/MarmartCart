@@ -3,6 +3,27 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-21 16:03 (UTC-7): Item library and hand (R1-R3); Ability core (Step 3)
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Map powerups now run on a shared Item library and a per-player hand, and `PowerupId` is gone. On top of that, the Ability core: two hand slots, LB swap, Sample charge and cooldown. Liang tested each step; map powerups behave as before.
+- Changed:
+  - R1 (0531f369): `PlayerPowerupController` became `PlayerItemHand` in `Scripts/Items/` (same GUID). The blockers and the use check live on the hand.
+  - R2a (8919918a): Item types (`ItemDefinition`, `ThrowItemUse`, `InstantItemUse`, `ItemEffectDefinition`, `ItemLibrary`) and Item assets in `SO_Variables/Items`. The Tomato, Ice and Cola profiles became effect parts (`TomatoBlindEffect`, `IceCubeEffect`, `ColaBoostEffect`).
+  - R2b (8cd263d3): aim, launcher, projectile pool and the three effect systems read the equipped Item and its parts. The scene effect profiles were removed.
+  - R3 (47a1b0c7): pickups, spawner, random pool, visual catalog, HUD profile and event relays use Items. Data migrated in the four build scenes and the pickup prefab variants. `PowerupId.cs` deleted with its `.meta`. The scene saves also kept Camera P2 edit-mode values in Gameplay Scene 2P and three empty Round Profile slots in the other three scenes.
+  - Liang's test setup (af354d3b): Gameplay Scene 2P values for easier Ability testing (a random map slot cooldown of 1 s, the Round profile).
+  - Step 3 (df7a3316): `SwapItem` input action (LB, keyboard R) and `CartControlScript.OnSwapItemPressed`; map and ability slots and swap on the hand; new `AbilitySampleDefinition`, `PlayerAbilityController` and the `Tomato Supply` asset. The controller sits on `Chain of Carts Base` with Debug Starting Sample = Tomato Supply.
+- Why: Powerups and Abilities give the same things from different sources. One library and one hand keep the Ability code out of the map powerup code and let variants reuse parts.
+- Decisions:
+  - The term is "Item".
+  - Each duration effect decides whether it blocks the other slot (4f861d8d). Cola does not.
+  - The slot loaded last is equipped; when it empties, the other one is. LB swaps when both are loaded, also while use is blocked.
+  - A charge counts only while the match is playing, and the cooldown starts when the charge is used. Tomato supply: first charge 10 s, cooldown 20 s.
+  - The held-item HUD shows the map slot only until the Ability HUD step.
+- Open questions:
+  - Clear the Debug Starting Sample on `Chain of Carts Base` before the booth build.
+  - Deferred renames (such as the serialized `playerPowerupController` field) are listed in `item-library.md`.
+
 ## 2026-11-21 05:14 (UTC-7): Ability Samples plan; Item library and hand before the Abilities
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh. The first code read was done with Claude Fable 5.2 (`claude-fable-5-2`).
 - Summary: Read the live powerup system (code, the 2P/4P/tutorial scene setup and the cart prefabs) for Ability Samples Step 1. Agreed to refactor it into a shared Item library and a per-player hand before any Ability code. No project code changed.
