@@ -9,12 +9,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 151648549606583701, guid: 7e807ec9e0c456c478b95fec29e85e33, type: 3}
+      propertyPath: fixedItem
+      value: 
+      objectReference: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
+    - target: {fileID: 151648549606583701, guid: 7e807ec9e0c456c478b95fec29e85e33, type: 3}
       propertyPath: grantMode
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 151648549606583701, guid: 7e807ec9e0c456c478b95fec29e85e33, type: 3}
-      propertyPath: fixedPowerup
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1956433495321633799, guid: 7e807ec9e0c456c478b95fec29e85e33, type: 3}
       propertyPath: m_LocalPosition.x

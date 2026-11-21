@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Optional Inspector-facing bridge for precise lifecycle timing.
@@ -16,8 +17,12 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
 
     [Header("Filters")]
-    [SerializeField] private bool filterByPowerupId = true;
-    [SerializeField] private PowerupId powerupId = PowerupId.Tomato;
+    [FormerlySerializedAs("filterByPowerupId")]
+    [SerializeField] private bool filterByItem = true;
+
+    [Tooltip("Only events of this exact item. A variant (such as Rolling Tomato) needs its own relay.")]
+    [SerializeField] private ItemDefinition item;
+
     [SerializeField] private bool filterEffectsByEffectId;
     [SerializeField]
     private PowerupEffectId effectId =
@@ -41,7 +46,6 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
     [SerializeField] private PowerupEffectEvent lastEffectEvent;
 
     private PowerupLifecycleEventSystem subscribedLifecycleEventSystem;
-    private PowerupRuntimeSystem runtimeSystem;
 
     public PowerupActivationEvent LastActivation => lastActivation;
     public PowerupProjectileEvent LastProjectileEvent => lastProjectileEvent;
@@ -132,23 +136,9 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
         onEffectEnded?.Invoke();
     }
 
-    // The filter is still authored as a PowerupId; the Item Library says
-    // which PowerupId an item belongs to.
     private bool Accepts(ItemDefinition candidateItem)
     {
-        if (!filterByPowerupId) return true;
-        if (candidateItem == null) return false;
-
-        if (runtimeSystem == null)
-        {
-            runtimeSystem = FindFirstObjectByType<PowerupRuntimeSystem>();
-        }
-
-        ItemLibrary library = runtimeSystem != null ? runtimeSystem.ItemLibrary : null;
-
-        return library != null &&
-               library.TryGetPowerupForItem(candidateItem, out PowerupId candidatePowerupId) &&
-               candidatePowerupId == powerupId;
+        return !filterByItem || (candidateItem != null && candidateItem == item);
     }
 
     private bool Accepts(PowerupEffectEvent effectEvent)

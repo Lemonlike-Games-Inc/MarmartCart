@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Optional non-tier random source for mystery pickups.
+/// Weighted random items for mystery map pickups.
 /// Fixed map-section pickups do not need this asset.
 /// </summary>
 [CreateAssetMenu(
@@ -14,17 +14,19 @@ public class PowerupRandomPool : ScriptableObject
     [Serializable]
     private struct WeightedEntry
     {
-        [SerializeField] private PowerupId powerup;
+        [SerializeField] private ItemDefinition item;
+
         [Min(0f)]
         [SerializeField] private float weight;
 
-        public PowerupId Powerup => powerup;
+        public ItemDefinition Item => item;
         public float Weight => Mathf.Max(0f, weight);
+        public bool IsUsable => item != null && Weight > 0f;
     }
 
     [SerializeField] private WeightedEntry[] entries = Array.Empty<WeightedEntry>();
 
-    public bool TryRoll(out PowerupId powerupId)
+    public bool TryRoll(out ItemDefinition item)
     {
         float totalWeight = 0f;
 
@@ -32,15 +34,13 @@ public class PowerupRandomPool : ScriptableObject
         {
             for (int i = 0; i < entries.Length; i++)
             {
-                WeightedEntry entry = entries[i];
-                if (!PowerupIdRules.IsDefined(entry.Powerup)) continue;
-                totalWeight += entry.Weight;
+                if (entries[i].IsUsable) totalWeight += entries[i].Weight;
             }
         }
 
         if (totalWeight <= 0f)
         {
-            powerupId = default;
+            item = null;
             return false;
         }
 
@@ -50,30 +50,28 @@ public class PowerupRandomPool : ScriptableObject
         for (int i = 0; i < entries.Length; i++)
         {
             WeightedEntry entry = entries[i];
-            if (!PowerupIdRules.IsDefined(entry.Powerup) || entry.Weight <= 0f) continue;
+            if (!entry.IsUsable) continue;
 
             accumulatedWeight += entry.Weight;
 
             if (roll <= accumulatedWeight)
             {
-                powerupId = entry.Powerup;
+                item = entry.Item;
                 return true;
             }
         }
 
-        // Floating-point fallback: return the final positive valid entry.
+        // Floating-point fallback: return the final usable entry.
         for (int i = entries.Length - 1; i >= 0; i--)
         {
-            WeightedEntry entry = entries[i];
-
-            if (PowerupIdRules.IsDefined(entry.Powerup) && entry.Weight > 0f)
+            if (entries[i].IsUsable)
             {
-                powerupId = entry.Powerup;
+                item = entries[i].Item;
                 return true;
             }
         }
 
-        powerupId = default;
+        item = null;
         return false;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         public int PlayerIndex;
         public bool PlayerBound;
         public bool HasStoredPowerup;
-        public PowerupId StoredPowerup;
+        public ItemDefinition StoredItem;
         public bool Visible;
     }
 
@@ -61,9 +62,10 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
             PowerupHudProfile.PromptSlotCount
         ];
     private readonly bool[] hasStoredPowerup = new bool[MaxPlayerSlots];
-    private readonly PowerupId[] storedPowerups =
-        new PowerupId[MaxPlayerSlots];
-    private readonly bool[] missingIconLogged = new bool[4];
+    private readonly ItemDefinition[] storedItems =
+        new ItemDefinition[MaxPlayerSlots];
+    private readonly List<ItemDefinition> missingIconLogged =
+        new List<ItemDefinition>(4);
 
     private PowerupRuntimeSystem subscribedRuntimeSystem;
     private ViewportCanvasSystem subscribedViewportCanvasSystem;
@@ -164,15 +166,10 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         RefreshSlot(slotIndex);
     }
 
-    // The icons are still looked up by PowerupId, through the Item Library.
     private void StoreMapItem(int slotIndex, ItemDefinition item)
     {
-        ItemLibrary library = runtimeSystem != null ? runtimeSystem.ItemLibrary : null;
-
-        hasStoredPowerup[slotIndex] =
-            item != null &&
-            library != null &&
-            library.TryGetPowerupForItem(item, out storedPowerups[slotIndex]);
+        hasStoredPowerup[slotIndex] = item != null;
+        storedItems[slotIndex] = item;
     }
 
     private void HandleViewportLayoutRefreshed()
@@ -370,7 +367,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         diagnostics.PlayerIndex = slotIndex + 1;
         diagnostics.PlayerBound = boundControllers[slotIndex] != null;
         diagnostics.HasStoredPowerup = hasStoredPowerup[slotIndex];
-        diagnostics.StoredPowerup = storedPowerups[slotIndex];
+        diagnostics.StoredItem = storedItems[slotIndex];
 
         RectTransform widgetRoot = widgetRoots[slotIndex];
 
@@ -398,7 +395,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         ApplyLayout(slotIndex);
 
         Sprite iconSprite = hasStoredPowerup[slotIndex]
-            ? hudProfile.GetIcon(storedPowerups[slotIndex])
+            ? hudProfile.GetIcon(storedItems[slotIndex])
             : hudProfile.EmptySlotIcon;
 
         bool shouldShow =
@@ -440,7 +437,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
             PowerupHudPromptIcon promptIcon =
                 hasStoredPowerup[slotIndex]
                     ? hudProfile.GetPromptForSlot(
-                        storedPowerups[slotIndex],
+                        storedItems[slotIndex],
                         promptSlot
                     )
                     : PowerupHudPromptIcon.None;
@@ -469,7 +466,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
         if (hasStoredPowerup[slotIndex] && iconSprite == null)
         {
-            LogMissingIconOnce(storedPowerups[slotIndex]);
+            LogMissingIconOnce(storedItems[slotIndex]);
         }
     }
 
@@ -685,22 +682,19 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
         }
     }
 
-    private void LogMissingIconOnce(PowerupId powerupId)
+    private void LogMissingIconOnce(ItemDefinition item)
     {
-        if (!logMissingIconAssignments) return;
-
-        int index = (int)powerupId;
-
-        if (index < 0 || index >= missingIconLogged.Length ||
-            missingIconLogged[index])
+        if (!logMissingIconAssignments ||
+            item == null ||
+            missingIconLogged.Contains(item))
         {
             return;
         }
 
-        missingIconLogged[index] = true;
+        missingIconLogged.Add(item);
         Debug.LogWarning(
             $"[PowerupHeldItemHudPresenter] No HUD Sprite is assigned for " +
-            $"{powerupId} in PowerupHudProfile.",
+            $"{item.name} in PowerupHudProfile.",
             this
         );
     }

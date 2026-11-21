@@ -90,14 +90,15 @@ public class PowerupSpawner : MonoBehaviour
     [SerializeField] private bool activationRequested;
     [SerializeField] private float remainingCountdownSeconds;
     [SerializeField] private int displayedCountdownValue;
-    [SerializeField] private bool hasCurrentPowerup;
-    [SerializeField] private PowerupId currentPowerup;
+    [SerializeField] private bool hasCurrentItem;
+    [SerializeField] private ItemDefinition currentItem;
     [SerializeField] private int completedSpawnCount;
     [SerializeField] private int completedCollectionCount;
 
-    private readonly Dictionary<PowerupPickupVisualKind, CachedVisual>
+    // Keyed by visual prefab: one cached instance per look.
+    private readonly Dictionary<GameObject, CachedVisual>
         cachedVisuals =
-            new Dictionary<PowerupPickupVisualKind, CachedVisual>();
+            new Dictionary<GameObject, CachedVisual>();
 
     private CachedVisual currentVisual;
     private PowerupPickup subscribedPickup;
@@ -113,18 +114,18 @@ public class PowerupSpawner : MonoBehaviour
         state == PowerupSpawnerState.PickupAvailable;
     public float RemainingCountdownSeconds => remainingCountdownSeconds;
     public int DisplayedCountdownValue => displayedCountdownValue;
-    public bool HasCurrentPowerup => hasCurrentPowerup;
-    public PowerupId CurrentPowerup => currentPowerup;
+    public bool HasCurrentItem => hasCurrentItem;
+    public ItemDefinition CurrentItem => currentItem;
 
     public event Action<PowerupSpawner> OnActivated;
     public event Action<PowerupSpawner> OnDeactivated;
     public event Action<PowerupSpawner> OnCountdownStarted;
     public event Action<PowerupSpawner, int> OnCountdownValueChanged;
-    public event Action<PowerupSpawner, PowerupId> OnPickupSpawned;
+    public event Action<PowerupSpawner, ItemDefinition> OnPickupSpawned;
     public event Action<
         PowerupSpawner,
         PlayerItemHand,
-        PowerupId> OnPickupCollected;
+        ItemDefinition> OnPickupCollected;
     public event Action<
         PowerupSpawner,
         PowerupSpawnerState> OnStateChanged;
@@ -279,8 +280,8 @@ public class PowerupSpawner : MonoBehaviour
         StopCountdownRoutine();
         uint generation = AdvanceCountdownGeneration();
 
-        hasCurrentPowerup = false;
-        currentPowerup = default;
+        hasCurrentItem = false;
+        currentItem = null;
         remainingCountdownSeconds = countdownSeconds;
         displayedCountdownValue = 0;
 
@@ -358,7 +359,7 @@ public class PowerupSpawner : MonoBehaviour
         remainingCountdownSeconds = 0f;
         SetCountdownVisible(false);
 
-        if (!pickup.TryPrepareSpawn(out PowerupId selectedPowerup))
+        if (!pickup.TryPrepareSpawn(out ItemDefinition selectedItem))
         {
             LogConfigurationFailure(
                 "The pickup could not resolve a valid Fixed/RandomPool grant."
@@ -367,17 +368,17 @@ public class PowerupSpawner : MonoBehaviour
             return;
         }
 
-        if (!TryResolveVisualKind(
-                selectedPowerup,
-                out PowerupPickupVisualKind visualKind) ||
+        if (!TryResolveVisualEntry(
+                selectedItem,
+                out PowerupPickupVisualCatalog.Entry visualEntry) ||
             !TryResolveCachedVisual(
-                visualKind,
+                visualEntry,
                 out CachedVisual visual))
         {
             pickup.CancelPreparedSpawn();
             LogConfigurationFailure(
                 $"No usable pickup visual is assigned for " +
-                $"{GetRequiredVisualKindName(selectedPowerup)}."
+                $"{GetRequiredVisualName(selectedItem)}."
             );
             StopAfterConfigurationFailure(true);
             return;
@@ -397,8 +398,8 @@ public class PowerupSpawner : MonoBehaviour
         }
 
         ShowCurrentPickupVisual();
-        currentPowerup = selectedPowerup;
-        hasCurrentPowerup = true;
+        currentItem = selectedItem;
+        hasCurrentItem = true;
         completedSpawnCount++;
         SetState(PowerupSpawnerState.PickupAvailable);
 
@@ -409,22 +410,22 @@ public class PowerupSpawner : MonoBehaviour
             return;
         }
 
-        OnPickupSpawned?.Invoke(this, selectedPowerup);
+        OnPickupSpawned?.Invoke(this, selectedItem);
     }
 
     private void HandlePickupCollected(
         PowerupPickup collectedPickup,
         PlayerItemHand collector,
-        PowerupId collectedPowerup)
+        ItemDefinition collectedItem)
     {
         if (collectedPickup != pickup) return;
 
         HideCurrentPickupVisual();
-        hasCurrentPowerup = false;
-        currentPowerup = default;
+        hasCurrentItem = false;
+        currentItem = null;
         completedCollectionCount++;
 
-        OnPickupCollected?.Invoke(this, collector, collectedPowerup);
+        OnPickupCollected?.Invoke(this, collector, collectedItem);
 
         // A collection subscriber may deliberately deactivate the spawner.
         if (activationRequested && isActiveAndEnabled)
@@ -444,8 +445,8 @@ public class PowerupSpawner : MonoBehaviour
         AdvanceCountdownGeneration();
         remainingCountdownSeconds = 0f;
         displayedCountdownValue = 0;
-        hasCurrentPowerup = false;
-        currentPowerup = default;
+        hasCurrentItem = false;
+        currentItem = null;
 
         HideCurrentPickupVisual();
 
@@ -551,62 +552,58 @@ public class PowerupSpawner : MonoBehaviour
 
     #region Pickup Visual Cache
 
-    private bool TryResolveVisualKind(
-        PowerupId selectedPowerup,
-        out PowerupPickupVisualKind visualKind)
+    // Random Pool pickups hide which item they give behind one shared visual.
+    private bool TryResolveVisualEntry(
+        ItemDefinition selectedItem,
+        out PowerupPickupVisualCatalog.Entry entry)
+    {
+        if (pickupVisualCatalog == null)
+        {
+            entry = default;
+            return false;
+        }
+
+        if (pickup != null &&
+            pickup.GrantMode == PowerupPickupGrantMode.RandomPool)
+        {
+            return pickupVisualCatalog.TryGetRandomVisual(out entry);
+        }
+
+        return pickupVisualCatalog.TryGetItemVisual(selectedItem, out entry);
+    }
+
+    private string GetRequiredVisualName(ItemDefinition selectedItem)
     {
         if (pickup != null &&
             pickup.GrantMode == PowerupPickupGrantMode.RandomPool)
         {
-            visualKind = PowerupPickupVisualKind.RandomPowerup;
-            return true;
+            return "the Random Pickup Visual";
         }
 
-        return PowerupPickupVisualCatalog.TryGetVisualKind(
-            selectedPowerup,
-            out visualKind
-        );
-    }
-
-    private string GetRequiredVisualKindName(PowerupId selectedPowerup)
-    {
-        return TryResolveVisualKind(
-            selectedPowerup,
-            out PowerupPickupVisualKind visualKind)
-                ? visualKind.ToString()
-                : selectedPowerup.ToString();
+        return selectedItem != null ? selectedItem.name : "no item";
     }
 
     private bool TryResolveCachedVisual(
-        PowerupPickupVisualKind visualKind,
+        PowerupPickupVisualCatalog.Entry entry,
         out CachedVisual visual)
     {
-        visual = null;
+        GameObject visualPrefab = entry.VisualPrefab;
 
-        if (pickupVisualCatalog == null ||
-            !pickupVisualCatalog.TryGetEntry(
-                visualKind,
-                out PowerupPickupVisualCatalog.Entry entry))
+        if (visualPrefab == null)
         {
+            visual = null;
             return false;
         }
 
-        if (cachedVisuals.TryGetValue(visualKind, out visual))
+        if (cachedVisuals.TryGetValue(visualPrefab, out visual))
         {
-            if (visual != null &&
-                visual.Root != null &&
-                visual.SourcePrefab == entry.VisualPrefab)
+            if (visual != null && visual.Root != null)
             {
                 ApplyVisualTransform(visual.Root.transform, entry);
                 return true;
             }
 
-            if (visual != null && visual.Root != null)
-            {
-                Destroy(visual.Root);
-            }
-
-            cachedVisuals.Remove(visualKind);
+            cachedVisuals.Remove(visualPrefab);
             visual = null;
         }
 
@@ -621,7 +618,7 @@ public class PowerupSpawner : MonoBehaviour
         if (root == null) return false;
 
         root.name =
-            $"{entry.VisualPrefab.name} ({visualKind} Pickup Visual Cached)";
+            $"{entry.VisualPrefab.name} (Pickup Visual Cached)";
 
         ApplyVisualTransform(root.transform, entry);
 
@@ -638,7 +635,7 @@ public class PowerupSpawner : MonoBehaviour
             ParticleSystems = particleSystems
         };
 
-        cachedVisuals.Add(visualKind, visual);
+        cachedVisuals.Add(visualPrefab, visual);
         return true;
     }
 

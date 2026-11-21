@@ -24,7 +24,8 @@ public class PowerupPickup : MonoBehaviour
     [SerializeField]
     private PowerupPickupGrantMode grantMode = PowerupPickupGrantMode.Fixed;
 
-    [SerializeField] private PowerupId fixedPowerup = PowerupId.Tomato;
+    [SerializeField] private ItemDefinition fixedItem;
+
     [SerializeField] private PowerupRandomPool randomPool;
 
     [Header("Pickup Presentation / Lifetime")]
@@ -60,9 +61,9 @@ public class PowerupPickup : MonoBehaviour
     [SerializeField] private bool managedBySpawner;
     [SerializeField] private bool available;
     [SerializeField] private bool collected;
-    [SerializeField] private bool hasPreparedPowerup;
-    [SerializeField] private PowerupId preparedPowerup;
-    [SerializeField] private PowerupId lastGrantedPowerup;
+    [SerializeField] private bool hasPreparedItem;
+    [SerializeField] private ItemDefinition preparedItem;
+    [SerializeField] private ItemDefinition lastGrantedItem;
     [SerializeField] private int lastCollectorPlayerIndex;
 
     public PowerupPickupGrantMode GrantMode => grantMode;
@@ -70,15 +71,15 @@ public class PowerupPickup : MonoBehaviour
     public bool IsManagedBySpawner => managedBySpawner;
     public bool IsAvailable => available;
     public bool IsCollected => collected;
-    public bool HasPreparedPowerup => hasPreparedPowerup;
-    public PowerupId PreparedPowerup => preparedPowerup;
-    public PowerupId LastGrantedPowerup => lastGrantedPowerup;
+    public bool HasPreparedItem => hasPreparedItem;
+    public ItemDefinition PreparedItem => preparedItem;
+    public ItemDefinition LastGrantedItem => lastGrantedItem;
     public int LastCollectorPlayerIndex => lastCollectorPlayerIndex;
 
     public event Action<
         PowerupPickup,
         PlayerItemHand,
-        PowerupId> OnCollected;
+        ItemDefinition> OnCollected;
 
     #endregion
 
@@ -191,21 +192,21 @@ public class PowerupPickup : MonoBehaviour
     /// Resolves and locks the next grant while keeping the trigger and visual
     /// hidden. Random pools roll exactly once here.
     /// </summary>
-    public bool TryPrepareSpawn(out PowerupId powerupId)
+    public bool TryPrepareSpawn(out ItemDefinition item)
     {
         SetAvailability(false);
-        hasPreparedPowerup = false;
-        preparedPowerup = default;
+        hasPreparedItem = false;
+        preparedItem = null;
         collected = false;
         lastCollectorPlayerIndex = 0;
 
-        if (!TryResolveGrantedPowerup(out powerupId))
+        if (!TryResolveGrantedItem(out item))
         {
             return false;
         }
 
-        preparedPowerup = powerupId;
-        hasPreparedPowerup = true;
+        preparedItem = item;
+        hasPreparedItem = true;
         return true;
     }
 
@@ -214,8 +215,8 @@ public class PowerupPickup : MonoBehaviour
     /// </summary>
     public bool RevealPreparedSpawn()
     {
-        if (!hasPreparedPowerup ||
-            !PowerupIdRules.IsDefined(preparedPowerup))
+        if (!hasPreparedItem ||
+            preparedItem == null)
         {
             return false;
         }
@@ -228,14 +229,14 @@ public class PowerupPickup : MonoBehaviour
     /// <summary>
     /// Convenience path for legacy/standalone pickups.
     /// </summary>
-    public bool TrySpawnImmediately(out PowerupId powerupId)
+    public bool TrySpawnImmediately(out ItemDefinition item)
     {
-        if (!TryPrepareSpawn(out powerupId)) return false;
+        if (!TryPrepareSpawn(out item)) return false;
 
         if (RevealPreparedSpawn()) return true;
 
         CancelPreparedSpawn();
-        powerupId = default;
+        item = null;
         return false;
     }
 
@@ -245,8 +246,8 @@ public class PowerupPickup : MonoBehaviour
     public void CancelPreparedSpawn()
     {
         SetAvailability(false);
-        hasPreparedPowerup = false;
-        preparedPowerup = default;
+        hasPreparedItem = false;
+        preparedItem = null;
     }
 
     /// <summary>
@@ -288,7 +289,7 @@ public class PowerupPickup : MonoBehaviour
             return false;
         }
 
-        if (!hasPreparedPowerup)
+        if (!hasPreparedItem)
         {
             if (!TryPrepareSpawn(out _) || !RevealPreparedSpawn())
             {
@@ -296,45 +297,29 @@ public class PowerupPickup : MonoBehaviour
             }
         }
 
-        PowerupId grantedPowerup = preparedPowerup;
-
-        ResolveRuntimeSystem();
-
-        if (runtimeSystem == null ||
-            runtimeSystem.ItemLibrary == null ||
-            !runtimeSystem.ItemLibrary.TryGetItemForPowerup(
-                grantedPowerup,
-                out ItemDefinition grantedItem))
-        {
-            Debug.LogWarning(
-                $"[PowerupPickup] No item is mapped to {grantedPowerup} in " +
-                "the Item Library. The pickup stays available.",
-                this
-            );
-            return false;
-        }
+        ItemDefinition grantedItem = preparedItem;
 
         // TryLoadMapItem intentionally replaces an unused map item.
         if (!controller.TryLoadMapItem(grantedItem)) return false;
 
-        CompleteCollection(controller, grantedPowerup);
+        CompleteCollection(controller, grantedItem);
         return true;
     }
 
-    private bool TryResolveGrantedPowerup(out PowerupId powerupId)
+    private bool TryResolveGrantedItem(out ItemDefinition item)
     {
         if (grantMode == PowerupPickupGrantMode.Fixed)
         {
-            powerupId = fixedPowerup;
-            return PowerupIdRules.IsDefined(powerupId);
+            item = fixedItem;
+            return item != null;
         }
 
-        if (randomPool != null && randomPool.TryRoll(out powerupId))
+        if (randomPool != null && randomPool.TryRoll(out item))
         {
             return true;
         }
 
-        powerupId = default;
+        item = null;
 
         Debug.LogWarning(
             "[PowerupPickup] RandomPool mode has no valid positive-weight " +
@@ -347,21 +332,21 @@ public class PowerupPickup : MonoBehaviour
 
     private void CompleteCollection(
         PlayerItemHand controller,
-        PowerupId grantedPowerup)
+        ItemDefinition grantedItem)
     {
         collected = true;
-        lastGrantedPowerup = grantedPowerup;
+        lastGrantedItem = grantedItem;
         lastCollectorPlayerIndex = controller != null
             ? controller.PlayerIndex
             : 0;
 
         SetAvailability(false);
-        hasPreparedPowerup = false;
-        preparedPowerup = default;
+        hasPreparedItem = false;
+        preparedItem = null;
 
         // Publish only after trigger/presentation state is final. A managing
         // spawner may now safely begin its next countdown inside this callback.
-        OnCollected?.Invoke(this, controller, grantedPowerup);
+        OnCollected?.Invoke(this, controller, grantedItem);
 
         if (deactivateGameObjectOnCollect && !managedBySpawner)
         {

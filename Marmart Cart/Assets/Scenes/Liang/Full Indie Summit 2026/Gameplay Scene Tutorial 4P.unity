@@ -20351,8 +20351,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifecycleEventSystem: {fileID: 674537954}
-  filterByPowerupId: 1
-  powerupId: 2
+  filterByItem: 1
+  item: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
   filterEffectsByEffectId: 0
   effectId: 3
   onActivated:
@@ -23113,8 +23113,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifecycleEventSystem: {fileID: 674537954}
-  filterByPowerupId: 1
-  powerupId: 1
+  filterByItem: 1
+  item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
   filterEffectsByEffectId: 0
   effectId: 1
   onActivated:
@@ -147316,22 +147316,22 @@ MonoBehaviour:
   - PlayerIndex: 1
     PlayerBound: 0
     HasStoredPowerup: 0
-    StoredPowerup: 0
+    StoredItem: {fileID: 0}
     Visible: 0
   - PlayerIndex: 2
     PlayerBound: 0
     HasStoredPowerup: 0
-    StoredPowerup: 0
+    StoredItem: {fileID: 0}
     Visible: 0
   - PlayerIndex: 3
     PlayerBound: 0
     HasStoredPowerup: 0
-    StoredPowerup: 0
+    StoredItem: {fileID: 0}
     Visible: 0
   - PlayerIndex: 4
     PlayerBound: 0
     HasStoredPowerup: 0
-    StoredPowerup: 0
+    StoredItem: {fileID: 0}
     Visible: 0
 --- !u!1 &1563801855
 GameObject:
@@ -159421,8 +159421,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifecycleEventSystem: {fileID: 674537954}
-  filterByPowerupId: 1
-  powerupId: 0
+  filterByItem: 1
+  item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
   filterEffectsByEffectId: 0
   effectId: 0
   onActivated:

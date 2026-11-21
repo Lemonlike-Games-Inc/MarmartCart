@@ -45,6 +45,20 @@ public struct PowerupHudPromptRecipe
 }
 
 [Serializable]
+public struct ItemHudEntry
+{
+    [SerializeField] private ItemDefinition item;
+    [SerializeField] private Sprite icon;
+
+    [Tooltip("Slot order is 1, 2, 3. None leaves that slot hidden.")]
+    [SerializeField] private PowerupHudPromptRecipe prompts;
+
+    public ItemDefinition Item => item;
+    public Sprite Icon => icon;
+    public PowerupHudPromptRecipe Prompts => prompts;
+}
+
+[Serializable]
 public struct PowerupHudPromptSlotLayout
 {
     [Tooltip("Absolute pixel offset from the selected viewport anchor.")]
@@ -85,11 +99,9 @@ public class PowerupHudProfile : ScriptableObject
 {
     public const int PromptSlotCount = 3;
 
-    [Header("Power-up Icons")]
-    [SerializeField] private Sprite tomatoIcon;
-    [SerializeField] private Sprite iceCubeIcon;
-    [SerializeField] private Sprite colaMentosIcon;
-    [SerializeField] private Sprite strongFanIcon;
+    [Header("Items")]
+    [Tooltip("Icon and input prompts for each item the HUD can show.")]
+    [SerializeField] private ItemHudEntry[] itemEntries = Array.Empty<ItemHudEntry>();
 
     [Header("Input Prompt Sprites")]
     [SerializeField] private Sprite rightJoystickPromptIcon;
@@ -101,40 +113,6 @@ public class PowerupHudProfile : ScriptableObject
     [SerializeField] private Sprite activateTriggerPromptIcon;
 
     [SerializeField] private Sprite plusPromptIcon;
-
-    [Header("Power-up Prompt Recipes")]
-    [Tooltip("Slot order is 1, 2, 3. None leaves that slot hidden.")]
-    [SerializeField]
-    private PowerupHudPromptRecipe tomatoPromptRecipe =
-        new PowerupHudPromptRecipe(
-            PowerupHudPromptIcon.RightJoystick,
-            PowerupHudPromptIcon.Plus,
-            PowerupHudPromptIcon.ActivateTrigger
-        );
-
-    [SerializeField]
-    private PowerupHudPromptRecipe iceCubePromptRecipe =
-        new PowerupHudPromptRecipe(
-            PowerupHudPromptIcon.RightJoystick,
-            PowerupHudPromptIcon.Plus,
-            PowerupHudPromptIcon.ActivateTrigger
-        );
-
-    [SerializeField]
-    private PowerupHudPromptRecipe colaMentosPromptRecipe =
-        new PowerupHudPromptRecipe(
-            PowerupHudPromptIcon.None,
-            PowerupHudPromptIcon.ActivateTrigger,
-            PowerupHudPromptIcon.None
-        );
-
-    [SerializeField]
-    private PowerupHudPromptRecipe strongFanPromptRecipe =
-        new PowerupHudPromptRecipe(
-            PowerupHudPromptIcon.ActivateTrigger,
-            PowerupHudPromptIcon.Plus,
-            PowerupHudPromptIcon.RightJoystick
-        );
 
     [Header("Empty Slot")]
     [Tooltip(
@@ -266,16 +244,26 @@ public class PowerupHudProfile : ScriptableObject
         };
     }
 
-    public Sprite GetIcon(PowerupId powerupId)
+    public Sprite GetIcon(ItemDefinition item)
     {
-        return powerupId switch
+        return TryGetItemEntry(item, out ItemHudEntry entry) ? entry.Icon : null;
+    }
+
+    private bool TryGetItemEntry(ItemDefinition item, out ItemHudEntry entry)
+    {
+        if (item != null && itemEntries != null)
         {
-            PowerupId.Tomato => tomatoIcon,
-            PowerupId.IceCube => iceCubeIcon,
-            PowerupId.ColaMentos => colaMentosIcon,
-            PowerupId.StrongFan => strongFanIcon,
-            _ => null
-        };
+            for (int i = 0; i < itemEntries.Length; i++)
+            {
+                if (itemEntries[i].Item != item) continue;
+
+                entry = itemEntries[i];
+                return true;
+            }
+        }
+
+        entry = default;
+        return false;
     }
 
     public Sprite GetPromptSprite(PowerupHudPromptIcon promptIcon)
@@ -291,19 +279,12 @@ public class PowerupHudProfile : ScriptableObject
     }
 
     public PowerupHudPromptIcon GetPromptForSlot(
-        PowerupId powerupId,
+        ItemDefinition item,
         int slotIndex)
     {
-        PowerupHudPromptRecipe recipe = powerupId switch
-        {
-            PowerupId.Tomato => tomatoPromptRecipe,
-            PowerupId.IceCube => iceCubePromptRecipe,
-            PowerupId.ColaMentos => colaMentosPromptRecipe,
-            PowerupId.StrongFan => strongFanPromptRecipe,
-            _ => default
-        };
-
-        return recipe.GetSlot(slotIndex);
+        return TryGetItemEntry(item, out ItemHudEntry entry)
+            ? entry.Prompts.GetSlot(slotIndex)
+            : PowerupHudPromptIcon.None;
     }
 
     public void GetLayout(

@@ -237,6 +237,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -334,8 +335,8 @@ MonoBehaviour:
   activationRequested: 0
   remainingCountdownSeconds: 0
   displayedCountdownValue: 0
-  hasCurrentPowerup: 0
-  currentPowerup: 0
+  hasCurrentItem: 0
+  currentItem: {fileID: 0}
   completedSpawnCount: 0
   completedCollectionCount: 0
 --- !u!114 &151648549606583701
@@ -351,7 +352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grantMode: 1
-  fixedPowerup: 1
+  fixedItem: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
   randomPool: {fileID: 11400000, guid: f9e69fa15770f9c41b58baabf54f54fc, type: 2}
   visualRoot: {fileID: 4412393328442373208}
   pickupTrigger: {fileID: 3127663212624857154}
@@ -360,9 +361,9 @@ MonoBehaviour:
   managedBySpawner: 0
   available: 0
   collected: 0
-  hasPreparedPowerup: 0
-  preparedPowerup: 0
-  lastGrantedPowerup: 0
+  hasPreparedItem: 0
+  preparedItem: {fileID: 0}
+  lastGrantedItem: {fileID: 0}
   lastCollectorPlayerIndex: 0
 --- !u!135 &3127663212624857154
 SphereCollider:

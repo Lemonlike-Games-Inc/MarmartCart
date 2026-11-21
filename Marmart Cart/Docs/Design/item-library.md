@@ -87,6 +87,8 @@ Each step is tested with map Items in Gameplay Scene 2P, 4P and the tutorial sce
    - R2a (done): Item types; the three effect profiles renamed `TomatoBlindEffect`, `IceCubeEffect`, `ColaBoostEffect`; Item assets in `SO_Variables/Items` with values copied from today's profiles and checked identical.
    - R2b (done): the hand, targeting, launcher, projectile pool, projectiles and effect systems use Items; each effect system checks its own effect and takes its tuning from it. `PowerupRuntimeSystem` holds the Item Library (assigned in the four build scenes). Cola's block toggle is off. The map side, held-item HUD icons and the SFX relay still use `PowerupId` through the Item Library. The ice cube pool keeps its own `IceCubeEffect` reference for pool sizes and the cube prefab; a second cube look (Really Really Cold) will need the pool to key by prefab.
 3. **R3, map side on Items.** Pickups, random pools, the pickup visual catalog and spawners use Items; `PowerupId` is retired.
+   - Done: the spawner prefab and its Tomato/Cola variants hold their Fixed Item; the random pool, the pickup visual catalog (one visual per item plus a Random Pickup Visual), the held-item HUD profile (icon and prompts per item) and the SFX relays (filter by exact item) use Items. The Item Library has no `PowerupId` mapping any more. StrongFan had no item; its HUD icon and prompts were dropped. `LevelGreyBoxScene` (test scene) was not migrated.
+   - Not done, for after the event: renaming `PowerupRuntimeSystem` and the shared throw profiles, and moving the effect assets into `SO_Variables/Items`.
 
 ## Risks
 

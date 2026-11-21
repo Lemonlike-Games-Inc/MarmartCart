@@ -1,26 +1,9 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
-/// Presentation identities available to a world-space pickup spawner.
-///
-/// The first four numeric values deliberately match PowerupId so existing
-/// serialized catalog entries keep their assignments. RandomPowerup is a
-/// presentation-only identity and is never granted to a player.
-/// </summary>
-public enum PowerupPickupVisualKind
-{
-    Tomato = 0,
-    IceCube = 1,
-    ColaMentos = 2,
-    StrongFan = 3,
-    RandomPowerup = 4
-}
-
-/// <summary>
-/// Shared mapping from pickup presentation identities to the world-space
-/// visual prefabs shown by PowerupSpawner. Gameplay colliders remain on
+/// Which world-space visual a map pickup shows: one per item it can give,
+/// plus one for Random Pool pickups. Gameplay colliders remain on
 /// PowerupPickup.
 /// </summary>
 [CreateAssetMenu(
@@ -32,8 +15,8 @@ public class PowerupPickupVisualCatalog : ScriptableObject
     [Serializable]
     public struct Entry
     {
-        [FormerlySerializedAs("powerup")]
-        [SerializeField] private PowerupPickupVisualKind visualKind;
+        [Tooltip("The item this visual shows. Ignored on the Random Pickup Visual.")]
+        [SerializeField] private ItemDefinition item;
 
         [Tooltip(
             "Visual-only world prefab. Do not put the gameplay pickup " +
@@ -46,7 +29,7 @@ public class PowerupPickupVisualCatalog : ScriptableObject
         [SerializeField] private Vector3 localEulerAngles;
         [SerializeField] private Vector3 localScale;
 
-        public PowerupPickupVisualKind VisualKind => visualKind;
+        public ItemDefinition Item => item;
         public GameObject VisualPrefab => visualPrefab;
         public Vector3 LocalPosition => localPosition;
         public Vector3 LocalEulerAngles => localEulerAngles;
@@ -65,13 +48,6 @@ public class PowerupPickupVisualCatalog : ScriptableObject
             }
         }
 
-        public bool IsUsableFor(PowerupPickupVisualKind requestedKind)
-        {
-            return visualKind == requestedKind &&
-                   IsDefined(visualKind) &&
-                   visualPrefab != null;
-        }
-
         public void Sanitize()
         {
             if (localScale == Vector3.zero)
@@ -86,19 +62,25 @@ public class PowerupPickupVisualCatalog : ScriptableObject
         }
     }
 
-    [SerializeField] private Entry[] entries = Array.Empty<Entry>();
+    [Tooltip("One visual per item a map pickup can give.")]
+    [SerializeField] private Entry[] itemVisuals = Array.Empty<Entry>();
 
-    public bool TryGetEntry(
-        PowerupPickupVisualKind visualKind,
-        out Entry entry)
+    [Tooltip("Shown by Random Pool pickups, whatever item they will give.")]
+    [SerializeField] private Entry randomPickupVisual;
+
+    public bool TryGetItemVisual(ItemDefinition item, out Entry entry)
     {
-        if (entries != null)
+        if (item != null && itemVisuals != null)
         {
-            for (int i = 0; i < entries.Length; i++)
+            for (int i = 0; i < itemVisuals.Length; i++)
             {
-                if (!entries[i].IsUsableFor(visualKind)) continue;
+                if (itemVisuals[i].Item != item ||
+                    itemVisuals[i].VisualPrefab == null)
+                {
+                    continue;
+                }
 
-                entry = entries[i];
+                entry = itemVisuals[i];
                 return true;
             }
         }
@@ -107,67 +89,24 @@ public class PowerupPickupVisualCatalog : ScriptableObject
         return false;
     }
 
-    /// <summary>
-    /// Compatibility overload for callers that need a concrete power-up
-    /// visual rather than the shared RandomPowerup presentation.
-    /// </summary>
-    public bool TryGetEntry(PowerupId powerupId, out Entry entry)
+    public bool TryGetRandomVisual(out Entry entry)
     {
-        if (!TryGetVisualKind(powerupId, out PowerupPickupVisualKind kind))
-        {
-            entry = default;
-            return false;
-        }
-
-        return TryGetEntry(kind, out entry);
-    }
-
-    public static bool TryGetVisualKind(
-        PowerupId powerupId,
-        out PowerupPickupVisualKind visualKind)
-    {
-        switch (powerupId)
-        {
-            case PowerupId.Tomato:
-                visualKind = PowerupPickupVisualKind.Tomato;
-                return true;
-
-            case PowerupId.IceCube:
-                visualKind = PowerupPickupVisualKind.IceCube;
-                return true;
-
-            case PowerupId.ColaMentos:
-                visualKind = PowerupPickupVisualKind.ColaMentos;
-                return true;
-
-            case PowerupId.StrongFan:
-                visualKind = PowerupPickupVisualKind.StrongFan;
-                return true;
-
-            default:
-                visualKind = default;
-                return false;
-        }
-    }
-
-    public static bool IsDefined(PowerupPickupVisualKind visualKind)
-    {
-        return visualKind == PowerupPickupVisualKind.Tomato ||
-               visualKind == PowerupPickupVisualKind.IceCube ||
-               visualKind == PowerupPickupVisualKind.ColaMentos ||
-               visualKind == PowerupPickupVisualKind.StrongFan ||
-               visualKind == PowerupPickupVisualKind.RandomPowerup;
+        entry = randomPickupVisual;
+        return entry.VisualPrefab != null;
     }
 
     private void OnValidate()
     {
-        if (entries == null) return;
-
-        for (int i = 0; i < entries.Length; i++)
+        if (itemVisuals != null)
         {
-            Entry entry = entries[i];
-            entry.Sanitize();
-            entries[i] = entry;
+            for (int i = 0; i < itemVisuals.Length; i++)
+            {
+                Entry entry = itemVisuals[i];
+                entry.Sanitize();
+                itemVisuals[i] = entry;
+            }
         }
+
+        randomPickupVisual.Sanitize();
     }
 }

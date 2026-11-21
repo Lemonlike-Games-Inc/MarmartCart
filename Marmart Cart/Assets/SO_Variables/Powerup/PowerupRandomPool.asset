@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: PowerupRandomPool
   m_EditorClassIdentifier: 
   entries:
-  - powerup: 0
+  - item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
     weight: 1
-  - powerup: 1
+  - item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
     weight: 1
-  - powerup: 2
+  - item: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
     weight: 1

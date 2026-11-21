@@ -12,29 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c862415857e2eb41a8efe80eae0273f, type: 3}
   m_Name: PowerupHudProfile
   m_EditorClassIdentifier: 
-  tomatoIcon: {fileID: 21300000, guid: cd9483e32e335d740b164b82ec4b34ab, type: 3}
-  iceCubeIcon: {fileID: 21300000, guid: 407293487fd9ece4487b28cf8f18dbd1, type: 3}
-  colaMentosIcon: {fileID: 21300000, guid: 3c18126a487af7342861041e7e7d2e11, type: 3}
-  strongFanIcon: {fileID: 21300000, guid: 937a6378f03f4f24e9f788363d663207, type: 3}
+  itemEntries:
+  - item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
+    icon: {fileID: 21300000, guid: cd9483e32e335d740b164b82ec4b34ab, type: 3}
+    prompts:
+      slot1: 1
+      slot2: 3
+      slot3: 2
+  - item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
+    icon: {fileID: 21300000, guid: 407293487fd9ece4487b28cf8f18dbd1, type: 3}
+    prompts:
+      slot1: 1
+      slot2: 3
+      slot3: 2
+  - item: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
+    icon: {fileID: 21300000, guid: 3c18126a487af7342861041e7e7d2e11, type: 3}
+    prompts:
+      slot1: 0
+      slot2: 2
+      slot3: 0
   rightJoystickPromptIcon: {fileID: 21300000, guid: 590341f1df8ef8e4ba8cfc8a682dfd48, type: 3}
   activateTriggerPromptIcon: {fileID: 21300000, guid: dfac01fbef47d1943ad5fee810fa6fd3, type: 3}
   plusPromptIcon: {fileID: 21300000, guid: 3a2296c7f0adec04fa11d14a453b7cdc, type: 3}
-  tomatoPromptRecipe:
-    slot1: 1
-    slot2: 3
-    slot3: 2
-  iceCubePromptRecipe:
-    slot1: 1
-    slot2: 3
-    slot3: 2
-  colaMentosPromptRecipe:
-    slot1: 0
-    slot2: 2
-    slot3: 0
-  strongFanPromptRecipe:
-    slot1: 2
-    slot2: 3
-    slot3: 1
   showSlotWhenEmpty: 0
   emptySlotIcon: {fileID: 0}
   player1BackgroundSprite: {fileID: 21300000, guid: 221b52abfe5b92e4a9ffb32a559d6f0a, type: 3}
