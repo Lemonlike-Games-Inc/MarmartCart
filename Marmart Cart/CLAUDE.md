@@ -13,7 +13,7 @@ Details live in `Docs/` (and in subfolder `CLAUDE.md` files once we add any). Th
 - Terminology: say "rob", not "steal", in player-facing text.
 
 ## Tech
-- Unity 6000.0.50f1, C#, Cinemachine, URP. Packages: `Packages/manifest.json`.
+- Unity 6000.0.84f1, C#, Cinemachine, URP. Packages: `Packages/manifest.json`.
 - Input: gameplay uses the Unity Input System, and new code should too. Active Input Handling is set to Both because `MainMenuTutorialLauncher` and a few debug scripts still use the legacy `Input` API.
 - Gamepad bindings (Player map): right stick Aim, LT ActivatePowerUp, RT Speedup (spends Hype), RB Drift, B MoveBackward, X CheckOut.
 - Third-party plugins live under `Assets/ImportedAssests/` (the misspelling is the real folder name), except Bakery (`Assets/Bakery/`) and TextMesh Pro. Do not edit them. Key ones: Shapes (all custom gameplay UI, leaderboards, aim previews), Feel (includes MoreMountains Tools and Nice Vibrations), UniText Folio (`ImportedAssests/UniText`, resources in `Assets/LightSide/`), VFX All In 1 (`AllIn1VfxToolkit`), Bakery. Also there: QuickOutline, vFolders, Synty, Kenney packs, Hovl Studio, Vefects, Ciathyza, Feel_URPfix, and `MercerMade` (team-made art, treated as imported assets).
