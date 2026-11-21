@@ -15,7 +15,7 @@ One Round is one load of the gameplay scene. The three phases are the ones `Game
 
 | Phase | Existing phase | Round 1 | Rounds 2 and 3 |
 |---|---|---|---|
-| Pre-round | PreGame, time paused | "Round 1" countdown, then start | Ability pick, Policy pop, "Round N" countdown, then start |
+| Pre-round | PreGame, time paused | "Round 1" countdown, then start | Policy pop, Section reveal, Ability pick, "Round N" countdown, then start |
 | Mid-round | Playing | Today's `MatchFlowDirector` timeline, unchanged | Same |
 | Post-round | PostGame | Round winner showcase with total Match Points | Same. Round 3 then shows the final ranking |
 
@@ -67,7 +67,9 @@ There is no finer checkpoint. A fault during a showcase replays that Round.
 
 ## Ability pick
 
-- All players pick at the same time, each in their own viewport, from 2 or 3 offered Ability Samples.
+Detail is in `ability-samples.md` (2026-11-21). The pick comes after the Policy pop and the Section reveal, so players choose knowing the Round.
+
+- All players pick at the same time, each in their own viewport, from 3 offered Ability Samples.
 - Two players may pick the same one.
 - After about 15 s, a player who has not confirmed gets the option they are highlighting.
 
