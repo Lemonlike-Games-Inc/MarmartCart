@@ -44,7 +44,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
     [Header("Runtime - Read Only")]
     [SerializeField] private uint launchedShotVersion;
-    [SerializeField] private PowerupId lastLaunchedPowerup;
+    [SerializeField] private ItemDefinition lastLaunchedItem;
     [SerializeField] private int lastLaunchedActorCount;
     [SerializeField] private PowerupProjectileLaunchFailureReason lastFailureReason;
 
@@ -62,13 +62,13 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
     public event Action<
         PowerupProjectileLauncher,
-        PowerupId,
+        ItemDefinition,
         uint,
         int> OnShotLaunched;
 
     public event Action<
         PowerupProjectileLauncher,
-        PowerupId,
+        ItemDefinition,
         PowerupProjectileLaunchFailureReason> OnShotLaunchFailed;
 
     private void Reset()
@@ -108,9 +108,10 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
     private bool ValidateProjectileExecution(
         PlayerItemHand controller,
-        PowerupId requestedPowerup)
+        ItemDefinition requestedItem)
     {
-        if (!PowerupIdRules.RequiresProjectileAim(requestedPowerup))
+        if (requestedItem == null ||
+            !requestedItem.TryGetUse(out ThrowItemUse throwUse))
         {
             return true;
         }
@@ -120,7 +121,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
             projectilePool == null)
         {
             RecordFailure(
-                requestedPowerup,
+                requestedItem,
                 PowerupProjectileLaunchFailureReason.MissingReference
             );
             return false;
@@ -133,7 +134,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
             targetingController.ProjectileProfile == null)
         {
             RecordFailure(
-                requestedPowerup,
+                requestedItem,
                 PowerupProjectileLaunchFailureReason.MissingReference
             );
             return false;
@@ -142,31 +143,31 @@ public class PowerupProjectileLauncher : MonoBehaviour
         if (targetingController.ProjectileProfile != projectileProfile)
         {
             RecordFailure(
-                requestedPowerup,
+                requestedItem,
                 PowerupProjectileLaunchFailureReason.ProjectileProfileMismatch
             );
             return false;
         }
 
         ProjectileShotPattern pattern =
-            projectileProfile.GetPattern(requestedPowerup);
+            throwUse.Pattern;
 
         if (!IsUsablePattern(pattern))
         {
             RecordFailure(
-                requestedPowerup,
+                requestedItem,
                 PowerupProjectileLaunchFailureReason.InvalidShotPattern
             );
             return false;
         }
 
         FakeArcProjectile prefabActor =
-            projectileProfile.GetPrefab(requestedPowerup);
+            throwUse.GetProjectilePrefab();
 
         if (prefabActor == null || !prefabActor.HasValidAuthoredHitbox)
         {
             RecordFailure(
-                requestedPowerup,
+                requestedItem,
                 PowerupProjectileLaunchFailureReason.InvalidProjectileHitbox
             );
             return false;
@@ -174,22 +175,21 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
         if (!projectileProfile.HasCartTargetMask ||
             !projectilePool.CanProvide(
-                requestedPowerup,
+                throwUse,
                 pattern.EntryCount
             ))
         {
             RecordFailure(
-                requestedPowerup,
+                requestedItem,
                 PowerupProjectileLaunchFailureReason.PoolUnavailable
             );
             return false;
         }
 
         WarnIfPatternExceedsAdvertisedPreview(
-            requestedPowerup,
-            pattern,
-            projectileProfile,
-            targetingController.GameplayProfile
+            requestedItem,
+            throwUse,
+            pattern
         );
 
         return true;
@@ -215,20 +215,21 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
         if (!snapshot.Visible ||
             snapshot.PlayerIndex != playerPowerupController.PlayerIndex ||
-            !PowerupIdRules.RequiresProjectileAim(snapshot.PowerupId))
+            snapshot.Item == null ||
+            !snapshot.Item.TryGetUse(out ThrowItemUse throwUse))
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.SnapshotMismatch
             );
             return false;
         }
 
         if (!playerPowerupController.HasEquippedItem ||
-            playerPowerupController.EquippedItem != snapshot.PowerupId)
+            playerPowerupController.EquippedItem != snapshot.Item)
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.InventoryChanged
             );
             return false;
@@ -241,7 +242,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
             targetingController.ProjectileProfile == null)
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.MissingReference
             );
             return false;
@@ -255,7 +256,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         if (targetingController.ProjectileProfile != projectileProfile)
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.ProjectileProfileMismatch
             );
             return false;
@@ -264,31 +265,31 @@ public class PowerupProjectileLauncher : MonoBehaviour
         if (!projectileProfile.HasCartTargetMask)
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.PoolUnavailable
             );
             return false;
         }
 
         ProjectileShotPattern pattern =
-            projectileProfile.GetPattern(snapshot.PowerupId);
+            throwUse.Pattern;
 
         if (!IsUsablePattern(pattern))
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.InvalidShotPattern
             );
             return false;
         }
 
         FakeArcProjectile prefabActor =
-            projectileProfile.GetPrefab(snapshot.PowerupId);
+            throwUse.GetProjectilePrefab();
 
         if (prefabActor == null || !prefabActor.HasValidAuthoredHitbox)
         {
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.InvalidProjectileHitbox
             );
             return false;
@@ -304,14 +305,14 @@ public class PowerupProjectileLauncher : MonoBehaviour
         for (int i = 0; i < resolvedLaunches.Count; i++)
         {
             if (!projectilePool.TryRent(
-                snapshot.PowerupId,
+                throwUse,
                 out FakeArcProjectile projectile
             ))
             {
                 RollBackRentedProjectiles();
                 resolvedLaunches.Clear();
                 RecordFailure(
-                    snapshot.PowerupId,
+                    snapshot.Item,
                     PowerupProjectileLaunchFailureReason.PoolRentFailed
                 );
                 return false;
@@ -336,7 +337,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
                 RollBackRentedProjectiles();
                 resolvedLaunches.Clear();
                 RecordFailure(
-                    snapshot.PowerupId,
+                    snapshot.Item,
                     PowerupProjectileLaunchFailureReason.ProjectilePreparationFailed
                 );
                 return false;
@@ -347,20 +348,20 @@ public class PowerupProjectileLauncher : MonoBehaviour
         // Consume only after the complete volley has been resolved, rented,
         // and prepared.
         if (!playerPowerupController.TryConsumeEquippedItem(
-            out PowerupId consumedPowerup
-        ) || consumedPowerup != snapshot.PowerupId)
+            out ItemDefinition consumedItem
+        ) || consumedItem != snapshot.Item)
         {
             RollBackRentedProjectiles();
             resolvedLaunches.Clear();
             RecordFailure(
-                snapshot.PowerupId,
+                snapshot.Item,
                 PowerupProjectileLaunchFailureReason.InventoryConsumeFailed
             );
             return false;
         }
 
         launchedShotVersion = nextShotVersion;
-        lastLaunchedPowerup = snapshot.PowerupId;
+        lastLaunchedItem = snapshot.Item;
         lastLaunchedActorCount = 0;
 
         for (int i = 0; i < rentedProjectiles.Count; i++)
@@ -392,7 +393,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         {
             Debug.Log(
                 $"[PowerupProjectileLauncher] P{snapshot.PlayerIndex} launched " +
-                $"{snapshot.PowerupId} shot #{launchedShotVersion} with " +
+                $"{snapshot.Item.name} shot #{launchedShotVersion} with " +
                 $"{launchedActorCount} deterministic actor(s).",
                 this
             );
@@ -403,7 +404,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         lifecycleEventSystem?.PublishActivated(
             new PowerupActivationEvent
             {
-                PowerupId = snapshot.PowerupId,
+                Item = snapshot.Item,
                 Mode = PowerupActivationMode.ProjectileVolley,
                 ActivationVersion = launchedShotVersion,
                 OwnerPlayerIndex = snapshot.PlayerIndex,
@@ -416,7 +417,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
         OnShotLaunched?.Invoke(
             this,
-            snapshot.PowerupId,
+            snapshot.Item,
             launchedShotVersion,
             launchedActorCount
         );
@@ -498,7 +499,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
                 {
                     ShotVersion = 0u,
                     PatternEntryIndex = i,
-                    PowerupId = snapshot.PowerupId,
+                    Item = snapshot.Item,
                     OwnerPlayerIndex = snapshot.PlayerIndex,
                     StartPosition = snapshot.StartPosition,
                     LandingPosition = resolvedLanding,
@@ -587,23 +588,22 @@ public class PowerupProjectileLauncher : MonoBehaviour
     }
 
     private void WarnIfPatternExceedsAdvertisedPreview(
-        PowerupId powerupId,
-        ProjectileShotPattern pattern,
-        PowerupProjectileProfile projectileProfile,
-        PowerupGameplayProfile gameplayProfile)
+        ItemDefinition item,
+        ThrowItemUse throwUse,
+        ProjectileShotPattern pattern)
     {
         if (!warnWhenPatternExceedsPreview ||
-            patternPreviewWarningLogged ||
-            projectileProfile == null ||
-            gameplayProfile == null)
+            patternPreviewWarningLogged)
         {
             return;
         }
 
-        if (!projectileProfile.TryGetAuthoredHitboxPlanarRadius(
-            powerupId,
-            out float authoredFootprint
-        ))
+        FakeArcProjectile prefabActor = throwUse.GetProjectilePrefab();
+
+        if (prefabActor == null ||
+            !prefabActor.TryGetAuthoredHitboxPlanarRadius(
+                out float authoredFootprint
+            ))
         {
             return;
         }
@@ -621,14 +621,13 @@ public class PowerupProjectileLauncher : MonoBehaviour
             );
         }
 
-        float advertisedRadius =
-            gameplayProfile.GetImpactPreviewRadius(powerupId);
+        float advertisedRadius = throwUse.PreviewRadius;
 
         if (maximumPatternRadius <= advertisedRadius + 0.0001f) return;
 
         patternPreviewWarningLogged = true;
         Debug.LogWarning(
-            $"[PowerupProjectileLauncher] {powerupId} runtime footprint " +
+            $"[PowerupProjectileLauncher] {item.name} runtime footprint " +
             $"({maximumPatternRadius:0.##}) exceeds its advertised aim-preview " +
             $"radius ({advertisedRadius:0.##}). Increase the preview radius or " +
             "reduce the shot pattern.",
@@ -677,7 +676,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
         {
             if (subscribedPowerupController != null)
             {
-                subscribedPowerupController.OnPowerupUseValidationRequested -=
+                subscribedPowerupController.OnItemUseValidationRequested -=
                     ValidateProjectileExecution;
             }
 
@@ -685,7 +684,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
 
             if (subscribedPowerupController != null)
             {
-                subscribedPowerupController.OnPowerupUseValidationRequested +=
+                subscribedPowerupController.OnItemUseValidationRequested +=
                     ValidateProjectileExecution;
             }
         }
@@ -712,7 +711,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
     {
         if (subscribedPowerupController != null)
         {
-            subscribedPowerupController.OnPowerupUseValidationRequested -=
+            subscribedPowerupController.OnItemUseValidationRequested -=
                 ValidateProjectileExecution;
         }
 
@@ -740,7 +739,7 @@ public class PowerupProjectileLauncher : MonoBehaviour
     }
 
     private void RecordFailure(
-        PowerupId powerupId,
+        ItemDefinition item,
         PowerupProjectileLaunchFailureReason reason)
     {
         lastFailureReason = reason;
@@ -750,12 +749,12 @@ public class PowerupProjectileLauncher : MonoBehaviour
             Debug.LogWarning(
                 $"[PowerupProjectileLauncher] P" +
                 $"{(playerPowerupController != null ? playerPowerupController.PlayerIndex : 0)} " +
-                $"could not launch {powerupId}: {reason}. " +
-                "The stored power-up was retained whenever inventory was still available.",
+                $"could not launch {(item != null ? item.name : "no item")}: {reason}. " +
+                "The equipped item was kept whenever it was still loaded.",
                 this
             );
         }
 
-        OnShotLaunchFailed?.Invoke(this, powerupId, reason);
+        OnShotLaunchFailed?.Invoke(this, item, reason);
     }
 }

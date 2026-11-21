@@ -14,7 +14,6 @@ public class TomatoBlindEffectSystem : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
-    [SerializeField] private TomatoBlindEffect tomatoProfile;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logStateChanges = true;
@@ -29,9 +28,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
 
     private PowerupLifecycleEventSystem subscribedLifecycleEventSystem;
     private PowerupRuntimeSystem subscribedRuntimeSystem;
-    private bool missingProfileLogged;
 
-    public TomatoBlindEffect TomatoProfile => tomatoProfile;
 
     public event Action<int, TomatoBlindState> OnBlindStateChanged;
     public event Action<
@@ -113,7 +110,8 @@ public class TomatoBlindEffectSystem : MonoBehaviour
         PowerupProjectileCompletion completion =
             projectileEvent.Completion;
 
-        if (completion.PowerupId != PowerupId.Tomato ||
+        if (completion.Item == null ||
+            !completion.Item.TryGetEffect(out TomatoBlindEffect blindEffect) ||
             completion.Reason !=
                 PowerupProjectileCompletionReason.LeadingCartHit ||
             completion.HitCartKind !=
@@ -121,24 +119,6 @@ public class TomatoBlindEffectSystem : MonoBehaviour
         {
             return;
         }
-
-        if (tomatoProfile == null)
-        {
-            if (!missingProfileLogged)
-            {
-                missingProfileLogged = true;
-                Debug.LogError(
-                    "[TomatoBlindEffectSystem] Assign a " +
-                    "TomatoBlindEffect. Valid impacts cannot create a " +
-                    "blind state without effect tuning.",
-                    this
-                );
-            }
-
-            return;
-        }
-
-        missingProfileLogged = false;
 
         int targetPlayerIndex = completion.HitPlayerIndex;
         int slotIndex = targetPlayerIndex - 1;
@@ -168,6 +148,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
         ApplyBlindState(
             slotIndex,
             completion,
+            blindEffect,
             sourceController,
             targetController
         );
@@ -176,6 +157,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
     private void ApplyBlindState(
         int slotIndex,
         PowerupProjectileCompletion completion,
+        TomatoBlindEffect blindEffect,
         PlayerItemHand sourceController,
         PlayerItemHand targetController)
     {
@@ -196,10 +178,10 @@ public class TomatoBlindEffectSystem : MonoBehaviour
             previousState = playerStates[slotIndex];
         }
 
-        float duration = tomatoProfile.BlindDurationSeconds;
+        float duration = blindEffect.BlindDurationSeconds;
         bool refreshDuration =
             !wasActive ||
-            tomatoProfile.RefreshDurationOnAdditionalHit;
+            blindEffect.RefreshDurationOnAdditionalHit;
 
         float startedAt = refreshDuration
             ? now
@@ -211,7 +193,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
 
         int splashCount = wasActive
             ? Mathf.Min(
-                tomatoProfile.MaximumVisualSplashCount,
+                blindEffect.MaximumVisualSplashCount,
                 previousState.SplashCount + 1
             )
             : 1;
@@ -237,7 +219,8 @@ public class TomatoBlindEffectSystem : MonoBehaviour
             DurationSeconds = Mathf.Max(0.0001f, endsAt - startedAt),
             StartedAtTime = startedAt,
             EndsAtTime = endsAt,
-            LastImpactPosition = completion.Position
+            LastImpactPosition = completion.Position,
+            SourceItem = completion.Item
         };
 
         playerStates[slotIndex] = nextState;
@@ -361,7 +344,7 @@ public class TomatoBlindEffectSystem : MonoBehaviour
         return new PowerupEffectEvent
         {
             EffectId = PowerupEffectId.TomatoBlind,
-            SourcePowerupId = PowerupId.Tomato,
+            SourceItem = state.SourceItem,
             ActivationVersion = state.SourceActivationVersion,
             EffectInstanceId = state.EffectInstanceId,
             EffectVersion = state.Revision,

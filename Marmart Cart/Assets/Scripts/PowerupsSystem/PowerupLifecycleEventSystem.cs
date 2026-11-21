@@ -74,7 +74,7 @@ public class PowerupLifecycleEventSystem : MonoBehaviour
             Debug.Log(
                 $"[PowerupLifecycleEventSystem] P" +
                 $"{activationEvent.OwnerPlayerIndex} activated " +
-                $"{activationEvent.PowerupId} " +
+                $"{ItemName(activationEvent.Item)} " +
                 $"#{activationEvent.ActivationVersion}.",
                 this
             );
@@ -109,7 +109,7 @@ public class PowerupLifecycleEventSystem : MonoBehaviour
             {
                 Debug.Log(
                     $"[PowerupLifecycleEventSystem] " +
-                    $"{completion.PowerupId}[{completion.PatternEntryIndex}] " +
+                    $"{ItemName(completion.Item)}[{completion.PatternEntryIndex}] " +
                     $"#{completion.ShotVersion} cancelled.",
                     this
                 );
@@ -129,7 +129,7 @@ public class PowerupLifecycleEventSystem : MonoBehaviour
         {
             Debug.Log(
                 $"[PowerupLifecycleEventSystem] " +
-                $"{completion.PowerupId}[{completion.PatternEntryIndex}] " +
+                $"{ItemName(completion.Item)}[{completion.PatternEntryIndex}] " +
                 $"#{completion.ShotVersion} impacted: {completion.Reason}.",
                 this
             );
@@ -254,5 +254,10 @@ public class PowerupLifecycleEventSystem : MonoBehaviour
                 Debug.LogException(exception, this);
             }
         }
+    }
+
+    private static string ItemName(ItemDefinition item)
+    {
+        return item != null ? item.name : "no item";
     }
 }

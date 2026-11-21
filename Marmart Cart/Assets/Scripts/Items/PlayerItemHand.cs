@@ -87,8 +87,8 @@ public class PlayerItemHand : MonoBehaviour
 
     public bool HasEquippedItem => EquippedSlot != null;
 
-    /// <summary>The item LT uses. Only meaningful while HasEquippedItem.</summary>
-    public PowerupId EquippedItem => EquippedSlot != null ? EquippedSlot.Item : default;
+    /// <summary>The item LT uses, or null.</summary>
+    public ItemDefinition EquippedItem => EquippedSlot != null ? EquippedSlot.Item : null;
 
     public bool CanUseEquippedItem =>
         HasEquippedItem &&
@@ -106,30 +106,30 @@ public class PlayerItemHand : MonoBehaviour
     #region Events
 
     /// <summary>The map slot was loaded (also with the same item again) or emptied (null).</summary>
-    public event Action<PlayerItemHand, PowerupId?> OnMapItemChanged;
+    public event Action<PlayerItemHand, ItemDefinition> OnMapItemChanged;
 
     /// <summary>A pickup replaced an unused map item: previous, new.</summary>
-    public event Action<PlayerItemHand, PowerupId, PowerupId> OnMapItemReplaced;
+    public event Action<PlayerItemHand, ItemDefinition, ItemDefinition> OnMapItemReplaced;
 
     public event Action<PlayerItemHand, PowerupUseBlockReason> OnBlockReasonsChanged;
 
     /// <summary>
     /// Optional execution-layer gate evaluated after slot/blocker checks
-    /// but before a request is accepted. Projectile power-ups require at least
-    /// one validator so a neutral or invalid target can never become a launch.
+    /// but before a request is accepted. Aimed items require at least one
+    /// validator so a neutral or invalid target can never become a launch.
     /// Every subscribed validator must return true.
     /// </summary>
-    public event Func<PlayerItemHand, PowerupId, bool>
-        OnPowerupUseValidationRequested;
+    public event Func<PlayerItemHand, ItemDefinition, bool>
+        OnItemUseValidationRequested;
 
-    public event Action<PlayerItemHand, PowerupId> OnPowerupUseRejected;
+    public event Action<PlayerItemHand, ItemDefinition> OnItemUseRejected;
 
     /// <summary>
     /// Raised only after the input press passes slot, blocker and validation
     /// checks. The system that runs the item consumes the equipped item only
     /// after its work succeeded.
     /// </summary>
-    public event Action<PlayerItemHand, PowerupId> OnPowerupUseRequested;
+    public event Action<PlayerItemHand, ItemDefinition> OnItemUseRequested;
 
     #endregion
 
@@ -213,19 +213,16 @@ public class PlayerItemHand : MonoBehaviour
     /// Loads a map Powerup item. A new pickup intentionally replaces an
     /// unused map item.
     /// </summary>
-    public bool TryLoadMapItem(PowerupId item)
+    public bool TryLoadMapItem(ItemDefinition item)
     {
-        if (!PowerupIdRules.IsDefined(item))
+        if (item == null)
         {
-            Debug.LogError(
-                $"[PlayerItemHand] Cannot load undefined item value '{item}'.",
-                this
-            );
+            Debug.LogError("[PlayerItemHand] Cannot load a missing item.", this);
             return false;
         }
 
         bool replacedExistingItem = mapSlot.IsLoaded;
-        PowerupId previousItem = mapSlot.Item;
+        ItemDefinition previousItem = mapSlot.Item;
 
         mapSlot.Load(item, Time.time);
         RefreshInputPermissions();
@@ -254,13 +251,13 @@ public class PlayerItemHand : MonoBehaviour
     /// Spends the equipped item. Called by the system that runs the item, only
     /// after its work succeeded. Input alone never calls this.
     /// </summary>
-    public bool TryConsumeEquippedItem(out PowerupId consumedItem)
+    public bool TryConsumeEquippedItem(out ItemDefinition consumedItem)
     {
         HandSlot slot = EquippedSlot;
 
         if (slot == null)
         {
-            consumedItem = default;
+            consumedItem = null;
             return false;
         }
 
@@ -323,32 +320,32 @@ public class PlayerItemHand : MonoBehaviour
 
         cartControlInput.SetPowerupInputEnabled(canUseEquippedItem);
 
-        bool allowProjectileAim =
+        bool allowAim =
             canUseEquippedItem &&
-            PowerupIdRules.RequiresProjectileAim(EquippedItem);
+            EquippedItem.RequiresAim;
 
-        cartControlInput.SetAimInputEnabled(allowProjectileAim);
+        cartControlInput.SetAimInputEnabled(allowAim);
     }
 
     private void HandlePowerupUsePressed()
     {
         if (!CanUseEquippedItem) return;
 
-        PowerupId requestedPowerup = EquippedItem;
+        ItemDefinition requestedItem = EquippedItem;
 
-        if (!ValidateUseRequest(requestedPowerup))
+        if (!ValidateUseRequest(requestedItem))
         {
             if (logRejectedUseRequests)
             {
                 Debug.Log(
                     $"[PlayerItemHand] P{playerIndex} rejected use request " +
-                    $"for {requestedPowerup}: no valid target is currently available. " +
+                    $"for {requestedItem.name}: no valid target is currently available. " +
                     "The equipped item was kept.",
                     this
                 );
             }
 
-            OnPowerupUseRejected?.Invoke(this, requestedPowerup);
+            OnItemUseRejected?.Invoke(this, requestedItem);
             return;
         }
 
@@ -358,25 +355,25 @@ public class PlayerItemHand : MonoBehaviour
         {
             Debug.Log(
                 $"[PlayerItemHand] P{playerIndex} accepted use request " +
-                $"#{acceptedUseRequestVersion} for {requestedPowerup}. " +
+                $"#{acceptedUseRequestVersion} for {requestedItem.name}. " +
                 "The responsible executor now owns launch and consumption.",
                 this
             );
         }
 
-        OnPowerupUseRequested?.Invoke(this, requestedPowerup);
+        OnItemUseRequested?.Invoke(this, requestedItem);
     }
 
-    private bool ValidateUseRequest(PowerupId requestedPowerup)
+    private bool ValidateUseRequest(ItemDefinition requestedItem)
     {
-        Func<PlayerItemHand, PowerupId, bool> validators =
-            OnPowerupUseValidationRequested;
+        Func<PlayerItemHand, ItemDefinition, bool> validators =
+            OnItemUseValidationRequested;
 
         if (validators == null)
         {
-            // Immediate-use power-ups do not need projectile targeting. A
-            // targeted item fails closed if its targeting controller is absent.
-            return !PowerupIdRules.RequiresProjectileAim(requestedPowerup);
+            // Items used at once need no targeting. An aimed item fails
+            // closed if its targeting controller is absent.
+            return !requestedItem.RequiresAim;
         }
 
         Delegate[] invocationList = validators.GetInvocationList();
@@ -384,9 +381,9 @@ public class PlayerItemHand : MonoBehaviour
         for (int i = 0; i < invocationList.Length; i++)
         {
             var validator =
-                (Func<PlayerItemHand, PowerupId, bool>)invocationList[i];
+                (Func<PlayerItemHand, ItemDefinition, bool>)invocationList[i];
 
-            if (!validator(this, requestedPowerup)) return false;
+            if (!validator(this, requestedItem)) return false;
         }
 
         return true;

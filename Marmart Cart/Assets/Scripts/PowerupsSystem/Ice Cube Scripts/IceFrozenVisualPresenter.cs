@@ -322,8 +322,7 @@ public class IceFrozenVisualPresenter : MonoBehaviour
 
     private static bool IsFrozenEffect(PowerupEffectEvent effectEvent)
     {
-        return effectEvent.SourcePowerupId == PowerupId.IceCube &&
-               effectEvent.EffectId == PowerupEffectId.IceFrozen;
+        return effectEvent.EffectId == PowerupEffectId.IceFrozen;
     }
 
     private bool TryRent(out FrozenVisualInstance instance)

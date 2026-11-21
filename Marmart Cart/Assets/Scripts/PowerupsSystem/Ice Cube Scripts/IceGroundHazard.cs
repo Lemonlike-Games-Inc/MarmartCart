@@ -44,6 +44,8 @@ public class IceGroundHazard : MonoBehaviour
     private IceFreezeEffectSystem freezeEffectSystem;
     private IceVisualFadeController visualFadeController;
     private PlayerItemHand ownerController;
+    private ItemDefinition sourceItem;
+    private IceCubeEffect iceEffect;
     private LayerMask cartTargetMask;
     private Vector3 authoredLocalScale = Vector3.one;
     private bool authoredScaleCaptured;
@@ -68,6 +70,7 @@ public class IceGroundHazard : MonoBehaviour
     public int SourcePatternEntryIndex => sourcePatternEntryIndex;
     public int OwnerPlayerIndex => ownerPlayerIndex;
     public PlayerItemHand OwnerController => ownerController;
+    public ItemDefinition SourceItem => sourceItem;
     public float DurationSeconds => durationSeconds;
     public float StartedAtTime => startedAtTime;
     public float EndsAtTime => endsAtTime;
@@ -122,6 +125,8 @@ public class IceGroundHazard : MonoBehaviour
         int patternEntryIndex,
         int sourcePlayerIndex,
         PlayerItemHand sourceController,
+        ItemDefinition sourceItemDefinition,
+        IceCubeEffect sourceEffect,
         Vector3 position,
         Quaternion rotation,
         Vector3 scaleMultiplier,
@@ -148,6 +153,8 @@ public class IceGroundHazard : MonoBehaviour
         sourcePatternEntryIndex = patternEntryIndex;
         ownerPlayerIndex = sourcePlayerIndex;
         ownerController = sourceController;
+        sourceItem = sourceItemDefinition;
+        iceEffect = sourceEffect;
         durationSeconds = Mathf.Max(0.05f, lifetimeSeconds);
         startedAtTime = Time.time;
         endsAtTime = startedAtTime + durationSeconds;
@@ -213,6 +220,8 @@ public class IceGroundHazard : MonoBehaviour
         presentationFading = false;
         freezeEffectSystem = null;
         ownerController = null;
+        sourceItem = null;
+        iceEffect = null;
         cartTargetMask = default;
         canAffectLeadingCarts = false;
         activationVersion = 0u;
@@ -287,6 +296,8 @@ public class IceGroundHazard : MonoBehaviour
                         TargetPlayerIndex = snapshot.PlayerIndex,
                         TargetController = snapshot.OwnerController,
                         TargetCartControl = snapshot.LeadingCartControl,
+                        SourceItem = sourceItem,
+                        Effect = iceEffect,
                         FromGroundHazard = true,
                         ImpactPosition = ClosestPointOrCenter(
                             hitCollider,

@@ -290,8 +290,7 @@ public class ColaMentosCartVisualPresenter : MonoBehaviour
 
     private static bool IsColaEffect(PowerupEffectEvent effectEvent)
     {
-        return effectEvent.SourcePowerupId == PowerupId.ColaMentos &&
-               effectEvent.EffectId == PowerupEffectId.ColaMentosBoost;
+        return effectEvent.EffectId == PowerupEffectId.ColaMentosBoost;
     }
 
     private bool TryRent(out VisualInstance instance)

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   durationSeconds: 10
   fixedTargetSpeed: 30
-  blockOtherPowerupUseWhileActive: 1
+  blockOtherPowerupUseWhileActive: 0

@@ -244,8 +244,9 @@ public sealed class ProjectileShotPattern
 }
 
 /// <summary>
-/// Shared prefab, pooling, hit-query, and deterministic shot-pattern settings
-/// for the two projectile power-ups. Gameplay effects are deliberately absent.
+/// Shared projectile rules for every thrown item: the cart hit query, pool
+/// growth and runtime safety limits. What differs per thrown item (prefab,
+/// pool size, shot pattern) lives in its ThrowItemUse.
 /// </summary>
 [CreateAssetMenu(
     menuName = "Marmart Carts/Powerups/Projectile Profile",
@@ -253,10 +254,6 @@ public sealed class ProjectileShotPattern
 )]
 public class PowerupProjectileProfile : ScriptableObject
 {
-    [Header("Swappable Projectile Prefabs")]
-    [SerializeField] private GameObject tomatoProjectilePrefab;
-    [SerializeField] private GameObject iceCubeProjectilePrefab;
-
     [Header("Cart Target Query")]
     [Tooltip(
         "Assign the game's existing Cart layer. PowerupCartTarget and " +
@@ -266,12 +263,6 @@ public class PowerupProjectileProfile : ScriptableObject
     [SerializeField] private LayerMask cartTargetMask;
 
     [Header("Pool")]
-    [Min(0)]
-    [SerializeField] private int tomatoPrewarmCount = 12;
-
-    [Min(0)]
-    [SerializeField] private int iceCubePrewarmCount = 4;
-
     [SerializeField] private bool allowPoolGrowth = true;
 
     [Header("Runtime Safety")]
@@ -281,136 +272,15 @@ public class PowerupProjectileProfile : ScriptableObject
     [Min(0f)]
     [SerializeField] private float minimumProjectileArcHeight = 0f;
 
-    [Header("Patterns")]
-    [SerializeField]
-    private ProjectileShotPattern tomatoPattern =
-        ProjectileShotPattern.CreateRecommendedTomato();
-
-    [SerializeField]
-    private ProjectileShotPattern iceCubePattern =
-        ProjectileShotPattern.CreateRecommendedIceCube();
-
     public LayerMask CartTargetMask => cartTargetMask;
     public bool HasCartTargetMask => cartTargetMask.value != 0;
     public bool AllowPoolGrowth => allowPoolGrowth;
     public float MinimumProjectileDuration => minimumProjectileDuration;
     public float MinimumProjectileArcHeight => minimumProjectileArcHeight;
 
-    public GameObject GetPrefabGameObject(PowerupId powerupId)
-    {
-        switch (powerupId)
-        {
-            case PowerupId.Tomato:
-                return tomatoProjectilePrefab;
-
-            case PowerupId.IceCube:
-                return iceCubeProjectilePrefab;
-
-            default:
-                return null;
-        }
-    }
-
-    public FakeArcProjectile GetPrefab(PowerupId powerupId)
-    {
-        GameObject prefab = GetPrefabGameObject(powerupId);
-        return prefab != null
-            ? prefab.GetComponent<FakeArcProjectile>()
-            : null;
-    }
-
-    public int GetPrewarmCount(PowerupId powerupId)
-    {
-        switch (powerupId)
-        {
-            case PowerupId.Tomato:
-                return tomatoPrewarmCount;
-
-            case PowerupId.IceCube:
-                return iceCubePrewarmCount;
-
-            default:
-                return 0;
-        }
-    }
-
-    public ProjectileShotPattern GetPattern(PowerupId powerupId)
-    {
-        switch (powerupId)
-        {
-            case PowerupId.Tomato:
-                return tomatoPattern;
-
-            case PowerupId.IceCube:
-                return iceCubePattern;
-
-            default:
-                return null;
-        }
-    }
-
-    public float EvaluateFlightTime(
-        PowerupId powerupId,
-        float planarDistance,
-        float minimumThrowRange,
-        float maximumThrowRange)
-    {
-        ProjectileShotPattern pattern = GetPattern(powerupId);
-
-        float evaluatedTime = pattern != null
-            ? pattern.EvaluateFlightTime(
-                planarDistance,
-                minimumThrowRange,
-                maximumThrowRange
-            )
-            : minimumProjectileDuration;
-
-        return Mathf.Max(minimumProjectileDuration, evaluatedTime);
-    }
-
-    public bool TryGetAuthoredHitboxPlanarRadius(
-        PowerupId powerupId,
-        out float planarRadius)
-    {
-        FakeArcProjectile prefabActor = GetPrefab(powerupId);
-
-        if (prefabActor != null &&
-            prefabActor.TryGetAuthoredHitboxPlanarRadius(
-                out planarRadius
-            ))
-        {
-            return true;
-        }
-
-        planarRadius = 0f;
-        return false;
-    }
-
-    [ContextMenu("Reset Recommended Projectile Patterns")]
-    private void ResetRecommendedPatterns()
-    {
-        tomatoPattern = ProjectileShotPattern.CreateRecommendedTomato();
-        iceCubePattern = ProjectileShotPattern.CreateRecommendedIceCube();
-    }
-
     private void OnValidate()
     {
-        tomatoPrewarmCount = Mathf.Max(0, tomatoPrewarmCount);
-        iceCubePrewarmCount = Mathf.Max(0, iceCubePrewarmCount);
         minimumProjectileDuration = Mathf.Max(0.01f, minimumProjectileDuration);
         minimumProjectileArcHeight = Mathf.Max(0f, minimumProjectileArcHeight);
-
-        if (tomatoPattern == null)
-        {
-            tomatoPattern = ProjectileShotPattern.CreateRecommendedTomato();
-        }
-
-        if (iceCubePattern == null)
-        {
-            iceCubePattern = ProjectileShotPattern.CreateRecommendedIceCube();
-        }
-
-        tomatoPattern.Sanitize();
-        iceCubePattern.Sanitize();
     }
 }

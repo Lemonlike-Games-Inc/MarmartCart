@@ -32,10 +32,10 @@ public class PowerupCollector : MonoBehaviour
         }
     }
 
-    public bool TryCollect(PowerupId powerupId)
+    public bool TryCollect(ItemDefinition item)
     {
         return powerupController != null &&
-               powerupController.TryLoadMapItem(powerupId);
+               powerupController.TryLoadMapItem(item);
     }
 
     private void ResolveController()

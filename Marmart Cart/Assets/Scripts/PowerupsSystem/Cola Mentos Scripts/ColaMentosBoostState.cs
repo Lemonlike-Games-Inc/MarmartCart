@@ -16,6 +16,7 @@ public struct ColaMentosBoostState
 
     public PlayerItemHand PlayerController;
     public CartControlScript CartControl;
+    public ItemDefinition SourceItem;
 
     public bool BlocksOtherPowerupUse;
     public float FixedTargetSpeed;

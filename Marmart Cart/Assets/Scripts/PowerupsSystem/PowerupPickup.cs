@@ -298,8 +298,24 @@ public class PowerupPickup : MonoBehaviour
 
         PowerupId grantedPowerup = preparedPowerup;
 
+        ResolveRuntimeSystem();
+
+        if (runtimeSystem == null ||
+            runtimeSystem.ItemLibrary == null ||
+            !runtimeSystem.ItemLibrary.TryGetItemForPowerup(
+                grantedPowerup,
+                out ItemDefinition grantedItem))
+        {
+            Debug.LogWarning(
+                $"[PowerupPickup] No item is mapped to {grantedPowerup} in " +
+                "the Item Library. The pickup stays available.",
+                this
+            );
+            return false;
+        }
+
         // TryLoadMapItem intentionally replaces an unused map item.
-        if (!controller.TryLoadMapItem(grantedPowerup)) return false;
+        if (!controller.TryLoadMapItem(grantedItem)) return false;
 
         CompleteCollection(controller, grantedPowerup);
         return true;

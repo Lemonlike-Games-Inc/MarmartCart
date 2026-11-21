@@ -98,8 +98,7 @@ public class IceImpactVfxPresenter : MonoBehaviour
 
     private void HandleEffectApplied(PowerupEffectEvent effectEvent)
     {
-        if (effectEvent.SourcePowerupId != PowerupId.IceCube ||
-            effectEvent.EffectId != PowerupEffectId.IceFrozen)
+        if (effectEvent.EffectId != PowerupEffectId.IceFrozen)
         {
             return;
         }

@@ -35,7 +35,6 @@ public class IceFreezeEffectSystem : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
-    [SerializeField] private IceCubeEffect iceProfile;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logStateChanges = true;
@@ -50,9 +49,8 @@ public class IceFreezeEffectSystem : MonoBehaviour
 
     private PowerupLifecycleEventSystem subscribedLifecycleEventSystem;
     private PowerupRuntimeSystem subscribedRuntimeSystem;
-    private bool missingProfileLogged;
+    private bool missingEffectLogged;
 
-    public IceCubeEffect IceProfile => iceProfile;
 
     public event Action<int, IceFreezeState> OnFreezeStateChanged;
     public event Action<
@@ -173,13 +171,13 @@ public class IceFreezeEffectSystem : MonoBehaviour
     /// </summary>
     public bool TryApplyFreeze(IceFreezeRequest request)
     {
-        if (iceProfile == null)
+        if (request.Effect == null)
         {
-            LogMissingProfileOnce();
+            LogMissingEffectOnce();
             return false;
         }
 
-        missingProfileLogged = false;
+        missingEffectLogged = false;
 
         ResolveRequestReferences(ref request);
 
@@ -258,7 +256,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
         }
 
         float now = Time.time;
-        float duration = iceProfile.FreezeDurationSeconds;
+        float duration = request.Effect.FreezeDurationSeconds;
         uint effectInstanceId = wasActive
             ? previousState.EffectInstanceId
             : lifecycleEventSystem != null
@@ -277,6 +275,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
             SourceController = request.SourceController,
             TargetController = request.TargetController,
             TargetCartControl = request.TargetCartControl,
+            SourceItem = request.SourceItem,
             AppliedFromGroundHazard = request.FromGroundHazard,
             DurationSeconds = duration,
             StartedAtTime = now,
@@ -318,7 +317,8 @@ public class IceFreezeEffectSystem : MonoBehaviour
         PowerupProjectileCompletion completion =
             projectileEvent.Completion;
 
-        if (completion.PowerupId != PowerupId.IceCube ||
+        if (completion.Item == null ||
+            !completion.Item.TryGetEffect(out IceCubeEffect iceEffect) ||
             completion.Reason !=
                 PowerupProjectileCompletionReason.LeadingCartHit ||
             completion.HitCartKind !=
@@ -356,6 +356,8 @@ public class IceFreezeEffectSystem : MonoBehaviour
             TargetPlayerIndex = completion.HitPlayerIndex,
             TargetController = targetController,
             TargetCartControl = completion.HitLeadingCartControl,
+            SourceItem = completion.Item,
+            Effect = iceEffect,
             FromGroundHazard = false,
             ImpactPosition = completion.Position
         });
@@ -686,7 +688,7 @@ public class IceFreezeEffectSystem : MonoBehaviour
         return new PowerupEffectEvent
         {
             EffectId = PowerupEffectId.IceFrozen,
-            SourcePowerupId = PowerupId.IceCube,
+            SourceItem = state.SourceItem,
             ActivationVersion = state.SourceActivationVersion,
             EffectInstanceId = state.EffectInstanceId,
             EffectVersion = state.Revision,
@@ -963,14 +965,14 @@ public class IceFreezeEffectSystem : MonoBehaviour
         Debug.LogException(exception, this);
     }
 
-    private void LogMissingProfileOnce()
+    private void LogMissingEffectOnce()
     {
-        if (missingProfileLogged) return;
+        if (missingEffectLogged) return;
 
-        missingProfileLogged = true;
+        missingEffectLogged = true;
         Debug.LogError(
-            "[IceFreezeEffectSystem] Assign an IceCubeEffect. " +
-            "Ice impacts cannot create Freeze without effect tuning.",
+            "[IceFreezeEffectSystem] A freeze request had no Ice Cube effect. " +
+            "Freeze needs the effect for its duration.",
             this
         );
     }

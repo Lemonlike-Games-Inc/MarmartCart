@@ -9,16 +9,16 @@ using UnityEngine;
 public sealed class HandSlot
 {
     [SerializeField] private bool loaded;
-    [SerializeField] private PowerupId item;
+    [SerializeField] private ItemDefinition item;
 
     [Tooltip("Game time when the current item was loaded.")]
     [SerializeField] private float loadedAtTime;
 
-    public bool IsLoaded => loaded;
-    public PowerupId Item => item;
+    public bool IsLoaded => loaded && item != null;
+    public ItemDefinition Item => item;
     public float LoadedAtTime => loadedAtTime;
 
-    internal void Load(PowerupId newItem, float time)
+    internal void Load(ItemDefinition newItem, float time)
     {
         item = newItem;
         loaded = true;
@@ -28,7 +28,7 @@ public sealed class HandSlot
     internal void Clear()
     {
         loaded = false;
-        item = default;
+        item = null;
         loadedAtTime = 0f;
     }
 }

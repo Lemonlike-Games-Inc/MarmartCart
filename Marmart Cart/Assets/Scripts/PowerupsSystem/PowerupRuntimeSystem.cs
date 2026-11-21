@@ -18,6 +18,9 @@ public class PowerupRuntimeSystem : MonoBehaviour
     [Tooltip("Optional explicit reference. Automatically resolved when left empty.")]
     [SerializeField] private GameTimeManager gameTimeManager;
 
+    [Tooltip("Every item in the game. The projectile pool prewarms from it, and map pickups use it to find the item a PowerupId gives.")]
+    [SerializeField] private ItemLibrary itemLibrary;
+
     #endregion
 
     #region Isolated Scene Testing
@@ -45,6 +48,7 @@ public class PowerupRuntimeSystem : MonoBehaviour
 
     public bool MatchPlaying => matchPlaying;
     public int RegisteredPlayerCount => registeredPlayerCount;
+    public ItemLibrary ItemLibrary => itemLibrary;
 
     public event Action<int, PlayerItemHand> OnPlayerRegistered;
     public event Action<int> OnPlayerUnregistered;
@@ -58,6 +62,15 @@ public class PowerupRuntimeSystem : MonoBehaviour
     {
         ResolveGameTimeManager();
         RefreshMatchStateFromSource();
+
+        if (itemLibrary == null)
+        {
+            Debug.LogError(
+                "[PowerupRuntimeSystem] Assign the Item Library. Map pickups " +
+                "cannot give items and projectiles are not prewarmed without it.",
+                this
+            );
+        }
     }
 
     private void OnEnable()

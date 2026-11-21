@@ -57,7 +57,7 @@ public enum PowerupEffectEndReason
 [Serializable]
 public struct PowerupActivationEvent
 {
-    public PowerupId PowerupId;
+    public ItemDefinition Item;
     public PowerupActivationMode Mode;
     public uint ActivationVersion;
     public int OwnerPlayerIndex;
@@ -91,7 +91,7 @@ public struct PowerupProjectileEvent
 public struct PowerupEffectEvent
 {
     public PowerupEffectId EffectId;
-    public PowerupId SourcePowerupId;
+    public ItemDefinition SourceItem;
     public PowerupEffectPhase Phase;
     public PowerupEffectEndReason EndReason;
 

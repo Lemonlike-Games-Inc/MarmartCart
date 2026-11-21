@@ -20,6 +20,7 @@ public struct IceFreezeState
     public PlayerItemHand TargetController;
     public CartControlScript TargetCartControl;
 
+    public ItemDefinition SourceItem;
     public bool AppliedFromGroundHazard;
     public float DurationSeconds;
     public float StartedAtTime;
@@ -58,6 +59,11 @@ public struct IceFreezeRequest
     public int TargetPlayerIndex;
     public PlayerItemHand TargetController;
     public CartControlScript TargetCartControl;
+
+    public ItemDefinition SourceItem;
+
+    [Tooltip("The Ice Cube effect whose freeze duration applies.")]
+    public IceCubeEffect Effect;
 
     public bool FromGroundHazard;
     public Vector3 ImpactPosition;

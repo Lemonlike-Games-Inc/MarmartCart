@@ -23,15 +23,4 @@ public static class PowerupIdRules
                powerupId == PowerupId.ColaMentos ||
                powerupId == PowerupId.StrongFan;
     }
-
-    /// <summary>
-    /// Whether the STORED item needs projectile targeting before its initial
-    /// activation. Strong Fan is activated immediately and will read Aim only
-    /// during its future active-duration state.
-    /// </summary>
-    public static bool RequiresProjectileAim(PowerupId powerupId)
-    {
-        return powerupId == PowerupId.Tomato ||
-               powerupId == PowerupId.IceCube;
-    }
 }

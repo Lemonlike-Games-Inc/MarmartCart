@@ -41,6 +41,7 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
     [SerializeField] private PowerupEffectEvent lastEffectEvent;
 
     private PowerupLifecycleEventSystem subscribedLifecycleEventSystem;
+    private PowerupRuntimeSystem runtimeSystem;
 
     public PowerupActivationEvent LastActivation => lastActivation;
     public PowerupProjectileEvent LastProjectileEvent => lastProjectileEvent;
@@ -83,7 +84,7 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
 
     private void HandleActivated(PowerupActivationEvent activationEvent)
     {
-        if (!Accepts(activationEvent.PowerupId)) return;
+        if (!Accepts(activationEvent.Item)) return;
 
         lastActivation = activationEvent;
         onActivated?.Invoke();
@@ -92,7 +93,7 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
     private void HandleProjectileImpacted(
         PowerupProjectileEvent projectileEvent)
     {
-        if (!Accepts(projectileEvent.Completion.PowerupId)) return;
+        if (!Accepts(projectileEvent.Completion.Item)) return;
 
         lastProjectileEvent = projectileEvent;
         onProjectileImpacted?.Invoke();
@@ -101,7 +102,7 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
     private void HandleProjectileCancelled(
         PowerupProjectileEvent projectileEvent)
     {
-        if (!Accepts(projectileEvent.Completion.PowerupId)) return;
+        if (!Accepts(projectileEvent.Completion.Item)) return;
 
         lastProjectileEvent = projectileEvent;
         onProjectileCancelled?.Invoke();
@@ -131,14 +132,28 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
         onEffectEnded?.Invoke();
     }
 
-    private bool Accepts(PowerupId candidatePowerupId)
+    // The filter is still authored as a PowerupId; the Item Library says
+    // which PowerupId an item belongs to.
+    private bool Accepts(ItemDefinition candidateItem)
     {
-        return !filterByPowerupId || candidatePowerupId == powerupId;
+        if (!filterByPowerupId) return true;
+        if (candidateItem == null) return false;
+
+        if (runtimeSystem == null)
+        {
+            runtimeSystem = FindFirstObjectByType<PowerupRuntimeSystem>();
+        }
+
+        ItemLibrary library = runtimeSystem != null ? runtimeSystem.ItemLibrary : null;
+
+        return library != null &&
+               library.TryGetPowerupForItem(candidateItem, out PowerupId candidatePowerupId) &&
+               candidatePowerupId == powerupId;
     }
 
     private bool Accepts(PowerupEffectEvent effectEvent)
     {
-        if (!Accepts(effectEvent.SourcePowerupId)) return false;
+        if (!Accepts(effectEvent.SourceItem)) return false;
 
         return !filterEffectsByEffectId || effectEvent.EffectId == effectId;
     }

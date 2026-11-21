@@ -38,7 +38,7 @@ public class FakeArcProjectile : MonoBehaviour
     [SerializeField] private bool rentedFromPool;
     [SerializeField] private bool preparedLaunch;
     [SerializeField] private bool activeFlight;
-    [SerializeField] private PowerupId activePowerupId;
+    [SerializeField] private ItemDefinition activeItem;
     [SerializeField] private uint activeShotVersion;
     [SerializeField] private int activePatternEntryIndex = -1;
     [SerializeField] private float elapsedSeconds;
@@ -69,7 +69,7 @@ public class FakeArcProjectile : MonoBehaviour
 
     public bool IsRentedFromPool => rentedFromPool;
     public bool ActiveFlight => activeFlight;
-    public PowerupId ActivePowerupId => activePowerupId;
+    public ItemDefinition ActiveItem => activeItem;
     public uint ActiveShotVersion => activeShotVersion;
     public bool HasValidAuthoredHitbox => ValidateAuthoredHitbox();
 
@@ -185,7 +185,7 @@ public class FakeArcProjectile : MonoBehaviour
         if (!CaptureHitboxDefaults()) return false;
 
         launch = resolvedLaunch;
-        activePowerupId = launch.PowerupId;
+        activeItem = launch.Item;
         activeShotVersion = launch.ShotVersion;
         activePatternEntryIndex = launch.PatternEntryIndex;
         elapsedSeconds = 0f;
@@ -254,7 +254,7 @@ public class FakeArcProjectile : MonoBehaviour
         activeFlight = false;
         preparedLaunch = false;
         rentedFromPool = false;
-        activePowerupId = default;
+        activeItem = null;
         activeShotVersion = 0u;
         activePatternEntryIndex = -1;
         elapsedSeconds = 0f;
@@ -757,7 +757,7 @@ public class FakeArcProjectile : MonoBehaviour
             {
                 ShotVersion = launch.ShotVersion,
                 PatternEntryIndex = launch.PatternEntryIndex,
-                PowerupId = launch.PowerupId,
+                Item = launch.Item,
                 OwnerPlayerIndex = launch.OwnerPlayerIndex,
                 Reason = reason,
                 Position = position,

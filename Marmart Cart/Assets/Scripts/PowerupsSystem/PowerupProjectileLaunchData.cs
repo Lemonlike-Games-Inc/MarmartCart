@@ -15,7 +15,7 @@ public struct ResolvedPowerupProjectileLaunch
 {
     public uint ShotVersion;
     public int PatternEntryIndex;
-    public PowerupId PowerupId;
+    public ItemDefinition Item;
     public int OwnerPlayerIndex;
 
     public Vector3 StartPosition;
@@ -42,7 +42,7 @@ public struct PowerupProjectileCompletion
 {
     public uint ShotVersion;
     public int PatternEntryIndex;
-    public PowerupId PowerupId;
+    public ItemDefinition Item;
     public int OwnerPlayerIndex;
     public PowerupProjectileCompletionReason Reason;
     public Vector3 Position;

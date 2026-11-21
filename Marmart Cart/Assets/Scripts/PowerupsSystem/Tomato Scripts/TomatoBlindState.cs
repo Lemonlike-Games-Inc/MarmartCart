@@ -19,6 +19,7 @@ public struct TomatoBlindState
     public int SourcePlayerIndex;
     public PlayerItemHand SourceController;
     public PlayerItemHand TargetController;
+    public ItemDefinition SourceItem;
 
     public int SplashCount;
     public float DurationSeconds;

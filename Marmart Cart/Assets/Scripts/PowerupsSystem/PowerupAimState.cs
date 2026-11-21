@@ -11,7 +11,7 @@ public struct PowerupAimState
 {
     public int PlayerIndex;
     public bool Visible;
-    public PowerupId PowerupId;
+    public ItemDefinition Item;
 
     public Vector2 RawAimInput;
     public float RawAimMagnitude;

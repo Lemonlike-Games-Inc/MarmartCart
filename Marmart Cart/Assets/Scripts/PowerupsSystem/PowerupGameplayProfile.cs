@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Shared gameplay tuning for deterministic power-up targeting.
+/// Shared gameplay tuning for deterministic targeting of every thrown item.
+/// The preview radius of each thrown item lives in its ThrowItemUse.
 ///
 /// The requested landing point always remains ground-based. A separate
 /// projectile-blocking mask lets presentation show the first descending-side
@@ -91,19 +92,6 @@ public class PowerupGameplayProfile : ScriptableObject
 
     #endregion
 
-    #region Impact Envelopes
-
-    [Header("Impact Preview Envelopes")]
-    [Tooltip("Complete advertised Tomato volley radius in world units.")]
-    [Min(0.01f)]
-    [SerializeField] private float tomatoPreviewRadius = 2.5f;
-
-    [Tooltip("Advertised Ice Cube landing/hazard radius in world units.")]
-    [Min(0.01f)]
-    [SerializeField] private float iceCubePreviewRadius = 0.9f;
-
-    #endregion
-
     #region Public Values
 
     public float AimDeadzone => aimDeadzone;
@@ -178,21 +166,6 @@ public class PowerupGameplayProfile : ScriptableObject
         );
     }
 
-    public float GetImpactPreviewRadius(PowerupId powerupId)
-    {
-        switch (powerupId)
-        {
-            case PowerupId.Tomato:
-                return tomatoPreviewRadius;
-
-            case PowerupId.IceCube:
-                return iceCubePreviewRadius;
-
-            default:
-                return 0f;
-        }
-    }
-
     #endregion
 
     #region Validation
@@ -212,9 +185,6 @@ public class PowerupGameplayProfile : ScriptableObject
         minimumArcHeight = Mathf.Max(0f, minimumArcHeight);
         maximumArcHeight = Mathf.Max(minimumArcHeight, maximumArcHeight);
         projectileBlockingSampleCount = Mathf.Clamp(projectileBlockingSampleCount, 4, 128);
-
-        tomatoPreviewRadius = Mathf.Max(0.01f, tomatoPreviewRadius);
-        iceCubePreviewRadius = Mathf.Max(0.01f, iceCubePreviewRadius);
     }
 
     #endregion

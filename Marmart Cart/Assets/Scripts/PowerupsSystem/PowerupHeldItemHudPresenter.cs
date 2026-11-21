@@ -148,7 +148,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
 
     private void HandleStoredPowerupChanged(
         PlayerItemHand controller,
-        PowerupId? powerupId)
+        ItemDefinition item)
     {
         if (controller == null) return;
 
@@ -160,14 +160,19 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
             return;
         }
 
-        hasStoredPowerup[slotIndex] = powerupId.HasValue;
-
-        if (powerupId.HasValue)
-        {
-            storedPowerups[slotIndex] = powerupId.Value;
-        }
-
+        StoreMapItem(slotIndex, item);
         RefreshSlot(slotIndex);
+    }
+
+    // The icons are still looked up by PowerupId, through the Item Library.
+    private void StoreMapItem(int slotIndex, ItemDefinition item)
+    {
+        ItemLibrary library = runtimeSystem != null ? runtimeSystem.ItemLibrary : null;
+
+        hasStoredPowerup[slotIndex] =
+            item != null &&
+            library != null &&
+            library.TryGetPowerupForItem(item, out storedPowerups[slotIndex]);
     }
 
     private void HandleViewportLayoutRefreshed()
@@ -219,8 +224,7 @@ public class PowerupHeldItemHudPresenter : MonoBehaviour
                 HandleStoredPowerupChanged;
         }
 
-        hasStoredPowerup[slotIndex] = controller.MapSlot.IsLoaded;
-        storedPowerups[slotIndex] = controller.MapSlot.Item;
+        StoreMapItem(slotIndex, controller.MapSlot.IsLoaded ? controller.MapSlot.Item : null);
     }
 
     private void UnbindPlayer(int slotIndex)

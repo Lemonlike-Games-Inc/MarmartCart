@@ -85,7 +85,7 @@ Each step is tested with map Items in Gameplay Scene 2P, 4P and the tutorial sce
 1. **R1, the hand.** `PlayerPowerupController` becomes `PlayerItemHand` (LT, aim permission, blockers, use check, player registration). Its stored item becomes the hand's map slot; pickups load it, and item systems read and consume the equipped item. `PowerupId`, `PowerupUseBlockReason`, `PowerupRuntimeSystem`, the use event names and serialized field names stay until R2/R3.
 2. **R2, the Item library.**
    - R2a (done): Item types; the three effect profiles renamed `TomatoBlindEffect`, `IceCubeEffect`, `ColaBoostEffect`; Item assets in `SO_Variables/Items` with values copied from today's profiles and checked identical.
-   - R2b: the hand, targeting, launcher, projectile pool, projectiles and effect systems use Items; each effect system checks its own effect. Cola's block toggle is turned off. The map side, held-item HUD icons and the SFX relay still use `PowerupId` through the Item Library.
+   - R2b (done): the hand, targeting, launcher, projectile pool, projectiles and effect systems use Items; each effect system checks its own effect and takes its tuning from it. `PowerupRuntimeSystem` holds the Item Library (assigned in the four build scenes). Cola's block toggle is off. The map side, held-item HUD icons and the SFX relay still use `PowerupId` through the Item Library. The ice cube pool keeps its own `IceCubeEffect` reference for pool sizes and the cube prefab; a second cube look (Really Really Cold) will need the pool to key by prefab.
 3. **R3, map side on Items.** Pickups, random pools, the pickup visual catalog and spawners use Items; `PowerupId` is retired.
 
 ## Risks

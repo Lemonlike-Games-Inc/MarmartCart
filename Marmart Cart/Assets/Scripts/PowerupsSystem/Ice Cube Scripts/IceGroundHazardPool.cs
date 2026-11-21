@@ -11,6 +11,10 @@ using UnityEngine;
 public class IceGroundHazardPool : MonoBehaviour
 {
     [Header("References")]
+    [Tooltip(
+        "Pool settings and the cube prefab. Each cube's lifetime and placement " +
+        "come from the Ice Cube effect of the item that landed."
+    )]
     [SerializeField] private IceCubeEffect iceProfile;
     [SerializeField] private IcePresentationProfile icePresentationProfile;
     [SerializeField] private IceFreezeEffectSystem freezeEffectSystem;
@@ -118,28 +122,36 @@ public class IceGroundHazardPool : MonoBehaviour
         PowerupProjectileCompletion completion =
             projectileEvent.Completion;
 
-        if (completion.PowerupId != PowerupId.IceCube ||
+        if (completion.Item == null ||
+            !completion.Item.TryGetEffect(out IceCubeEffect iceEffect) ||
             completion.Reason !=
                 PowerupProjectileCompletionReason.Landed)
         {
             return;
         }
 
-        TrySpawnHazard(completion);
+        TrySpawnHazard(completion, iceEffect);
     }
 
-    private bool TrySpawnHazard(PowerupProjectileCompletion completion)
+    private bool TrySpawnHazard(
+        PowerupProjectileCompletion completion,
+        IceCubeEffect iceEffect)
     {
         ResolveReferences();
 
         if (!TryGetRuntimeSetup(
                 out PowerupProjectileProfile projectileProfile,
-                out ProjectileShotPattern icePattern,
                 out IceGroundHazard prefab))
         {
             LogInvalidSetupOnce();
             return false;
         }
+
+        // The cube freezes leading carts when the thrown item's pattern does.
+        bool affectsLeadingCarts =
+            !completion.Item.TryGetUse(out ThrowItemUse throwUse) ||
+            throwUse.Pattern == null ||
+            throwUse.Pattern.HasEffectOnLeadingCart;
 
         invalidSetupLogged = false;
 
@@ -168,17 +180,17 @@ public class IceGroundHazardPool : MonoBehaviour
             ? completion.SurfaceNormal.normalized
             : Vector3.up;
 
-        Quaternion surfaceRotation = iceProfile.AlignHazardToSurfaceNormal
+        Quaternion surfaceRotation = iceEffect.AlignHazardToSurfaceNormal
             ? Quaternion.FromToRotation(Vector3.up, surfaceNormal)
             : Quaternion.identity;
 
         Quaternion finalRotation =
             surfaceRotation *
-            Quaternion.Euler(iceProfile.GroundHazardEulerOffset);
+            Quaternion.Euler(iceEffect.GroundHazardEulerOffset);
 
         Vector3 finalPosition =
             completion.Position +
-            surfaceNormal * iceProfile.GroundHazardSurfaceOffset;
+            surfaceNormal * iceEffect.GroundHazardSurfaceOffset;
 
         uint effectInstanceId = lifecycleEventSystem != null
             ? lifecycleEventSystem.ReserveEffectInstanceId()
@@ -187,16 +199,18 @@ public class IceGroundHazardPool : MonoBehaviour
         bool activated = hazard.Activate(
             freezeEffectSystem,
             projectileProfile.CartTargetMask,
-            icePattern.HasEffectOnLeadingCart,
+            affectsLeadingCarts,
             completion.ShotVersion,
             effectInstanceId,
             completion.PatternEntryIndex,
             completion.OwnerPlayerIndex,
             ownerController,
+            completion.Item,
+            iceEffect,
             finalPosition,
             finalRotation,
-            iceProfile.GroundHazardScaleMultiplier,
-            iceProfile.GroundHazardLifetimeSeconds,
+            iceEffect.GroundHazardScaleMultiplier,
+            iceEffect.GroundHazardLifetimeSeconds,
             GetVisualStartAlphaByte()
         );
 
@@ -236,14 +250,10 @@ public class IceGroundHazardPool : MonoBehaviour
 
     private bool TryGetRuntimeSetup(
         out PowerupProjectileProfile projectileProfile,
-        out ProjectileShotPattern icePattern,
         out IceGroundHazard prefab)
     {
         projectileProfile = projectilePool != null
             ? projectilePool.ProjectileProfile
-            : null;
-        icePattern = projectileProfile != null
-            ? projectileProfile.GetPattern(PowerupId.IceCube)
             : null;
         prefab = iceProfile != null
             ? iceProfile.GetGroundHazardPrefab()
@@ -253,7 +263,6 @@ public class IceGroundHazardPool : MonoBehaviour
                freezeEffectSystem != null &&
                projectileProfile != null &&
                projectileProfile.HasCartTargetMask &&
-               icePattern != null &&
                prefab != null &&
                prefab.HasValidAuthoredHitbox;
     }
@@ -261,7 +270,6 @@ public class IceGroundHazardPool : MonoBehaviour
     private void Prewarm()
     {
         if (!TryGetRuntimeSetup(
-                out _,
                 out _,
                 out IceGroundHazard prefab))
         {
@@ -440,7 +448,7 @@ public class IceGroundHazardPool : MonoBehaviour
         return new PowerupEffectEvent
         {
             EffectId = PowerupEffectId.IceGroundHazard,
-            SourcePowerupId = PowerupId.IceCube,
+            SourceItem = hazard.SourceItem,
             ActivationVersion = hazard.ActivationVersion,
             EffectInstanceId = hazard.EffectInstanceId,
             EffectVersion = hazard.EffectVersion,

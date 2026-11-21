@@ -102,7 +102,8 @@ public class TomatoImpactVfxPresenter : MonoBehaviour
     private void HandleProjectileImpacted(
         PowerupProjectileEvent projectileEvent)
     {
-        if (projectileEvent.Completion.PowerupId != PowerupId.Tomato)
+        if (projectileEvent.Completion.Item == null ||
+            !projectileEvent.Completion.Item.HasEffect<TomatoBlindEffect>())
         {
             return;
         }

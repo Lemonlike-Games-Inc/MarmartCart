@@ -150,10 +150,12 @@ public class PowerupTargetingController : MonoBehaviour
 
         missingProjectileProfileLogged = false;
 
+        ItemDefinition item = playerPowerupController.EquippedItem;
+
         if (!playerPowerupController.CanUseEquippedItem ||
-            !PowerupIdRules.RequiresProjectileAim(
-                playerPowerupController.EquippedItem
-            ))
+            item == null ||
+            !item.TryGetUse(out ThrowItemUse throwUse) ||
+            throwUse.Pattern == null)
         {
             ClearAimState();
             return false;
@@ -220,11 +222,13 @@ public class PowerupTargetingController : MonoBehaviour
         float resolvedDistance =
             PowerupTrajectory.PlanarDistance(rangeOrigin, landingPosition);
 
-        float flightDuration = projectileProfile.EvaluateFlightTime(
-            playerPowerupController.EquippedItem,
-            resolvedDistance,
-            gameplayProfile.MinimumThrowRange,
-            gameplayProfile.MaximumThrowRange
+        float flightDuration = Mathf.Max(
+            projectileProfile.MinimumProjectileDuration,
+            throwUse.Pattern.EvaluateFlightTime(
+                resolvedDistance,
+                gameplayProfile.MinimumThrowRange,
+                gameplayProfile.MaximumThrowRange
+            )
         );
 
         float arcHeight = gameplayProfile.EvaluateArcHeight(
@@ -246,7 +250,7 @@ public class PowerupTargetingController : MonoBehaviour
         {
             PlayerIndex = playerPowerupController.PlayerIndex,
             Visible = true,
-            PowerupId = playerPowerupController.EquippedItem,
+            Item = item,
             RawAimInput = rawAimInput,
             RawAimMagnitude = rawMagnitude,
             AdjustedAimMagnitude = adjustedMagnitude,
@@ -263,9 +267,7 @@ public class PowerupTargetingController : MonoBehaviour
             ResolvedPlanarDistance = resolvedDistance,
             FlightDuration = flightDuration,
             ArcHeight = arcHeight,
-            ImpactPreviewRadius = gameplayProfile.GetImpactPreviewRadius(
-                playerPowerupController.EquippedItem
-            )
+            ImpactPreviewRadius = throwUse.PreviewRadius
         };
 
         if (publish && aimStateSystem != null)
@@ -446,9 +448,9 @@ public class PowerupTargetingController : MonoBehaviour
 
     private bool ValidatePowerupUse(
         PlayerItemHand controller,
-        PowerupId requestedPowerup)
+        ItemDefinition requestedItem)
     {
-        if (!PowerupIdRules.RequiresProjectileAim(requestedPowerup))
+        if (!IsThrownItem(requestedItem))
         {
             return true;
         }
@@ -459,7 +461,7 @@ public class PowerupTargetingController : MonoBehaviour
 
         if (!valid ||
             !currentAimState.Visible ||
-            currentAimState.PowerupId != requestedPowerup)
+            currentAimState.Item != requestedItem)
         {
             return false;
         }
@@ -475,12 +477,12 @@ public class PowerupTargetingController : MonoBehaviour
 
     private void HandleAcceptedUse(
         PlayerItemHand controller,
-        PowerupId requestedPowerup)
+        ItemDefinition requestedItem)
     {
         if (controller != playerPowerupController ||
-            !PowerupIdRules.RequiresProjectileAim(requestedPowerup) ||
+            !IsThrownItem(requestedItem) ||
             !currentAimState.Visible ||
-            currentAimState.PowerupId != requestedPowerup)
+            currentAimState.Item != requestedItem)
         {
             return;
         }
@@ -492,7 +494,7 @@ public class PowerupTargetingController : MonoBehaviour
         {
             Debug.Log(
                 $"[PowerupTargetingController] P{controller.PlayerIndex} " +
-                $"captured {requestedPowerup} aim snapshot " +
+                $"captured {requestedItem.name} aim snapshot " +
                 $"#{acceptedAimSnapshotVersion} at " +
                 $"{lastAcceptedAimSnapshot.LandingPosition}.",
                 this
@@ -503,6 +505,11 @@ public class PowerupTargetingController : MonoBehaviour
             this,
             lastAcceptedAimSnapshot
         );
+    }
+
+    private static bool IsThrownItem(ItemDefinition item)
+    {
+        return item != null && item.TryGetUse(out ThrowItemUse _);
     }
 
     #endregion
@@ -592,9 +599,9 @@ public class PowerupTargetingController : MonoBehaviour
         UnsubscribeFromController();
 
         subscribedPowerupController = playerPowerupController;
-        subscribedPowerupController.OnPowerupUseValidationRequested +=
+        subscribedPowerupController.OnItemUseValidationRequested +=
             ValidatePowerupUse;
-        subscribedPowerupController.OnPowerupUseRequested +=
+        subscribedPowerupController.OnItemUseRequested +=
             HandleAcceptedUse;
     }
 
@@ -602,9 +609,9 @@ public class PowerupTargetingController : MonoBehaviour
     {
         if (subscribedPowerupController == null) return;
 
-        subscribedPowerupController.OnPowerupUseValidationRequested -=
+        subscribedPowerupController.OnItemUseValidationRequested -=
             ValidatePowerupUse;
-        subscribedPowerupController.OnPowerupUseRequested -=
+        subscribedPowerupController.OnItemUseRequested -=
             HandleAcceptedUse;
         subscribedPowerupController = null;
     }

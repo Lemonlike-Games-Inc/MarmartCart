@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Small scene-level pool dedicated to the fixed Tomato/Ice projectile scope.
+/// Small scene-level pool for thrown items, one bucket per ThrowItemUse.
+/// It prewarms every thrown item in the Item Library.
 /// It is intentionally not a project-wide generic pooling framework.
 /// </summary>
 [DisallowMultipleComponent]
@@ -11,7 +12,7 @@ public class PowerupProjectilePool : MonoBehaviour
 {
     private sealed class PoolBucket
     {
-        public PowerupId PowerupId;
+        public ThrowItemUse Use;
         public FakeArcProjectile Prefab;
         public readonly Stack<FakeArcProjectile> Available =
             new Stack<FakeArcProjectile>();
@@ -26,6 +27,9 @@ public class PowerupProjectilePool : MonoBehaviour
     )]
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
 
+    [Tooltip("Optional explicit reference (holds the Item Library). Automatically resolved when left empty.")]
+    [SerializeField] private PowerupRuntimeSystem runtimeSystem;
+
     [Tooltip("Optional hierarchy parent for pooled actors. Defaults to this object.")]
     [SerializeField] private Transform poolRoot;
 
@@ -36,8 +40,8 @@ public class PowerupProjectilePool : MonoBehaviour
     [SerializeField] private int totalCreatedActorCount;
     [SerializeField] private int rentedActorCount;
 
-    private readonly Dictionary<PowerupId, PoolBucket> buckets =
-        new Dictionary<PowerupId, PoolBucket>();
+    private readonly Dictionary<ThrowItemUse, PoolBucket> buckets =
+        new Dictionary<ThrowItemUse, PoolBucket>();
 
     private readonly Dictionary<FakeArcProjectile, PoolBucket> actorBuckets =
         new Dictionary<FakeArcProjectile, PoolBucket>();
@@ -54,15 +58,14 @@ public class PowerupProjectilePool : MonoBehaviour
 
         if (poolRoot == null) poolRoot = transform;
 
-        Prewarm(PowerupId.Tomato);
-        Prewarm(PowerupId.IceCube);
+        PrewarmLibraryItems();
     }
 
-    public bool CanProvide(PowerupId powerupId, int requiredCount)
+    public bool CanProvide(ThrowItemUse use, int requiredCount)
     {
         if (requiredCount <= 0 || projectileProfile == null) return false;
 
-        PoolBucket bucket = GetOrCreateBucket(powerupId);
+        PoolBucket bucket = GetOrCreateBucket(use);
         if (bucket == null ||
             bucket.Prefab == null ||
             !bucket.Prefab.HasValidAuthoredHitbox)
@@ -75,12 +78,12 @@ public class PowerupProjectilePool : MonoBehaviour
     }
 
     public bool TryRent(
-        PowerupId powerupId,
+        ThrowItemUse use,
         out FakeArcProjectile projectile)
     {
         projectile = null;
 
-        PoolBucket bucket = GetOrCreateBucket(powerupId);
+        PoolBucket bucket = GetOrCreateBucket(use);
         if (bucket == null ||
             bucket.Prefab == null ||
             !bucket.Prefab.HasValidAuthoredHitbox)
@@ -129,7 +132,7 @@ public class PowerupProjectilePool : MonoBehaviour
 
             Debug.Log(
                 $"[PowerupProjectilePool] Shot #{completion.ShotVersion} " +
-                $"{completion.PowerupId}[{completion.PatternEntryIndex}] " +
+                $"{(completion.Item != null ? completion.Item.name : "no item")}[{completion.PatternEntryIndex}] " +
                 $"completed: {completion.Reason}{targetText}.",
                 this
             );
@@ -158,11 +161,32 @@ public class PowerupProjectilePool : MonoBehaviour
         }
     }
 
-    private void Prewarm(PowerupId powerupId)
+    private void PrewarmLibraryItems()
+    {
+        if (runtimeSystem == null)
+        {
+            runtimeSystem = FindFirstObjectByType<PowerupRuntimeSystem>();
+        }
+
+        ItemLibrary library = runtimeSystem != null ? runtimeSystem.ItemLibrary : null;
+        if (library == null) return;
+
+        for (int i = 0; i < library.ItemCount; i++)
+        {
+            ItemDefinition item = library.GetItem(i);
+
+            if (item != null && item.TryGetUse(out ThrowItemUse use))
+            {
+                Prewarm(use);
+            }
+        }
+    }
+
+    private void Prewarm(ThrowItemUse use)
     {
         if (projectileProfile == null) return;
 
-        PoolBucket bucket = GetOrCreateBucket(powerupId);
+        PoolBucket bucket = GetOrCreateBucket(use);
         if (bucket == null ||
             bucket.Prefab == null ||
             !bucket.Prefab.HasValidAuthoredHitbox)
@@ -170,9 +194,7 @@ public class PowerupProjectilePool : MonoBehaviour
             return;
         }
 
-        int desiredCount = projectileProfile.GetPrewarmCount(powerupId);
-
-        while (bucket.TotalCreated < desiredCount)
+        while (bucket.TotalCreated < use.PrewarmCount)
         {
             FakeArcProjectile actor = CreateActor(bucket);
             if (actor == null) break;
@@ -180,26 +202,25 @@ public class PowerupProjectilePool : MonoBehaviour
         }
     }
 
-    private PoolBucket GetOrCreateBucket(PowerupId powerupId)
+    private PoolBucket GetOrCreateBucket(ThrowItemUse use)
     {
-        if (!PowerupIdRules.RequiresProjectileAim(powerupId) ||
-            projectileProfile == null)
+        if (use == null || projectileProfile == null)
         {
             return null;
         }
 
-        if (buckets.TryGetValue(powerupId, out PoolBucket existing))
+        if (buckets.TryGetValue(use, out PoolBucket existing))
         {
             return existing;
         }
 
         PoolBucket created = new PoolBucket
         {
-            PowerupId = powerupId,
-            Prefab = projectileProfile.GetPrefab(powerupId)
+            Use = use,
+            Prefab = use.GetProjectilePrefab()
         };
 
-        buckets.Add(powerupId, created);
+        buckets.Add(use, created);
         return created;
     }
 

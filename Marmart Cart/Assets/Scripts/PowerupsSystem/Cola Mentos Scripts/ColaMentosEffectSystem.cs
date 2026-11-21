@@ -25,7 +25,6 @@ public class ColaMentosEffectSystem : MonoBehaviour
     [Header("References")]
     [SerializeField] private PowerupRuntimeSystem runtimeSystem;
     [SerializeField] private PowerupLifecycleEventSystem lifecycleEventSystem;
-    [SerializeField] private ColaBoostEffect colaProfile;
 
     [Header("Diagnostics")]
     [SerializeField] private bool logStateChanges = true;
@@ -46,7 +45,6 @@ public class ColaMentosEffectSystem : MonoBehaviour
     private PowerupRuntimeSystem subscribedRuntimeSystem;
     private uint fallbackEffectInstanceId;
 
-    public ColaBoostEffect ColaProfile => colaProfile;
     public ColaMentosActivationFailureReason LastFailureReason =>
         lastFailureReason;
 
@@ -174,17 +172,12 @@ public class ColaMentosEffectSystem : MonoBehaviour
 
     private bool ValidatePowerupUse(
         PlayerItemHand controller,
-        PowerupId requestedPowerup)
+        ItemDefinition requestedItem)
     {
-        if (requestedPowerup != PowerupId.ColaMentos) return true;
-
-        if (colaProfile == null)
+        if (requestedItem == null ||
+            !requestedItem.HasEffect<ColaBoostEffect>())
         {
-            RecordFailure(
-                controller,
-                ColaMentosActivationFailureReason.MissingProfile
-            );
-            return false;
+            return true;
         }
 
         if (controller == null ||
@@ -212,16 +205,23 @@ public class ColaMentosEffectSystem : MonoBehaviour
 
     private void HandlePowerupUseRequested(
         PlayerItemHand controller,
-        PowerupId requestedPowerup)
+        ItemDefinition requestedItem)
     {
-        if (requestedPowerup != PowerupId.ColaMentos) return;
-        TryActivateOrRefresh(controller);
+        if (requestedItem == null ||
+            !requestedItem.TryGetEffect(out ColaBoostEffect colaEffect))
+        {
+            return;
+        }
+
+        TryActivateOrRefresh(controller, requestedItem, colaEffect);
     }
 
     private bool TryActivateOrRefresh(
-        PlayerItemHand controller)
+        PlayerItemHand controller,
+        ItemDefinition item,
+        ColaBoostEffect colaEffect)
     {
-        if (!ValidatePowerupUse(controller, PowerupId.ColaMentos))
+        if (!ValidatePowerupUse(controller, item))
         {
             return false;
         }
@@ -230,7 +230,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
         CartControlScript cartControl = controller.CartControlInput;
 
         if (!controller.HasEquippedItem ||
-            controller.EquippedItem != PowerupId.ColaMentos)
+            controller.EquippedItem != item)
         {
             RecordFailure(
                 controller,
@@ -255,8 +255,8 @@ public class ColaMentosEffectSystem : MonoBehaviour
         }
 
         if (!controller.TryConsumeEquippedItem(
-                out PowerupId consumedPowerup) ||
-            consumedPowerup != PowerupId.ColaMentos)
+                out ItemDefinition consumedItem) ||
+            consumedItem != item)
         {
             RecordFailure(
                 controller,
@@ -277,10 +277,10 @@ public class ColaMentosEffectSystem : MonoBehaviour
         }
 
         float now = Time.time;
-        float duration = colaProfile.DurationSeconds;
-        float fixedTargetSpeed = colaProfile.FixedTargetSpeed;
+        float duration = colaEffect.DurationSeconds;
+        float fixedTargetSpeed = colaEffect.FixedTargetSpeed;
         bool blockOtherPowerupUse =
-            colaProfile.BlockOtherPowerupUseWhileActive;
+            colaEffect.BlockOtherPowerupUseWhileActive;
 
         uint effectInstanceId = wasActive
             ? previousState.EffectInstanceId
@@ -297,6 +297,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
             ActivationVersion = controller.AcceptedUseRequestVersion,
             PlayerController = controller,
             CartControl = cartControl,
+            SourceItem = item,
             BlocksOtherPowerupUse = blockOtherPowerupUse,
             FixedTargetSpeed = fixedTargetSpeed,
             DurationSeconds = duration,
@@ -316,7 +317,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
         lifecycleEventSystem?.PublishActivated(
             new PowerupActivationEvent
             {
-                PowerupId = PowerupId.ColaMentos,
+                Item = item,
                 Mode = PowerupActivationMode.Duration,
                 ActivationVersion = nextState.ActivationVersion,
                 OwnerPlayerIndex = nextState.PlayerIndex,
@@ -420,7 +421,7 @@ public class ColaMentosEffectSystem : MonoBehaviour
         return new PowerupEffectEvent
         {
             EffectId = PowerupEffectId.ColaMentosBoost,
-            SourcePowerupId = PowerupId.ColaMentos,
+            SourceItem = state.SourceItem,
             ActivationVersion = state.ActivationVersion,
             EffectInstanceId = state.EffectInstanceId,
             EffectVersion = state.Revision,
@@ -554,8 +555,8 @@ public class ColaMentosEffectSystem : MonoBehaviour
 
         UnsubscribePlayer(slotIndex);
         subscribedPlayers[slotIndex] = controller;
-        controller.OnPowerupUseValidationRequested += ValidatePowerupUse;
-        controller.OnPowerupUseRequested += HandlePowerupUseRequested;
+        controller.OnItemUseValidationRequested += ValidatePowerupUse;
+        controller.OnItemUseRequested += HandlePowerupUseRequested;
     }
 
     private void UnsubscribePlayer(int slotIndex)
@@ -566,8 +567,8 @@ public class ColaMentosEffectSystem : MonoBehaviour
 
         if (controller != null)
         {
-            controller.OnPowerupUseValidationRequested -= ValidatePowerupUse;
-            controller.OnPowerupUseRequested -= HandlePowerupUseRequested;
+            controller.OnItemUseValidationRequested -= ValidatePowerupUse;
+            controller.OnItemUseRequested -= HandlePowerupUseRequested;
         }
 
         subscribedPlayers[slotIndex] = null;
