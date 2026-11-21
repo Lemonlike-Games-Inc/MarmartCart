@@ -69,12 +69,23 @@ An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tom
 - Blockers live here. Their writers (`PowerupRuntimeSystem`, `CartPitZone`, `IceFreezeEffectSystem`, `MatchResultsPresentationController`) and readers (`PowerupCartTarget`, `ColaMentosEffectSystem`) move to it.
 - Consumption rule stays: the system that runs the Item spends it only after its work succeeded.
 
+## Duration effects (noted 2026-11-21)
+
+With two slots a player can use a second item while a duration effect is still running, so each duration effect decides whether it blocks that.
+
+- Every duration effect has its own toggle: "blocks other item use while active". It lives on the effect asset, so a variant can differ from its base item.
+- Cola Boost already has it (`Block Other Powerup Use While Active` on `ColaMentosPowerupProfile.asset`, now `ColaBoostEffect`). It is on today; Liang wants Cola not to block, so it is turned off in R2b.
+- Today the toggle sets the single `ActiveEffectLock` blocker. Once a second duration effect can lock, the lock needs one handle per running effect, so the end of one effect never clears another's lock.
+- Watch, design later: effects that change the same thing at once, such as two speed effects (Cola with Customer in Training).
+
 ## Refactor steps (each keeps today's behaviour)
 
 Each step is tested with map Items in Gameplay Scene 2P, 4P and the tutorial scenes before the next one starts.
 
 1. **R1, the hand.** `PlayerPowerupController` becomes `PlayerItemHand` (LT, aim permission, blockers, use check, player registration). Its stored item becomes the hand's map slot; pickups load it, and item systems read and consume the equipped item. `PowerupId`, `PowerupUseBlockReason`, `PowerupRuntimeSystem`, the use event names and serialized field names stay until R2/R3.
-2. **R2, the Item library.** Item, use and effect assets for Tomato, Ice Cube and Cola, built from today's profiles (values copied by an editor script, with Liang's OK first). Projectiles carry the Item; effect systems check their own effect. The map side still uses `PowerupId` through a lookup asset.
+2. **R2, the Item library.**
+   - R2a (done): Item types; the three effect profiles renamed `TomatoBlindEffect`, `IceCubeEffect`, `ColaBoostEffect`; Item assets in `SO_Variables/Items` with values copied from today's profiles and checked identical.
+   - R2b: the hand, targeting, launcher, projectile pool, projectiles and effect systems use Items; each effect system checks its own effect. Cola's block toggle is turned off. The map side, held-item HUD icons and the SFX relay still use `PowerupId` through the Item Library.
 3. **R3, map side on Items.** Pickups, random pools, the pickup visual catalog and spawners use Items; `PowerupId` is retired.
 
 ## Risks

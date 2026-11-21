@@ -51,6 +51,7 @@ An adjective should change a rule or a behaviour. A pure stat change ("bigger", 
 - The item that became ready last is equipped. When one slot is empty, the other is equipped.
 - LB swaps the equipped item when both are loaded (decided 2026-11-21). It is a new action in the input asset.
 - Samples that are not aimed fire at once on LT.
+- A duration effect decides per effect whether it blocks using the other slot while it runs (see `item-library.md`). Cola does not block.
 - The cooldown starts when the charge is used. The first charge is ready about 10 s after "SHOP!".
 
 This is the first version to test. It replaces the open aim-input question in `CLAUDE.md` until a playtest says otherwise.
@@ -123,6 +124,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 ## Open
 
 - Rolling Tomato: does the whole volley roll, or one big tomato?
+- Effects that change the same thing at once, such as two speed effects (Cola with Customer in Training). Watch in playtests; design later.
 - The rule of at most one baseline in a hand.
 - Tier weights in the random offer.
 - Whether three cards stay readable in a 4P view. Check early.
