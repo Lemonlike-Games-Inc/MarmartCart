@@ -20,8 +20,15 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
     [FormerlySerializedAs("filterByPowerupId")]
     [SerializeField] private bool filterByItem = true;
 
-    [Tooltip("Only events of this exact item. A variant (such as Rolling Tomato) needs its own relay.")]
+    [Tooltip("Only events of this item and of the Also Accept Items.")]
     [SerializeField] private ItemDefinition item;
+
+    [Tooltip(
+        "More items that use these callbacks, such as a variant that should " +
+        "sound like its base item. Give a variant its own relay instead when " +
+        "it needs different callbacks."
+    )]
+    [SerializeField] private ItemDefinition[] alsoAcceptItems = new ItemDefinition[0];
 
     [SerializeField] private bool filterEffectsByEffectId;
     [SerializeField]
@@ -138,7 +145,18 @@ public class PowerupLifecycleUnityEventRelay : MonoBehaviour
 
     private bool Accepts(ItemDefinition candidateItem)
     {
-        return !filterByItem || (candidateItem != null && candidateItem == item);
+        if (!filterByItem) return true;
+        if (candidateItem == null) return false;
+        if (candidateItem == item) return true;
+
+        if (alsoAcceptItems == null) return false;
+
+        for (int i = 0; i < alsoAcceptItems.Length; i++)
+        {
+            if (alsoAcceptItems[i] == candidateItem) return true;
+        }
+
+        return false;
     }
 
     private bool Accepts(PowerupEffectEvent effectEvent)

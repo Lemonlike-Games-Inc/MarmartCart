@@ -80,7 +80,7 @@ Cooldowns are starting values.
 | Tomato supply | Baseline | Gold | 20 s | |
 | Ice Cube supply | Baseline | Gold | 20 s | |
 | Cola supply | Baseline | Gold | 30 s | A Cola lasts 10 s, so 20 s gave half the Round at Cola speed (changed 2026-11-21). A Cola used while one runs restarts the 10 s; it does not add up. |
-| Really Really Cold Ice Cube | Adjective | Prismatic | 35 s | The cube stays for the whole Round. Cap the number of cubes; the oldest melts. A longer freeze is the secondary effect: keep it small. |
+| Really Really Cold Ice Cube | Adjective | Prismatic | 35 s | The cube stays until a leading cart drives into it (it still melts then) or the Round ends. Per-player cap where the oldest melts; 0 = no cap, and there is no cap for now (decided 2026-11-21). Same freeze time (3 s) and look as Ice Cube for now. |
 | Rolling Tomato | Adjective | Prismatic | 30 s | After it lands, the tomato rolls on until it hits an obstacle or a chained cart. A leading cart it hits gets the normal Tomato effect. |
 | U-shape Magnet | Gadget | Prismatic | 45 s | Shows a cone; on fire, pulls all loose carts in the cone to the player fast. No force on leading carts or chained carts. |
 
@@ -115,7 +115,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 2. R1, R2, R3: the hand and the Item library, keeping today's behaviour (`item-library.md`). Done 2026-11-21.
 3. Ability core: the swap action, the Sample definition, the charge and cooldown, the two slots and the swap, tested with Tomato supply assigned without a pick screen. No HUD yet; logs and the Inspector. Done 2026-11-21: `AbilitySampleDefinition` assets in `SO_Variables/AbilitySamples`, `PlayerAbilityController` on `Chain of Carts Base` with a Debug Starting Sample (Tomato Supply) that must be cleared before the booth build.
 4. Ice Cube supply and Cola supply. Assets done 2026-11-21, no code needed. Debug Starting Sample overrides for testing: `Chain of Carts P1` = Cola Supply, `P2` = Ice Cube Supply (P3/P4 inherit Tomato Supply). Clear them with the Base before the booth build.
-5. Really Really Cold Ice Cube, with the passive on map pickups.
+5. Really Really Cold Ice Cube, with the passive on map pickups. Done 2026-11-21: Item, effect and Sample assets; the passive (`Upgrades Map Item` on the Sample); the Ice Cube SFX relay also accepts the variant. The Sample under test goes on `Chain of Carts P1` (Liang, 2026-11-21): P1 = Really Really Cold Ice Cube, P2 = Ice Cube Supply, P3/P4 = Tomato Supply from the Base.
 6. Rolling Tomato.
 7. U-shape Magnet.
 8. Ability HUD and the changes to the powerup icons, on Liang's detailed instructions. Can move to any point after step 3.
@@ -128,7 +128,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 - The rule of at most one baseline in a hand.
 - Tier weights in the random offer.
 - Whether three cards stay readable in a 4P view. Check early.
-- The cap on permanent ice cubes.
+- Permanent ice cubes have no cap. If Rounds get too messy, set Maximum Cubes Per Player on the Really Really Cold Ice Cube Effect.
 - Whether loose carts pulled by the Magnet attach by the normal collect rule.
 - A HUD icon for the Ability and its cooldown.
 - Emergency Cart Delivery is parked. The last idea was a cooldown action on its own button, always available.

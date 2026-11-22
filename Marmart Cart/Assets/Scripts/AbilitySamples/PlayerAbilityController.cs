@@ -5,7 +5,8 @@ using UnityEngine;
 /// Per-player Ability: holds this Round's Sample and runs its charge. When the
 /// charge is ready, its item goes into the hand's ability slot; the cooldown
 /// starts when that item is used. The charge counts game time only while the
-/// match is playing. Runtime state lives here, never on the Sample asset.
+/// match is playing. An Adjective Sample's passive is applied to the hand while
+/// the Sample is held. Runtime state lives here, never on the Sample asset.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class PlayerAbilityController : MonoBehaviour
@@ -37,6 +38,8 @@ public sealed class PlayerAbilityController : MonoBehaviour
 
     private PowerupRuntimeSystem runtimeSystem;
     private PlayerItemHand subscribedHand;
+    private PlayerItemHand passiveHand;
+    private int passiveHandle;
 
     public AbilitySampleDefinition Sample => sample;
     public ChargeState State => state;
@@ -66,6 +69,7 @@ public sealed class PlayerAbilityController : MonoBehaviour
     private void OnEnable()
     {
         SubscribeHand();
+        if (sample != null) ApplyPassive();
     }
 
     private void Start()
@@ -80,6 +84,7 @@ public sealed class PlayerAbilityController : MonoBehaviour
 
     private void OnDisable()
     {
+        RemovePassive();
         UnsubscribeHand();
     }
 
@@ -116,6 +121,7 @@ public sealed class PlayerAbilityController : MonoBehaviour
     /// </summary>
     public void SetSample(AbilitySampleDefinition newSample)
     {
+        RemovePassive();
         if (hand != null) hand.ClearAbilityItem();
 
         sample = newSample;
@@ -139,6 +145,7 @@ public sealed class PlayerAbilityController : MonoBehaviour
                 Debug.Log($"[Ability] P{PlayerIndex} Sample set: {sample.DisplayName}.", this);
             }
 
+            ApplyPassive();
             StartCharge(sample.FirstChargeSeconds);
         }
 
@@ -169,6 +176,37 @@ public sealed class PlayerAbilityController : MonoBehaviour
         }
 
         StartCharge(sample.CooldownSeconds);
+    }
+
+    // Passive: this player's map pickups of the Sample's base item give the
+    // Sample's item instead, for as long as the Sample is held.
+    private void ApplyPassive()
+    {
+        RemovePassive();
+
+        if (hand == null || sample == null || sample.UpgradesMapItem == null) return;
+
+        passiveHandle = hand.AddMapItemReplacement(sample.UpgradesMapItem, sample.Item);
+        if (passiveHandle == 0) return;
+
+        passiveHand = hand;
+
+        if (logStateChanges)
+        {
+            Debug.Log(
+                $"[Ability] P{PlayerIndex} passive on: {sample.UpgradesMapItem.name} " +
+                $"pickups give {sample.Item.name}.",
+                this
+            );
+        }
+    }
+
+    private void RemovePassive()
+    {
+        if (passiveHand != null) passiveHand.RemoveMapItemReplacement(passiveHandle);
+
+        passiveHand = null;
+        passiveHandle = 0;
     }
 
     private int PlayerIndex => hand != null ? hand.PlayerIndex : 0;

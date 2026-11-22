@@ -47,10 +47,18 @@ public sealed class AbilitySampleDefinition : ScriptableObject
     [Min(0f)]
     [SerializeField] private float firstChargeSeconds = 10f;
 
+    [Header("Passive (Adjective)")]
+    [Tooltip(
+        "While this Sample is held, the player's map pickups of this item give " +
+        "the Sample's item instead. Empty means no passive."
+    )]
+    [SerializeField] private ItemDefinition upgradesMapItem;
+
     public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
     public AbilitySampleKind Kind => kind;
     public AbilitySampleTier Tier => tier;
     public ItemDefinition Item => item;
     public float CooldownSeconds => cooldownSeconds;
     public float FirstChargeSeconds => firstChargeSeconds;
+    public ItemDefinition UpgradesMapItem => upgradesMapItem;
 }

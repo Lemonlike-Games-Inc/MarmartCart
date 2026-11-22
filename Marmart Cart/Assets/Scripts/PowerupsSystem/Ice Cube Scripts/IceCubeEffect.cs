@@ -31,6 +31,19 @@ public class IceCubeEffect : ItemEffectDefinition
     [Min(0.05f)]
     [SerializeField] private float groundHazardLifetimeSeconds = 5f;
 
+    [Tooltip(
+        "The cube stays until a leading cart triggers it or the Round ends. " +
+        "Ground Hazard Lifetime Seconds is ignored."
+    )]
+    [SerializeField] private bool staysUntilTriggered;
+
+    [Tooltip(
+        "Most cubes of this effect one player can have on the ground. A new " +
+        "cube melts that player's oldest one. 0 means no cap."
+    )]
+    [Min(0)]
+    [SerializeField] private int maximumCubesPerPlayer;
+
     [Tooltip("Small offset along the landing normal to avoid visual z-fighting.")]
     [SerializeField] private float groundHazardSurfaceOffset = 0.02f;
 
@@ -43,7 +56,7 @@ public class IceCubeEffect : ItemEffectDefinition
     [Tooltip("Additional scale applied to the authored hazard prefab.")]
     [SerializeField] private Vector3 groundHazardScaleMultiplier = Vector3.one;
 
-    [Header("Ground Hazard Pool")]
+    [Header("Ground Hazard Pool (read from the scene pool's effect only)")]
     [Min(0)]
     [SerializeField] private int prewarmGroundHazardCount = 4;
 
@@ -59,6 +72,8 @@ public class IceCubeEffect : ItemEffectDefinition
     public float FreezeDurationSeconds => freezeDurationSeconds;
     public GameObject GroundHazardPrefab => groundHazardPrefab;
     public float GroundHazardLifetimeSeconds => groundHazardLifetimeSeconds;
+    public bool StaysUntilTriggered => staysUntilTriggered;
+    public int MaximumCubesPerPlayer => maximumCubesPerPlayer;
     public float GroundHazardSurfaceOffset => groundHazardSurfaceOffset;
     public bool AlignHazardToSurfaceNormal => alignHazardToSurfaceNormal;
     public Vector3 GroundHazardEulerOffset => groundHazardEulerOffset;
@@ -81,6 +96,7 @@ public class IceCubeEffect : ItemEffectDefinition
             0.05f,
             groundHazardLifetimeSeconds
         );
+        maximumCubesPerPlayer = Mathf.Max(0, maximumCubesPerPlayer);
         prewarmGroundHazardCount = Mathf.Max(0, prewarmGroundHazardCount);
         maximumGroundHazardInstances = Mathf.Max(
             0,

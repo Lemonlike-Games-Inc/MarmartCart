@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -7,6 +8,7 @@ using UnityEngine;
 ///
 /// - Owns the item slots. Map Powerup pickups load the map slot (a new pickup
 ///   replaces an unused item); the Ability charge loads the ability slot.
+/// - Applies map-item replacements (an Adjective Sample's passive) to pickups.
 /// - The equipped item is the one LT uses and the aim preview shows. The slot
 ///   loaded last is equipped; LB swaps when both are loaded.
 /// - Binds the runtime-spawned leading cart by Player1..Player4 tag.
@@ -71,6 +73,17 @@ public class PlayerItemHand : MonoBehaviour
     [SerializeField] private PowerupUseBlockReason activeBlockReasons;
     [SerializeField] private bool canUseEquippedItem;
     [SerializeField] private uint acceptedUseRequestVersion;
+
+    private struct MapItemReplacement
+    {
+        public int Handle;
+        public ItemDefinition From;
+        public ItemDefinition To;
+    }
+
+    private readonly List<MapItemReplacement> mapItemReplacements =
+        new List<MapItemReplacement>(2);
+    private int lastReplacementHandle;
 
     private bool missingRuntimeSystemLogged;
     private bool invalidPlayerIndexLogged;
@@ -248,6 +261,18 @@ public class PlayerItemHand : MonoBehaviour
             return false;
         }
 
+        ItemDefinition pickedUpItem = item;
+        item = ResolveMapItem(item);
+
+        if (item != pickedUpItem && logEquipChanges)
+        {
+            Debug.Log(
+                $"[PlayerItemHand] P{playerIndex} map pickup {pickedUpItem.name} " +
+                $"upgraded to {item.name}.",
+                this
+            );
+        }
+
         bool replacedExistingItem = mapSlot.IsLoaded;
         ItemDefinition previousItem = mapSlot.Item;
 
@@ -272,6 +297,55 @@ public class PlayerItemHand : MonoBehaviour
         mapSlot.Clear();
         EquipAfterEmptied(HandSlotId.Map);
         OnMapItemChanged?.Invoke(this, null);
+    }
+
+    /// <summary>
+    /// Until removed, map pickups of <paramref name="from"/> load
+    /// <paramref name="to"/> instead (an Adjective Sample's passive). The
+    /// newest replacement wins. Returns a handle for RemoveMapItemReplacement;
+    /// 0 means nothing was added.
+    /// </summary>
+    public int AddMapItemReplacement(ItemDefinition from, ItemDefinition to)
+    {
+        if (from == null || to == null || from == to) return 0;
+
+        lastReplacementHandle++;
+        if (lastReplacementHandle <= 0) lastReplacementHandle = 1;
+
+        mapItemReplacements.Add(new MapItemReplacement
+        {
+            Handle = lastReplacementHandle,
+            From = from,
+            To = to
+        });
+
+        return lastReplacementHandle;
+    }
+
+    public void RemoveMapItemReplacement(int handle)
+    {
+        if (handle == 0) return;
+
+        for (int i = mapItemReplacements.Count - 1; i >= 0; i--)
+        {
+            if (mapItemReplacements[i].Handle != handle) continue;
+
+            mapItemReplacements.RemoveAt(i);
+            return;
+        }
+    }
+
+    private ItemDefinition ResolveMapItem(ItemDefinition item)
+    {
+        for (int i = mapItemReplacements.Count - 1; i >= 0; i--)
+        {
+            if (mapItemReplacements[i].From == item)
+            {
+                return mapItemReplacements[i].To;
+            }
+        }
+
+        return item;
     }
 
     /// <summary>Loads the Ability charge's item.</summary>

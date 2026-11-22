@@ -20353,6 +20353,7 @@ MonoBehaviour:
   lifecycleEventSystem: {fileID: 674537954}
   filterByItem: 1
   item: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
+  alsoAcceptItems: []
   filterEffectsByEffectId: 0
   effectId: 3
   onActivated:
@@ -23115,6 +23116,8 @@ MonoBehaviour:
   lifecycleEventSystem: {fileID: 674537954}
   filterByItem: 1
   item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
+  alsoAcceptItems:
+  - {fileID: 11400000, guid: 2e167e72733eb9c458caee14cc5d4336, type: 2}
   filterEffectsByEffectId: 0
   effectId: 1
   onActivated:
@@ -159423,6 +159426,7 @@ MonoBehaviour:
   lifecycleEventSystem: {fileID: 674537954}
   filterByItem: 1
   item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
+  alsoAcceptItems: []
   filterEffectsByEffectId: 0
   effectId: 0
   onActivated:

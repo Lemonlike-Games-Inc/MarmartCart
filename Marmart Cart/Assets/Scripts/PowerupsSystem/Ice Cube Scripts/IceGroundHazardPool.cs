@@ -196,6 +196,10 @@ public class IceGroundHazardPool : MonoBehaviour
             ? lifecycleEventSystem.ReserveEffectInstanceId()
             : NextFallbackEffectInstanceId();
 
+        float lifetimeSeconds = iceEffect.StaysUntilTriggered
+            ? float.PositiveInfinity
+            : iceEffect.GroundHazardLifetimeSeconds;
+
         bool activated = hazard.Activate(
             freezeEffectSystem,
             projectileProfile.CartTargetMask,
@@ -210,7 +214,7 @@ public class IceGroundHazardPool : MonoBehaviour
             finalPosition,
             finalRotation,
             iceEffect.GroundHazardScaleMultiplier,
-            iceEffect.GroundHazardLifetimeSeconds,
+            lifetimeSeconds,
             GetVisualStartAlphaByte()
         );
 
@@ -221,6 +225,7 @@ public class IceGroundHazardPool : MonoBehaviour
             return false;
         }
 
+        MeltOldestOverCap(completion.OwnerPlayerIndex, iceEffect);
         active.Add(hazard);
         activeHazardCount = active.Count;
 
@@ -237,15 +242,60 @@ public class IceGroundHazardPool : MonoBehaviour
 
         if (logHazardLifecycle)
         {
+            string untilText = iceEffect.StaysUntilTriggered
+                ? "until triggered"
+                : $"until {hazard.EndsAtTime:0.###}";
+
             Debug.Log(
                 $"[IceGroundHazardPool] Ice hazard " +
                 $"#{hazard.EffectInstanceId} started at " +
-                $"{finalPosition} until {hazard.EndsAtTime:0.###}.",
+                $"{finalPosition} {untilText}.",
                 this
             );
         }
 
         return true;
+    }
+
+    // Called before the new cube joins the active set: melts the owner's oldest
+    // cubes of this effect until there is room for one more.
+    private void MeltOldestOverCap(int ownerPlayerIndex, IceCubeEffect effect)
+    {
+        int cap = effect.MaximumCubesPerPlayer;
+        if (cap <= 0) return;
+
+        while (true)
+        {
+            int count = 0;
+            IceGroundHazard oldest = null;
+
+            foreach (IceGroundHazard hazard in active)
+            {
+                if (hazard == null ||
+                    hazard.OwnerPlayerIndex != ownerPlayerIndex ||
+                    hazard.Effect != effect)
+                {
+                    continue;
+                }
+
+                count++;
+
+                if (oldest == null || hazard.StartedAtTime < oldest.StartedAtTime)
+                {
+                    oldest = hazard;
+                }
+            }
+
+            if (count < cap || oldest == null) return;
+
+            ReturnHazard(
+                oldest,
+                PowerupEffectEndReason.Replaced,
+                default,
+                null,
+                oldest.transform.position
+            );
+        }
     }
 
     private bool TryGetRuntimeSetup(

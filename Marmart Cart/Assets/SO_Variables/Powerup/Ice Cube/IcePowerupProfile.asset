@@ -15,10 +15,12 @@ MonoBehaviour:
   freezeDurationSeconds: 3
   groundHazardPrefab: {fileID: 8071062625868544155, guid: a29befa6d2a4afa418639c58d56f71cf, type: 3}
   groundHazardLifetimeSeconds: 10
+  staysUntilTriggered: 0
+  maximumCubesPerPlayer: 0
   groundHazardSurfaceOffset: 0.02
   alignHazardToSurfaceNormal: 1
   groundHazardEulerOffset: {x: 0, y: 0, z: 0}
   groundHazardScaleMultiplier: {x: 1, y: 1, z: 1}
   prewarmGroundHazardCount: 4
   allowGroundHazardPoolGrowth: 1
-  maximumGroundHazardInstances: 16
+  maximumGroundHazardInstances: 64

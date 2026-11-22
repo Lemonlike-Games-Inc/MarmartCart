@@ -53,11 +53,15 @@ public class ItemDefinition : ScriptableObject
 A variant is its own full Item asset that reuses the base Item's parts by pointing to the same assets. No inheritance or override machinery.
 
 - Rolling Tomato: the Tomato throw and Tomato blind assets, plus a roll effect.
-- Really Really Cold Ice Cube: the Ice Cube throw and freeze assets, plus its own ice cube effect (lasts the Round, capped).
+- Really Really Cold Ice Cube: the Ice Cube throw, plus its own Ice Cube effect (a copy with Stays Until Triggered on and Maximum Cubes Per Player 0 = no cap). It uses the same cube prefab; a second look needs the ice cube pool keyed by prefab.
 
 ## Passive
 
 An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tomato. The hand applies it to this player's map pickups.
+
+- Built in Ability Step 5: the Sample's `Upgrades Map Item` names the base item. `PlayerAbilityController` adds the replacement to the hand (`AddMapItemReplacement`, which returns a handle) and removes it when the Sample changes or the controller is disabled.
+- The pickup still reports the base item; the hand loads the variant, so the held-item HUD needs an entry for the variant.
+- SFX relays filter by item. A variant that should sound like its base item goes in the base relay's Also Accept Items; one that needs other sounds gets its own relay.
 
 ## The hand
 

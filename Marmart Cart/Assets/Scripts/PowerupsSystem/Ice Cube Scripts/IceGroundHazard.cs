@@ -71,6 +71,7 @@ public class IceGroundHazard : MonoBehaviour
     public int OwnerPlayerIndex => ownerPlayerIndex;
     public PlayerItemHand OwnerController => ownerController;
     public ItemDefinition SourceItem => sourceItem;
+    public IceCubeEffect Effect => iceEffect;
     public float DurationSeconds => durationSeconds;
     public float StartedAtTime => startedAtTime;
     public float EndsAtTime => endsAtTime;
