@@ -15037,6 +15037,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7689148556561879390, guid: 5ab2dd6a40a9de444865b29eb43285de, type: 3}
   m_PrefabInstance: {fileID: 815221694}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &820560357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 820560358}
+  - component: {fileID: 820560359}
+  m_Layer: 0
+  m_Name: Magnet Pull Effect System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &820560358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820560357}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1720599058}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &820560359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820560357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c29090469cb7f4e9a7292460438934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runtimeSystem: {fileID: 874786258}
+  lifecycleEventSystem: {fileID: 674537954}
+  aimStateSystem: {fileID: 1645347202}
+  logPulls: 1
+  activePullCount: 0
 --- !u!1 &821155003 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 523521462275092170, guid: a7502df6d4140c54fbbd7b90f39e47d5, type: 3}
@@ -15966,6 +16015,7 @@ Transform:
   - {fileID: 130588355}
   - {fileID: 1108476017}
   - {fileID: 18994538}
+  - {fileID: 1720599058}
   - {fileID: 557048473}
   - {fileID: 79608705}
   - {fileID: 2093745206}
@@ -135486,6 +135536,8 @@ MonoBehaviour:
     FlightDuration: 0
     ArcHeight: 0
     ImpactPreviewRadius: 0
+    ConeLength: 0
+    ConeAngleDegrees: 0
     Revision: 0
   - PlayerIndex: 0
     Visible: 0
@@ -135507,6 +135559,8 @@ MonoBehaviour:
     FlightDuration: 0
     ArcHeight: 0
     ImpactPreviewRadius: 0
+    ConeLength: 0
+    ConeAngleDegrees: 0
     Revision: 0
   - PlayerIndex: 0
     Visible: 0
@@ -135528,6 +135582,8 @@ MonoBehaviour:
     FlightDuration: 0
     ArcHeight: 0
     ImpactPreviewRadius: 0
+    ConeLength: 0
+    ConeAngleDegrees: 0
     Revision: 0
   - PlayerIndex: 0
     Visible: 0
@@ -135549,6 +135605,8 @@ MonoBehaviour:
     FlightDuration: 0
     ArcHeight: 0
     ImpactPreviewRadius: 0
+    ConeLength: 0
+    ConeAngleDegrees: 0
     Revision: 0
 --- !u!1001 &1650387363
 PrefabInstance:
@@ -137062,6 +137120,38 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1720367844}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1720599057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1720599058}
+  m_Layer: 0
+  m_Name: Magnet Scripts
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1720599058
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1720599057}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 820560358}
+  m_Father: {fileID: 874786257}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1729774496
 GameObject:
   m_ObjectHideFlags: 0

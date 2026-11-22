@@ -57,11 +57,14 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
                 playerIndex,
                 out PowerupAimState aimState
             ) ||
-            !aimState.Visible ||
-            aimState.ImpactPreviewRadius <= 0f)
+            !aimState.Visible)
         {
             return;
         }
+
+        bool isCone = aimState.ConeLength > 0f;
+
+        if (!isCone && aimState.ImpactPreviewRadius <= 0f) return;
 
         drawScale = HudShapes.Scale();
 
@@ -73,10 +76,139 @@ public class PowerupAimRenderer : ImmediateModeShapeDrawer
                 aimState.TrajectoryObstructed
             );
 
+            if (isCone)
+            {
+                DrawCone(cam, aimState, mainColor);
+                return;
+            }
+
             DrawLandingEnvelope(cam, aimState, mainColor);
             DrawLandingCenter(cam, aimState, mainColor);
             DrawTrajectory(cam, aimState, mainColor);
         }
+    }
+
+    // Flat cone on the ground plane: a filled fan plus its outline, in the
+    // landing-disc colours and thicknesses.
+    private void DrawCone(
+        Camera cam,
+        PowerupAimState aimState,
+        Color mainColor)
+    {
+        Vector3 forward = aimState.AimDirection;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude <= 0.000001f ||
+            !TryProjectPoint(cam, aimState.RangeOrigin, out Vector3 renderOrigin))
+        {
+            return;
+        }
+
+        forward.Normalize();
+
+        float halfAngle = aimState.ConeAngleDegrees * 0.5f;
+        int segmentCount = Mathf.Max(
+            4,
+            Mathf.CeilToInt(
+                Mathf.Max(12, aimProfile.LandingCircleSampleCount) *
+                aimState.ConeAngleDegrees / 360f
+            )
+        );
+
+        Color fillColor = aimProfile.GetFillColor(false);
+
+        for (int i = 0; i < segmentCount; i++)
+        {
+            Vector3 pointA = GetConePoint(aimState, forward, halfAngle, i / (float)segmentCount);
+            Vector3 pointB = GetConePoint(aimState, forward, halfAngle, (i + 1) / (float)segmentCount);
+
+            if (!TryProjectPoint(cam, pointA, out Vector3 renderA) ||
+                !TryProjectPoint(cam, pointB, out Vector3 renderB))
+            {
+                continue;
+            }
+
+            Draw.Triangle(renderOrigin, renderA, renderB, fillColor);
+        }
+
+        float mainThickness = aimProfile.LandingOutlineThicknessPixels * drawScale;
+        float underlayThickness =
+            mainThickness + aimProfile.LandingUnderlayExtraPixels * drawScale;
+
+        if (underlayThickness > mainThickness)
+        {
+            DrawConeOutlinePass(
+                cam,
+                aimState,
+                forward,
+                halfAngle,
+                segmentCount,
+                renderOrigin,
+                underlayThickness,
+                aimProfile.TrajectoryUnderlayColor
+            );
+        }
+
+        DrawConeOutlinePass(
+            cam,
+            aimState,
+            forward,
+            halfAngle,
+            segmentCount,
+            renderOrigin,
+            mainThickness,
+            mainColor
+        );
+    }
+
+    private void DrawConeOutlinePass(
+        Camera cam,
+        PowerupAimState aimState,
+        Vector3 forward,
+        float halfAngle,
+        int segmentCount,
+        Vector3 renderOrigin,
+        float thicknessPixels,
+        Color color)
+    {
+        // Origin -> one edge, along the far arc, then the other edge back.
+        Vector3 previousPoint = renderOrigin;
+        bool hasPreviousPoint = true;
+
+        for (int i = 0; i <= segmentCount; i++)
+        {
+            Vector3 worldPoint = GetConePoint(aimState, forward, halfAngle, i / (float)segmentCount);
+
+            if (!TryProjectPoint(cam, worldPoint, out Vector3 renderPoint))
+            {
+                hasPreviousPoint = false;
+                continue;
+            }
+
+            if (hasPreviousPoint)
+            {
+                Draw.Line(previousPoint, renderPoint, thicknessPixels, color);
+            }
+
+            previousPoint = renderPoint;
+            hasPreviousPoint = true;
+        }
+
+        if (hasPreviousPoint)
+        {
+            Draw.Line(previousPoint, renderOrigin, thicknessPixels, color);
+        }
+    }
+
+    private static Vector3 GetConePoint(
+        PowerupAimState aimState,
+        Vector3 forward,
+        float halfAngle,
+        float fraction)
+    {
+        float angle = Mathf.Lerp(-halfAngle, halfAngle, fraction);
+        return aimState.RangeOrigin +
+               Quaternion.AngleAxis(angle, Vector3.up) * forward * aimState.ConeLength;
     }
 
     private void DrawTrajectory(

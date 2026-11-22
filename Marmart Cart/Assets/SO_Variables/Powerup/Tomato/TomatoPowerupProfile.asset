@@ -15,3 +15,4 @@ MonoBehaviour:
   blindDurationSeconds: 4
   maximumVisualSplashCount: 3
   refreshDurationOnAdditionalHit: 1
+  blindsThrower: 1

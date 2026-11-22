@@ -12,6 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9e27b960ed11a4e81c2d52eca11506, type: 3}
   m_Name: Tomato Roll Effect
   m_EditorClassIdentifier: 
-  rollSpeed: 15
+  rollUntilHit: 1
   maximumRollDistance: 30
+  rollSpeed: 15
   rollHeight: 0.9
+  rollAlongAim: 0
+  rollHitRadius: 0.8
+  cartLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 1536

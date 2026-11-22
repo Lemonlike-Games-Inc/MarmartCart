@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d3146e8b87a4c4eb883e6850b618f4, type: 3}
+  m_Name: U-shape Magnet
+  m_EditorClassIdentifier: 
+  displayName: U-shape Magnet
+  use: {fileID: 11400000, guid: 8979a7dfecfc3194080c8490cdc3fbdd, type: 2}
+  effects:
+  - {fileID: 11400000, guid: 982eec08a8d0e7247b04f411ad6fd36b, type: 2}

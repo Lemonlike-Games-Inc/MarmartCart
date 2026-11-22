@@ -38,5 +38,10 @@ public struct PowerupAimState
     public float ArcHeight;
     public float ImpactPreviewRadius;
 
+    // Cone items (ConeItemUse): ConeLength > 0 means a flat cone from
+    // RangeOrigin along AimDirection instead of a throw arc and landing disc.
+    public float ConeLength;
+    public float ConeAngleDegrees;
+
     public uint Revision;
 }

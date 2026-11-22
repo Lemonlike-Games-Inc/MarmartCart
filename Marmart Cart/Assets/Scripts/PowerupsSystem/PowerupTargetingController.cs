@@ -152,9 +152,18 @@ public class PowerupTargetingController : MonoBehaviour
 
         ItemDefinition item = playerPowerupController.EquippedItem;
 
-        if (!playerPowerupController.CanUseEquippedItem ||
-            item == null ||
-            !item.TryGetUse(out ThrowItemUse throwUse) ||
+        if (!playerPowerupController.CanUseEquippedItem || item == null)
+        {
+            ClearAimState();
+            return false;
+        }
+
+        if (item.TryGetUse(out ConeItemUse coneUse))
+        {
+            return RebuildConeAimState(item, coneUse, publish);
+        }
+
+        if (!item.TryGetUse(out ThrowItemUse throwUse) ||
             throwUse.Pattern == null)
         {
             ClearAimState();
@@ -268,6 +277,75 @@ public class PowerupTargetingController : MonoBehaviour
             FlightDuration = flightDuration,
             ArcHeight = arcHeight,
             ImpactPreviewRadius = throwUse.PreviewRadius
+        };
+
+        if (publish && aimStateSystem != null)
+        {
+            currentAimState = aimStateSystem.PublishState(
+                playerPowerupController.PlayerIndex,
+                currentAimState
+            );
+        }
+
+        return true;
+    }
+
+    // A cone item publishes a flat cone from the leading cart along the aim,
+    // using the same stick deadzone as throws. The item's effect system reads
+    // this published state, so the cone shown is the cone used.
+    private bool RebuildConeAimState(
+        ItemDefinition item,
+        ConeItemUse coneUse,
+        bool publish)
+    {
+        ResolveRuntimeCartReferences();
+
+        if (boundCartControl == null)
+        {
+            ClearAimState();
+            return false;
+        }
+
+        Vector2 rawAimInput = boundCartControl.RawAimInput;
+        float rawMagnitude = Mathf.Clamp01(rawAimInput.magnitude);
+        float adjustedMagnitude =
+            gameplayProfile.RemapAimMagnitude(rawMagnitude);
+
+        Vector3 aimDirection = boundCartControl.AimDirection;
+        aimDirection.y = 0f;
+
+        if (adjustedMagnitude <= 0f ||
+            aimDirection.sqrMagnitude <= 0.000001f)
+        {
+            ClearAimState();
+            return false;
+        }
+
+        aimDirection.Normalize();
+
+        Vector3 origin = boundCartControl.transform.position;
+        Vector3 tip = origin + aimDirection * coneUse.ConeLength;
+
+        currentAimState = new PowerupAimState
+        {
+            PlayerIndex = playerPowerupController.PlayerIndex,
+            Visible = true,
+            Item = item,
+            RawAimInput = rawAimInput,
+            RawAimMagnitude = rawMagnitude,
+            AdjustedAimMagnitude = adjustedMagnitude,
+            AimDirection = aimDirection,
+            RangeOrigin = origin,
+            StartPosition = origin,
+            LandingPosition = tip,
+            LandingNormal = Vector3.up,
+            PreviewEndNormalizedTime = 1f,
+            PreviewEndPosition = tip,
+            PreviewEndNormal = Vector3.up,
+            RequestedRange = coneUse.ConeLength,
+            ResolvedPlanarDistance = coneUse.ConeLength,
+            ConeLength = coneUse.ConeLength,
+            ConeAngleDegrees = coneUse.ConeAngleDegrees
         };
 
         if (publish && aimStateSystem != null)

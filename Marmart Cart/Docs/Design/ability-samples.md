@@ -82,7 +82,7 @@ Cooldowns are starting values.
 | Cola supply | Baseline | Gold | 30 s | A Cola lasts 10 s, so 20 s gave half the Round at Cola speed (changed 2026-11-21). A Cola used while one runs restarts the 10 s; it does not add up. |
 | Really Really Cold Ice Cube | Adjective | Prismatic | 35 s | The cube stays until a leading cart drives into it (it still melts then) or the Round ends. Per-player cap where the oldest melts; 0 = no cap, and there is no cap for now (decided 2026-11-21). Same freeze time (3 s) and look as Ice Cube for now. |
 | Rolling Tomato | Adjective | Prismatic | 30 s | After it lands, the tomato rolls on until it hits an obstacle or a chained cart. A leading cart it hits gets the normal Tomato effect. The whole volley of 12 rolls (decided 2026-11-21; cut the count if it gets laggy or messy). It rolls until it hits (Liang, 2026-11-21): any cart, or an Obstacles or Walls collider, stops a tomato; the thrower's own leading cart is blinded like any other while Blinds Thrower is on. The match end cancels it. The volley rolls side by side in the aim direction. The tomatoes spin forward in flight and while rolling. |
-| U-shape Magnet | Gadget | Prismatic | 45 s | Shows a cone; on fire, pulls all loose carts in the cone to the player fast. No force on leading carts or chained carts. |
+| U-shape Magnet | Gadget | Prismatic | 45 s | Hold the right stick to show a cone (20 m, 70°); LT pulls the loose carts in it toward the player at 35 m/s, for up to 1.5 s. No force on leading carts or chained carts. Decided 2026-11-21: pulled carts join by the normal collect rule (a rival chain in the way can collect them; nothing joins in ghost mode); only carts with a clear line to the player are pulled (shelves and walls shield); an empty cone still spends the charge. |
 
 ### Second wave (after more features are done)
 
@@ -117,7 +117,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 4. Ice Cube supply and Cola supply. Assets done 2026-11-21, no code needed. Debug Starting Sample overrides for testing: `Chain of Carts P1` = Cola Supply, `P2` = Ice Cube Supply (P3/P4 inherit Tomato Supply). Clear them with the Base before the booth build.
 5. Really Really Cold Ice Cube, with the passive on map pickups. Done 2026-11-21: Item, effect and Sample assets; the passive (`Upgrades Map Item` on the Sample); the Ice Cube SFX relay also accepts the variant. The Sample under test goes on `Chain of Carts P1` (Liang, 2026-11-21): P1 = Really Really Cold Ice Cube, P2 = Ice Cube Supply, P3/P4 = Tomato Supply from the Base.
 6. Rolling Tomato. Done 2026-11-21: `ProjectileRollEffect` read by the launcher, a roll phase in `FakeArcProjectile`, and Item, throw, effect and Sample assets. The Tomato SFX relay also accepts it. `Chain of Carts P1` = Rolling Tomato. All roll tuning is on `Tomato Roll Effect`: Roll Until Hit (on; off uses Maximum Roll Distance), speed 15 m/s, roll height 0.9 m, Roll Along Aim (on), a 0.8 m roll hit radius (the prefab hitbox is about 1.7 m and caught shelves early), and the Cart Layers and Blocking Layers that stop it. The projectile pool cancels rolling items at match end.
-7. U-shape Magnet.
+7. U-shape Magnet. Built 2026-11-21: `ConeItemUse` (cone length and angle), `MagnetPullEffect` (pull speed, give-up time, cart and line-of-sight layers) and `MagnetPullEffectSystem` (in the four build scenes under `Powerup Runtime System/Magnet Scripts`). The aim preview draws the cone, and the system uses the published cone. Item, effect, use and Sample assets; the held-item HUD uses the unused Fan icon until step 8. `Chain of Carts P1` = U-shape Magnet.
 8. Ability HUD and the changes to the powerup icons, on Liang's detailed instructions. Can move to any point after step 3.
 9. The pick screen, as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
 
@@ -130,6 +130,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 - Tier weights in the random offer.
 - Whether three cards stay readable in a 4P view. Check early.
 - Permanent ice cubes have no cap. If Rounds get too messy, set Maximum Cubes Per Player on the Really Really Cold Ice Cube Effect.
-- Whether loose carts pulled by the Magnet attach by the normal collect rule.
+- Idea (Liang, 2026-11-21, not approved): the Magnet also becomes a map powerup with a narrower cone (about 45°), and the Sample version gets a much wider one (up to about 360°).
+- U-shape Magnet: a cart pulled into a thrower in ghost mode is let go next to them; it joins only when it touches the chain again. It needs its own icon and sound (no SFX relay yet; it publishes an activation event).
 - A HUD icon for the Ability and its cooldown.
 - Emergency Cart Delivery is parked. The last idea was a cooldown action on its own button, always available.

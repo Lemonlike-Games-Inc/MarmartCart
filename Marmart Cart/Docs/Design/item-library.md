@@ -47,6 +47,7 @@ public class ItemDefinition : ScriptableObject
 - Use and effect assets hold definitions only, never runtime state.
 - Each scene system handles only the Items that carry its effect (`item.TryGetEffect(out TomatoBlindEffect blind)`). No switch over Items.
 - A new behaviour is a new effect type plus its system; nothing shared is edited.
+- Cone use (`ConeItemUse`, U-shape Magnet): the targeting controller publishes a cone aim state (Cone Length > 0) that the aim renderer draws as a flat cone; the effect system validates and acts on that published state, so the cone shown is the cone used.
 - Self-hit: an effect can say it may land on its thrower (`ItemEffectDefinition.HitsThrower`; the Tomato blind's Blinds Thrower toggle). The projectile then ignores the thrower on the way up only, and can hit them on the way down and while rolling. Ice cubes on the ground already hit everyone.
 
 ## Variants
