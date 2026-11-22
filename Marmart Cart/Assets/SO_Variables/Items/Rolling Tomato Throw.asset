@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75bd17a476a8b7442b1c20908cd881a2, type: 3}
+  m_Name: Rolling Tomato Throw
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 6549189977630224461, guid: 2e5a21f5b61109f4b85238cf3f2f856d, type: 3}
+  prewarmCount: 12
+  pattern:
+    minimumFlightTime: 0.35
+    maximumFlightTime: 0.85
+    spreadRadius: 5
+    castEulerAngles: {x: 0, y: 0, z: 0}
+    ignoreOwnerInFlight: 1
+    ignoreCheckoutTargets: 1
+    hasEffectOnLeadingCart: 1
+    hasEffectOnChainedCarts: 0
+    entries:
+    - normalizedLandingOffset: {x: 0, y: 0}
+      arrivalTimeOffsetSeconds: 0
+      arcHeightOffset: 0
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 420
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.78, y: 0}
+      arrivalTimeOffsetSeconds: -0.06
+      arcHeightOffset: -0.12
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 330
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.24103323, y: 0.7418241}
+      arrivalTimeOffsetSeconds: -0.03
+      arcHeightOffset: 0.1
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 365
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.6310333, y: 0.45847243}
+      arrivalTimeOffsetSeconds: 0.08
+      arcHeightOffset: 0.14
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 400
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.6310332, y: -0.45847258}
+      arrivalTimeOffsetSeconds: 0.06
+      arcHeightOffset: 0.05
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 435
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.24103335, y: -0.74182403}
+      arrivalTimeOffsetSeconds: 0.03
+      arcHeightOffset: -0.1
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 470
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.49, y: 0.35}
+      arrivalTimeOffsetSeconds: 0
+      arcHeightOffset: 0
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 440.3
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.26, y: 0.53}
+      arrivalTimeOffsetSeconds: -0.1
+      arcHeightOffset: -0.13
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 457.3
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.26, y: 0.53}
+      arrivalTimeOffsetSeconds: -0.1
+      arcHeightOffset: -0.13
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 457.3
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: -0.52, y: 0.85}
+      arrivalTimeOffsetSeconds: 0.02
+      arcHeightOffset: 0.09
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 515.5
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.16, y: 0.31}
+      arrivalTimeOffsetSeconds: 0.02
+      arcHeightOffset: 0.25
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 489
+      visualScaleMultiplier: 1
+    - normalizedLandingOffset: {x: 0.72, y: -0.69}
+      arrivalTimeOffsetSeconds: -0.08
+      arcHeightOffset: -0.18
+      visualSpinAxis: {x: 1, y: 0, z: 0}
+      visualSpinDegreesPerSecond: 475.1
+      visualScaleMultiplier: 1
+  previewRadius: 5

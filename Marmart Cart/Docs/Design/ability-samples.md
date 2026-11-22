@@ -60,7 +60,7 @@ This is the first version to test. It replaces the open aim-input question in `C
 
 | Powerup | Section | State | What it does |
 |---|---|---|---|
-| Tomato | Produce & Meat | Built | Aim and throw, high arc. Blocks the vision of a leading cart it lands on. |
+| Tomato | Produce & Meat | Built | Aim and throw, high arc. Blocks the vision of a leading cart it lands on, the thrower's own included, but never on the way up (decided 2026-11-21; toggle Blinds Thrower on `TomatoPowerupProfile`, shared by every Tomato item). |
 | Ice Cube | Seafood & Frozen | Built | Aim and throw, high arc. Freezes a leading cart it lands on. The cube stays for a short time. |
 | Cola + Mentos | Toys & Snacks | Built | Activate. Faster than a Hype boost while active. |
 | Tomahawk Steak | Produce & Meat | Concept | Aim and throw, low arc. Makes a chained cart vulnerable; breaks a cart that is already vulnerable. On a leading cart, makes its nearest chained carts vulnerable (start at 3, the idea was 5). Vulnerable carts recover after a time. |
@@ -81,7 +81,7 @@ Cooldowns are starting values.
 | Ice Cube supply | Baseline | Gold | 20 s | |
 | Cola supply | Baseline | Gold | 30 s | A Cola lasts 10 s, so 20 s gave half the Round at Cola speed (changed 2026-11-21). A Cola used while one runs restarts the 10 s; it does not add up. |
 | Really Really Cold Ice Cube | Adjective | Prismatic | 35 s | The cube stays until a leading cart drives into it (it still melts then) or the Round ends. Per-player cap where the oldest melts; 0 = no cap, and there is no cap for now (decided 2026-11-21). Same freeze time (3 s) and look as Ice Cube for now. |
-| Rolling Tomato | Adjective | Prismatic | 30 s | After it lands, the tomato rolls on until it hits an obstacle or a chained cart. A leading cart it hits gets the normal Tomato effect. |
+| Rolling Tomato | Adjective | Prismatic | 30 s | After it lands, the tomato rolls on until it hits an obstacle or a chained cart. A leading cart it hits gets the normal Tomato effect. The whole volley of 12 rolls (decided 2026-11-21; cut the count if it gets laggy or messy). It rolls until it hits (Liang, 2026-11-21): any cart, or an Obstacles or Walls collider, stops a tomato; the thrower's own leading cart is blinded like any other while Blinds Thrower is on. The match end cancels it. The volley rolls side by side in the aim direction. The tomatoes spin forward in flight and while rolling. |
 | U-shape Magnet | Gadget | Prismatic | 45 s | Shows a cone; on fire, pulls all loose carts in the cone to the player fast. No force on leading carts or chained carts. |
 
 ### Second wave (after more features are done)
@@ -116,14 +116,15 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 3. Ability core: the swap action, the Sample definition, the charge and cooldown, the two slots and the swap, tested with Tomato supply assigned without a pick screen. No HUD yet; logs and the Inspector. Done 2026-11-21: `AbilitySampleDefinition` assets in `SO_Variables/AbilitySamples`, `PlayerAbilityController` on `Chain of Carts Base` with a Debug Starting Sample (Tomato Supply) that must be cleared before the booth build.
 4. Ice Cube supply and Cola supply. Assets done 2026-11-21, no code needed. Debug Starting Sample overrides for testing: `Chain of Carts P1` = Cola Supply, `P2` = Ice Cube Supply (P3/P4 inherit Tomato Supply). Clear them with the Base before the booth build.
 5. Really Really Cold Ice Cube, with the passive on map pickups. Done 2026-11-21: Item, effect and Sample assets; the passive (`Upgrades Map Item` on the Sample); the Ice Cube SFX relay also accepts the variant. The Sample under test goes on `Chain of Carts P1` (Liang, 2026-11-21): P1 = Really Really Cold Ice Cube, P2 = Ice Cube Supply, P3/P4 = Tomato Supply from the Base.
-6. Rolling Tomato.
+6. Rolling Tomato. Done 2026-11-21: `ProjectileRollEffect` read by the launcher, a roll phase in `FakeArcProjectile`, and Item, throw, effect and Sample assets. The Tomato SFX relay also accepts it. `Chain of Carts P1` = Rolling Tomato. All roll tuning is on `Tomato Roll Effect`: Roll Until Hit (on; off uses Maximum Roll Distance), speed 15 m/s, roll height 0.9 m, Roll Along Aim (on), a 0.8 m roll hit radius (the prefab hitbox is about 1.7 m and caught shelves early), and the Cart Layers and Blocking Layers that stop it. The projectile pool cancels rolling items at match end.
 7. U-shape Magnet.
 8. Ability HUD and the changes to the powerup icons, on Liang's detailed instructions. Can move to any point after step 3.
 9. The pick screen, as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
 
 ## Open
 
-- Rolling Tomato: does the whole volley roll, or one big tomato?
+- Rolling Tomato: the aim preview shows only the landing area, not the roll path.
+- Rolling Tomato: the roll is flat and ignores the floor, so a tomato that finds a gap in the walls rolls on until the match ends.
 - Effects that change the same thing at once, such as two speed effects (Cola with Customer in Training). Watch in playtests; design later.
 - The rule of at most one baseline in a hand.
 - Tier weights in the random offer.

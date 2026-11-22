@@ -62,6 +62,22 @@ public sealed class ItemDefinition : ScriptableObject
         return TryGetEffect(out T _);
     }
 
+    /// <summary>True when any effect part lets this item hit its own thrower.</summary>
+    public bool HitsThrower
+    {
+        get
+        {
+            if (effects == null) return false;
+
+            for (int i = 0; i < effects.Length; i++)
+            {
+                if (effects[i] != null && effects[i].HitsThrower) return true;
+            }
+
+            return false;
+        }
+    }
+
     private void OnValidate()
     {
         if (effects == null) effects = Array.Empty<ItemEffectDefinition>();

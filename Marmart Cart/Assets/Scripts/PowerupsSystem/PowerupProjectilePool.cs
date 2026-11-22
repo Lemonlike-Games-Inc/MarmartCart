@@ -46,6 +46,11 @@ public class PowerupProjectilePool : MonoBehaviour
     private readonly Dictionary<FakeArcProjectile, PoolBucket> actorBuckets =
         new Dictionary<FakeArcProjectile, PoolBucket>();
 
+    private readonly List<FakeArcProjectile> cancelBuffer =
+        new List<FakeArcProjectile>();
+
+    private PowerupRuntimeSystem subscribedRuntimeSystem;
+
     public PowerupProjectileProfile ProjectileProfile => projectileProfile;
     public int TotalCreatedActorCount => totalCreatedActorCount;
     public int RentedActorCount => rentedActorCount;
@@ -59,6 +64,58 @@ public class PowerupProjectilePool : MonoBehaviour
         if (poolRoot == null) poolRoot = transform;
 
         PrewarmLibraryItems();
+    }
+
+    private void OnEnable()
+    {
+        ResolveRuntimeSystem();
+
+        if (runtimeSystem != null && subscribedRuntimeSystem != runtimeSystem)
+        {
+            subscribedRuntimeSystem = runtimeSystem;
+            subscribedRuntimeSystem.OnMatchPlayingChanged += HandleMatchPlayingChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (subscribedRuntimeSystem != null)
+        {
+            subscribedRuntimeSystem.OnMatchPlayingChanged -= HandleMatchPlayingChanged;
+            subscribedRuntimeSystem = null;
+        }
+    }
+
+    // Normal throws end within seconds, but an item that rolls until it hits
+    // could outlive the match, so rolling items are cancelled when it ends.
+    private void HandleMatchPlayingChanged(bool matchPlaying)
+    {
+        if (matchPlaying) return;
+
+        cancelBuffer.Clear();
+
+        foreach (FakeArcProjectile actor in actorBuckets.Keys)
+        {
+            if (actor != null && actor.ActiveRollingItem)
+            {
+                cancelBuffer.Add(actor);
+            }
+        }
+
+        for (int i = 0; i < cancelBuffer.Count; i++)
+        {
+            cancelBuffer[i].Cancel();
+        }
+
+        if (cancelBuffer.Count > 0)
+        {
+            Debug.Log(
+                $"[PowerupProjectilePool] Match ended: cancelled {cancelBuffer.Count} rolling projectile(s).",
+                this
+            );
+        }
+
+        cancelBuffer.Clear();
     }
 
     public bool CanProvide(ThrowItemUse use, int requiredCount)
@@ -161,12 +218,17 @@ public class PowerupProjectilePool : MonoBehaviour
         }
     }
 
-    private void PrewarmLibraryItems()
+    private void ResolveRuntimeSystem()
     {
         if (runtimeSystem == null)
         {
             runtimeSystem = FindFirstObjectByType<PowerupRuntimeSystem>();
         }
+    }
+
+    private void PrewarmLibraryItems()
+    {
+        ResolveRuntimeSystem();
 
         ItemLibrary library = runtimeSystem != null ? runtimeSystem.ItemLibrary : null;
         if (library == null) return;

@@ -7,4 +7,9 @@ using UnityEngine;
 /// </summary>
 public abstract class ItemEffectDefinition : ScriptableObject
 {
+    /// <summary>
+    /// True when this effect may land on the thrower's own leading cart. A
+    /// projectile still ignores its thrower on the way up.
+    /// </summary>
+    public virtual bool HitsThrower => false;
 }

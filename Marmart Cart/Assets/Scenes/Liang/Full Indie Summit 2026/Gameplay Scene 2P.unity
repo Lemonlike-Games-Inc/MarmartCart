@@ -141692,7 +141692,8 @@ MonoBehaviour:
   lifecycleEventSystem: {fileID: 674537954}
   filterByItem: 1
   item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
-  alsoAcceptItems: []
+  alsoAcceptItems:
+  - {fileID: 11400000, guid: 57e51046da5e31947a6a1554f115a028, type: 2}
   filterEffectsByEffectId: 0
   effectId: 0
   onActivated:

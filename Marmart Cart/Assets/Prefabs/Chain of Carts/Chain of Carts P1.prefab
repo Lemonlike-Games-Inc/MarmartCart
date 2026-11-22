@@ -55,7 +55,7 @@ PrefabInstance:
     - target: {fileID: 5382320639808303397, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: debugStartingSample
       value: 
-      objectReference: {fileID: 11400000, guid: 81c026a3c8e8b7246b6f1e36bd99c116, type: 2}
+      objectReference: {fileID: 11400000, guid: 0f0728774bdbb654387643a22ee68a4a, type: 2}
     - target: {fileID: 6172510833367344487, guid: b924f27a013eceb46b289c9c04b82cab, type: 3}
       propertyPath: m_Name
       value: Chain of Carts P1

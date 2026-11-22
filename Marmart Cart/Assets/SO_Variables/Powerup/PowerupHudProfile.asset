@@ -37,6 +37,12 @@ MonoBehaviour:
       slot1: 1
       slot2: 3
       slot3: 2
+  - item: {fileID: 11400000, guid: 57e51046da5e31947a6a1554f115a028, type: 2}
+    icon: {fileID: 21300000, guid: cd9483e32e335d740b164b82ec4b34ab, type: 3}
+    prompts:
+      slot1: 1
+      slot2: 3
+      slot3: 2
   rightJoystickPromptIcon: {fileID: 21300000, guid: 590341f1df8ef8e4ba8cfc8a682dfd48, type: 3}
   activateTriggerPromptIcon: {fileID: 21300000, guid: dfac01fbef47d1943ad5fee810fa6fd3, type: 3}
   plusPromptIcon: {fileID: 21300000, guid: 3a2296c7f0adec04fa11d14a453b7cdc, type: 3}

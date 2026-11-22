@@ -47,6 +47,10 @@ public class FakeArcProjectile : MonoBehaviour
     [SerializeField] private PowerupProjectileSweepShape runtimeSweepShape;
     [SerializeField] private float runtimeSphereRadius;
     [SerializeField] private Vector3 runtimeBoxHalfExtents;
+    [SerializeField] private bool rolling;
+    [SerializeField] private float rolledDistance;
+
+    private Vector3 rollDirection;
 
     private readonly RaycastHit[] hitBuffer =
         new RaycastHit[HitBufferCapacity];
@@ -73,6 +77,9 @@ public class FakeArcProjectile : MonoBehaviour
     public uint ActiveShotVersion => activeShotVersion;
     public bool HasValidAuthoredHitbox => ValidateAuthoredHitbox();
 
+    /// <summary>In flight or rolling, with a roll after landing.</summary>
+    public bool ActiveRollingItem => activeFlight && launch.RollSpeed > 0f;
+
     private void Awake()
     {
         CaptureVisualDefaults();
@@ -98,6 +105,12 @@ public class FakeArcProjectile : MonoBehaviour
     private void Update()
     {
         if (!activeFlight) return;
+
+        if (rolling)
+        {
+            UpdateRoll();
+            return;
+        }
 
         float duration = Mathf.Max(0.0001f, launch.FlightDuration);
         float nextElapsed = Mathf.Min(
@@ -147,6 +160,12 @@ public class FakeArcProjectile : MonoBehaviour
 
         if (nextNormalizedTime >= 1f)
         {
+            if (launch.RollSpeed > 0f)
+            {
+                BeginRoll();
+                return;
+            }
+
             Complete(
                 PowerupProjectileCompletionReason.Landed,
                 launch.LandingPosition,
@@ -185,6 +204,16 @@ public class FakeArcProjectile : MonoBehaviour
         if (!CaptureHitboxDefaults()) return false;
 
         launch = resolvedLaunch;
+
+        // A rolling projectile ends its arc at roll height, so it does not
+        // pop up when the roll starts.
+        if (launch.RollSpeed > 0f)
+        {
+            launch.LandingPosition += Vector3.up * launch.RollHeight;
+        }
+
+        rolling = false;
+        rolledDistance = 0f;
         activeItem = launch.Item;
         activeShotVersion = launch.ShotVersion;
         activePatternEntryIndex = launch.PatternEntryIndex;
@@ -254,6 +283,9 @@ public class FakeArcProjectile : MonoBehaviour
         activeFlight = false;
         preparedLaunch = false;
         rentedFromPool = false;
+        rolling = false;
+        rolledDistance = 0f;
+        rollDirection = Vector3.zero;
         activeItem = null;
         activeShotVersion = 0u;
         activePatternEntryIndex = -1;
@@ -386,8 +418,23 @@ public class FakeArcProjectile : MonoBehaviour
                     continue;
                 }
 
+                float segmentProgress = Mathf.Clamp01(
+                    candidateHit.distance / cartSweepDistance
+                );
+
+                float candidateHitTime = Mathf.Lerp(
+                    segmentStartNormalizedTime,
+                    segmentEndNormalizedTime,
+                    segmentProgress
+                );
+
+                // An item that hits its thrower may land on the thrower's
+                // leading cart, but only on the way down.
                 if (launch.IgnoreOwnerInFlight &&
-                    targetPlayerIndex == launch.OwnerPlayerIndex)
+                    targetPlayerIndex == launch.OwnerPlayerIndex &&
+                    !(launch.CanHitOwner &&
+                      candidateHitCart.Kind == PowerupCartTargetKind.LeadingCart &&
+                      candidateHitTime >= runtimeApexNormalizedTime))
                 {
                     continue;
                 }
@@ -403,16 +450,6 @@ public class FakeArcProjectile : MonoBehaviour
                     PowerupCartTargetKind.LeadingCart
                     ? PowerupProjectileCompletionReason.LeadingCartHit
                     : PowerupProjectileCompletionReason.ChainedCartHit;
-
-                float segmentProgress = Mathf.Clamp01(
-                    candidateHit.distance / cartSweepDistance
-                );
-
-                float candidateHitTime = Mathf.Lerp(
-                    segmentStartNormalizedTime,
-                    segmentEndNormalizedTime,
-                    segmentProgress
-                );
 
                 if (candidateHitTime >= nearestHitNormalizedTime) continue;
 
@@ -503,6 +540,266 @@ public class FakeArcProjectile : MonoBehaviour
         hitCart = nearestHitCart;
         return true;
     }
+
+    #region Roll
+
+    // After landing, a rolling projectile moves flat along the launcher's roll
+    // direction and completes on the first cart or blocking collider, or after
+    // its roll distance (infinite when the item rolls until it hits).
+    private void BeginRoll()
+    {
+        rollDirection = launch.RollDirection;
+        rollDirection.y = 0f;
+
+        rollDirection = rollDirection.sqrMagnitude > 0.000001f
+            ? rollDirection.normalized
+            : Vector3.forward;
+
+        rolledDistance = 0f;
+        rolling = true;
+    }
+
+    private void UpdateRoll()
+    {
+        float remaining = Mathf.Max(0f, launch.RollMaxDistance - rolledDistance);
+        float step = Mathf.Min(remaining, launch.RollSpeed * Time.deltaTime);
+
+        Vector3 previousPosition = transform.position;
+        Vector3 nextPosition = previousPosition + rollDirection * step;
+
+        elapsedSeconds += Time.deltaTime;
+
+        if (TrySweepRoll(
+                previousPosition,
+                nextPosition,
+                out RaycastHit acceptedHit,
+                out PowerupCartTargetSnapshot hitCart,
+                out PowerupProjectileCompletionReason completionReason,
+                out Vector3 projectileCenterAtHit))
+        {
+            transform.position = projectileCenterAtHit;
+            UpdateVisualSpin();
+
+            // A hit that starts inside a collider reports no point.
+            Vector3 hitPoint = acceptedHit.distance > 0f
+                ? acceptedHit.point
+                : projectileCenterAtHit;
+
+            Complete(
+                completionReason,
+                hitPoint,
+                acceptedHit.normal,
+                hitCart,
+                acceptedHit.collider
+            );
+            return;
+        }
+
+        transform.position = nextPosition;
+        rolledDistance += step;
+        UpdateVisualSpin();
+
+        if (rolledDistance >= launch.RollMaxDistance - 0.0001f)
+        {
+            Complete(
+                PowerupProjectileCompletionReason.Landed,
+                nextPosition - Vector3.up * launch.RollHeight,
+                launch.LandingNormal,
+                default,
+                null
+            );
+        }
+    }
+
+    // Any cart or obstacle stops the roll, except the thrower's own leading
+    // cart when the item cannot hit its thrower. Only a valid leading cart
+    // gets the item's effect.
+    private bool TrySweepRoll(
+        Vector3 start,
+        Vector3 end,
+        out RaycastHit acceptedHit,
+        out PowerupCartTargetSnapshot hitCart,
+        out PowerupProjectileCompletionReason completionReason,
+        out Vector3 projectileCenterAtHit)
+    {
+        acceptedHit = default;
+        hitCart = default;
+        completionReason = default;
+        projectileCenterAtHit = end;
+
+        if (!runtimeHitboxValid) return false;
+
+        float nearestDistance = float.PositiveInfinity;
+        float nearestSweepDistance = 1f;
+        bool found = false;
+
+        if (TrySweepRollShape(
+                start,
+                end,
+                launch.RollCartMask,
+                out int cartHitCount,
+                out float cartSweepDistance))
+        {
+            for (int i = 0; i < cartHitCount; i++)
+            {
+                RaycastHit candidateHit = hitBuffer[i];
+                Collider candidateCollider = candidateHit.collider;
+                if (candidateCollider == null) continue;
+                if (candidateHit.distance >= nearestDistance) continue;
+
+                PowerupCartTargetSnapshot snapshot = default;
+                bool resolved =
+                    PowerupCartTarget.TryResolveFromCollider(
+                        candidateCollider,
+                        out PowerupCartTarget candidateTarget);
+
+                if (resolved)
+                {
+                    // The snapshot is filled even for loose carts, which are
+                    // not gameplay targets.
+                    candidateTarget.TryGetGameplayTarget(out snapshot);
+                }
+                else if (candidateCollider.isTrigger)
+                {
+                    continue;
+                }
+
+                PowerupProjectileCompletionReason candidateReason;
+                PowerupCartTargetSnapshot candidateCart = default;
+
+                if (snapshot.Kind == PowerupCartTargetKind.LeadingCart)
+                {
+                    bool isOwner =
+                        snapshot.PlayerIndex == launch.OwnerPlayerIndex;
+
+                    if (isOwner &&
+                        launch.IgnoreOwnerInFlight &&
+                        !launch.CanHitOwner)
+                    {
+                        continue;
+                    }
+
+                    bool validTarget =
+                        launch.HasEffectOnLeadingCart &&
+                        snapshot.PlayerIndex >= 1 &&
+                        snapshot.PlayerIndex <=
+                            PowerupRuntimeSystem.MaxPlayerSlots &&
+                        !(launch.IgnoreCheckoutTargets && snapshot.IsInCheckout);
+
+                    if (validTarget)
+                    {
+                        candidateReason =
+                            PowerupProjectileCompletionReason.LeadingCartHit;
+                        candidateCart = snapshot;
+                    }
+                    else
+                    {
+                        candidateReason =
+                            PowerupProjectileCompletionReason.EnvironmentBlocked;
+                    }
+                }
+                else if (snapshot.Kind == PowerupCartTargetKind.ChainedCart)
+                {
+                    candidateReason =
+                        PowerupProjectileCompletionReason.ChainedCartHit;
+                    candidateCart = snapshot;
+                }
+                else
+                {
+                    candidateReason =
+                        PowerupProjectileCompletionReason.EnvironmentBlocked;
+                }
+
+                nearestDistance = candidateHit.distance;
+                nearestSweepDistance = cartSweepDistance;
+                acceptedHit = candidateHit;
+                hitCart = candidateCart;
+                completionReason = candidateReason;
+                found = true;
+            }
+        }
+
+        if (TrySweepRollShape(
+                start,
+                end,
+                launch.RollBlockingMask,
+                out int environmentHitCount,
+                out float environmentSweepDistance))
+        {
+            for (int i = 0; i < environmentHitCount; i++)
+            {
+                RaycastHit candidateHit = hitBuffer[i];
+                Collider candidateCollider = candidateHit.collider;
+
+                if (candidateCollider == null ||
+                    candidateCollider.isTrigger ||
+                    candidateHit.distance >= nearestDistance)
+                {
+                    continue;
+                }
+
+                nearestDistance = candidateHit.distance;
+                nearestSweepDistance = environmentSweepDistance;
+                acceptedHit = candidateHit;
+                hitCart = default;
+                completionReason =
+                    PowerupProjectileCompletionReason.EnvironmentBlocked;
+                found = true;
+            }
+        }
+
+        if (!found) return false;
+
+        projectileCenterAtHit = Vector3.Lerp(
+            start,
+            end,
+            Mathf.Clamp01(nearestDistance / nearestSweepDistance)
+        );
+        return true;
+    }
+
+    // The roll's own hit sphere, centred on the pivot; 0 falls back to the
+    // authored hitbox.
+    private bool TrySweepRollShape(
+        Vector3 rootStart,
+        Vector3 rootEnd,
+        LayerMask collisionMask,
+        out int hitCount,
+        out float sweepDistance)
+    {
+        if (launch.RollHitRadius <= 0f)
+        {
+            return TrySweepHitbox(
+                rootStart,
+                rootEnd,
+                collisionMask,
+                out hitCount,
+                out sweepDistance);
+        }
+
+        hitCount = 0;
+        Vector3 segment = rootEnd - rootStart;
+        sweepDistance = segment.magnitude;
+
+        if (collisionMask.value == 0 || sweepDistance <= 0.000001f)
+        {
+            return false;
+        }
+
+        hitCount = Physics.SphereCastNonAlloc(
+            rootStart,
+            launch.RollHitRadius,
+            segment / sweepDistance,
+            hitBuffer,
+            sweepDistance,
+            collisionMask,
+            QueryTriggerInteraction.Collide
+        );
+
+        return hitCount > 0;
+    }
+
+    #endregion
 
     private bool TrySweepHitbox(
         Vector3 rootStart,
@@ -751,6 +1048,7 @@ public class FakeArcProjectile : MonoBehaviour
         if (!activeFlight) return;
 
         activeFlight = false;
+        rolling = false;
 
         PowerupProjectileCompletion completion =
             new PowerupProjectileCompletion

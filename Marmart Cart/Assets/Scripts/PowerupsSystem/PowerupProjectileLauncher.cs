@@ -475,6 +475,9 @@ public class PowerupProjectileLauncher : MonoBehaviour
             Quaternion.LookRotation(collisionForward, Vector3.up) *
             Quaternion.Euler(pattern.CastEulerAngles);
 
+        bool rolls = snapshot.Item.TryGetEffect(out ProjectileRollEffect roll);
+        bool canHitOwner = snapshot.Item.HitsThrower;
+
         for (int i = 0; i < pattern.EntryCount; i++)
         {
             ProjectilePatternEntry entry = pattern.GetEntry(i);
@@ -493,6 +496,19 @@ public class PowerupProjectileLauncher : MonoBehaviour
                 out Vector3 resolvedLanding,
                 out Vector3 resolvedNormal
             );
+
+            Vector3 rollDirection = collisionForward;
+
+            if (rolls && !roll.RollAlongAim)
+            {
+                Vector3 flightLine = resolvedLanding - snapshot.StartPosition;
+                flightLine.y = 0f;
+
+                if (flightLine.sqrMagnitude > 0.000001f)
+                {
+                    rollDirection = flightLine.normalized;
+                }
+            }
 
             resolvedLaunches.Add(
                 new ResolvedPowerupProjectileLaunch
@@ -523,11 +539,19 @@ public class PowerupProjectileLauncher : MonoBehaviour
                     HasEffectOnChainedCarts =
                         pattern.HasEffectOnChainedCarts,
                     IgnoreOwnerInFlight = pattern.IgnoreOwnerInFlight,
+                    CanHitOwner = canHitOwner,
                     IgnoreCheckoutTargets = pattern.IgnoreCheckoutTargets,
                     VisualSpinAxis = entry.VisualSpinAxis,
                     VisualSpinDegreesPerSecond =
                         entry.VisualSpinDegreesPerSecond,
-                    VisualScaleMultiplier = entry.VisualScaleMultiplier
+                    VisualScaleMultiplier = entry.VisualScaleMultiplier,
+                    RollSpeed = rolls ? roll.RollSpeed : 0f,
+                    RollMaxDistance = rolls ? roll.ResolvedRollDistance : 0f,
+                    RollHeight = rolls ? roll.RollHeight : 0f,
+                    RollDirection = rolls ? rollDirection : Vector3.zero,
+                    RollHitRadius = rolls ? roll.RollHitRadius : 0f,
+                    RollCartMask = rolls ? roll.CartLayers : default,
+                    RollBlockingMask = rolls ? roll.BlockingLayers : default
                 }
             );
         }

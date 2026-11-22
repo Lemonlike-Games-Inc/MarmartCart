@@ -28,7 +28,16 @@ public class TomatoBlindEffect : ItemEffectDefinition
     )]
     [SerializeField] private bool refreshDurationOnAdditionalHit = true;
 
+    [Header("Self-Hit")]
+    [Tooltip(
+        "On: a Tomato that comes down on, or rolls into, the thrower's own " +
+        "leading cart blinds the thrower too. It never hits the thrower on the way up."
+    )]
+    [SerializeField] private bool blindsThrower = true;
+
     public float BlindDurationSeconds => blindDurationSeconds;
+    public bool BlindsThrower => blindsThrower;
+    public override bool HitsThrower => blindsThrower;
     public int MaximumVisualSplashCount => maximumVisualSplashCount;
     public bool RefreshDurationOnAdditionalHit =>
         refreshDurationOnAdditionalHit;

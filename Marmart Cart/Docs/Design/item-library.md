@@ -47,12 +47,13 @@ public class ItemDefinition : ScriptableObject
 - Use and effect assets hold definitions only, never runtime state.
 - Each scene system handles only the Items that carry its effect (`item.TryGetEffect(out TomatoBlindEffect blind)`). No switch over Items.
 - A new behaviour is a new effect type plus its system; nothing shared is edited.
+- Self-hit: an effect can say it may land on its thrower (`ItemEffectDefinition.HitsThrower`; the Tomato blind's Blinds Thrower toggle). The projectile then ignores the thrower on the way up only, and can hit them on the way down and while rolling. Ice cubes on the ground already hit everyone.
 
 ## Variants
 
 A variant is its own full Item asset that reuses the base Item's parts by pointing to the same assets. No inheritance or override machinery.
 
-- Rolling Tomato: the Tomato throw and Tomato blind assets, plus a roll effect.
+- Rolling Tomato: the Tomato blind asset and a roll effect (`ProjectileRollEffect`), plus its own throw: a copy of the Tomato throw whose tomatoes spin forward. The launcher passes the roll values (distance, direction, hit radius and the layers that stop it) to the projectile, which rolls after landing; the blind, splat and sound run where it stops. The projectile pool cancels rolling items at match end.
 - Really Really Cold Ice Cube: the Ice Cube throw, plus its own Ice Cube effect (a copy with Stays Until Triggered on and Maximum Cubes Per Player 0 = no cap). It uses the same cube prefab; a second look needs the ice cube pool keyed by prefab.
 
 ## Passive
