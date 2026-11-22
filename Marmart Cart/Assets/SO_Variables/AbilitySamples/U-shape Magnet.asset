@@ -16,6 +16,6 @@ MonoBehaviour:
   kind: 2
   tier: 1
   item: {fileID: 11400000, guid: 743a10fbaf94a204cac2a0465426babb, type: 2}
-  cooldownSeconds: 45
-  firstChargeSeconds: 10
+  cooldownSeconds: 1
+  firstChargeSeconds: 1
   upgradesMapItem: {fileID: 0}

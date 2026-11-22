@@ -6,11 +6,17 @@ using UnityEngine;
 /// (U-shape Magnet).
 ///
 /// LT is accepted only while the cone preview is shown. On use it finds the
-/// loose carts inside the published cone that have a clear line to the
-/// leading cart, spends the item (also when none are found), then moves each
-/// cart toward the thrower every physics step. A cart stops being pulled when
-/// any chain collects it (the normal trigger rule), when the pull times out,
-/// when the thrower enters ghost mode, or when the match ends.
+/// loose carts, and optionally the rival leading carts, inside the published
+/// cone that have a clear line to the thrower, spends the item (also when
+/// none are found), then pulls each one toward the thrower every physics step.
+///
+/// One pull method for both kinds (ComputePullAcceleration), with their own
+/// amounts. Loose carts are pushed through their Rigidbody and stop being
+/// pulled when any chain collects them (the normal trigger rule) or the pull
+/// times out. Leading carts are pushed through LeadingCartExternalForces and
+/// stop being pulled when it times out or the cart cannot be moved (ghost,
+/// checkout, frozen). Every pull stops when the thrower enters ghost mode or
+/// the match ends.
 /// </summary>
 [DefaultExecutionOrder(140)]
 [DisallowMultipleComponent]
@@ -20,12 +26,14 @@ public class MagnetPullEffectSystem : MonoBehaviour
 
     private struct PullState
     {
-        public ChainedCartManager Cart;
         public Rigidbody Body;
+        public ChainedCartManager LooseCart;
+        public LeadingCartExternalForces LeadingCart;
         public int OwnerPlayerIndex;
         public Transform Target;
         public LeadingCartBattleController TargetBattle;
         public float Speed;
+        public float Acceleration;
         public float EndsAtTime;
     }
 
@@ -44,7 +52,8 @@ public class MagnetPullEffectSystem : MonoBehaviour
         new PlayerItemHand[PowerupRuntimeSystem.MaxPlayerSlots];
 
     private readonly Collider[] overlapBuffer = new Collider[OverlapBufferCapacity];
-    private readonly List<ChainedCartManager> foundCarts = new List<ChainedCartManager>(16);
+    private readonly List<ChainedCartManager> foundLooseCarts = new List<ChainedCartManager>(16);
+    private readonly List<LeadingCartExternalForces> foundLeadingCarts = new List<LeadingCartExternalForces>(4);
     private readonly List<PullState> activePulls = new List<PullState>(16);
 
     private PowerupRuntimeSystem subscribedRuntimeSystem;
@@ -87,9 +96,13 @@ public class MagnetPullEffectSystem : MonoBehaviour
         for (int i = activePulls.Count - 1; i >= 0; i--)
         {
             PullState pull = activePulls[i];
+            bool isLoose = pull.LooseCart != null;
 
-            // Collected by any chain, or destroyed by its disappear timer.
-            if (pull.Cart == null || pull.Body == null || !pull.Cart.isAvailable)
+            // A loose cart collected by any chain, or destroyed by its
+            // disappear timer; a leading cart that went away.
+            if (pull.Body == null ||
+                (isLoose && !pull.LooseCart.isAvailable) ||
+                (!isLoose && pull.LeadingCart == null))
             {
                 activePulls.RemoveAt(i);
                 continue;
@@ -104,30 +117,72 @@ public class MagnetPullEffectSystem : MonoBehaviour
                 continue;
             }
 
-            Vector3 toTarget = pull.Target.position - pull.Body.position;
-            toTarget.y = 0f;
-            float distance = toTarget.magnitude;
+            Vector3 acceleration = ComputePullAcceleration(
+                pull.Body.linearVelocity,
+                pull.Target.position - pull.Body.position,
+                pull.Speed,
+                pull.Acceleration,
+                isLoose,
+                step
+            );
 
-            Vector3 velocity = pull.Body.linearVelocity;
-
-            if (distance > 0.0001f)
+            if (isLoose)
             {
-                // Never overshoot the leading cart in one step.
-                float speed = Mathf.Min(pull.Speed, distance / step);
-                Vector3 planar = toTarget / distance * speed;
-                velocity.x = planar.x;
-                velocity.z = planar.z;
+                pull.Body.AddForce(acceleration, ForceMode.Acceleration);
             }
-            else
+            else if (!pull.LeadingCart.TryAddAcceleration(acceleration))
             {
-                velocity.x = 0f;
-                velocity.z = 0f;
+                // Ghost, checkout or frozen: this cart is no longer pulled.
+                activePulls.RemoveAt(i);
             }
-
-            pull.Body.linearVelocity = velocity;
         }
 
         activePullCount = activePulls.Count;
+    }
+
+    /// <summary>
+    /// The one pull method: accelerate toward the target until the closing
+    /// speed reaches the pull speed, never overshooting in one step. With
+    /// cancelSideways the body also loses its sideways drift and is slowed
+    /// near the target, so it homes in (loose carts). Without it only the
+    /// toward-target part is added (leading carts, whose own grip and
+    /// steering act on the rest).
+    /// </summary>
+    private static Vector3 ComputePullAcceleration(
+        Vector3 velocity,
+        Vector3 toTarget,
+        float pullSpeed,
+        float maximumAcceleration,
+        bool cancelSideways,
+        float step)
+    {
+        toTarget.y = 0f;
+        Vector3 planarVelocity = new Vector3(velocity.x, 0f, velocity.z);
+        float distance = toTarget.magnitude;
+        Vector3 velocityChange;
+
+        if (distance <= 0.0001f)
+        {
+            velocityChange = cancelSideways ? -planarVelocity : Vector3.zero;
+        }
+        else
+        {
+            Vector3 direction = toTarget / distance;
+            float closingSpeed = Vector3.Dot(planarVelocity, direction);
+            float desiredClosingSpeed = Mathf.Min(pullSpeed, distance / step);
+            float alongChange = desiredClosingSpeed - closingSpeed;
+
+            if (!cancelSideways) alongChange = Mathf.Max(0f, alongChange);
+
+            velocityChange = direction * alongChange;
+
+            if (cancelSideways)
+            {
+                velocityChange -= planarVelocity - direction * closingSpeed;
+            }
+        }
+
+        return Vector3.ClampMagnitude(velocityChange / step, maximumAcceleration);
     }
 
     private bool ValidateItemUse(
@@ -156,7 +211,9 @@ public class MagnetPullEffectSystem : MonoBehaviour
             return;
         }
 
-        FindLooseCartsInCone(aim, pullEffect);
+        CartControlScript cartControl = controller.CartControlInput;
+
+        FindTargetsInCone(aim, pullEffect, cartControl);
 
         if (!controller.TryConsumeEquippedItem(out ItemDefinition consumedItem) ||
             consumedItem != requestedItem)
@@ -165,33 +222,47 @@ public class MagnetPullEffectSystem : MonoBehaviour
                 $"[Magnet] P{controller.PlayerIndex} could not spend {requestedItem.name}; nothing was pulled.",
                 this
             );
-            foundCarts.Clear();
+            ClearFoundTargets();
             return;
         }
 
-        CartControlScript cartControl = controller.CartControlInput;
         LeadingCartBattleController battle =
             cartControl.GetComponentInChildren<LeadingCartBattleController>(true);
-        float endsAt = Time.time + pullEffect.MaximumPullSeconds;
+        float now = Time.time;
 
-        for (int i = 0; i < foundCarts.Count; i++)
+        for (int i = 0; i < foundLooseCarts.Count; i++)
         {
-            ChainedCartManager cart = foundCarts[i];
+            ChainedCartManager cart = foundLooseCarts[i];
             Rigidbody body = cart.GetComponent<Rigidbody>();
             if (body == null) continue;
 
-            // The newest magnet takes over a cart another magnet is pulling.
-            RemovePullForCart(cart);
-
-            activePulls.Add(new PullState
+            StartPull(new PullState
             {
-                Cart = cart,
                 Body = body,
+                LooseCart = cart,
                 OwnerPlayerIndex = controller.PlayerIndex,
                 Target = cartControl.transform,
                 TargetBattle = battle,
                 Speed = pullEffect.PullSpeed,
-                EndsAtTime = endsAt
+                Acceleration = pullEffect.PullAcceleration,
+                EndsAtTime = now + pullEffect.MaximumPullSeconds
+            });
+        }
+
+        for (int i = 0; i < foundLeadingCarts.Count; i++)
+        {
+            LeadingCartExternalForces leadingCart = foundLeadingCarts[i];
+
+            StartPull(new PullState
+            {
+                Body = leadingCart.Body,
+                LeadingCart = leadingCart,
+                OwnerPlayerIndex = controller.PlayerIndex,
+                Target = cartControl.transform,
+                TargetBattle = battle,
+                Speed = pullEffect.LeadingCartPullSpeed,
+                Acceleration = pullEffect.LeadingCartPullAcceleration,
+                EndsAtTime = now + pullEffect.LeadingCartPullSeconds
             });
         }
 
@@ -207,26 +278,30 @@ public class MagnetPullEffectSystem : MonoBehaviour
                 OwnerController = controller,
                 Position = aim.RangeOrigin,
                 Direction = aim.AimDirection,
-                ProjectileCount = foundCarts.Count
+                ProjectileCount = foundLooseCarts.Count + foundLeadingCarts.Count
             }
         );
 
         if (logPulls)
         {
             Debug.Log(
-                $"[Magnet] P{controller.PlayerIndex} used {requestedItem.name}: pulling {foundCarts.Count} loose cart(s).",
+                $"[Magnet] P{controller.PlayerIndex} used {requestedItem.name}: pulling " +
+                $"{foundLooseCarts.Count} loose cart(s) and {foundLeadingCarts.Count} leading cart(s).",
                 this
             );
         }
 
-        foundCarts.Clear();
+        ClearFoundTargets();
     }
 
-    // Fills foundCarts with loose carts inside the cone that have a clear line
-    // to the cone origin.
-    private void FindLooseCartsInCone(PowerupAimState aim, MagnetPullEffect pullEffect)
+    // Fills the found lists with loose carts and rival leading carts inside
+    // the cone that have a clear line to the cone origin.
+    private void FindTargetsInCone(
+        PowerupAimState aim,
+        MagnetPullEffect pullEffect,
+        CartControlScript throwerCart)
     {
-        foundCarts.Clear();
+        ClearFoundTargets();
 
         Vector3 origin = aim.RangeOrigin;
         Vector3 forward = aim.AimDirection;
@@ -236,8 +311,7 @@ public class MagnetPullEffectSystem : MonoBehaviour
 
         float length = aim.ConeLength;
         float cosHalfAngle = Mathf.Cos(aim.ConeAngleDegrees * 0.5f * Mathf.Deg2Rad);
-        Vector3 sightOffset = Vector3.up * pullEffect.LineOfSightHeight;
-        LayerMask blockingLayers = pullEffect.LineOfSightBlockingLayers;
+        bool includeLeadingCarts = pullEffect.PullLeadingCarts;
 
         int hitCount = Physics.OverlapSphereNonAlloc(
             origin,
@@ -253,37 +327,70 @@ public class MagnetPullEffectSystem : MonoBehaviour
             if (hit == null) continue;
 
             Rigidbody body = hit.attachedRigidbody;
-            ChainedCartManager cart = body != null
+            ChainedCartManager looseCart = body != null
                 ? body.GetComponent<ChainedCartManager>()
                 : hit.GetComponentInParent<ChainedCartManager>();
 
-            if (cart == null || !cart.isAvailable || foundCarts.Contains(cart)) continue;
+            if (looseCart != null)
+            {
+                if (looseCart.isAvailable &&
+                    !foundLooseCarts.Contains(looseCart) &&
+                    IsInConeWithClearLine(looseCart.transform.position, origin, forward, length, cosHalfAngle, pullEffect))
+                {
+                    foundLooseCarts.Add(looseCart);
+                }
 
-            Vector3 cartPosition = cart.transform.position;
-            Vector3 toCart = cartPosition - origin;
-            toCart.y = 0f;
-            float distance = toCart.magnitude;
+                continue;
+            }
 
-            if (distance > length) continue;
+            if (!includeLeadingCarts || body == null) continue;
 
-            if (distance > 0.0001f &&
-                Vector3.Dot(toCart / distance, forward) < cosHalfAngle)
+            LeadingCartExternalForces leadingCart = body.GetComponent<LeadingCartExternalForces>();
+
+            if (leadingCart == null ||
+                leadingCart.CartControl == throwerCart ||
+                foundLeadingCarts.Contains(leadingCart) ||
+                !leadingCart.CanBeMoved ||
+                !IsInConeWithClearLine(body.position, origin, forward, length, cosHalfAngle, pullEffect))
             {
                 continue;
             }
 
-            if (blockingLayers.value != 0 &&
-                Physics.Linecast(
-                    origin + sightOffset,
-                    cartPosition + sightOffset,
-                    blockingLayers,
-                    QueryTriggerInteraction.Ignore))
-            {
-                continue;
-            }
-
-            foundCarts.Add(cart);
+            foundLeadingCarts.Add(leadingCart);
         }
+    }
+
+    private static bool IsInConeWithClearLine(
+        Vector3 position,
+        Vector3 origin,
+        Vector3 forward,
+        float length,
+        float cosHalfAngle,
+        MagnetPullEffect pullEffect)
+    {
+        Vector3 toTarget = position - origin;
+        toTarget.y = 0f;
+        float distance = toTarget.magnitude;
+
+        if (distance > length) return false;
+
+        if (distance > 0.0001f &&
+            Vector3.Dot(toTarget / distance, forward) < cosHalfAngle)
+        {
+            return false;
+        }
+
+        LayerMask blockingLayers = pullEffect.LineOfSightBlockingLayers;
+        if (blockingLayers.value == 0) return true;
+
+        Vector3 sightOffset = Vector3.up * pullEffect.LineOfSightHeight;
+
+        return !Physics.Linecast(
+            origin + sightOffset,
+            position + sightOffset,
+            blockingLayers,
+            QueryTriggerInteraction.Ignore
+        );
     }
 
     // The cone the player sees is the cone that is used.
@@ -316,19 +423,29 @@ public class MagnetPullEffectSystem : MonoBehaviour
                item.TryGetUse(out coneUse);
     }
 
-    private void RemovePullForCart(ChainedCartManager cart)
+    // The newest magnet takes over a cart another magnet is pulling.
+    private void StartPull(PullState pull)
     {
         for (int i = activePulls.Count - 1; i >= 0; i--)
         {
-            if (activePulls[i].Cart == cart) activePulls.RemoveAt(i);
+            if (activePulls[i].Body == pull.Body) activePulls.RemoveAt(i);
         }
+
+        activePulls.Add(pull);
     }
 
+    private void ClearFoundTargets()
+    {
+        foundLooseCarts.Clear();
+        foundLeadingCarts.Clear();
+    }
+
+    // Loose carts are let go with a little momentum instead of a dead stop.
+    // Leading carts keep their speed; their own drive and grip take over.
     private static void ReleasePull(PullState pull)
     {
-        if (pull.Body == null) return;
+        if (pull.LooseCart == null || pull.Body == null || !pull.LooseCart.isAvailable) return;
 
-        // Let go with a little momentum instead of a dead stop.
         Vector3 velocity = pull.Body.linearVelocity;
         velocity.x *= 0.3f;
         velocity.z *= 0.3f;
@@ -339,8 +456,7 @@ public class MagnetPullEffectSystem : MonoBehaviour
     {
         for (int i = 0; i < activePulls.Count; i++)
         {
-            PullState pull = activePulls[i];
-            if (pull.Cart != null && pull.Cart.isAvailable) ReleasePull(pull);
+            ReleasePull(activePulls[i]);
         }
 
         activePulls.Clear();

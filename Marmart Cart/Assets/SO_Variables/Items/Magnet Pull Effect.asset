@@ -13,7 +13,12 @@ MonoBehaviour:
   m_Name: Magnet Pull Effect
   m_EditorClassIdentifier: 
   pullSpeed: 35
+  pullAcceleration: 200
   maximumPullSeconds: 1.5
+  pullLeadingCarts: 1
+  leadingCartPullSpeed: 16
+  leadingCartPullAcceleration: 100
+  leadingCartPullSeconds: 0.5
   cartLayers:
     serializedVersion: 2
     m_Bits: 128

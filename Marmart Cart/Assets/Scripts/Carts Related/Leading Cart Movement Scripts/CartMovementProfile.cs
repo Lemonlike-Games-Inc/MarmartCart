@@ -131,6 +131,19 @@ public class CartMovementModeSettings
 
     #endregion
 
+    #region Overspeed Settle
+
+    [Header("Overspeed Settle")]
+    [Tooltip(
+        "Deceleration (m/s²) while forward speed is above this mode's target speed, " +
+        "for example after Hype Speed Up or Cola ends, or when overload lowers the target. " +
+        "The drive never brakes on its own, so 0 keeps the extra speed until the cart turns."
+    )]
+    [Min(0f)]
+    public float overspeedSettleDeceleration = 0f;
+
+    #endregion
+
     public float GetTurnAssistTorqueMultiplier(float normalizedTurnIntensity)
     {
         if (!enableTurnSpeedAssist)
@@ -149,6 +162,7 @@ public class CartMovementModeSettings
     {
         turnAssistReferenceAngle = Mathf.Max(1f, turnAssistReferenceAngle);
         maxTurnAssistTorqueMultiplier = Mathf.Max(0f, maxTurnAssistTorqueMultiplier);
+        overspeedSettleDeceleration = Mathf.Max(0f, overspeedSettleDeceleration);
     }
 
     public static CartMovementModeSettings CreateNormalDrive()
@@ -158,7 +172,8 @@ public class CartMovementModeSettings
             enableTurnSpeedAssist = true,
             turnAssistReferenceAngle = 45f,
             turnAssistStartIntensity = 0f,
-            maxTurnAssistTorqueMultiplier = 1.1f
+            maxTurnAssistTorqueMultiplier = 1.1f,
+            overspeedSettleDeceleration = 8f
         };
     }
 
@@ -180,7 +195,8 @@ public class CartMovementModeSettings
             enableTurnSpeedAssist = true,
             turnAssistReferenceAngle = 45f,
             turnAssistStartIntensity = 0f,
-            maxTurnAssistTorqueMultiplier = 1.5f
+            maxTurnAssistTorqueMultiplier = 1.5f,
+            overspeedSettleDeceleration = 8f
         };
     }
 }

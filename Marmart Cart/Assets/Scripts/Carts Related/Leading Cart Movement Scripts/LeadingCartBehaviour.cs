@@ -12,6 +12,7 @@ using UnityEngine;
 /// - Speedup is the Hype-funded speedup mode from CartControlScript.
 /// - Cola Mentos may temporarily replace all three with one fixed target speed.
 /// - Turn assist changes engine authority only; lateral grip remains independent.
+/// - Above the target speed, the mode's overspeed settle slows the cart back down.
 /// - Battle/crash systems may temporarily stop and resume wheel drive through
 ///   SetSpeedToZero() and ResetSpeed().
 /// </summary>
@@ -93,6 +94,13 @@ public class LeadingCartBehaviour : MonoBehaviour
 
     private CartDriveMode currentDriveMode = CartDriveMode.NormalDrive;
 
+    // This wheel's share of cart-wide forces (1 / wheels on this body).
+    private float wheelShare = 0.25f;
+
+    private const float OverspeedTolerance = 0.25f;
+
+    public float TargetSpeed => targetSpeed;
+
     #endregion
 
     #region Brake Settings
@@ -143,6 +151,18 @@ public class LeadingCartBehaviour : MonoBehaviour
         if (cargoCapacityController == null)
         {
             Debug.LogWarning("[LeadingCartBehaviour] CargoCapacityController was not found. Overload movement penalty will remain inactive.", this);
+        }
+
+        if (cartBody != null)
+        {
+            int wheelCount = 0;
+
+            foreach (LeadingCartBehaviour wheel in cartBody.GetComponentsInChildren<LeadingCartBehaviour>(true))
+            {
+                if (wheel.cartBody == cartBody) wheelCount++;
+            }
+
+            wheelShare = wheelCount > 0 ? 1f / wheelCount : 1f;
         }
     }
 
@@ -381,6 +401,12 @@ public class LeadingCartBehaviour : MonoBehaviour
         float cartForwardSpeed = Vector3.Dot(cartBody.transform.forward, cartBody.linearVelocity);
         float speedError = targetSpeed - cartForwardSpeed;
 
+        if (speedError < -OverspeedTolerance)
+        {
+            ApplyOverspeedSettle(-speedError);
+            return;
+        }
+
         if (speedError <= 0.1f) return;
 
         float normalizedSpeed = Mathf.Clamp01(Mathf.Abs(cartForwardSpeed) / targetSpeed);
@@ -391,6 +417,22 @@ public class LeadingCartBehaviour : MonoBehaviour
         float forceMagnitude = Mathf.Min(desiredAcceleration * cartBody.mass, forceCap);
 
         cartBody.AddForceAtPosition(accelerationDirection * forceMagnitude, transform.position);
+    }
+
+    // The drive only pushes, so without this a cart keeps speed above its
+    // target (after Hype Speed Up or Cola ends) until it turns. Each wheel
+    // brakes its share at the centre of mass, so the whole cart slows at the
+    // mode's settle rate without pitching.
+    private void ApplyOverspeedSettle(float overspeed)
+    {
+        float deceleration = GetModeSettings(currentDriveMode).overspeedSettleDeceleration;
+
+        if (deceleration <= 0f) return;
+
+        float appliedDeceleration = Mathf.Min(deceleration, overspeed / Time.fixedDeltaTime);
+        Vector3 forward = cartBody.transform.forward;
+
+        cartBody.AddForce(-forward * (appliedDeceleration * wheelShare), ForceMode.Acceleration);
     }
 
     private float GetTurnAssistTorqueMultiplier()

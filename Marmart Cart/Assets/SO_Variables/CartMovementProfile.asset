@@ -20,16 +20,19 @@ MonoBehaviour:
     turnAssistReferenceAngle: 45
     turnAssistStartIntensity: 0
     maxTurnAssistTorqueMultiplier: 0.5
+    overspeedSettleDeceleration: 8
   drift:
     enableTurnSpeedAssist: 1
     turnAssistReferenceAngle: 60
     turnAssistStartIntensity: 0
     maxTurnAssistTorqueMultiplier: 1.5
+    overspeedSettleDeceleration: 0
   speedup:
     enableTurnSpeedAssist: 1
     turnAssistReferenceAngle: 45
     turnAssistStartIntensity: 0
     maxTurnAssistTorqueMultiplier: 3
+    overspeedSettleDeceleration: 8
   driftFeel:
     enableTightDriftDip: 1
     tightDriftDipTriggerTightness: 0.35
