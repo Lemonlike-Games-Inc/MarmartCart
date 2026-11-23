@@ -57,8 +57,8 @@ MonoBehaviour:
   activateTriggerPromptIcon: {fileID: 21300000, guid: dfac01fbef47d1943ad5fee810fa6fd3, type: 3}
   plusPromptIcon: {fileID: 21300000, guid: 3a2296c7f0adec04fa11d14a453b7cdc, type: 3}
   twoPlayerAnchor: {x: 0.5, y: 0}
-  twoPlayerOffsetPixels: {x: 0, y: 8}
-  twoPlayerScale: 1
+  twoPlayerOffsetPixels: {x: 0, y: 40}
+  twoPlayerScale: 1.25
   fourPlayerAnchor: {x: 0.5, y: 0}
   fourPlayerOffsetPixels: {x: 0, y: 4}
   fourPlayerScale: 0.7

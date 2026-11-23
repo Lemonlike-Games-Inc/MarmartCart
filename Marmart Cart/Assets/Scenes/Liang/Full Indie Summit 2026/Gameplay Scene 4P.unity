@@ -12124,7 +12124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: d1922b80c3c3a79428ae71472cd5f93c, type: 2}
   roundProfiles:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: f8fa068387abfb04eb0d72b23e93d786, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   cartRestockSpawner: {fileID: 2056198977}
