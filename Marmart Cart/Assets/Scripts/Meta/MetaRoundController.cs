@@ -8,9 +8,10 @@ using UnityEngine.SceneManagement;
 /// Scene-local Round loop. One Round is one load of the gameplay scene.
 ///
 /// - On load it logs the Round held in MatchSession.
-/// - Pre-round: it takes over the match start from GameTimeManager, shows the
-///   Round title and a countdown in real time while PreGame keeps the world
-///   frozen, then starts the match. Presentation listens to the pre-round events.
+/// - Pre-round: it takes over the match start from GameTimeManager. While
+///   PreGame keeps the world frozen it runs its Pre-Round Stages in order (the
+///   Ability pick from Round 2), then shows the Round title and a countdown in
+///   real time, then starts the match. Presentation listens to the pre-round events.
 /// - When the score reveal ends it works out the Round winners, holds the
 ///   result for a set time, then commits the Round and reloads the active scene.
 /// - The final Round is not committed, because no next Round loads. The
@@ -46,6 +47,10 @@ public sealed class MetaRoundController : MonoBehaviour
     public enum PreRoundBeat
     {
         None,
+
+        /// <summary>A Pre-Round Stage is running, such as the Ability pick.</summary>
+        Stages,
+
         RoundTitle,
         Countdown,
         Go
@@ -60,6 +65,13 @@ public sealed class MetaRoundController : MonoBehaviour
 
     [Tooltip("Auto-found if left empty.")]
     [SerializeField] private GameTimeManager gameTimeManager;
+
+    [Header("Pre-Round Stages")]
+    [Tooltip(
+        "Run in this order before the Round title, each only in the Rounds it applies to " +
+        "(for example the Ability pick from Round 2)."
+    )]
+    [SerializeField] private PreRoundStage[] preRoundStages = new PreRoundStage[0];
 
     [Header("Pre-Round (real-time seconds)")]
     [Min(0f)]
@@ -107,6 +119,8 @@ public sealed class MetaRoundController : MonoBehaviour
     [SerializeField] private int countdownValue;
 
     private float nextBeatTime;
+    private int stageIndex = -1;
+    private PreRoundStage activeStage;
 
     /// <summary>Round title shown: Round number, and whether it is the final Round.</summary>
     public event Action<int, bool> RoundTitleShown;
@@ -184,7 +198,8 @@ public sealed class MetaRoundController : MonoBehaviour
     // Diagnostic only: when this controller requested a load, so the next load can log its duration.
     private static float loadRequestedRealtime = -1f;
 
-    private static int ActivePlayerCount =>
+    /// <summary>Players in this Match, from GMode (2 when there is none).</summary>
+    public static int ActivePlayerCount =>
         Mathf.Clamp(GMode.Instance != null ? GMode.Instance.PlayerCount() : 2, 1, MaxPlayers);
 
     #region Unity
@@ -304,9 +319,21 @@ public sealed class MetaRoundController : MonoBehaviour
             // GameTimeManager enters PreGame in its Start; wait for it so the world is frozen.
             if (!gameTimeManager.IsPreGame) return;
 
-            SetBeat(PreRoundBeat.RoundTitle, roundTitleDuration);
             Debug.Log($"[Meta] Pre-round | Round {roundNumber}{(MatchSession.IsFinalRound ? " (final)" : string.Empty)}", this);
-            RoundTitleShown?.Invoke(roundNumber, MatchSession.IsFinalRound);
+            currentBeat = PreRoundBeat.Stages;
+            stageIndex = -1;
+            if (!TryBeginNextStage()) ShowRoundTitle();
+            return;
+        }
+
+        if (currentBeat == PreRoundBeat.Stages)
+        {
+            if (activeStage != null && activeStage.isActiveAndEnabled && !activeStage.IsFinished) return;
+
+            if (activeStage == null || !activeStage.isActiveAndEnabled)
+                Debug.LogWarning("[Meta] A pre-round stage was disabled or destroyed while running. Moving on.", this);
+
+            if (!TryBeginNextStage()) ShowRoundTitle();
             return;
         }
 
@@ -328,6 +355,41 @@ public sealed class MetaRoundController : MonoBehaviour
                 EndPreRound();
                 break;
         }
+    }
+
+    // Starts the next stage that runs before this Round. False when none is left.
+    private bool TryBeginNextStage()
+    {
+        activeStage = null;
+
+        while (++stageIndex < preRoundStages.Length)
+        {
+            PreRoundStage stage = preRoundStages[stageIndex];
+            if (stage == null || !stage.isActiveAndEnabled || !stage.RunsBeforeRound(roundNumber)) continue;
+
+            activeStage = stage;
+            Debug.Log($"[Meta] Pre-round stage {stageIndex + 1}: {stage.name}", this);
+            stage.Begin(roundNumber);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ShowRoundTitle()
+    {
+        activeStage = null;
+        SetBeat(PreRoundBeat.RoundTitle, roundTitleDuration);
+        RoundTitleShown?.Invoke(roundNumber, MatchSession.IsFinalRound);
+    }
+
+    private void CancelActiveStage()
+    {
+        if (activeStage == null) return;
+
+        Debug.Log($"[Meta] Pre-round stage cancelled: {activeStage.name}", this);
+        activeStage.Cancel();
+        activeStage = null;
     }
 
     private void ShowCountdown(int value)
@@ -599,6 +661,7 @@ public sealed class MetaRoundController : MonoBehaviour
     // Fades out first; Update completes the load when the fade ends.
     private void BeginLoad(LoadTarget target)
     {
+        CancelActiveStage();
         phase = RoundPhase.Loading;
         pendingLoad = target;
         fadeOutElapsed = 0f;

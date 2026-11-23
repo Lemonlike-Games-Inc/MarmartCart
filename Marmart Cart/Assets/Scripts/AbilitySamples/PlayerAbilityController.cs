@@ -23,8 +23,8 @@ public sealed class PlayerAbilityController : MonoBehaviour
 
     [Header("Debug")]
     [Tooltip(
-        "Sample given when the scene loads, until the pick screen exists. " +
-        "Clear it before the booth build."
+        "Sample given when the scene loads. A pick before the Round (from Round 2) " +
+        "replaces it. Clear it before the booth build."
     )]
     [SerializeField] private AbilitySampleDefinition debugStartingSample;
 

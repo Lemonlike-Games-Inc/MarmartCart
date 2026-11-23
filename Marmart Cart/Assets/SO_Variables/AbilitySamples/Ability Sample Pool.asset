@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce14190ce8071da44a137c950fa85507, type: 3}
+  m_Name: Ability Sample Pool
+  m_EditorClassIdentifier: 
+  samples:
+  - {fileID: 11400000, guid: 1d32e41a2e6a19943878fad3b73e178c, type: 2}
+  - {fileID: 11400000, guid: d33f0589fb273d04ba072f3b03639304, type: 2}
+  - {fileID: 11400000, guid: 81c026a3c8e8b7246b6f1e36bd99c116, type: 2}
+  - {fileID: 11400000, guid: 0f0728774bdbb654387643a22ee68a4a, type: 2}
+  - {fileID: 11400000, guid: 6d16ee56ac5f38c49b6cf21db2cc6cf6, type: 2}
+  - {fileID: 11400000, guid: 8ea45465e9ff2c34c8b7d3f9cc3441eb, type: 2}
+  roundWeights:
+  - label: Round 2
+    round: 2
+    silver: 60
+    gold: 40
+    prismatic: 0
+    unique: 0
+  - label: Round 3
+    round: 3
+    silver: 30
+    gold: 70
+    prismatic: 0
+    unique: 0
+  atMostOneBaselinePerHand: 0

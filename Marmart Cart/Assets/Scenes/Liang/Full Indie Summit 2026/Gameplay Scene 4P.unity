@@ -11095,6 +11095,61 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8565887602054136036, guid: 4a3012937cb42cf4f830d548501e8ad7, type: 3}
   m_PrefabInstance: {fileID: 630892100}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &631051943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 631051945}
+  - component: {fileID: 631051944}
+  m_Layer: 0
+  m_Name: Ability Sample Pick
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &631051944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 631051943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 457fc05f9e4c42e4d9aab125e856be5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pool: {fileID: 11400000, guid: 1bfab6cf085601a4f80165a013e0aa34, type: 2}
+  firstPickRound: 2
+  introSeconds: 0.6
+  revealStepSeconds: 0.3
+  pickSeconds: 20
+  allPickedHoldSeconds: 3
+  debugMode: 0
+  logPick: 1
+  phase: 0
+  round: 0
+  playerCount: 0
+--- !u!4 &631051945
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 631051943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1253354287}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &638164538
 GameObject:
   m_ObjectHideFlags: 0
@@ -128920,6 +128975,8 @@ MonoBehaviour:
   resultsPresentation: {fileID: 0}
   cashScoreManager: {fileID: 0}
   gameTimeManager: {fileID: 0}
+  preRoundStages:
+  - {fileID: 631051944}
   roundTitleDuration: 2.5
   countdownFrom: 3
   countdownStepDuration: 1
@@ -128945,7 +129002,8 @@ Transform:
   m_LocalPosition: {x: 147.46622, y: -302.71225, z: -204.21207}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 631051945}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1255611761
@@ -133686,30 +133744,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runtimeSystem: {fileID: 874786258}
   viewportCanvasSystem: {fileID: 0}
-  hudProfile: {fileID: 11400000, guid: 6d7e630dfd1e0204b86e966748b3fd90, type: 2}
+  profile: {fileID: 11400000, guid: 6d7e630dfd1e0204b86e966748b3fd90, type: 2}
   bindingRetryInterval: 0.1
   logMissingIconAssignments: 1
-  slotDiagnostics:
-  - PlayerIndex: 1
-    PlayerBound: 0
-    HasStoredPowerup: 0
-    StoredItem: {fileID: 0}
-    Visible: 0
-  - PlayerIndex: 2
-    PlayerBound: 0
-    HasStoredPowerup: 0
-    StoredItem: {fileID: 0}
-    Visible: 0
-  - PlayerIndex: 3
-    PlayerBound: 0
-    HasStoredPowerup: 0
-    StoredItem: {fileID: 0}
-    Visible: 0
-  - PlayerIndex: 4
-    PlayerBound: 0
-    HasStoredPowerup: 0
-    StoredItem: {fileID: 0}
-    Visible: 0
 --- !u!1 &1563801855
 GameObject:
   m_ObjectHideFlags: 0

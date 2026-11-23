@@ -33,18 +33,21 @@ An adjective should change a rule or a behaviour. A pure stat change ("bigger", 
 
 ## The offer
 
-- Each player is offered 3 Samples and picks 1.
-- The offer is random per player, with tiers mixed. Two players may pick the same Sample.
-- Proposed, not yet agreed: at most one baseline in a hand, so no player gets three baselines.
-- Later, much later: a one-by-one reveal with more show.
+- Each player is dealt 3 cards and picks 1. The three are always different Samples; two players may get, and pick, the same one.
+- Each card rolls its tier with the Round's tier weights (agreed 2026-11-23), then a Sample of that tier. The weights are set per Round in the `Ability Sample Pool` asset; a tier with no Sample left is skipped. Defaults: Round 2 Silver 60 / Gold 40, Round 3 Silver 30 / Gold 70, Prismatic and Unique 0.
+- Pity rule "at most one Baseline per hand" is a toggle on the pool, off by default.
+- Not built yet: a specific Unique once per Match.
 
 ## The pick
 
-- Pre-round order for Rounds 2 and 3: Policy pop, Section reveal, Ability pick, countdown. Round 1 has no pick.
+- Pre-round order for Rounds 2 and 3: Policy pop, Section reveal, Ability pick, Round title, countdown. Round 1 has no pick.
 - All players pick at the same time, each in their own viewport.
-- Left stick or D-pad highlights; A confirms.
-- After about 15 s, a player who has not confirmed gets the highlighted Sample.
-- A locked pick is shown larger, so the other players can read it. There is no separate reveal step.
+- The cards show their backs, then flip face up one by one, left to right, 0.3 s apart. Then the input hints appear and choosing starts.
+- Left stick or D-pad highlights (the highlighted card pops larger); A locks. Keyboard: A/D or arrows, Enter.
+- 20 s to choose, counted from when every card is face up. At 0, a player who has not locked gets the highlighted card.
+- Once everyone has locked: hold 3 s, skip the rest of the time, then the Round title. A locked player sees "Waiting for others"; the other two cards fade.
+- The picked Sample is set when the pick ends and replaces the earlier one. Its first charge starts at "SHOP!".
+- Debug Mode on the pick: the time becomes 99999 s and F5 (or "Deal New Cards" in the component's ⋮ menu) deals every player new cards.
 
 ## Using it in a Round
 
@@ -134,15 +137,23 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
      - Ready motion per tier: Silver still, Gold a shine sweep, Prismatic a colour-cycling rim and glow plus the shine, Unique a red glow pulse and a gold inner line. A ring bursts out when the Ability becomes ready.
      - Styles (colours and motion per tier) and timings sit on the bar root; the placeholder sprites are in `2D Arts/Player Action Bar/`.
 9. System sound hooks (inserted 2026-11-22, before the pick screen). Built 2026-11-22: `PlayerItemSfxRelay` on `Chain of Carts Base` (inherited by P1-P4), with Inspector hooks for generic feedback that does not depend on the item: powerup collected, item equipped (after a pickup, a ready Ability, a swap, or when the other item was used up), swapped, swap failed (LB with nothing to swap to; optional) and Ability ready. Several can fire in the same frame. The hooks are empty; sounds are wired later, for example to `SfxManager.PlaySFX`. Item-specific sounds stay on `PowerupLifecycleUnityEventRelay`. `PlayerItemHand` gained `OnSwapPressed`.
-10. The pick screen (was step 9), as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
+10. The pick screen (was step 9), as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it. Agreed 2026-11-23, in three parts:
+   - 10a, logic with logs only. Built 2026-11-23:
+     - `MetaRoundController` runs a list of Pre-Round Stages (`PreRoundStage`) before the Round title; a load (F1-F4) cancels the running one.
+     - `AbilitySamplePickController` is the first stage, on `Meta Game Controller/Ability Sample Pick` in the gameplay scenes. It deals, reveals, takes input, runs the timer and sets each player's Sample.
+     - `AbilitySamplePool` (`SO_Variables/AbilitySamples/Ability Sample Pool`) holds the Samples and the tier weights per Round.
+     - Input comes from the UI map (Navigate, Submit) through `CartControlScript` (`OnMenuHorizontalStep`, `OnMenuSubmitPressed`), so the input asset did not change.
+   - 10b, the look: large card (icon, name, short description, cooldown), the header and timer, the input hints, per-player view, Prefab Mode preview.
+     - Card content lives on each Sample asset: Display Name, a new short Description, and an optional Card Icon (empty uses the action bar icon). The cooldown line is text ("Cooldown 30s") from Cooldown Seconds.
+     - Header "FREE SAMPLES!" with the sub-line "One per customer", the timer below it.
+   - 10c, the motion and sound: card backs and the flip reveal with a tier pop, the highlight pop, the lock, and sound hooks (card revealed, highlight moved, picked).
+     - The reveal sound is one generic sound, not per tier, fired per flip in each player's view. All views flip together, so in 4P it can stack four times; if that sounds bad, try once per flip for the whole screen. Decided 2026-11-23.
 
 ## Open
 
 - Rolling Tomato: the aim preview shows only the landing area, not the roll path.
 - Rolling Tomato: the roll is flat and ignores the floor, so a tomato that finds a gap in the walls rolls on until the match ends.
 - Effects that change the same thing at once, such as two speed effects (Cola with Customer in Training). Watch in playtests; design later.
-- The rule of at most one baseline in a hand.
-- Tier weights in the random offer.
 - Whether three cards stay readable in a 4P view. Check early.
 - Permanent ice cubes have no cap. If Rounds get too messy, set Maximum Cubes Per Player on the Really Really Cold Ice Cube Effect.
 - Idea (Liang, 2026-11-21, not approved): the Magnet also becomes a map powerup with a narrower cone (about 45°), and the Sample version gets a much wider one (up to about 360°).

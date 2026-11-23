@@ -230,6 +230,16 @@ public class CartControlScript : MonoBehaviour
     public event System.Action OnSwapItemPressed;
 
     /// <summary>
+    /// Menu step from the UI map's Navigate, for between-Round screens such as
+    /// the Ability pick: -1 (left) or +1 (right) once per push of a stick, the
+    /// D-pad, or A/D and the arrow keys. The stick must come back before it steps again.
+    /// </summary>
+    public event System.Action<int> OnMenuHorizontalStep;
+
+    /// <summary>Menu confirm from the UI map's Submit: A on a gamepad, Enter on the keyboard.</summary>
+    public event System.Action OnMenuSubmitPressed;
+
+    /// <summary>
     /// Raised only when the stored raw aim value actually changes.
     /// </summary>
     public event System.Action<Vector2> OnAimInputChanged;
@@ -392,6 +402,21 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == device) OnTutorialNext?.Invoke();
         };
+
+        _inputActions.UI.Navigate.performed += ctx =>
+        {
+            if (ctx.control.device == device) HandleMenuNavigate(ctx.ReadValue<Vector2>());
+        };
+
+        _inputActions.UI.Navigate.canceled += ctx =>
+        {
+            if (ctx.control.device == device) HandleMenuNavigate(Vector2.zero);
+        };
+
+        _inputActions.UI.Submit.performed += ctx =>
+        {
+            if (ctx.control.device == device) OnMenuSubmitPressed?.Invoke();
+        };
     }
 
     private void BindKeyboardActions()
@@ -510,6 +535,44 @@ public class CartControlScript : MonoBehaviour
         {
             if (ctx.control.device == Keyboard.current) OnTutorialNext?.Invoke();
         };
+
+        _inputActions.UI.Navigate.performed += ctx =>
+        {
+            if (ctx.control.device == Keyboard.current) HandleMenuNavigate(ctx.ReadValue<Vector2>());
+        };
+
+        _inputActions.UI.Navigate.canceled += ctx =>
+        {
+            if (ctx.control.device == Keyboard.current) HandleMenuNavigate(Vector2.zero);
+        };
+
+        _inputActions.UI.Submit.performed += ctx =>
+        {
+            if (ctx.control.device == Keyboard.current) OnMenuSubmitPressed?.Invoke();
+        };
+    }
+
+    private const float MenuStepPressThreshold = 0.5f;
+    private const float MenuStepReleaseThreshold = 0.3f;
+
+    // -1 or +1 while a step is held, 0 when re-armed.
+    private int menuStepHeld;
+
+    private void HandleMenuNavigate(Vector2 value)
+    {
+        float x = value.x;
+
+        if (menuStepHeld != 0)
+        {
+            // Still pushed the same way: no repeat.
+            if (x * menuStepHeld > MenuStepReleaseThreshold) return;
+            menuStepHeld = 0;
+        }
+
+        if (Mathf.Abs(x) < MenuStepPressThreshold) return;
+
+        menuStepHeld = x > 0f ? 1 : -1;
+        OnMenuHorizontalStep?.Invoke(menuStepHeld);
     }
 
     #endregion
@@ -602,6 +665,7 @@ public class CartControlScript : MonoBehaviour
 
         isDriftHeld = false;
         isSpeedingUp = false;
+        menuStepHeld = 0;
     }
 
     #endregion
