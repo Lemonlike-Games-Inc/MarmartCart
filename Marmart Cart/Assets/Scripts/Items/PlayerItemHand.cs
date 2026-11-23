@@ -147,6 +147,9 @@ public class PlayerItemHand : MonoBehaviour
 
     public event Action<PlayerItemHand, HandSlotId> OnEquippedSlotChanged;
 
+    /// <summary>The swap button was pressed: true if it swapped, false if there was nothing to swap to.</summary>
+    public event Action<PlayerItemHand, bool> OnSwapPressed;
+
     public event Action<PlayerItemHand, PowerupUseBlockReason> OnBlockReasonsChanged;
 
     /// <summary>
@@ -458,7 +461,8 @@ public class PlayerItemHand : MonoBehaviour
 
     private void HandleSwapPressed()
     {
-        TrySwapEquipped();
+        bool swapped = TrySwapEquipped();
+        OnSwapPressed?.Invoke(this, swapped);
     }
 
     #endregion

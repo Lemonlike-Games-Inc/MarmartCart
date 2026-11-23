@@ -133,7 +133,8 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
      - The cooldown is a radial wipe that clears clockwise from the top.
      - Ready motion per tier: Silver still, Gold a shine sweep, Prismatic a colour-cycling rim and glow plus the shine, Unique a red glow pulse and a gold inner line. A ring bursts out when the Ability becomes ready.
      - Styles (colours and motion per tier) and timings sit on the bar root; the placeholder sprites are in `2D Arts/Player Action Bar/`.
-9. The pick screen, as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
+9. System sound hooks (inserted 2026-11-22, before the pick screen). Built 2026-11-22: `PlayerItemSfxRelay` on `Chain of Carts Base` (inherited by P1-P4), with Inspector hooks for generic feedback that does not depend on the item: powerup collected, item equipped (after a pickup, a ready Ability, a swap, or when the other item was used up), swapped, swap failed (LB with nothing to swap to; optional) and Ability ready. Several can fire in the same frame. The hooks are empty; sounds are wired later, for example to `SfxManager.PlaySFX`. Item-specific sounds stay on `PowerupLifecycleUnityEventRelay`. `PlayerItemHand` gained `OnSwapPressed`.
+10. The pick screen (was step 9), as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
 
 ## Open
 

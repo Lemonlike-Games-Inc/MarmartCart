@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 2247272871967667016}
   - component: {fileID: 1830793791781320991}
   - component: {fileID: 5382320639808303397}
+  - component: {fileID: 986057439150845244}
   m_Layer: 0
   m_Name: Chain of Carts Base
   m_TagString: Untagged
@@ -398,6 +399,8 @@ MonoBehaviour:
     FlightDuration: 0
     ArcHeight: 0
     ImpactPreviewRadius: 0
+    ConeLength: 0
+    ConeAngleDegrees: 0
     Revision: 0
   lastAcceptedAimSnapshot:
     PlayerIndex: 0
@@ -420,6 +423,8 @@ MonoBehaviour:
     FlightDuration: 0
     ArcHeight: 0
     ImpactPreviewRadius: 0
+    ConeLength: 0
+    ConeAngleDegrees: 0
     Revision: 0
   acceptedAimSnapshotVersion: 0
 --- !u!114 &1830793791781320991
@@ -464,3 +469,81 @@ MonoBehaviour:
   state: 0
   remainingChargeSeconds: 0
   chargeDurationSeconds: 0
+--- !u!114 &986057439150845244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6172510833367344487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7dc6a54cb89ff24da665821cc15a6d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hand: {fileID: 1721464837927437150}
+  ability: {fileID: 5382320639808303397}
+  onPowerupCollected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CheckoutSingle
+          m_BoolArgument: 0
+        m_CallState: 2
+  onItemEquipped:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwapped:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CheckoutSingle
+          m_BoolArgument: 0
+        m_CallState: 2
+  onSwapFailed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CheckoutComplete
+          m_BoolArgument: 0
+        m_CallState: 2
+  onAbilityReady:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CheckoutSingle
+          m_BoolArgument: 0
+        m_CallState: 2
+  logHooks: 0

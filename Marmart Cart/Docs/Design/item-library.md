@@ -64,6 +64,7 @@ An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tom
 - Built in Ability Step 5: the Sample's `Upgrades Map Item` names the base item. `PlayerAbilityController` adds the replacement to the hand (`AddMapItemReplacement`, which returns a handle) and removes it when the Sample changes or the controller is disabled.
 - The pickup still reports the base item; the hand loads the variant, so the held-item HUD needs an entry for the variant.
 - SFX relays filter by item. A variant that should sound like its base item goes in the base relay's Also Accept Items; one that needs other sounds gets its own relay.
+- Generic system sounds that do not depend on the item (powerup collected, item equipped, swap, Ability ready) are hooked on `PlayerItemSfxRelay`, one per player on the Chain of Carts root.
 
 ## The hand
 
