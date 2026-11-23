@@ -3,6 +3,17 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-23 05:43 (UTC-7): Sample pool rule, Item folders, Upgrade kind; Ability Samples paused
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Housekeeping after the pick screen. The Ability Samples session pauses here; it can return for more Samples before the demo.
+- Changed:
+  - Pool rule (cd73a639): "No Baseline With Its Upgrade", on. A hand never holds a supply and its own upgrade (Tomato supply with Rolling Tomato).
+  - Folders (09c18cc9): `SO_Variables/Items` has one folder per item with its use, effects and variants; the base effects moved out of `SO_Variables/Powerup`. Liang renamed the Sample files by kind (`Supply_`, `Upgrade_`, `Gadget_`), Cola to "Cola with Mentos", and the card names and descriptions.
+  - Kind rename (73852c41): `AbilitySampleKind.Adjective` is now `Upgrade`.
+- Why: A supply next to its upgrade wastes a card. Item parts were spread over two folders.
+- Decisions: every item folder keeps its own use asset, also Instant Use.
+- Open questions: before the booth, see the 04:46 entry (Magnet timings, Debug Starting Samples, 4P Match Flow test profile); Gameplay Scene 2P has the pick's Debug Mode on (uncommitted).
+
 ## 2026-11-23 04:46 (UTC-7): Ability Samples Steps 9-10, card polish, pick screen, pre-round shade
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: The first Ability Sample set is complete. Before Rounds 2 and 3 every player gets three Sample cards that flip over, picks one, and plays the Round with it. The action bar cards got their polish and system sound hooks. Liang tested each step in 2P and 4P.
