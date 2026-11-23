@@ -32,6 +32,7 @@ Where each in-game UI element's size, position and 2P/4P values live. Rules are 
 | Screen fade between Rounds | Timing: `Meta Game Controller` > Fade In / Fade Out Duration. Colour: `Game UIs/Screen Fade` > Fade Color | Gameplay scenes only |
 | Tutorial control hints | `Assets/Prefabs/Tutorial/Control Hints.prefab` | Built on each player's HUD layer by `HintsOverlay/manager` |
 | Ability pick (before Rounds 2 and 3) | Look: `Assets/Prefabs/UI/Ability Pick/Ability Pick.prefab` (backdrop, header, footer, texts, highlight scale) and `Ability Pick Card.prefab` (card back, face, labels, stamp). Placement: `Player HUD/AbilityPickProfile` > 2 Player Layout / 4 Player Layout | Card text comes from each Sample asset (Display Name, Description, Card Icon, Cooldown Seconds). Timing: `Meta Game Controller/Ability Sample Pick`. Shown by `Game UIs/Ability Pick Presenter`, with its sound hooks on the same object (`AbilityPickSfxRelay`). Flip and pop: the prefab root > Reveal Timings. Pick a Preview State on the prefab root in Prefab Mode |
+| Pre-round shade (dark layer under the pick and later pre-round stages) | `Game UIs/Pre-Round Shade` > Shade Color (alpha = strength), Fade Seconds | Bottom of each player's Banner layer: over the world and HUD, under the stage UI. On while any Pre-Round Stage runs |
 | Ability card colours and motion per tier | `Player HUD/Ability Tier Styles` | Shared by the Player Action Bar and the Ability pick |
 
 ## Shared

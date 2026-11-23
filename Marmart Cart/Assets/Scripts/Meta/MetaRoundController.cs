@@ -121,6 +121,13 @@ public sealed class MetaRoundController : MonoBehaviour
     private float nextBeatTime;
     private int stageIndex = -1;
     private PreRoundStage activeStage;
+    private bool stagesRunning;
+
+    /// <summary>The first Pre-Round Stage began (for example the Ability pick).</summary>
+    public event Action PreRoundStagesStarted;
+
+    /// <summary>The last Pre-Round Stage finished, or a load cut it short.</summary>
+    public event Action PreRoundStagesEnded;
 
     /// <summary>Round title shown: Round number, and whether it is the final Round.</summary>
     public event Action<int, bool> RoundTitleShown;
@@ -149,6 +156,9 @@ public sealed class MetaRoundController : MonoBehaviour
     public int RoundNumber => roundNumber;
     public bool IsFinalRound => MatchSession.IsFinalRound;
     public PreRoundBeat CurrentBeat => currentBeat;
+
+    /// <summary>A Pre-Round Stage is running.</summary>
+    public bool PreRoundStagesRunning => stagesRunning;
     public int CurrentCountdownValue => countdownValue;
 
     /// <summary>Players in the result (the active player count when the Round ended).</summary>
@@ -369,6 +379,13 @@ public sealed class MetaRoundController : MonoBehaviour
 
             activeStage = stage;
             Debug.Log($"[Meta] Pre-round stage {stageIndex + 1}: {stage.name}", this);
+
+            if (!stagesRunning)
+            {
+                stagesRunning = true;
+                PreRoundStagesStarted?.Invoke();
+            }
+
             stage.Begin(roundNumber);
             return true;
         }
@@ -379,17 +396,29 @@ public sealed class MetaRoundController : MonoBehaviour
     private void ShowRoundTitle()
     {
         activeStage = null;
+        EndStages();
         SetBeat(PreRoundBeat.RoundTitle, roundTitleDuration);
         RoundTitleShown?.Invoke(roundNumber, MatchSession.IsFinalRound);
     }
 
     private void CancelActiveStage()
     {
-        if (activeStage == null) return;
+        if (activeStage != null)
+        {
+            Debug.Log($"[Meta] Pre-round stage cancelled: {activeStage.name}", this);
+            activeStage.Cancel();
+            activeStage = null;
+        }
 
-        Debug.Log($"[Meta] Pre-round stage cancelled: {activeStage.name}", this);
-        activeStage.Cancel();
-        activeStage = null;
+        EndStages();
+    }
+
+    private void EndStages()
+    {
+        if (!stagesRunning) return;
+
+        stagesRunning = false;
+        PreRoundStagesEnded?.Invoke();
     }
 
     private void ShowCountdown(int value)

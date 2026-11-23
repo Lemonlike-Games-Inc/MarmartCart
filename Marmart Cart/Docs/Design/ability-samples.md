@@ -155,6 +155,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
          - Reveal: the card flips (the back narrows edge-on, the face widens back with a small lift and tilt), then pops with a ring burst in the rim colour and plays its tier motion once. Choosing starts 0.6 s after the last flip (`After Last Reveal Seconds`), so the hints appear once the last pop is done.
          - The tier motion (Gold shine, Prismatic colours, Unique pulse) plays only on the highlighted or picked card. `ActionBarCardView.PlayMotionOnce` runs one round of a motion; the Player Action Bar is unchanged.
          - Sound hooks: `AbilityPickSfxRelay` (card revealed, with Reveal Once Per Flip off by default; highlight moved; picked, also when the time runs out; everyone picked).
+         - Shade: `PreRoundShadeView` (`Game UIs/Pre-Round Shade`) darkens every player's view while any Pre-Round Stage runs, from `MetaRoundController.PreRoundStagesStarted` / `PreRoundStagesEnded`, so later stages get it too. The pick prefab's own Dim is off.
    - 10c, the motion and sound: card backs and the flip reveal with a tier pop, the highlight pop, the lock, and sound hooks (card revealed, highlight moved, picked).
      - The reveal sound is one generic sound, not per tier, fired per flip in each player's view. All views flip together, so in 4P it can stack four times; if that sounds bad, try once per flip for the whole screen. Decided 2026-11-23.
 
