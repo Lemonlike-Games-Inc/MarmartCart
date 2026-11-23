@@ -3,6 +3,30 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-23 04:46 (UTC-7): Ability Samples Steps 9-10, card polish, pick screen, pre-round shade
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: The first Ability Sample set is complete. Before Rounds 2 and 3 every player gets three Sample cards that flip over, picks one, and plays the Round with it. The action bar cards got their polish and system sound hooks. Liang tested each step in 2P and 4P.
+- Changed:
+  - Card polish (19373a93): rim, body, outline and glow, radial cooldown wipe, tier motion (Gold shine, Prismatic colours, Unique pulse); new `UIVertexGradient`; placeholder card sprites in `2D Arts/Player Action Bar/`.
+  - Step 9 (c386325d): `PlayerItemSfxRelay` on `Chain of Carts Base`: powerup collected, item equipped, swapped, swap failed, Ability ready. `PlayerItemHand.OnSwapPressed`.
+  - Step 10a (14d4a5be): `MetaRoundController` runs Pre-Round Stages (`PreRoundStage`) before the Round title. `AbilitySamplePickController` on `Meta Game Controller/Ability Sample Pick` deals, reveals, takes input, times and sets the Sample. `AbilitySamplePool` asset with tier weights per Round. Menu input from the UI map through `CartControlScript` (`OnMenuHorizontalStep`, `OnMenuSubmitPressed`).
+  - Tier styles (7337e718): shared `Ability Tier Styles` asset for the bar and the pick.
+  - Step 10b-c (ae1e5288): `AbilityPickPresenter`, `AbilityPickView`, `AbilityPickCardView`, `AbilityPickProfile`; prefabs `Ability Pick` and `Ability Pick Card`; flip, pop and one tier motion on reveal; tier motion only on the highlighted card; `AbilityPickSfxRelay`; Sample Description and Card Icon fields.
+  - Pre-round shade (df873be4): `PreRoundShadeView` darkens every view while any pre-round stage runs (`PreRoundStagesStarted` / `PreRoundStagesEnded`).
+- Why: The demo needs a visible, exciting moment between Rounds where each player chooses their Sample. The stage list and the shade let the Policy pop and Section reveal plug in later without reopening the Round controller.
+- Decisions:
+  - Each card rolls its tier with that Round's weights (Round 2 Silver 60 / Gold 40, Round 3 Silver 30 / Gold 70). Three different Samples per hand; players may get the same ones. The "at most one Baseline" pity rule is a toggle, off.
+  - 20 s to pick after the last reveal; the highlighted card is picked at 0. Once all have picked: hold 3 s and skip the rest. The Sample is set when the pick ends.
+  - Pick Debug Mode: 99999 s and F5 (or "Deal New Cards") deals new cards.
+  - Header "FREE SAMPLES!" / "One per customer". Cooldown shown as text.
+  - One generic reveal sound, fired per flip in each view (stacks in 4P). Try Reveal Once Per Flip if it sounds bad.
+  - Input reads the UI map, so the input asset did not change.
+- Open questions:
+  - Before the booth: U-shape Magnet back to 45 s / 10 s (its card reads "Cooldown 1s"); clear the Debug Starting Samples (Base Tomato Supply, P1 U-shape Magnet, P2 Ice Cube Supply); reset 4P Match Flow Round Profiles[0] (MatchFlowProfile_ShortForTest).
+  - Uncommitted: Liang's PlayerActionBarProfile 2P offset/scale; Cinemachine camera values in 2P.
+  - The Magnet icon is the Fan placeholder and has no own sound. Unique-once-per-Match is not built.
+  - The GDD Policy table still uses the old tier names.
+
 ## 2026-11-22 19:24 (UTC-7): Ability Samples Steps 4-8, cart outside forces, Silver/Gold tiers
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: The first Ability Sample set is playable and shown in a new Player Action Bar: Tomato, Ice Cube and Cola supply, Really Really Cold Ice Cube, Rolling Tomato and the U-shape Magnet. A side quest gave leading carts one entry point for outside forces. The tiers are now Silver, Gold, Prismatic, Unique. Liang tested each step.
