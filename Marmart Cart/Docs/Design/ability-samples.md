@@ -123,10 +123,16 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
 8. Ability HUD and the changes to the powerup icons, on Liang's detailed instructions. Can move to any point after step 3. Built 2026-11-22 (8a + 8b in one go), the **Player Action Bar**: a row of plain cards at the bottom of each view, canvas UI in each player's HUD layer of `ViewportCanvasSystem`.
    - Cards in fixed slots: Powerup left, Ability middle, Emergency right (reserved, hidden until that feature exists). A lone Powerup card (no Ability) moves to the middle.
    - The equipped card is larger and is the only one showing its prompts. The LB + arrow swap hint shows only when both are loaded.
-   - The Ability card always shows while a Sample is held: dimmed icon, a dark shade over the charge still to fill, and the seconds left; a pop when it is ready. Its frame takes the Sample's tier colour.
+   - The Ability card always shows while a Sample is held: dimmed icon, a dark wipe over the charge still to fill, and the seconds left; a pop when it is ready. Its frame takes the Sample's tier colour.
    - An empty Powerup slot shows a faint frame while the player has an Ability; with neither, the bar hides.
    - Code: `PlayerActionBarPresenter` (was `PowerupHeldItemHudPresenter`), `PlayerActionBarProfile` (was `PowerupHudProfile`: bar prefab per player, item icons and prompts, 2P/4P anchor, offset and scale), `PlayerActionBarView` (bar root, with a Prefab Mode preview), `ActionBarCardView` (one card).
    - Prefabs: `Prefabs/UI/Player Action Bar/` Base plus P1-P4 variants (no overrides yet), so each player can get its own colours later.
+   - Card polish (2026-11-22), all placeholder art made in code, no shaders:
+     - Each card is layered: drop shadow, rim with a metallic gradient (`UIVertexGradient`), body, top highlight, rounded corners. The Powerup card has a light cream body; Ability cards have a dark body in their tier colour.
+     - The equipped card has a white outline and glow, which flash when it becomes equipped.
+     - The cooldown is a radial wipe that clears clockwise from the top.
+     - Ready motion per tier: Silver still, Gold a shine sweep, Prismatic a colour-cycling rim and glow plus the shine, Unique a red glow pulse and a gold inner line. A ring bursts out when the Ability becomes ready.
+     - Styles (colours and motion per tier) and timings sit on the bar root; the placeholder sprites are in `2D Arts/Player Action Bar/`.
 9. The pick screen, as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it.
 
 ## Open

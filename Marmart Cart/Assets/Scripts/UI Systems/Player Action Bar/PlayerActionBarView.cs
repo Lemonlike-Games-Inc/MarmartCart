@@ -68,12 +68,29 @@ public sealed class PlayerActionBarView : MonoBehaviour
     [Min(0.01f)]
     [SerializeField] private float readyPopSeconds = 0.3f;
 
-    [Header("Frame Colors")]
-    [SerializeField] private Color powerupFrameColor = Color.white;
-    [SerializeField] private Color silverTierColor = new Color(0.72f, 0.76f, 0.82f);
-    [SerializeField] private Color goldTierColor = new Color(1f, 0.78f, 0.2f);
-    [SerializeField] private Color prismaticTierColor = new Color(0.66f, 0.5f, 1f);
-    [SerializeField] private Color uniqueTierColor = new Color(1f, 0.38f, 0.45f);
+    [Header("Card Styles")]
+    [SerializeField]
+    private ActionBarCardStyle powerupStyle = new ActionBarCardStyle(
+        Color.white, new Color(0.97f, 0.94f, 0.86f), Color.clear, ActionBarCardMotion.None);
+
+    [SerializeField]
+    private ActionBarCardStyle silverStyle = new ActionBarCardStyle(
+        new Color(0.78f, 0.81f, 0.86f), new Color(0.3f, 0.34f, 0.4f), Color.clear, ActionBarCardMotion.None);
+
+    [SerializeField]
+    private ActionBarCardStyle goldStyle = new ActionBarCardStyle(
+        new Color(1f, 0.78f, 0.2f), new Color(0.44f, 0.3f, 0.08f), Color.clear, ActionBarCardMotion.Shine);
+
+    [SerializeField]
+    private ActionBarCardStyle prismaticStyle = new ActionBarCardStyle(
+        new Color(0.67f, 0.41f, 0.74f), new Color(0.24f, 0.19f, 0.38f), Color.clear, ActionBarCardMotion.Prismatic);
+
+    [SerializeField]
+    private ActionBarCardStyle uniqueStyle = new ActionBarCardStyle(
+        new Color(0.74f, 0.04f, 0.12f), new Color(0.24f, 0.03f, 0.05f), new Color(0.88f, 0.7f, 0.33f), ActionBarCardMotion.Pulse);
+
+    [Tooltip("Effect timings shared by every card on this bar.")]
+    [SerializeField] private ActionBarCardTimings cardTimings = new ActionBarCardTimings();
 
     [Header("Editor Preview (Prefab Mode only)")]
     [SerializeField] private PreviewState previewState = PreviewState.PowerupEquippedAbilityCharging;
@@ -117,7 +134,7 @@ public sealed class PlayerActionBarView : MonoBehaviour
         if (powerupCard != null)
         {
             powerupCard.SetVisible(true);
-            powerupCard.Display(powerupFrameColor, !display.HasPowerup, false, powerupEquipped);
+            powerupCard.Display(powerupStyle, cardTimings, !display.HasPowerup, false, powerupEquipped, animate);
             powerupCard.SetTargetScale(powerupEquipped ? equippedScale : otherScale, resizeSeconds, animate);
         }
 
@@ -127,7 +144,13 @@ public sealed class PlayerActionBarView : MonoBehaviour
 
             if (display.HasAbility)
             {
-                abilityCard.Display(GetTierColor(display.AbilityTier), false, display.AbilityCharging, abilityEquipped);
+                abilityCard.Display(
+                    GetTierStyle(display.AbilityTier),
+                    cardTimings,
+                    false,
+                    display.AbilityCharging,
+                    abilityEquipped,
+                    animate);
                 abilityCard.SetTargetScale(abilityEquipped ? equippedScale : otherScale, resizeSeconds, animate);
             }
         }
@@ -157,17 +180,17 @@ public sealed class PlayerActionBarView : MonoBehaviour
 
     public void PlayAbilityReadyPop()
     {
-        if (abilityCard != null) abilityCard.Pop(readyPopScale, readyPopSeconds);
+        if (abilityCard != null) abilityCard.PlayReady(readyPopScale, readyPopSeconds);
     }
 
-    private Color GetTierColor(AbilitySampleTier tier)
+    private ActionBarCardStyle GetTierStyle(AbilitySampleTier tier)
     {
         return tier switch
         {
-            AbilitySampleTier.Gold => goldTierColor,
-            AbilitySampleTier.Prismatic => prismaticTierColor,
-            AbilitySampleTier.Unique => uniqueTierColor,
-            _ => silverTierColor
+            AbilitySampleTier.Gold => goldStyle,
+            AbilitySampleTier.Prismatic => prismaticStyle,
+            AbilitySampleTier.Unique => uniqueStyle,
+            _ => silverStyle
         };
     }
 
