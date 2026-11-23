@@ -19,3 +19,6 @@ MonoBehaviour:
   cooldownSeconds: 35
   firstChargeSeconds: 10
   upgradesMapItem: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
+  description: Ice Cubes that never melt until someone hits them. Your map Ice Cubes
+    too!
+  cardIcon: {fileID: 0}

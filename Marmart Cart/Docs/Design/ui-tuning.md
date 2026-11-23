@@ -31,6 +31,8 @@ Where each in-game UI element's size, position and 2P/4P values live. Rules are 
 | Round and Match result banner | Texts: `RoundResultTextProfile` (every Round line, the rank lines, the Match Points line). Look: `Assets/Prefabs/UI/Round Result Title.prefab` and `Round Result Detail.prefab` | Shown by `Game UIs/Round Result`. Lines take `<color=#RRGGBB>` and `<size=55%>` tags; a line break starts a smaller second line. How long it shows: `Meta Game Controller` > Round Result Duration |
 | Screen fade between Rounds | Timing: `Meta Game Controller` > Fade In / Fade Out Duration. Colour: `Game UIs/Screen Fade` > Fade Color | Gameplay scenes only |
 | Tutorial control hints | `Assets/Prefabs/Tutorial/Control Hints.prefab` | Built on each player's HUD layer by `HintsOverlay/manager` |
+| Ability pick (before Rounds 2 and 3) | Look: `Assets/Prefabs/UI/Ability Pick/Ability Pick.prefab` (backdrop, header, footer, texts, highlight scale) and `Ability Pick Card.prefab` (card back, face, labels, stamp). Placement: `Player HUD/AbilityPickProfile` > 2 Player Layout / 4 Player Layout | Card text comes from each Sample asset (Display Name, Description, Card Icon, Cooldown Seconds). Timing: `Meta Game Controller/Ability Sample Pick`. Shown by `Game UIs/Ability Pick Presenter`, with its sound hooks on the same object (`AbilityPickSfxRelay`). Flip and pop: the prefab root > Reveal Timings. Pick a Preview State on the prefab root in Prefab Mode |
+| Ability card colours and motion per tier | `Player HUD/Ability Tier Styles` | Shared by the Player Action Bar and the Ability pick |
 
 ## Shared
 

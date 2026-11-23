@@ -135,7 +135,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
      - The equipped card has a white outline and glow, which flash when it becomes equipped.
      - The cooldown is a radial wipe that clears clockwise from the top.
      - Ready motion per tier: Silver still, Gold a shine sweep, Prismatic a colour-cycling rim and glow plus the shine, Unique a red glow pulse and a gold inner line. A ring bursts out when the Ability becomes ready.
-     - Styles (colours and motion per tier) and timings sit on the bar root; the placeholder sprites are in `2D Arts/Player Action Bar/`.
+     - The Powerup card style and the timings sit on the bar root; the tier styles moved to the shared `Player HUD/Ability Tier Styles` asset in step 10b. The placeholder sprites are in `2D Arts/Player Action Bar/`.
 9. System sound hooks (inserted 2026-11-22, before the pick screen). Built 2026-11-22: `PlayerItemSfxRelay` on `Chain of Carts Base` (inherited by P1-P4), with Inspector hooks for generic feedback that does not depend on the item: powerup collected, item equipped (after a pickup, a ready Ability, a swap, or when the other item was used up), swapped, swap failed (LB with nothing to swap to; optional) and Ability ready. Several can fire in the same frame. The hooks are empty; sounds are wired later, for example to `SfxManager.PlaySFX`. Item-specific sounds stay on `PowerupLifecycleUnityEventRelay`. `PlayerItemHand` gained `OnSwapPressed`.
 10. The pick screen (was step 9), as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it. Agreed 2026-11-23, in three parts:
    - 10a, logic with logs only. Built 2026-11-23:
@@ -146,6 +146,15 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
    - 10b, the look: large card (icon, name, short description, cooldown), the header and timer, the input hints, per-player view, Prefab Mode preview.
      - Card content lives on each Sample asset: Display Name, a new short Description, and an optional Card Icon (empty uses the action bar icon). The cooldown line is text ("Cooldown 30s") from Cooldown Seconds.
      - Header "FREE SAMPLES!" with the sub-line "One per customer", the timer below it.
+     - Built 2026-11-23:
+       - `AbilityPickPresenter` (`Game UIs/Ability Pick Presenter`) puts one `Ability Pick` prefab into each player's Banner layer and shows the pick's state. The 2P and 4P placement is in `AbilityPickProfile`.
+       - `Ability Pick Card` prefab: a red card back with a "MARMART CARTS" watermark and "?", and a 280x420 face that reuses `ActionBarCardView` (rim, body, outline and glow, tier motion). The highlighted card grows to 1.1x; once a player picks, the other two fade and the picked one shows "P1 PICKED" on the player's colour.
+       - The tier styles moved from the bar into the shared `Ability Tier Styles` asset.
+       - Placeholder descriptions are on the six Sample assets. The hint sprites are Kenney Xbox prompts (left stick and D-pad left/right, A), switched to Sprite import.
+       - Liang's test feedback (2026-11-23), built the same day:
+         - Reveal: the card flips (the back narrows edge-on, the face widens back with a small lift and tilt), then pops with a ring burst in the rim colour and plays its tier motion once. Choosing starts 0.6 s after the last flip (`After Last Reveal Seconds`), so the hints appear once the last pop is done.
+         - The tier motion (Gold shine, Prismatic colours, Unique pulse) plays only on the highlighted or picked card. `ActionBarCardView.PlayMotionOnce` runs one round of a motion; the Player Action Bar is unchanged.
+         - Sound hooks: `AbilityPickSfxRelay` (card revealed, with Reveal Once Per Flip off by default; highlight moved; picked, also when the time runs out; everyone picked).
    - 10c, the motion and sound: card backs and the flip reveal with a tier pop, the highlight pop, the lock, and sound hooks (card revealed, highlight moved, picked).
      - The reveal sound is one generic sound, not per tier, fired per flip in each player's view. All views flip together, so in 4P it can stack four times; if that sounds bad, try once per flip for the whole screen. Decided 2026-11-23.
 

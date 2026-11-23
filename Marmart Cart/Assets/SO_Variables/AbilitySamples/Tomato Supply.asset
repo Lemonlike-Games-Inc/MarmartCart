@@ -18,3 +18,6 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
   cooldownSeconds: 20
   firstChargeSeconds: 10
+  upgradesMapItem: {fileID: 0}
+  description: Free Tomatoes! Throw one to splat a rival's screen.
+  cardIcon: {fileID: 0}

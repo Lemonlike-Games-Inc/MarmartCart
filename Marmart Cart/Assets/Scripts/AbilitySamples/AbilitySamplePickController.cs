@@ -49,9 +49,13 @@ public sealed class AbilitySamplePickController : PreRoundStage
     [Min(0f)]
     [SerializeField] private float introSeconds = 0.6f;
 
-    [Tooltip("Time between card flips, left to right. Choosing starts one step after the last flip.")]
+    [Tooltip("Time between card flips, left to right.")]
     [Min(0.05f)]
     [SerializeField] private float revealStepSeconds = 0.3f;
+
+    [Tooltip("Time from the last card's flip until choosing starts, so its flip and pop finish first.")]
+    [Min(0f)]
+    [SerializeField] private float afterLastRevealSeconds = 0.6f;
 
     [Tooltip("Time to choose, counted from when every card is face up.")]
     [Min(1f)]
@@ -211,7 +215,11 @@ public sealed class AbilitySamplePickController : PreRoundStage
                     RevealCard(revealedCount);
                 }
 
-                if (now >= phaseStartTime + CardCount * revealStepSeconds) StartChoosing(now);
+                if (revealedCount >= CardCount &&
+                    now >= phaseStartTime + (CardCount - 1) * revealStepSeconds + afterLastRevealSeconds)
+                {
+                    StartChoosing(now);
+                }
                 break;
 
             case PickPhase.Choosing:

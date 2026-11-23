@@ -19,3 +19,5 @@ MonoBehaviour:
   cooldownSeconds: 1
   firstChargeSeconds: 1
   upgradesMapItem: {fileID: 0}
+  description: Aim a cone and yank loose carts, and rivals, toward you.
+  cardIcon: {fileID: 0}

@@ -137,6 +137,9 @@ public sealed class ActionBarCardView : MonoBehaviour
 
     private ActionBarCardTimings timings;
     private ActionBarCardMotion motion;
+    private ActionBarCardMotion displayMotion;
+    private Color displayRim = Color.white;
+    private float oneShotLeft = -1f;
     private bool equipped;
 
     private float currentScale = 1f;
@@ -171,6 +174,7 @@ public sealed class ActionBarCardView : MonoBehaviour
         busy |= UpdateFlash(deltaTime);
         busy |= UpdateBurst(deltaTime);
         busy |= UpdateMotion(deltaTime);
+        busy |= UpdateOneShot(deltaTime);
 
         if (!busy) enabled = false;
     }
@@ -252,7 +256,26 @@ public sealed class ActionBarCardView : MonoBehaviour
 
         equipped = equippedNow;
 
-        SetMotion(ready ? style.motion : ActionBarCardMotion.None, style.rim);
+        displayMotion = ready ? style.motion : ActionBarCardMotion.None;
+        displayRim = style.rim;
+
+        // A one-shot motion finishes first, then hands over to this motion.
+        if (oneShotLeft < 0f) SetMotion(displayMotion, displayRim);
+    }
+
+    /// <summary>
+    /// Plays one round of a tier motion (one shine sweep, or one glow pulse),
+    /// whatever motion the card shows now, then returns to it. Play Mode only.
+    /// </summary>
+    public void PlayMotionOnce(ActionBarCardMotion oneShot)
+    {
+        if (oneShot == ActionBarCardMotion.None || timings == null || !Application.isPlaying) return;
+
+        oneShotLeft = oneShot == ActionBarCardMotion.Pulse ? timings.pulseSeconds : timings.shineSweepSeconds;
+
+        // Restart it, even if the card already shows this motion.
+        motion = ActionBarCardMotion.None;
+        SetMotion(oneShot, displayRim);
     }
 
     public void SetCharge(float progress01, float secondsLeft)
@@ -478,6 +501,19 @@ public sealed class ActionBarCardView : MonoBehaviour
         }
 
         return true;
+    }
+
+    private bool UpdateOneShot(float deltaTime)
+    {
+        if (oneShotLeft < 0f) return false;
+
+        oneShotLeft -= deltaTime;
+        if (oneShotLeft > 0f) return true;
+
+        oneShotLeft = -1f;
+        SetRimColor(displayRim);
+        SetMotion(displayMotion, displayRim);
+        return false;
     }
 
     private void UpdateShine()

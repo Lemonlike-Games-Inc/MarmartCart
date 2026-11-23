@@ -63,7 +63,17 @@ public sealed class AbilitySampleDefinition : ScriptableObject
     )]
     [SerializeField] private ItemDefinition upgradesMapItem;
 
+    [Header("Pick Card")]
+    [Tooltip("What it does, in one or two short lines. The pick card shows the name and cooldown on their own.")]
+    [TextArea(2, 4)]
+    [SerializeField] private string description;
+
+    [Tooltip("Icon on the pick card. Empty uses the item's icon from the Player Action Bar Profile.")]
+    [SerializeField] private Sprite cardIcon;
+
     public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
+    public string Description => description;
+    public Sprite CardIcon => cardIcon;
     public AbilitySampleKind Kind => kind;
     public AbilitySampleTier Tier => tier;
     public ItemDefinition Item => item;

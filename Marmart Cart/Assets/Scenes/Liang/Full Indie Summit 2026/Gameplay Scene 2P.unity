@@ -20172,8 +20172,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pool: {fileID: 11400000, guid: 1bfab6cf085601a4f80165a013e0aa34, type: 2}
   firstPickRound: 2
-  introSeconds: 0.6
-  revealStepSeconds: 0.3
+  introSeconds: 2
+  revealStepSeconds: 1.25
+  afterLastRevealSeconds: 0.6
   pickSeconds: 20
   allPickedHoldSeconds: 3
   debugMode: 0
@@ -133585,6 +133586,107 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 565448384831240301, guid: 3ac0f269a1b7fc24b91644d6f7dab83b, type: 3}
   m_PrefabInstance: {fileID: 1542629056}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1545573871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1545573872}
+  - component: {fileID: 1545573873}
+  - component: {fileID: 1545573874}
+  m_Layer: 0
+  m_Name: Ability Pick Presenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1545573872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545573871}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1694541254}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1545573873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545573871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 655240337f387aa46be9a9666c6b26c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickController: {fileID: 1201604881}
+  viewportCanvas: {fileID: 0}
+  profile: {fileID: 11400000, guid: f707b882fa93ac840962e46ebd70ef17, type: 2}
+  itemIcons: {fileID: 11400000, guid: 6d7e630dfd1e0204b86e966748b3fd90, type: 2}
+  playerIdentity: {fileID: 11400000, guid: 9db96f6f8347eaf4baaa6a0c29af28b8, type: 2}
+--- !u!114 &1545573874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545573871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be030b609c39d604b9e22304c09c4404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickController: {fileID: 1201604881}
+  onCardRevealed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CollectPowerup
+          m_BoolArgument: 0
+        m_CallState: 2
+  revealOncePerFlip: 0
+  onHighlightMoved:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 8fd27797f1f8cee4a8ba78b38ba9e656, type: 2}
+        m_TargetAssemblyTypeName: SfxManager, Assembly-CSharp
+        m_MethodName: PlaySFX
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: CollectPowerup
+          m_BoolArgument: 0
+        m_CallState: 2
+  onPicked:
+    m_PersistentCalls:
+      m_Calls: []
+  onEveryonePicked:
+    m_PersistentCalls:
+      m_Calls: []
+  logHooks: 0
 --- !u!1 &1548265966
 GameObject:
   m_ObjectHideFlags: 0
@@ -136802,6 +136904,7 @@ Transform:
   - {fileID: 417007281}
   - {fileID: 1310411153}
   - {fileID: 1792584995}
+  - {fileID: 1545573872}
   - {fileID: 2078227692}
   - {fileID: 649067656}
   m_Father: {fileID: 0}

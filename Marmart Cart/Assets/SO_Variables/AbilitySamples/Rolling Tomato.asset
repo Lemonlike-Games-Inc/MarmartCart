@@ -19,3 +19,5 @@ MonoBehaviour:
   cooldownSeconds: 30
   firstChargeSeconds: 10
   upgradesMapItem: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
+  description: Tomatoes keep rolling after they land. Your map Tomatoes roll too!
+  cardIcon: {fileID: 0}

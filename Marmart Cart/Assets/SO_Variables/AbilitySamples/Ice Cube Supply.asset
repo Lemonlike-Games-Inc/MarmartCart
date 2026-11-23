@@ -18,3 +18,6 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
   cooldownSeconds: 20
   firstChargeSeconds: 10
+  upgradesMapItem: {fileID: 0}
+  description: Free Ice Cubes! Throw one to freeze a rival in their tracks.
+  cardIcon: {fileID: 0}

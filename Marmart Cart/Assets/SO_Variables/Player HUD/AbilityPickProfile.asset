@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4a922a263a0ac4b9589fee604ebe4f, type: 3}
+  m_Name: AbilityPickProfile
+  m_EditorClassIdentifier: 
+  viewPrefab: {fileID: 8505224442230366217, guid: 49f6572b05d4e2144b0763844fcb1a70, type: 3}
+  twoPlayerLayout:
+    headerTopOffset: 60
+    headerScale: 1
+    cardRowOffsetY: -80
+    cardScale: 1
+    footerBottomOffset: 60
+    footerScale: 1
+  fourPlayerLayout:
+    headerTopOffset: 12
+    headerScale: 0.5
+    cardRowOffsetY: -36
+    cardScale: 0.68
+    footerBottomOffset: 12
+    footerScale: 0.5
