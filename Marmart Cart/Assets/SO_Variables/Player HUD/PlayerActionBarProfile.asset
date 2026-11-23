@@ -10,8 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c862415857e2eb41a8efe80eae0273f, type: 3}
-  m_Name: PowerupHudProfile
+  m_Name: PlayerActionBarProfile
   m_EditorClassIdentifier: 
+  player1BarPrefab: {fileID: 3025578451579778169, guid: b59561785d463f84ab3505d01a5648cd, type: 3}
+  player2BarPrefab: {fileID: 5651085739029425745, guid: 3ff5fe05b11eb0147bfa84ba8d6bee80, type: 3}
+  player3BarPrefab: {fileID: 7033692367233945084, guid: d88596a49e1009f4eaa0cf2123e9afb8, type: 3}
+  player4BarPrefab: {fileID: 3940869871817652143, guid: 756b1dfa08d12b64d9c06cca4f46099d, type: 3}
   itemEntries:
   - item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
     icon: {fileID: 21300000, guid: cd9483e32e335d740b164b82ec4b34ab, type: 3}
@@ -52,40 +56,9 @@ MonoBehaviour:
   rightJoystickPromptIcon: {fileID: 21300000, guid: 590341f1df8ef8e4ba8cfc8a682dfd48, type: 3}
   activateTriggerPromptIcon: {fileID: 21300000, guid: dfac01fbef47d1943ad5fee810fa6fd3, type: 3}
   plusPromptIcon: {fileID: 21300000, guid: 3a2296c7f0adec04fa11d14a453b7cdc, type: 3}
-  showSlotWhenEmpty: 0
-  emptySlotIcon: {fileID: 0}
-  player1BackgroundSprite: {fileID: 21300000, guid: 221b52abfe5b92e4a9ffb32a559d6f0a, type: 3}
-  player2BackgroundSprite: {fileID: 21300000, guid: 49b71029ef7588f4db3302bc93c2ca49, type: 3}
-  player3BackgroundSprite: {fileID: 21300000, guid: 58b7dfdcbe75e7f49830a29cd5f8b300, type: 3}
-  player4BackgroundSprite: {fileID: 21300000, guid: 89b068d0e3e7f5f489d31c5681167a22, type: 3}
-  slotBackgroundTint: {r: 1, g: 1, b: 1, a: 1}
-  iconTint: {r: 1, g: 1, b: 1, a: 1}
-  preserveIconAspect: 1
   twoPlayerAnchor: {x: 0.5, y: 0}
-  twoPlayerBackgroundPositionPixels: {x: 0, y: 150}
-  twoPlayerIconPositionPixels: {x: 0, y: 150}
-  twoPlayerBackgroundSizePixels: {x: 225, y: 225}
-  twoPlayerIconSizePixels: {x: 125, y: 125}
-  twoPlayerPromptSlot1:
-    positionPixels: {x: -50, y: 265}
-    sizePixels: {x: 70, y: 70}
-  twoPlayerPromptSlot2:
-    positionPixels: {x: 0, y: 265}
-    sizePixels: {x: 50, y: 50}
-  twoPlayerPromptSlot3:
-    positionPixels: {x: 50, y: 265}
-    sizePixels: {x: 70, y: 70}
+  twoPlayerOffsetPixels: {x: 0, y: 8}
+  twoPlayerScale: 1
   fourPlayerAnchor: {x: 0.5, y: 0}
-  fourPlayerBackgroundPositionPixels: {x: 0, y: 50.625}
-  fourPlayerIconPositionPixels: {x: 0, y: 50.625}
-  fourPlayerBackgroundSizePixels: {x: 126.5625, y: 126.5625}
-  fourPlayerIconSizePixels: {x: 70.3125, y: 70.3125}
-  fourPlayerPromptSlot1:
-    positionPixels: {x: -28.125, y: 115.3125}
-    sizePixels: {x: 39.375, y: 39.375}
-  fourPlayerPromptSlot2:
-    positionPixels: {x: 0, y: 115.3125}
-    sizePixels: {x: 28.125, y: 28.125}
-  fourPlayerPromptSlot3:
-    positionPixels: {x: 28.125, y: 115.3125}
-    sizePixels: {x: 39.375, y: 39.375}
+  fourPlayerOffsetPixels: {x: 0, y: 4}
+  fourPlayerScale: 0.7
