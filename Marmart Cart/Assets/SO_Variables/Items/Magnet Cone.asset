@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Magnet Cone
   m_EditorClassIdentifier: 
   coneLength: 20
-  coneAngleDegrees: 70
+  coneAngleDegrees: 45
