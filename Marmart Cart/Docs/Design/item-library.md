@@ -59,7 +59,7 @@ A variant is its own full Item asset that reuses the base Item's parts by pointi
 
 ## Passive
 
-An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tomato. The hand applies it to this player's map pickups.
+An Upgrade Sample lists an Item replacement, for example Tomato -> Rolling Tomato. The hand applies it to this player's map pickups.
 
 - Built in Ability Step 5: the Sample's `Upgrades Map Item` names the base item. `PlayerAbilityController` adds the replacement to the hand (`AddMapItemReplacement`, which returns a handle) and removes it when the Sample changes or the controller is disabled.
 - The pickup still reports the base item; the hand loads the variant, so the held-item HUD needs an entry for the variant.

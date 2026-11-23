@@ -8,7 +8,7 @@ using UnityEngine;
 ///
 /// - Owns the item slots. Map Powerup pickups load the map slot (a new pickup
 ///   replaces an unused item); the Ability charge loads the ability slot.
-/// - Applies map-item replacements (an Adjective Sample's passive) to pickups.
+/// - Applies map-item replacements (an Upgrade Sample's passive) to pickups.
 /// - The equipped item is the one LT uses and the aim preview shows. The slot
 ///   loaded last is equipped; LB swaps when both are loaded.
 /// - Binds the runtime-spawned leading cart by Player1..Player4 tag.
@@ -304,7 +304,7 @@ public class PlayerItemHand : MonoBehaviour
 
     /// <summary>
     /// Until removed, map pickups of <paramref name="from"/> load
-    /// <paramref name="to"/> instead (an Adjective Sample's passive). The
+    /// <paramref name="to"/> instead (an Upgrade Sample's passive). The
     /// newest replacement wins. Returns a handle for RemoveMapItemReplacement;
     /// 0 means nothing was added.
     /// </summary>

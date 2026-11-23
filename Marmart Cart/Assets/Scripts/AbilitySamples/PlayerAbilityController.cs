@@ -5,7 +5,7 @@ using UnityEngine;
 /// Per-player Ability: holds this Round's Sample and runs its charge. When the
 /// charge is ready, its item goes into the hand's ability slot; the cooldown
 /// starts when that item is used. The charge counts game time only while the
-/// match is playing. An Adjective Sample's passive is applied to the hand while
+/// match is playing. An Upgrade Sample's passive is applied to the hand while
 /// the Sample is held. Runtime state lives here, never on the Sample asset.
 /// </summary>
 [DisallowMultipleComponent]

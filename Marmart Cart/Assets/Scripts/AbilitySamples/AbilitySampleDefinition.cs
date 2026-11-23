@@ -6,7 +6,7 @@ public enum AbilitySampleKind
     Baseline,
 
     /// <summary>An upgraded item: its own charge, plus a passive on map pickups of that item.</summary>
-    Adjective,
+    Upgrade,
 
     /// <summary>An item that is not on the map. Charge only.</summary>
     Gadget
@@ -15,10 +15,10 @@ public enum AbilitySampleKind
 /// <remarks>Saved as numbers in the Sample assets: keep the order, add new tiers at the end.</remarks>
 public enum AbilitySampleTier
 {
-    /// <summary>Baselines and stat-only adjectives.</summary>
+    /// <summary>Baselines and stat-only upgrades.</summary>
     Silver,
 
-    /// <summary>Adjectives and gadgets that change behaviour.</summary>
+    /// <summary>Upgrades and gadgets that change behaviour.</summary>
     Gold,
 
     /// <summary>Rarer and more spectacular than Gold. No Sample uses it yet.</summary>
@@ -56,7 +56,7 @@ public sealed class AbilitySampleDefinition : ScriptableObject
     [Min(0f)]
     [SerializeField] private float firstChargeSeconds = 10f;
 
-    [Header("Passive (Adjective)")]
+    [Header("Passive (Upgrade)")]
     [Tooltip(
         "While this Sample is held, the player's map pickups of this item give " +
         "the Sample's item instead. Empty means no passive."
