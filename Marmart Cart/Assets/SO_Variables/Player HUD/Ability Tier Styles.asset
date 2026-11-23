@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d309b18cd1cd0d4faf2c380bfb054fa, type: 3}
+  m_Name: Ability Tier Styles
+  m_EditorClassIdentifier: 
+  silver:
+    rim: {r: 0.78, g: 0.81, b: 0.86, a: 1}
+    body: {r: 0.3, g: 0.34, b: 0.4, a: 1}
+    innerLine: {r: 0, g: 0, b: 0, a: 0}
+    motion: 0
+  gold:
+    rim: {r: 1, g: 0.78, b: 0.2, a: 1}
+    body: {r: 0.44, g: 0.3, b: 0.08, a: 1}
+    innerLine: {r: 0, g: 0, b: 0, a: 0}
+    motion: 1
+  prismatic:
+    rim: {r: 0.67, g: 0.41, b: 0.74, a: 1}
+    body: {r: 0.24, g: 0.19, b: 0.38, a: 1}
+    innerLine: {r: 0, g: 0, b: 0, a: 0}
+    motion: 2
+  unique:
+    rim: {r: 0.74, g: 0.04, b: 0.12, a: 1}
+    body: {r: 0.24, g: 0.03, b: 0.05, a: 1}
+    innerLine: {r: 0.88, g: 0.7, b: 0.33, a: 1}
+    motion: 3

@@ -73,21 +73,8 @@ public sealed class PlayerActionBarView : MonoBehaviour
     private ActionBarCardStyle powerupStyle = new ActionBarCardStyle(
         Color.white, new Color(0.97f, 0.94f, 0.86f), Color.clear, ActionBarCardMotion.None);
 
-    [SerializeField]
-    private ActionBarCardStyle silverStyle = new ActionBarCardStyle(
-        new Color(0.78f, 0.81f, 0.86f), new Color(0.3f, 0.34f, 0.4f), Color.clear, ActionBarCardMotion.None);
-
-    [SerializeField]
-    private ActionBarCardStyle goldStyle = new ActionBarCardStyle(
-        new Color(1f, 0.78f, 0.2f), new Color(0.44f, 0.3f, 0.08f), Color.clear, ActionBarCardMotion.Shine);
-
-    [SerializeField]
-    private ActionBarCardStyle prismaticStyle = new ActionBarCardStyle(
-        new Color(0.67f, 0.41f, 0.74f), new Color(0.24f, 0.19f, 0.38f), Color.clear, ActionBarCardMotion.Prismatic);
-
-    [SerializeField]
-    private ActionBarCardStyle uniqueStyle = new ActionBarCardStyle(
-        new Color(0.74f, 0.04f, 0.12f), new Color(0.24f, 0.03f, 0.05f), new Color(0.88f, 0.7f, 0.33f), ActionBarCardMotion.Pulse);
+    [Tooltip("Colours and motion of the Ability card per Sample tier. Shared with the Ability pick.")]
+    [SerializeField] private AbilityTierStyleProfile tierStyles;
 
     [Tooltip("Effect timings shared by every card on this bar.")]
     [SerializeField] private ActionBarCardTimings cardTimings = new ActionBarCardTimings();
@@ -185,13 +172,7 @@ public sealed class PlayerActionBarView : MonoBehaviour
 
     private ActionBarCardStyle GetTierStyle(AbilitySampleTier tier)
     {
-        return tier switch
-        {
-            AbilitySampleTier.Gold => goldStyle,
-            AbilitySampleTier.Prismatic => prismaticStyle,
-            AbilitySampleTier.Unique => uniqueStyle,
-            _ => silverStyle
-        };
+        return tierStyles != null ? tierStyles.Get(tier) : powerupStyle;
     }
 
 #if UNITY_EDITOR

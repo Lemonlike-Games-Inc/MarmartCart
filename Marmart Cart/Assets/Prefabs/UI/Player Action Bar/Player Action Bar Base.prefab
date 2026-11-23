@@ -2509,26 +2509,7 @@ MonoBehaviour:
     body: {r: 0.97, g: 0.94, b: 0.86, a: 1}
     innerLine: {r: 0, g: 0, b: 0, a: 0}
     motion: 0
-  silverStyle:
-    rim: {r: 0.78, g: 0.81, b: 0.86, a: 1}
-    body: {r: 0.3, g: 0.34, b: 0.4, a: 1}
-    innerLine: {r: 0, g: 0, b: 0, a: 0}
-    motion: 0
-  goldStyle:
-    rim: {r: 1, g: 0.78, b: 0.2, a: 1}
-    body: {r: 0.44, g: 0.3, b: 0.08, a: 1}
-    innerLine: {r: 0, g: 0, b: 0, a: 0}
-    motion: 1
-  prismaticStyle:
-    rim: {r: 0.67, g: 0.41, b: 0.74, a: 1}
-    body: {r: 0.24, g: 0.19, b: 0.38, a: 1}
-    innerLine: {r: 0, g: 0, b: 0, a: 0}
-    motion: 2
-  uniqueStyle:
-    rim: {r: 0.74, g: 0.04, b: 0.12, a: 1}
-    body: {r: 0.24, g: 0.03, b: 0.05, a: 1}
-    innerLine: {r: 0.88, g: 0.7, b: 0.33, a: 1}
-    motion: 3
+  tierStyles: {fileID: 11400000, guid: f6ccf3717501ddf4bb79e8ecdbd4b404, type: 2}
   cardTimings:
     equippedGlowAlpha: 0.45
     equipFlashSeconds: 0.25
