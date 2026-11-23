@@ -3,6 +3,30 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-22 19:24 (UTC-7): Ability Samples Steps 4-8, cart outside forces, Silver/Gold tiers
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: The first Ability Sample set is playable and shown in a new Player Action Bar: Tomato, Ice Cube and Cola supply, Really Really Cold Ice Cube, Rolling Tomato and the U-shape Magnet. A side quest gave leading carts one entry point for outside forces. The tiers are now Silver, Gold, Prismatic, Unique. Liang tested each step.
+- Changed:
+  - Step 4 (9ead82be): Ice Cube supply and Cola supply Samples (Baseline). No code.
+  - Step 5 (f8465bf3): Really Really Cold Ice Cube and the Adjective passive. `IceCubeEffect` can stay until triggered, with an optional per-player cap; `AbilitySampleDefinition.Upgrades Map Item` swaps the player's map pickups through a hand handle.
+  - Step 6 (ff4d4d92): Rolling Tomato. `ProjectileRollEffect` rolls a landed item until it hits a cart or a wall. Tomato self-hit (`HitsThrower`, Blinds Thrower on).
+  - Step 7 (75e7e5b3): U-shape Magnet. `ConeItemUse` (aimed cone) and `MagnetPullEffect` + `MagnetPullEffectSystem`, which pull loose carts with a clear line to the player.
+  - Side quest (0c2e6ac0): overspeed settle (`LeadingCartBehaviour`, `CartMovementProfile`); new `LeadingCartExternalForces` on Leading Cart Base; the Magnet also pulls rival leading carts. New `cart-movement.md`.
+  - Step 8 (6c8e7360): Player Action Bar. The held-powerup HUD became `PlayerActionBarPresenter` + `PlayerActionBarProfile` (renamed, same GUIDs), with new `PlayerActionBarView` and `ActionBarCardView`, prefabs `Player Action Bar Base` + P1-P4 variants, and the profile asset in `SO_Variables/Player HUD`. LB and the swap arrow imported as Sprites.
+  - Tiers (b6bc5b9e): `AbilitySampleTier` is Silver, Gold, Prismatic, Unique; the Sample assets moved with it (supplies Silver; Rolling Tomato, Really Really Cold Ice Cube, Magnet Gold). `ability-samples.md` and `GDD_v4.md` updated.
+  - Magnet cone (f51bd45d): 45° instead of 70°.
+- Why: The first set covers all three kinds (Baseline, Adjective, Gadget) for the demo. Outside forces need one place that respects the cart's speed rules. The bar must show both slots and the Ability cooldown. A flat purple frame did not read as prismatic.
+- Decisions:
+  - A pulled leading cart is never dragged backward, only slowed to 3 m/s and slid sideways; backward pulls folded the chain into a self-crash. Kept as the current Magnet design.
+  - Every outside force on a leading cart goes through `LeadingCartExternalForces`.
+  - Action bar: fixed slots; the equipped card is larger and alone shows prompts; the LB swap hint shows only when both are loaded; the Ability card shows whenever a Sample is held; an empty Powerup slot is a faint frame; the bar hides with neither. Base prefab plus per-player variants for later player colours.
+  - Silver = baselines and stat-only adjectives, Gold = behaviour changes, Prismatic unused until it has a moving colourful look, Unique dark red.
+- Open questions:
+  - Before the booth: restore the U-shape Magnet Sample to 45 s / 10 s (test values 1 / 1) and clear the Debug Starting Samples (Base Tomato Supply, P1 U-shape Magnet, P2 Ice Cube Supply).
+  - The Magnet icon is the Fan placeholder.
+  - The GDD Policy table still uses the old tier names.
+  - Next: card polish, then Step 9 (pick screen).
+
 ## 2026-11-21 16:03 (UTC-7): Item library and hand (R1-R3); Ability core (Step 3)
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Map powerups now run on a shared Item library and a per-player hand, and `PowerupId` is gone. On top of that, the Ability core: two hand slots, LB swap, Sample charge and cooldown. Liang tested each step; map powerups behave as before.
