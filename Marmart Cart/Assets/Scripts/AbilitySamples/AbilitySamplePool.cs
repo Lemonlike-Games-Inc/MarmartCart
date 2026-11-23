@@ -89,6 +89,13 @@ public sealed class AbilitySamplePool : ScriptableObject
     [Tooltip("Pity rule: a hand never holds more than one Baseline Sample (the plain supplies).")]
     [SerializeField] private bool atMostOneBaselinePerHand;
 
+    [Tooltip(
+        "A hand never holds a Baseline together with an upgrade of the same item (for example " +
+        "Tomato Supply and Rolling Tomato), since one is always better. Two upgrades of the same " +
+        "item can still be offered together."
+    )]
+    [SerializeField] private bool noBaselineWithItsUpgrade = true;
+
     public IReadOnlyList<AbilitySampleDefinition> Samples => samples;
 
     /// <summary>
@@ -113,6 +120,7 @@ public sealed class AbilitySamplePool : ScriptableObject
                 if (sample == null || sample.Item == null) continue;
                 if (Array.IndexOf(hand, sample, 0, filled) >= 0) continue;
                 if (atMostOneBaselinePerHand && hasBaseline && sample.Kind == AbilitySampleKind.Baseline) continue;
+                if (noBaselineWithItsUpgrade && SharesBaseItem(sample, hand, filled)) continue;
 
                 candidates.Add(sample);
             }
@@ -146,6 +154,24 @@ public sealed class AbilitySamplePool : ScriptableObject
 
         if (best == null && roundWeights.Count > 0) best = roundWeights[0];
         return best;
+    }
+
+    // True if the hand holds a Baseline this Sample upgrades, or an upgrade of this Baseline.
+    private static bool SharesBaseItem(AbilitySampleDefinition sample, AbilitySampleDefinition[] hand, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            if (IsBaselineAndUpgrade(hand[i], sample) || IsBaselineAndUpgrade(sample, hand[i])) return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsBaselineAndUpgrade(AbilitySampleDefinition baseline, AbilitySampleDefinition upgrade)
+    {
+        return baseline.Kind == AbilitySampleKind.Baseline &&
+               upgrade.UpgradesMapItem != null &&
+               upgrade.UpgradesMapItem == baseline.Item;
     }
 
     private static AbilitySampleDefinition PickByTier(List<AbilitySampleDefinition> candidates, RoundTierWeights weights)
