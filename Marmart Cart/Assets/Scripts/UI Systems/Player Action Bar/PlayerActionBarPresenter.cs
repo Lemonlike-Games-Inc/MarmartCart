@@ -232,7 +232,7 @@ public class PlayerActionBarPresenter : MonoBehaviour
             HasAbility = sample != null,
             AbilityLoaded = hand.AbilitySlot.IsLoaded,
             AbilityCharging = abilityCharging[slot],
-            AbilityTier = sample != null ? sample.Tier : AbilitySampleTier.Gold,
+            AbilityTier = sample != null ? sample.Tier : AbilitySampleTier.Silver,
             Equipped = hand.EquippedSlotId
         };
 

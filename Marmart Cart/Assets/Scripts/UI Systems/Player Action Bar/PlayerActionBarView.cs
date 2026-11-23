@@ -70,13 +70,14 @@ public sealed class PlayerActionBarView : MonoBehaviour
 
     [Header("Frame Colors")]
     [SerializeField] private Color powerupFrameColor = Color.white;
+    [SerializeField] private Color silverTierColor = new Color(0.72f, 0.76f, 0.82f);
     [SerializeField] private Color goldTierColor = new Color(1f, 0.78f, 0.2f);
     [SerializeField] private Color prismaticTierColor = new Color(0.66f, 0.5f, 1f);
     [SerializeField] private Color uniqueTierColor = new Color(1f, 0.38f, 0.45f);
 
     [Header("Editor Preview (Prefab Mode only)")]
     [SerializeField] private PreviewState previewState = PreviewState.PowerupEquippedAbilityCharging;
-    [SerializeField] private AbilitySampleTier previewAbilityTier = AbilitySampleTier.Prismatic;
+    [SerializeField] private AbilitySampleTier previewAbilityTier = AbilitySampleTier.Gold;
 
     [Range(0f, 1f)]
     [SerializeField] private float previewChargeProgress = 0.6f;
@@ -164,8 +165,9 @@ public sealed class PlayerActionBarView : MonoBehaviour
         return tier switch
         {
             AbilitySampleTier.Gold => goldTierColor,
+            AbilitySampleTier.Prismatic => prismaticTierColor,
             AbilitySampleTier.Unique => uniqueTierColor,
-            _ => prismaticTierColor
+            _ => silverTierColor
         };
     }
 

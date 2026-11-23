@@ -12,10 +12,19 @@ public enum AbilitySampleKind
     Gadget
 }
 
+/// <remarks>Saved as numbers in the Sample assets: keep the order, add new tiers at the end.</remarks>
 public enum AbilitySampleTier
 {
+    /// <summary>Baselines and stat-only adjectives.</summary>
+    Silver,
+
+    /// <summary>Adjectives and gadgets that change behaviour.</summary>
     Gold,
+
+    /// <summary>Rarer and more spectacular than Gold. No Sample uses it yet.</summary>
     Prismatic,
+
+    /// <summary>A specific Unique appears once per Match.</summary>
     Unique
 }
 

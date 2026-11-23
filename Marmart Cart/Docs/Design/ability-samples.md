@@ -20,13 +20,15 @@ There are three kinds of Sample:
 
 Adjectives point players at a Section ("P2 has Rolling Tomato, so P2 wants produce"). That creates conflict between players at a known place, which is why the pick comes after the Section reveal.
 
-An adjective should change a rule or a behaviour. A pure stat change ("bigger", "stronger") is the weak kind and sits in the Gold tier.
+An adjective should change a rule or a behaviour. A pure stat change ("bigger", "stronger") is the weak kind and sits in the Silver tier.
 
 ## Tiers
 
-- **Gold:** baselines and stat-only adjectives.
-- **Prismatic:** adjectives and gadgets that change behaviour.
-- **Unique:** a specific Unique appears once per Match.
+- **Silver:** baselines and stat-only adjectives. Silver-grey frame.
+- **Gold:** adjectives and gadgets that change behaviour. Gold frame.
+- **Prismatic:** rarer and more spectacular than Gold. No Sample uses it yet: a plain purple frame did not read as prismatic, so it waits for a colourful, moving look.
+- **Unique:** a specific Unique appears once per Match. Dark red frame.
+- Changed 2026-11-22: the old Gold tier is now Silver and the old Prismatic is now Gold. The assets moved with it, since the tier is saved as a number.
 - Mystery Samples are cut.
 
 ## The offer
@@ -77,31 +79,31 @@ Cooldowns are starting values.
 
 | Sample | Kind | Tier | Cooldown | Notes |
 |---|---|---|---|---|
-| Tomato supply | Baseline | Gold | 20 s | |
-| Ice Cube supply | Baseline | Gold | 20 s | |
-| Cola supply | Baseline | Gold | 30 s | A Cola lasts 10 s, so 20 s gave half the Round at Cola speed (changed 2026-11-21). A Cola used while one runs restarts the 10 s; it does not add up. |
-| Really Really Cold Ice Cube | Adjective | Prismatic | 35 s | The cube stays until a leading cart drives into it (it still melts then) or the Round ends. Per-player cap where the oldest melts; 0 = no cap, and there is no cap for now (decided 2026-11-21). Same freeze time (3 s) and look as Ice Cube for now. |
-| Rolling Tomato | Adjective | Prismatic | 30 s | After it lands, the tomato rolls on until it hits an obstacle or a chained cart. A leading cart it hits gets the normal Tomato effect. The whole volley of 12 rolls (decided 2026-11-21; cut the count if it gets laggy or messy). It rolls until it hits (Liang, 2026-11-21): any cart, or an Obstacles or Walls collider, stops a tomato; the thrower's own leading cart is blinded like any other while Blinds Thrower is on. The match end cancels it. The volley rolls side by side in the aim direction. The tomatoes spin forward in flight and while rolling. |
-| U-shape Magnet | Gadget | Prismatic | 45 s | Hold the right stick to show a cone (20 m, 70°); LT pulls the loose carts in it toward the player at 35 m/s, for up to 1.5 s. No force on chained carts. Decided 2026-11-21: pulled carts join by the normal collect rule (a rival chain in the way can collect them; nothing joins in ghost mode); only carts with a clear line to the player are pulled (shelves and walls shield); an empty cone still spends the charge. Tried 2026-11-21, kept 2026-11-22 as the current design: it also pulls rival leading carts in the cone (16 m/s, 100 m/s², 0.5 s) with the same pull method; ghost, checkout and frozen carts are never pulled, and a pulled rival that hits the thrower crashes by the normal rule. Decided 2026-11-22: a pulled leading cart is never dragged backward, only slowed to a crawl (3 m/s) and slid sideways, so it cannot fold its own chain and self-crash. See `cart-movement.md`. |
+| Tomato supply | Baseline | Silver | 20 s | |
+| Ice Cube supply | Baseline | Silver | 20 s | |
+| Cola supply | Baseline | Silver | 30 s | A Cola lasts 10 s, so 20 s gave half the Round at Cola speed (changed 2026-11-21). A Cola used while one runs restarts the 10 s; it does not add up. |
+| Really Really Cold Ice Cube | Adjective | Gold | 35 s | The cube stays until a leading cart drives into it (it still melts then) or the Round ends. Per-player cap where the oldest melts; 0 = no cap, and there is no cap for now (decided 2026-11-21). Same freeze time (3 s) and look as Ice Cube for now. |
+| Rolling Tomato | Adjective | Gold | 30 s | After it lands, the tomato rolls on until it hits an obstacle or a chained cart. A leading cart it hits gets the normal Tomato effect. The whole volley of 12 rolls (decided 2026-11-21; cut the count if it gets laggy or messy). It rolls until it hits (Liang, 2026-11-21): any cart, or an Obstacles or Walls collider, stops a tomato; the thrower's own leading cart is blinded like any other while Blinds Thrower is on. The match end cancels it. The volley rolls side by side in the aim direction. The tomatoes spin forward in flight and while rolling. |
+| U-shape Magnet | Gadget | Gold | 45 s | Hold the right stick to show a cone (20 m, 70°); LT pulls the loose carts in it toward the player at 35 m/s, for up to 1.5 s. No force on chained carts. Decided 2026-11-21: pulled carts join by the normal collect rule (a rival chain in the way can collect them; nothing joins in ghost mode); only carts with a clear line to the player are pulled (shelves and walls shield); an empty cone still spends the charge. Tried 2026-11-21, kept 2026-11-22 as the current design: it also pulls rival leading carts in the cone (16 m/s, 100 m/s², 0.5 s) with the same pull method; ghost, checkout and frozen carts are never pulled, and a pulled rival that hits the thrower crashes by the normal rule. Decided 2026-11-22: a pulled leading cart is never dragged backward, only slowed to a crawl (3 m/s) and slid sideways, so it cannot fold its own chain and self-crash. See `cart-movement.md`. |
 
 ### Second wave (after more features are done)
 
 | Sample | Kind | Tier | Cooldown | Notes |
 |---|---|---|---|---|
-| Piercing Tomahawk Steak | Adjective | Prismatic | 40 s | Passes through carts, one hit per cart. A throw along a chain can make the whole chain vulnerable. Needs the Tomahawk powerup. |
-| Customer in Training | Baseline | Gold | 25 s, lasts 8 s | Needs the powerup. |
-| Running in the Aisles | Adjective | Prismatic | 40 s, lasts 5 s | While small, the player passes through rival chained carts without crashing, and still loses to a leading cart. Other ideas: Sugar Rush (each grocery picked up extends the effect), Under the Shelves (low shortcuts; needs level support). |
+| Piercing Tomahawk Steak | Adjective | Gold | 40 s | Passes through carts, one hit per cart. A throw along a chain can make the whole chain vulnerable. Needs the Tomahawk powerup. |
+| Customer in Training | Baseline | Silver | 25 s, lasts 8 s | Needs the powerup. |
+| Running in the Aisles | Adjective | Gold | 40 s, lasts 5 s | While small, the player passes through rival chained carts without crashing, and still loses to a leading cart. Other ideas: Sugar Rush (each grocery picked up extends the effect), Under the Shelves (low shortcuts; needs level support). |
 | E.M.P. Device + Night-Vision Goggles | Gadget | Unique | 60 s, lasts 4 s | The store goes dark and players see only nearby. The user sees the map in green night vision. Reuses the Blackout Policy work. |
 
 ### Later
 
 | Sample | Kind | Tier | Notes |
 |---|---|---|---|
-| Rotten Tomato | Adjective | Gold | Longer vision block; a small part stays for the Round. Make the tomato look rotten. |
-| Leaking Cola | Adjective | Prismatic | Leaves a sticky trail that slows leading carts. First check whether a slow needs a force or only a speed cap. |
-| Overloaded Fan | Adjective | Prismatic | "Times stronger" is a stat change; it needs a real adjective. Needs the Fan. |
-| Looooong Baguette | Adjective | Gold | Much longer swing range. Needs the Baguette. |
-| Big Squid | Adjective | Prismatic | More stamina and a larger effect. Needs the Squid. |
+| Rotten Tomato | Adjective | Silver | Longer vision block; a small part stays for the Round. Make the tomato look rotten. |
+| Leaking Cola | Adjective | Gold | Leaves a sticky trail that slows leading carts. First check whether a slow needs a force or only a speed cap. |
+| Overloaded Fan | Adjective | Gold | "Times stronger" is a stat change; it needs a real adjective. Needs the Fan. |
+| Looooong Baguette | Adjective | Silver | Much longer swing range. Needs the Baguette. |
+| Big Squid | Adjective | Gold | More stamina and a larger effect. Needs the Squid. |
 
 Dropped: Protein Powder (replaced by Customer in Training).
 

@@ -350,8 +350,9 @@ Starting after the first Round, each player receives two random Ability Samples 
 
 | Tier | Meaning | Visual Direction |
 | :---- | :---- | :---- |
-| Gold / Normal | Baseline tier. Every Ability should already feel useful and fun; there is no trash tier. | Warm gold, clean premium frame. |
-| Prismatic / Rare | Less common, more spectacular, specialized, or rule-breaking — not simply double the raw power. | Diamond-like / colourful reflective treatment. |
+| Silver / Normal | Baseline tier. Every Ability should already feel useful and fun; there is no trash tier. | Silver-grey, clean frame. |
+| Gold | Less common; changes a rule or a behaviour rather than adding raw power. | Warm gold, premium frame. |
+| Prismatic / Rare | Rarer, more spectacular, specialized, or rule-breaking — not simply double the raw power. Not used until it has a colourful, moving look. | Diamond-like / colourful reflective treatment. |
 | Unique | Special Abilities with Match-level identity. A specific Unique can appear only once during the whole Match. | Near-black or dark body, deep red energy, thin gold detail. |
 
 • Some Ability Samples may trade certainty for rarity, such as “replace this with a random Ability one tier higher.” Unique results still obey the once-per-Match rule.  
@@ -390,8 +391,8 @@ Marmart Policies are global modifiers issued by the Hypermarket. They change how
 
 The early Match should teach the baseline game. Later Rounds should become visually and mechanically louder. The player should feel the same Hypermarket gradually turning into a ridiculous version of itself rather than being thrown into maximum complexity from the first minute.  
 • Opening: Opening Policies establish the Match identity; fewer Sections are active; Round 1 has no Ability by default.  
-• Early / Middle: more Sections open, Gold Abilities dominate, occasional Prismatic Abilities and stronger Policies enter play.  
-• Late: the Hypermarket is fuller, Prismatic and rare Unique moments become more likely, and the Match has developed a story specific to that lobby.
+• Early / Middle: more Sections open, Silver Abilities dominate, occasional Gold Abilities and stronger Policies enter play.  
+• Late: the Hypermarket is fuller, Gold, Prismatic and rare Unique moments become more likely, and the Match has developed a story specific to that lobby.
 
 ### 6.7 Version 4.0 Simplification from Version 3.0 {#6.7-version-4.0-simplification-from-version-3.0}
 

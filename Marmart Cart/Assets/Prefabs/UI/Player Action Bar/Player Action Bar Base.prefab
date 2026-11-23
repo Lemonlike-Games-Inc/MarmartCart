@@ -1241,6 +1241,7 @@ MonoBehaviour:
   readyPopScale: 1.25
   readyPopSeconds: 0.3
   powerupFrameColor: {r: 1, g: 1, b: 1, a: 1}
+  silverTierColor: {r: 0.72, g: 0.76, b: 0.82, a: 1}
   goldTierColor: {r: 1, g: 0.78, b: 0.2, a: 1}
   prismaticTierColor: {r: 0.6650412, g: 0.4142043, b: 0.735849, a: 1}
   uniqueTierColor: {r: 0.74213827, g: 0.039674006, b: 0.11919811, a: 1}
