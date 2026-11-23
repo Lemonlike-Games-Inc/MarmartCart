@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cd737a5b54567f4bb5ee9e21a8e8cd9, type: 3}
-  m_Name: Cola Supply
+  m_Name: Supply_Tomato
   m_EditorClassIdentifier: 
-  displayName: Cola supply
+  displayName: Tomato supply
   kind: 0
   tier: 0
-  item: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
-  cooldownSeconds: 30
+  item: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
+  cooldownSeconds: 10
   firstChargeSeconds: 10
   upgradesMapItem: {fileID: 0}
-  description: Free Cola! Shake it up for a 10 s speed boost.
+  description: Free Tomatoes! Throw one to splat a rival's screen.
   cardIcon: {fileID: 0}

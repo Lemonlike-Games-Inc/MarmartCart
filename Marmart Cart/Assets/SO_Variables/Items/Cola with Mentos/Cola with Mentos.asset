@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b144b07815ffc040a436b974cd1e68e, type: 3}
-  m_Name: ColaMentosPowerupProfile
+  m_Script: {fileID: 11500000, guid: c4d3146e8b87a4c4eb883e6850b618f4, type: 3}
+  m_Name: Cola with Mentos
   m_EditorClassIdentifier: 
-  durationSeconds: 10
-  fixedTargetSpeed: 30
-  blockOtherPowerupUseWhileActive: 0
+  displayName: Cola with Mentos
+  use: {fileID: 11400000, guid: ba780fbb37e97274f89d0c10493da4da, type: 2}
+  effects:
+  - {fileID: 11400000, guid: 0ddcedac9f5ec4d42bd03ffad11e7b9f, type: 2}

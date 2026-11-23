@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cd737a5b54567f4bb5ee9e21a8e8cd9, type: 3}
-  m_Name: Really Really Cold Ice Cube
+  m_Name: Supply_Ice Cube
   m_EditorClassIdentifier: 
-  displayName: Really Really Cold Ice Cube
-  kind: 1
-  tier: 1
-  item: {fileID: 11400000, guid: 2e167e72733eb9c458caee14cc5d4336, type: 2}
-  cooldownSeconds: 35
+  displayName: Ice Cube supply
+  kind: 0
+  tier: 0
+  item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
+  cooldownSeconds: 20
   firstChargeSeconds: 10
-  upgradesMapItem: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
-  description: Ice Cubes that never melt until someone hits them. Your map Ice Cubes
-    too!
+  upgradesMapItem: {fileID: 0}
+  description: Free Ice Cubes! Throw one to freeze a rival in their tracks.
   cardIcon: {fileID: 0}

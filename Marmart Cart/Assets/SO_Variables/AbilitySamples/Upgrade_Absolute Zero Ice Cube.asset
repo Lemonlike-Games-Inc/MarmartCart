@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cd737a5b54567f4bb5ee9e21a8e8cd9, type: 3}
-  m_Name: U-shape Magnet
+  m_Name: Upgrade_Absolute Zero Ice Cube
   m_EditorClassIdentifier: 
-  displayName: U-shape Magnet
-  kind: 2
+  displayName: '"Absolute Zero" Ice Cube'
+  kind: 1
   tier: 1
-  item: {fileID: 11400000, guid: 743a10fbaf94a204cac2a0465426babb, type: 2}
-  cooldownSeconds: 1
-  firstChargeSeconds: 1
-  upgradesMapItem: {fileID: 0}
-  description: Aim a cone and yank loose carts, and rivals, toward you.
+  item: {fileID: 11400000, guid: 2e167e72733eb9c458caee14cc5d4336, type: 2}
+  cooldownSeconds: 35
+  firstChargeSeconds: 10
+  upgradesMapItem: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
+  description: Upgrade your Ice Cubes so that they never melt until someone hits
+    them.
   cardIcon: {fileID: 0}

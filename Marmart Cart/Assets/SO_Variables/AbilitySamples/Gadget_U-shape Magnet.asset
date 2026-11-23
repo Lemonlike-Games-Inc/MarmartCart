@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cd737a5b54567f4bb5ee9e21a8e8cd9, type: 3}
-  m_Name: Rolling Tomato
+  m_Name: Gadget_U-shape Magnet
   m_EditorClassIdentifier: 
-  displayName: Rolling Tomato
-  kind: 1
+  displayName: U-shape Magnet
+  kind: 2
   tier: 1
-  item: {fileID: 11400000, guid: 57e51046da5e31947a6a1554f115a028, type: 2}
-  cooldownSeconds: 30
+  item: {fileID: 11400000, guid: 743a10fbaf94a204cac2a0465426babb, type: 2}
+  cooldownSeconds: 40
   firstChargeSeconds: 10
-  upgradesMapItem: {fileID: 11400000, guid: 82abe79d006bba14f8286178663f2db1, type: 2}
-  description: Tomatoes keep rolling after they land. Your map Tomatoes roll too!
+  upgradesMapItem: {fileID: 0}
+  description: Aim a cone and yank loose carts, and rivals, toward you.
   cardIcon: {fileID: 0}

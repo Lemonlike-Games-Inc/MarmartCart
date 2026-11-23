@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 303ae7d74725e804fa55ad8a195b0e9e, type: 3}
-  m_Name: TomatoPowerupProfile
+  m_Script: {fileID: 11500000, guid: 3b144b07815ffc040a436b974cd1e68e, type: 3}
+  m_Name: Cola with Mentos Boost Effect
   m_EditorClassIdentifier: 
-  blindDurationSeconds: 4
-  maximumVisualSplashCount: 3
-  refreshDurationOnAdditionalHit: 1
-  blindsThrower: 1
+  durationSeconds: 10
+  fixedTargetSpeed: 30
+  blockOtherPowerupUseWhileActive: 0

@@ -81,7 +81,7 @@ An adjective Sample lists an Item replacement, for example Tomato -> Rolling Tom
 With two slots a player can use a second item while a duration effect is still running, so each duration effect decides whether it blocks that.
 
 - Every duration effect has its own toggle: "blocks other item use while active". It lives on the effect asset, so a variant can differ from its base item.
-- Cola Boost already has it (`Block Other Powerup Use While Active` on `ColaMentosPowerupProfile.asset`, now `ColaBoostEffect`). It is on today; Liang wants Cola not to block, so it is turned off in R2b.
+- Cola Boost already has it (`Block Other Powerup Use While Active` on the `ColaBoostEffect` asset, now `Items/Cola with Mentos/Cola with Mentos Boost Effect`). It is on today; Liang wants Cola not to block, so it is turned off in R2b.
 - Today the toggle sets the single `ActiveEffectLock` blocker. Once a second duration effect can lock, the lock needs one handle per running effect, so the end of one effect never clears another's lock.
 - Watch, design later: effects that change the same thing at once, such as two speed effects (Cola with Customer in Training).
 
@@ -95,7 +95,18 @@ Each step is tested with map Items in Gameplay Scene 2P, 4P and the tutorial sce
    - R2b (done): the hand, targeting, launcher, projectile pool, projectiles and effect systems use Items; each effect system checks its own effect and takes its tuning from it. `PowerupRuntimeSystem` holds the Item Library (assigned in the four build scenes). Cola's block toggle is off. The map side, held-item HUD icons and the SFX relay still use `PowerupId` through the Item Library. The ice cube pool keeps its own `IceCubeEffect` reference for pool sizes and the cube prefab; a second cube look (Really Really Cold) will need the pool to key by prefab.
 3. **R3, map side on Items.** Pickups, random pools, the pickup visual catalog and spawners use Items; `PowerupId` is retired.
    - Done: the spawner prefab and its Tomato/Cola variants hold their Fixed Item; the random pool, the pickup visual catalog (one visual per item plus a Random Pickup Visual), the held-item HUD profile (icon and prompts per item) and the SFX relays (filter by exact item) use Items. The Item Library has no `PowerupId` mapping any more. StrongFan had no item; its HUD icon and prompts were dropped. `LevelGreyBoxScene` (test scene) was not migrated.
-   - Not done, for after the event: renaming `PowerupRuntimeSystem` and the shared throw profiles, and moving the effect assets into `SO_Variables/Items`.
+   - Not done, for after the event: renaming `PowerupRuntimeSystem` and the shared throw profiles.
+
+## Asset folders (sorted 2026-11-23)
+
+`SO_Variables/Items` holds the Item Library and one folder per item family. Each folder holds the base Item, its use and effect parts, and its variants:
+
+- `Tomato/`: Tomato, Tomato Throw, Tomato Blind Effect, Rolling Tomato, Rolling Tomato Throw, Tomato Roll Effect.
+- `Ice Cube/`: Ice Cube, Ice Cube Throw, Ice Cube Effect, Really Really Cold Ice Cube and its effect.
+- `Cola with Mentos/`: Cola with Mentos, Instant Use, Cola with Mentos Boost Effect.
+- `U-shape Magnet/`: U-shape Magnet, Magnet Cone, Magnet Pull Effect.
+
+The three base effects moved from `SO_Variables/Powerup/<item>/` and were renamed from `TomatoPowerupProfile`, `IcePowerupProfile` and `ColaMentosPowerupProfile` (same GUIDs, so every reference kept). Liang renamed the Cola files to "Cola with Mentos" afterwards. The presentation profiles stay in `SO_Variables/Powerup`. A new item gets its own folder; a variant goes in its base item's folder. Every item folder holds its own use asset, including an instant item: Instant Use has no settings, but a copy per item keeps each folder complete when browsing (Liang, 2026-11-23).
 
 ## Risks
 

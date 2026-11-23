@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cd737a5b54567f4bb5ee9e21a8e8cd9, type: 3}
-  m_Name: Ice Cube Supply
+  m_Name: Supply_Cola with Mentos
   m_EditorClassIdentifier: 
-  displayName: Ice Cube supply
+  displayName: Cola with Mentos supply
   kind: 0
   tier: 0
-  item: {fileID: 11400000, guid: 7754a8e5948854749a1cd0ed548f8ff7, type: 2}
-  cooldownSeconds: 20
+  item: {fileID: 11400000, guid: afd03fc5fb5ae6246ae88efae20f8b7c, type: 2}
+  cooldownSeconds: 30
   firstChargeSeconds: 10
   upgradesMapItem: {fileID: 0}
-  description: Free Ice Cubes! Throw one to freeze a rival in their tracks.
+  description: Free Cola with Mentos! Shake it up for a 10s speed boost.
   cardIcon: {fileID: 0}

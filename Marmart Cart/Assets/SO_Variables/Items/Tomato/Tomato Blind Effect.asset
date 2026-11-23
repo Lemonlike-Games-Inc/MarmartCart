@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4d3146e8b87a4c4eb883e6850b618f4, type: 3}
-  m_Name: Cola
+  m_Script: {fileID: 11500000, guid: 303ae7d74725e804fa55ad8a195b0e9e, type: 3}
+  m_Name: Tomato Blind Effect
   m_EditorClassIdentifier: 
-  displayName: Cola + Mentos
-  use: {fileID: 11400000, guid: ba780fbb37e97274f89d0c10493da4da, type: 2}
-  effects:
-  - {fileID: 11400000, guid: 0ddcedac9f5ec4d42bd03ffad11e7b9f, type: 2}
+  blindDurationSeconds: 4
+  maximumVisualSplashCount: 3
+  refreshDurationOnAdditionalHit: 1
+  blindsThrower: 1
