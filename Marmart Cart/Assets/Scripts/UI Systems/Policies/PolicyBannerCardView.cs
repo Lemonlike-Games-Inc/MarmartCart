@@ -180,7 +180,13 @@ public sealed class PolicyBannerCardView : MonoBehaviour
             MeasureName();
         }
 
-        if (frame != null) frame.color = style.rim;
+        if (frame != null)
+        {
+            // Prismatic: the same colour band as the other cards, static on the banner.
+            bool band = style.rimGradient != null && UIRimGradient.Apply(frame, style.rimGradient) != null;
+            if (style.rimGradient == null) UIRimGradient.Apply(frame, null);
+            frame.color = band ? Color.white : style.rim;
+        }
         if (body != null) body.color = style.body;
 
         if (innerLine != null)

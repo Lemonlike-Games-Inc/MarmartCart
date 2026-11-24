@@ -28,7 +28,7 @@ An upgrade should change a rule or a behaviour. A pure stat change ("bigger", "s
 
 - **Silver:** baselines and stat-only upgrades. Silver-grey frame.
 - **Gold:** upgrades and gadgets that change behaviour. Gold frame.
-- **Prismatic:** rarer and more spectacular than Gold. No Sample uses it yet: a plain purple frame did not read as prismatic, so it waits for a colourful, moving look.
+- **Prismatic:** rarer and more spectacular than Gold. Since 2026-11-24 its rim is a pastel colour band running around the card (`UIRimGradient`, colours in `Ability Tier Styles` → Prismatic → Rim Colors); while selected the band flows around the rim and the glow carries it. The U-shape Magnet is the first Prismatic Sample.
 - **Unique:** a specific Unique appears once per Match. Dark red frame.
 - Changed 2026-11-22: the old Gold tier is now Silver and the old Prismatic is now Gold. The assets moved with it, since the tier is saved as a number.
 - Mystery Samples are cut.
@@ -36,7 +36,7 @@ An upgrade should change a rule or a behaviour. A pure stat change ("bigger", "s
 ## The offer
 
 - Each player is dealt 3 cards and picks 1. The three are always different Samples; two players may get, and pick, the same one.
-- Each card rolls its tier with the Round's tier weights (agreed 2026-11-23), then a Sample of that tier. The weights are set per Round in the `Ability Sample Pool` asset; a tier with no Sample left is skipped. Defaults: Round 2 Silver 60 / Gold 40, Round 3 Silver 30 / Gold 70, Prismatic and Unique 0.
+- Each card rolls its tier with the Round's tier weights (agreed 2026-11-23), then a Sample of that tier. The weights are set per Round in the `Ability Sample Pool` asset; a tier with no Sample left is skipped. Defaults: Round 2 Silver 60 / Gold 40, Round 3 Silver 30 / Gold 70, Prismatic and Unique 0. Changed 2026-11-24: Round 2 Silver 50 / Gold 50, Round 3 Silver 10 / Gold 50 / Prismatic 40.
 - Pity rule "at most one Baseline per hand" is a toggle on the pool, off by default.
 - "No Baseline With Its Upgrade" (toggle on the pool, on; Liang, 2026-11-23): a hand never holds a Baseline together with an Upgrade of the same item (Tomato supply with Rolling Tomato, Ice Cube supply with "Absolute Zero" Ice Cube), because one is always better and the card is wasted. Two upgrades of the same item may still meet (Rolling Tomato and a later Rotten Tomato). The link is the upgrade's Upgrades Map Item. With today's six Samples every hand is three of four groups: a Tomato Sample, an Ice Cube Sample, Cola with Mentos supply, the Magnet. More Samples before the demo will spread it out.
 - Not built yet: a specific Unique once per Match.
@@ -138,6 +138,7 @@ Revised 2026-11-21. Each step stops for Liang to test in Unity.
      - The equipped card has a white outline and glow, which flash when it becomes equipped.
      - The cooldown is a radial wipe that clears clockwise from the top.
      - Ready motion per tier: Silver still, Gold a shine sweep, Prismatic a colour-cycling rim and glow plus the shine, Unique a red glow pulse and a gold inner line. A ring bursts out when the Ability becomes ready.
+     - Changed 2026-11-24: Prismatic's colour band flows around a multi-colour rim instead of cycling one colour; Gold's select glow is golden (style field Select Glow); the shine stripe is thinner (timings Shine Width 20) and faster (Shine Sweep Seconds 0.3).
      - The Powerup card style and the timings sit on the bar root; the tier styles moved to the shared `Player HUD/Ability Tier Styles` asset in step 10b. The placeholder sprites are in `2D Arts/Player Action Bar/`.
 9. System sound hooks (inserted 2026-11-22, before the pick screen). Built 2026-11-22: `PlayerItemSfxRelay` on `Chain of Carts Base` (inherited by P1-P4), with Inspector hooks for generic feedback that does not depend on the item: powerup collected, item equipped (after a pickup, a ready Ability, a swap, or when the other item was used up), swapped, swap failed (LB with nothing to swap to; optional) and Ability ready. Several can fire in the same frame. The hooks are empty; sounds are wired later, for example to `SfxManager.PlaySFX`. Item-specific sounds stay on `PowerupLifecycleUnityEventRelay`. `PlayerItemHand` gained `OnSwapPressed`.
 10. The pick screen (was step 9), as the last pre-round stage in Rounds 2 and 3, with room for the Policy pop and Section reveal before it. Agreed 2026-11-23, in three parts:

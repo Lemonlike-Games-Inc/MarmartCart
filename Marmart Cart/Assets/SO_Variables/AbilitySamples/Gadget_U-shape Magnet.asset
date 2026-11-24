@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: U-shape Magnet
   kind: 2
-  tier: 1
+  tier: 2
   item: {fileID: 11400000, guid: 743a10fbaf94a204cac2a0465426babb, type: 2}
   cooldownSeconds: 40
   firstChargeSeconds: 10

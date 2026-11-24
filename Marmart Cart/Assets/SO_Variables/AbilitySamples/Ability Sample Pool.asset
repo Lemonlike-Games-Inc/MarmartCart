@@ -22,14 +22,15 @@ MonoBehaviour:
   roundWeights:
   - label: Round 2
     round: 2
-    silver: 60
-    gold: 40
+    silver: 50
+    gold: 50
     prismatic: 0
     unique: 0
   - label: Round 3
     round: 3
-    silver: 30
-    gold: 70
-    prismatic: 0
+    silver: 10
+    gold: 50
+    prismatic: 40
     unique: 0
   atMostOneBaselinePerHand: 0
+  noBaselineWithItsUpgrade: 1

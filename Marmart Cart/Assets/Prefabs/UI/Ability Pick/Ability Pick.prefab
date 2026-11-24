@@ -85,9 +85,9 @@ MonoBehaviour:
     equipFlashSeconds: 0.25
     equipFlashOutlineScale: 1.12
     shineEverySeconds: 2.6
-    shineSweepSeconds: 0.45
+    shineSweepSeconds: 0.3
+    shineWidth: 20
     prismaticCycleSeconds: 3
-    prismaticSaturation: 0.55
     prismaticGlowAlpha: 0.5
     pulseSeconds: 1.6
     pulseGlowAlpha: 0.75

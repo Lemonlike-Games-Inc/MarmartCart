@@ -2509,15 +2509,16 @@ MonoBehaviour:
     body: {r: 0.97, g: 0.94, b: 0.86, a: 1}
     innerLine: {r: 0, g: 0, b: 0, a: 0}
     motion: 0
+    selectGlow: {r: 0, g: 0, b: 0, a: 0}
   tierStyles: {fileID: 11400000, guid: f6ccf3717501ddf4bb79e8ecdbd4b404, type: 2}
   cardTimings:
     equippedGlowAlpha: 0.45
     equipFlashSeconds: 0.25
     equipFlashOutlineScale: 1.12
     shineEverySeconds: 2.6
-    shineSweepSeconds: 0.45
+    shineSweepSeconds: 0.3
+    shineWidth: 20
     prismaticCycleSeconds: 3
-    prismaticSaturation: 0.55
     prismaticGlowAlpha: 0.5
     pulseSeconds: 1.6
     pulseGlowAlpha: 0.75

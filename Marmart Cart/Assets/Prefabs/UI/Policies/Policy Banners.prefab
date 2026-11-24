@@ -143,7 +143,7 @@ MonoBehaviour:
   text: THIS ROUND'S POLICIES
   font: {fileID: 0}
   fontStack: {fileID: 0}
-  fontSize: 20
+  fontSize: 14
   wordWrap: 0
   padding: {x: 0, y: 0, z: 0, w: 0}
   horizontalAlignment: 4

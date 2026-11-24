@@ -3,6 +3,7 @@ using LightSide;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Gradient = UnityEngine.Gradient;
 
 /// <summary>How a card moves while its item is ready. A charging or empty card stays still.</summary>
 public enum ActionBarCardMotion
@@ -33,12 +34,28 @@ public struct ActionBarCardStyle
 
     public ActionBarCardMotion motion;
 
+    [Tooltip("Colour of the soft glow behind a selected (equipped or highlighted) card. Alpha 0 = white.")]
+    public Color selectGlow;
+
+    /// <summary>
+    /// Runtime only, set by AbilityTierStyleProfile.Get: colours running around the
+    /// rim (the Prismatic tier). Null = the flat rim colour.
+    /// </summary>
+    [NonSerialized] public Gradient rimGradient;
+
     public ActionBarCardStyle(Color rim, Color body, Color innerLine, ActionBarCardMotion motion)
+        : this(rim, body, innerLine, motion, Color.clear)
+    {
+    }
+
+    public ActionBarCardStyle(Color rim, Color body, Color innerLine, ActionBarCardMotion motion, Color selectGlow)
     {
         this.rim = rim;
         this.body = body;
         this.innerLine = innerLine;
         this.motion = motion;
+        this.selectGlow = selectGlow;
+        rimGradient = null;
     }
 }
 
@@ -58,10 +75,11 @@ public sealed class ActionBarCardTimings
     [Min(0.1f)] public float shineEverySeconds = 2.6f;
     [Min(0.05f)] public float shineSweepSeconds = 0.45f;
 
-    [Tooltip("Seconds for the Prismatic rim to go through every colour.")]
-    [Min(0.1f)] public float prismaticCycleSeconds = 3f;
+    [Tooltip("Width of the shine stripe, in card pixels.")]
+    [Min(1f)] public float shineWidth = 20f;
 
-    [Range(0f, 1f)] public float prismaticSaturation = 0.55f;
+    [Tooltip("Seconds for the Prismatic colour band to flow once around the rim.")]
+    [Min(0.1f)] public float prismaticCycleSeconds = 3f;
 
     [Tooltip("Alpha of the Prismatic card's glow.")]
     [Range(0f, 1f)] public float prismaticGlowAlpha = 0.5f;
@@ -153,6 +171,12 @@ public sealed class ActionBarCardView : MonoBehaviour
     private float motionTime;
     private int shownSeconds = -1;
 
+    // Prismatic: colours running around the rim, glow and ready ring. Null = flat rim colour.
+    private Gradient rimGradient;
+    private UIRimGradient frameRim;
+    private UIRimGradient glowRim;
+    private UIRimGradient burstRim;
+
     private void Awake()
     {
         currentScale = transform.localScale.x;
@@ -219,8 +243,17 @@ public sealed class ActionBarCardView : MonoBehaviour
 
         if (canvasGroup != null) canvasGroup.alpha = empty ? emptyAlpha : 1f;
 
+        ApplyRimGradient(style.rimGradient);
         SetRimColor(style.rim);
         if (body != null) body.color = style.body;
+
+        if (equippedGlow != null)
+        {
+            // Only the colour; the equipped look sets the alpha.
+            Color glow = style.selectGlow.a > 0f ? style.selectGlow : Color.white;
+            glow.a = equippedGlow.color.a;
+            equippedGlow.color = glow;
+        }
 
         if (innerLine != null)
         {
@@ -342,12 +375,15 @@ public sealed class ActionBarCardView : MonoBehaviour
             if (shine != null) SetActive(shine.gameObject, false);
         }
 
+        // The colour band rests where it started whenever the Prismatic motion is not running.
+        if (changed && motion != ActionBarCardMotion.Prismatic) SetRimOffset(0f);
+
         if (tierGlow != null)
         {
             bool glowing = motion == ActionBarCardMotion.Pulse || motion == ActionBarCardMotion.Prismatic;
             SetActive(tierGlow.gameObject, glowing);
 
-            Color glow = rim;
+            Color glow = rimGradient != null ? Color.white : rim;
             glow.a = changed ? 0f : tierGlow.color.a;
             tierGlow.color = glow;
         }
@@ -372,6 +408,7 @@ public sealed class ActionBarCardView : MonoBehaviour
         if (motion != ActionBarCardMotion.Pulse && shine != null)
         {
             SetActive(shine.gameObject, true);
+            SetShineWidth();
             shine.anchoredPosition = Vector2.zero;
         }
 
@@ -478,14 +515,15 @@ public sealed class ActionBarCardView : MonoBehaviour
                 break;
 
             case ActionBarCardMotion.Prismatic:
-                float hue = Mathf.Repeat(motionTime / timings.prismaticCycleSeconds, 1f);
-                Color rim = Color.HSVToRGB(hue, timings.prismaticSaturation, 1f);
-                SetRimColor(rim);
+                // The colour band flows around the rim; the glow carries the same band.
+                // Without a band (edit mode) the glow takes the flat rim colour.
+                SetRimOffset(motionTime / timings.prismaticCycleSeconds);
 
                 if (tierGlow != null)
                 {
-                    rim.a = timings.prismaticGlowAlpha;
-                    tierGlow.color = rim;
+                    Color glow = rimGradient != null ? Color.white : displayRim;
+                    glow.a = timings.prismaticGlowAlpha;
+                    tierGlow.color = glow;
                 }
 
                 UpdateShine();
@@ -512,6 +550,7 @@ public sealed class ActionBarCardView : MonoBehaviour
 
         oneShotLeft = -1f;
         SetRimColor(displayRim);
+        SetRimOffset(0f);
         SetMotion(displayMotion, displayRim);
         return false;
     }
@@ -526,13 +565,42 @@ public sealed class ActionBarCardView : MonoBehaviour
         SetActive(shine.gameObject, sweeping);
         if (!sweeping) return;
 
+        SetShineWidth();
         float travel = ((RectTransform)shine.parent).rect.width * 0.5f + shine.rect.width;
         float x = Mathf.Lerp(-travel, travel, cycle / timings.shineSweepSeconds);
         shine.anchoredPosition = new Vector2(x, 0f);
     }
 
+    private void SetShineWidth()
+    {
+        if (shine == null || timings == null || Mathf.Approximately(shine.sizeDelta.x, timings.shineWidth)) return;
+        shine.sizeDelta = new Vector2(timings.shineWidth, shine.sizeDelta.y);
+    }
+
+    // A gradient rim, glow and ring show their colours untinted.
+    private void ApplyRimGradient(Gradient gradient)
+    {
+        frameRim = UIRimGradient.Apply(frame, gradient);
+        glowRim = UIRimGradient.Apply(tierGlow, gradient);
+        burstRim = UIRimGradient.Apply(readyBurst, gradient);
+
+        // Outside Play Mode the effect is not added, so the flat rim colour shows instead.
+        rimGradient = gradient != null && frameRim != null ? gradient : null;
+    }
+
+    private void SetRimOffset(float turns)
+    {
+        if (rimGradient == null) return;
+
+        if (frameRim != null) frameRim.SetOffset(turns);
+        if (glowRim != null) glowRim.SetOffset(turns);
+        if (burstRim != null) burstRim.SetOffset(turns);
+    }
+
     private void SetRimColor(Color color)
     {
+        if (rimGradient != null) color = Color.white;
+
         if (frame != null) frame.color = color;
 
         if (readyBurst != null)
