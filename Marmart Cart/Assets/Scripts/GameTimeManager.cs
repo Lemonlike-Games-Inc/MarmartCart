@@ -75,6 +75,14 @@ public class GameTimeManager : MonoBehaviour
     public bool IsPostGame => sessionState == GameSessionState.PostGame;
 
     public event Action OnPreGameEntered;
+
+    /// <summary>
+    /// Raised in BeginMatch right before the match flow starts, so Round rules
+    /// (Marmart Policies) are in place for the first session. If the flow then
+    /// fails to start, OnPreGameEntered follows.
+    /// </summary>
+    public event Action OnMatchStarting;
+
     public event Action OnMatchStarted;
     public event Action OnPostGameEntered;
 
@@ -220,6 +228,8 @@ public class GameTimeManager : MonoBehaviour
         sessionState = GameSessionState.Playing;
 
         SetWorldPaused(false);
+
+        OnMatchStarting?.Invoke();
 
         matchFlowDirector.StartFlow();
 

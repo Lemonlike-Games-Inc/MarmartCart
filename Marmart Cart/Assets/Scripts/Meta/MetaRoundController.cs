@@ -142,6 +142,12 @@ public sealed class MetaRoundController : MonoBehaviour
     public event Action PreRoundFinished;
 
     /// <summary>
+    /// A load began (next Round, F1 to F4, main menu): the fade-out starts and
+    /// the scene unloads after it. Round effects stop here.
+    /// </summary>
+    public event Action LoadStarted;
+
+    /// <summary>
     /// The score reveal ended and the Round result is decided. Read it with
     /// IsRoundWinner, RoundHasWinner and GetMatchPointsAfterRound.
     /// </summary>
@@ -694,6 +700,7 @@ public sealed class MetaRoundController : MonoBehaviour
         phase = RoundPhase.Loading;
         pendingLoad = target;
         fadeOutElapsed = 0f;
+        LoadStarted?.Invoke();
     }
 
     private void CompletePendingLoad()

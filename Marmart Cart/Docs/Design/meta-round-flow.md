@@ -75,7 +75,7 @@ Detail is in `ability-samples.md` (2026-11-21). The pick comes after the Policy 
 
 ## Policy pop
 
-Shown for about 5 s on a fixed timer, with no input, then the countdown.
+Detail is in `marmart-policies.md` (2026-11-23). Shown on a fixed timer, with no input, as the first pre-round stage. A Round can have more than one Policy.
 
 ## End of Match
 

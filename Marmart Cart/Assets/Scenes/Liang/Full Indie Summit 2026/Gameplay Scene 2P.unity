@@ -8361,6 +8361,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1201604882}
+  - {fileID: 2089150444}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &499230986
@@ -19863,6 +19864,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2354655433655111034, guid: 120422171881c03419b5812514930f7c, type: 3}
   m_PrefabInstance: {fileID: 1164252915}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1164532626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1164532627}
+  - component: {fileID: 1164532628}
+  m_Layer: 0
+  m_Name: Cart Over-stock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1164532627
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164532626}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2089150444}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1164532628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164532626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ccfd5c2b4e2e7c4b8a1f7e127367e0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 0f928f9e291e8344199a17e018fec482, type: 2}
+  restockSpawner: {fileID: 0}
+  budgetMultiplier: 1.5
+  extraCartsPerRestock: 0
 --- !u!1001 &1169308214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -142929,6 +142978,7 @@ MonoBehaviour:
   spawnArea: {fileID: 2056198978}
   randomizeYaw: 1
   isSpawning: 0
+  lastAuthoredBudget: 0
   lastRequestedBudget: 0
   lastSpawnedCount: 0
   lastUnreleasedBudget: 0
@@ -143336,6 +143386,61 @@ MonoBehaviour:
   roundController: {fileID: 0}
   viewportCanvas: {fileID: 0}
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
+--- !u!1 &2089150443
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2089150444}
+  - component: {fileID: 2089150445}
+  m_Layer: 0
+  m_Name: Marmart Policies
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2089150444
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089150443}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1164532627}
+  m_Father: {fileID: 494344407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2089150445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089150443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72acfc409f592e04680b32424967f619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useFixedSchedule: 1
+  fixedSchedule: {fileID: 11400000, guid: 8ef998d7832aa3e4b81c258db999a12e, type: 2}
+  randomPool: {fileID: 0}
+  effects: []
+  gameTimeManager: {fileID: 0}
+  roundController: {fileID: 0}
+  logPolicies: 1
+  round: 0
+  policiesRunning: 0
+  activePolicies: []
 --- !u!1 &2092522407
 GameObject:
   m_ObjectHideFlags: 0
