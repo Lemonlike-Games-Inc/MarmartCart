@@ -99,6 +99,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         if (cam == null || hudSystem == null || layoutProfile == null) return;
 
         if (!HudShapes.TryGetViewPlayer(cam, out int playerIndex)) return;
+        if (!PlayerHudVisibility.IsShown(playerIndex)) return;
 
         // During checkout the normal meters are suppressed and only the checkout prompt draws.
         bool checkoutPromptOnly = hudSystem.TryGetCheckoutAnchor(playerIndex, out Transform hudAnchor);

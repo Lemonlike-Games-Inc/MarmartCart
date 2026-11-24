@@ -46,6 +46,7 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         if (cam == null || hudSystem == null || profile == null || playerIdentity == null) return;
 
         if (!HudShapes.TryGetViewPlayer(cam, out int ownerPlayerIndex)) return;
+        if (!PlayerHudVisibility.IsShown(ownerPlayerIndex)) return;
         if (!hudSystem.TryGetRenderableAnchor(ownerPlayerIndex, out Transform ownerHUDAnchor)) return;
 
         GameObject ownerRoot = hudSystem.GetPlayerRoot(ownerPlayerIndex);

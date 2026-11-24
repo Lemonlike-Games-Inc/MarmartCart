@@ -55,6 +55,7 @@ public class PlayerActionBarPresenter : MonoBehaviour
 
     private void OnEnable()
     {
+        PlayerHudVisibility.Changed += HandleHudVisibilityChanged;
         BindEverything();
         StartBindingIfNeeded();
     }
@@ -67,6 +68,7 @@ public class PlayerActionBarPresenter : MonoBehaviour
 
     private void OnDisable()
     {
+        PlayerHudVisibility.Changed -= HandleHudVisibilityChanged;
         StopBinding();
         UnsubscribeFromSystems();
         UnbindAllPlayers();
@@ -173,6 +175,11 @@ public class PlayerActionBarPresenter : MonoBehaviour
         }
     }
 
+    private void HandleHudVisibilityChanged()
+    {
+        RefreshAll(false);
+    }
+
     private void RefreshAll(bool animate)
     {
         for (int i = 0; i < MaxPlayerSlots; i++)
@@ -203,6 +210,7 @@ public class PlayerActionBarPresenter : MonoBehaviour
             profile != null &&
             viewportCanvasSystem != null &&
             viewportCanvasSystem.IsPlayerViewActive(slot + 1) &&
+            PlayerHudVisibility.IsShown(slot + 1) &&
             (mapItem != null || sample != null);
 
         bool wasVisible = bar.gameObject.activeSelf;

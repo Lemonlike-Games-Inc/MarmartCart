@@ -52,6 +52,7 @@ public class OtherPlayerVisibleMarkerRenderer : ImmediateModeShapeDrawer
         if (cam == null || hudSystem == null || markerProfile == null || playerIdentity == null) return;
 
         if (!HudShapes.TryGetViewPlayer(cam, out int ownerPlayerIndex)) return;
+        if (!PlayerHudVisibility.IsShown(ownerPlayerIndex)) return;
         if (!hudSystem.TryGetRenderableAnchor(ownerPlayerIndex, out _)) return;
 
         float uiScale = HudShapes.Scale();

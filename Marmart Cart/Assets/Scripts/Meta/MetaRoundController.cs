@@ -126,6 +126,9 @@ public sealed class MetaRoundController : MonoBehaviour
     /// <summary>The first Pre-Round Stage began (for example the Ability pick).</summary>
     public event Action PreRoundStagesStarted;
 
+    /// <summary>A Pre-Round Stage is about to begin (each stage, in order).</summary>
+    public event Action<PreRoundStage> PreRoundStageBegan;
+
     /// <summary>The last Pre-Round Stage finished, or a load cut it short.</summary>
     public event Action PreRoundStagesEnded;
 
@@ -392,6 +395,7 @@ public sealed class MetaRoundController : MonoBehaviour
                 PreRoundStagesStarted?.Invoke();
             }
 
+            PreRoundStageBegan?.Invoke(stage);
             stage.Begin(roundNumber);
             return true;
         }

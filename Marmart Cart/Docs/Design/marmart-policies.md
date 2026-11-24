@@ -53,8 +53,10 @@ Round 3 is the first test of stacking. A random pool, tiers and compatibility gr
 - After the reveal, each card becomes a small horizontal banner card in the top-left of each view, with an icon, the name and the description. A header sits above them: "THIS ROUND'S POLICIES".
 - The banner cards stay through the rest of the pre-round, so a player can check them while picking a Sample.
 - There are no icon assets yet. The cards have an icon slot.
+- Built (2026-11-24): while a later stage such as the Ability pick runs, the banners are compact (icon slot and a one-line name that scrolls when too long), so they fit beside the pick header. They are full during the Round title and countdown.
+- The player HUD (timer, leaderboard, hype ring, cargo bars, pointers, session guide, arena arrows, action bar) is hidden from scene load until "GO" (`PlayerHudVisibility`).
 
-In-Round reminder: decided after the pre-round banners can be seen. The default is icon and name only.
+In-Round reminder: being tried (2026-11-24): the compact banners stay through the Round and fade out at its end ("Keep Compact During Round" on the banner presenter). Off: they fade out at "GO".
 
 ## Announcer
 

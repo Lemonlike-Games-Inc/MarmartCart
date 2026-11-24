@@ -86,6 +86,7 @@ public sealed class PlayerSessionGuideRenderer : ImmediateModeShapeDrawer
 
         // Overlay lookup: the guide stays visible during checkout.
         if (!HudShapes.TryGetViewPlayer(cam, out int playerIndex) ||
+            !PlayerHudVisibility.IsShown(playerIndex) ||
             !playerWorldHUDSystem.TryGetOverlayAnchor(playerIndex, out Transform hudAnchor))
         {
             return;

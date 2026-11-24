@@ -169,6 +169,8 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
             return;
         }
 
+        if (!PlayerHudVisibility.IsShown(localPlayerIndex)) return;
+
         viewPlayerCount = HudShapes.ViewCount();
         drawScale = profile.GetMasterScale(viewPlayerCount) * HudShapes.Scale();
 

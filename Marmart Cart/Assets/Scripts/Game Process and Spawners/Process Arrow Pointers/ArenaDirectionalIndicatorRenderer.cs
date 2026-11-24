@@ -252,7 +252,8 @@ public sealed class ArenaDirectionalIndicatorRenderer : ImmediateModeShapeDrawer
             cam == null ||
             profile == null ||
             worldCenter == null ||
-            !ShouldDrawForCamera(cam))
+            !ShouldDrawForCamera(cam) ||
+            !PlayerHudVisibility.IsShownForCamera(cam))
         {
             return;
         }
