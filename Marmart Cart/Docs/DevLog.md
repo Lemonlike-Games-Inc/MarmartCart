@@ -3,6 +3,43 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-24 01:35 (UTC-7): Marmart Policies Steps 1-3, pre-round HUD hide, card polish
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Policies have a core, a fixed schedule and their first effect (Cart Over-stock in Round 2). Each Round with Policies opens with a reveal in every view, and the Policies then stay as top-left banner cards. The player HUD is hidden until "GO". Prismatic cards got a colour-band rim. Liang tested each step in Play Mode.
+- Changed:
+  - Step 2 (5eeda4cd):
+    - `PolicyDefinition` (name, tier, description, icon and announcer slots) and `PolicyRoundSource`, with `PolicySchedule` as the fixed source.
+    - `MarmartPolicyDirector` on `Meta Game Controller/Marmart Policies`, with one `PolicyEffect` child per Policy.
+    - `CartOverstockPolicyEffect` (restocks x1.5) through a budget handle on `CartRestockSpawner`.
+    - New events `GameTimeManager.OnMatchStarting` and `MetaRoundController.LoadStarted`.
+    - Assets in `SO_Variables/Policies`.
+  - Step 3 (4366f165):
+    - `PolicyRevealStage`, the first pre-round stage: the cards flip one by one, then collapse into the banners.
+    - `PolicyRevealPresenter`/`View`, `PolicyCardView` (its own copy of the pick card's flip), `PolicyBannerPresenter`/`View`/`CardView`, `PolicyUIProfile`; prefabs in `Prefabs/UI/Policies`.
+    - Banners: compact (icon slot and a one-line scrolling name) during the pick and during the Round, full during the title and countdown.
+    - `MetaRoundController.PreRoundStageBegan`.
+    - `PlayerHudVisibility` (per-player hide handles) hides the player HUD from load until the match starts; a check in the six Shapes drawers and the Player Action Bar.
+  - Card polish (3383f7ce):
+    - `UIRimGradient` gives the Prismatic rim, glow and ready ring a pastel colour band that flows while the card is selected.
+    - `AbilityTierStyleProfile` Prismatic entry is now `PrismaticCardStyle` (Rim Colors, Body, Inner Line, Select Glow).
+    - Gold select glow is golden (`ActionBarCardStyle.selectGlow`).
+    - Shine: width 20, sweep 0.3 s.
+    - Liang's tuning: U-shape Magnet is Prismatic; Sample Pool weights R2 Silver 50 / Gold 50, R3 Silver 10 / Gold 50 / Prismatic 40.
+- Why: Policies are the next meta feature: shared rules that change where players go. The reveal comes before the pick so players choose knowing the Round. A HUD drawn through the pre-round cluttered the reveal, pick and countdown. A flat purple Prismatic read as weaker than Gold.
+- Decisions:
+  - The fixed schedule for now (Round 2 Cart Over-stock; Round 3 Blackout and Tomato Rain). A "Use Fixed Schedule" toggle leaves room for a random pool by tier, like the Sample Pool.
+  - Policies have a tier (the Sample tiers) and no kind.
+  - Policies start right before the match flow starts, so the first restock already counts.
+  - Every exit stops them: Round end, a failed start, any load (F1 to F4, next Round) and teardown.
+  - The tutorial gets no Policies.
+  - Compact banners during the pick, because full ones do not fit beside the pick header. Keeping them compact through the Round is on trial ("Keep Compact During Round").
+  - The audit session routed the card polish here, as its own commit.
+  - The Prismatic profile entry changed type at Liang's request; Body and Inner Line carried over by name.
+- Open questions:
+  - Next: Step 4 Blackout (warning before a window? the gap between windows), Step 5 Tomato Rain, Step 6 stacking check, hooks and the in-Round reminder decision.
+  - Policy icons do not exist yet.
+  - Saving Gameplay Scene 2P keeps writing Cinemachine `Camera P2` values; they were left out of the commits each time.
+
 ## 2026-11-23 05:43 (UTC-7): Sample pool rule, Item folders, Upgrade kind; Ability Samples paused
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Housekeeping after the pick screen. The Ability Samples session pauses here; it can return for more Samples before the demo.
