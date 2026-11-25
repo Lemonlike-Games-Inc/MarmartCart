@@ -3,6 +3,35 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-25 11:25 (UTC-7): Marmart Policies Steps 4-5: Blackout and Tomato Rain
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: Round 3's two Policies work. Blackout darkens each view in short windows, except a lit circle around the player's own cart, with a setting per HUD part. Tomato Rain marks a red circle near the players and rains Tomatoes into it. Liang tested both in 2P and 4P.
+- Changed:
+  - Step 4 (c4815cbf):
+    - `BlackoutPolicyEffect`: random windows with a three-blink warning. Liang's tuning: first window 15 to 25 s after "GO", windows 7 to 15 s, gaps 20 to 50 s, lit radius 7 m.
+    - `PlayerViewDarkness` on `Game UIs/Player View Darkness`: per-player handles, each with a strength, a lit radius and `DarknessHudRules`.
+    - `PlayerDarknessView`: a Shapes drawer in each player camera.
+    - `HudShapes` has three passes: normal HUD, darkness, and On Top HUD.
+    - HUD While Dark: Covered, Hidden or On Top for each part (rival pointers, timer and leaderboard, rings, action bar, Policy banners). The action bar and banners fade through `PlayerViewDarkness.CanvasAlpha`. Both scenes: pointers Hidden, everything else On Top.
+  - Step 5 (36359e42):
+    - `TomatoRainPolicyEffect` launches the normal Tomato item through the new `PowerupProjectilePool.TryLaunch`, with owner 0.
+    - Liang's tuning: 8 m radius, 3 s fill, 2.5 s rain at 10 drops per second, gaps 12 to 20 s.
+    - `TomatoRainZoneRenderer` draws the circle.
+    - Both Policies are on `Meta Game Controller/Marmart Policies` in Gameplay Scene 2P and 4P.
+- Why:
+  - HUD on top of the darkness needs the darkness drawn in the camera; a canvas overlay always draws over Shapes.
+  - Reusing the Tomato item gives the normal hit, splat and splash with no copies.
+- Decisions:
+  - The darkness moved from a canvas overlay to the camera. The first canvas version and its shader were dropped before commit.
+  - One dropdown per HUD part replaced the two toggle groups first asked for, so "hide" and "draw on top" cannot both be on.
+  - An E.M.P. Sample later adds darkness handles for everyone but its user; per HUD part the stricter setting wins.
+  - The Tomato Rain circle draws before transparent effects. The Tomato splash materials `GlowExplosion_TomatoVFX` and `Drops_TomatoVFX` write depth and cut it into squares otherwise.
+  - Editor writes to `Camera P2` in Gameplay Scene 2P are discarded on sight, with no need to ask.
+- Open questions:
+  - Next: Step 6. Check Round 3 with both Policies together, add sound and announcer hooks, and decide the in-Round reminder (compact banners stay on trial).
+  - The projectile pool and lifecycle logs write one line per landed drop (about 25 per rain).
+  - Should the two Tomato splash materials stop writing depth? That is art's call.
+
 ## 2026-11-24 01:35 (UTC-7): Marmart Policies Steps 1-3, pre-round HUD hide, card polish
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Policies have a core, a fixed schedule and their first effect (Cart Over-stock in Round 2). Each Round with Policies opens with a reveal in every view, and the Policies then stay as top-left banner cards. The player HUD is hidden until "GO". Prismatic cards got a colour-band rim. Liang tested each step in Play Mode.
