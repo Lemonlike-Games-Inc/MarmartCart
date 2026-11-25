@@ -48,6 +48,8 @@ Round 3 is the first test of stacking. A random pool, tiers and compatibility gr
 - A leading cart that is hit gets the normal Tomato splash effect.
 - The target is biased toward where the players are, because the map is large. It is not a player's current position: there is a delay between the warning and the rain. It is a random point inside the overall "heat" area that the players occupy.
 - A cart in a checkout is not affected.
+- Built (2026-11-25), tuned by Liang in both scenes: first circle 10 to 15 s after "GO", 8 m radius, 3 s fill, 2.5 s rain at 10 tomatoes per second, gaps 12 to 20 s. The circle goes to a random floor point in the box around all leading carts plus 6 m, never on a shelf top or inside a shelf.
+- How it works: `TomatoRainPolicyEffect` launches the normal Tomato item from the `PowerupProjectilePool` with no owner (player 0), straight down from 14 m, so the normal Tomato hit, splat and splash systems handle it. Drops still falling at Round end are cancelled. `TomatoRainZoneRenderer` draws the circle with Shapes before the transparent effects, so splashes blend over it. Some Tomato splash materials write depth, and a circle drawn after them is cut into squares.
 
 ## Reveal
 
@@ -94,7 +96,5 @@ If time runs short, Tomato Rain is dropped first; Round 3 then runs Blackout alo
 
 ## Open
 
-- The gap between rains.
-- The size of the Tomato Rain area, the fill time and the rain time.
 - The in-Round reminder.
 - More Policies. Ideas held for later: Private Checkout, Hot Potato, Golden Burger, Absolute Chaos.

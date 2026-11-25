@@ -176,6 +176,24 @@ public class PowerupProjectilePool : MonoBehaviour
         ReturnToBucket(projectile);
     }
 
+    /// <summary>
+    /// Rents, prepares and launches one projectile outside a player's volley, for
+    /// example a Policy hazard. Nothing stays rented when it fails.
+    /// </summary>
+    public bool TryLaunch(
+        ThrowItemUse use,
+        in ResolvedPowerupProjectileLaunch launch,
+        out FakeArcProjectile projectile)
+    {
+        if (!TryRent(use, out projectile)) return false;
+
+        if (projectile.TryPrepareLaunch(launch) && projectile.BeginPreparedLaunch()) return true;
+
+        ReturnUnlaunched(projectile);
+        projectile = null;
+        return false;
+    }
+
     internal void ReturnCompleted(
         FakeArcProjectile projectile,
         PowerupProjectileCompletion completion)
