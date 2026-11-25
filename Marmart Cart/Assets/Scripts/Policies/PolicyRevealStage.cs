@@ -77,6 +77,9 @@ public sealed class PolicyRevealStage : PreRoundStage
     public event Action RevealEnded;
 
     public RevealPhase Phase => phase;
+
+    /// <summary>True when the last reveal ended by Cancel (staff skip, load, teardown) instead of finishing.</summary>
+    public bool WasCancelled { get; private set; }
     public bool IsShowing => phase != RevealPhase.Idle && phase != RevealPhase.Done;
     public int CardCount => cardCount;
     public int RevealedCount => revealedCount;
@@ -120,6 +123,7 @@ public sealed class PolicyRevealStage : PreRoundStage
             Debug.LogWarning($"[Policy] {director.ActivePolicies.Count} Policies this Round; the reveal shows the first {MaxCards}.", this);
 
         SetPhase(RevealPhase.Intro, introSeconds);
+        WasCancelled = false;
         if (logReveal) Debug.Log($"[Policy] Reveal started | Round {round} | {cardCount} card(s)", this);
         RevealStarted?.Invoke();
     }
@@ -129,6 +133,7 @@ public sealed class PolicyRevealStage : PreRoundStage
         if (!IsShowing) return;
 
         phase = RevealPhase.Done;
+        WasCancelled = true;
         if (logReveal) Debug.Log("[Policy] Reveal cancelled.", this);
         RevealEnded?.Invoke();
     }

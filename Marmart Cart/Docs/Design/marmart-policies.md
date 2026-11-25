@@ -62,11 +62,19 @@ Round 3 is the first test of stacking. A random pool, tiers and compatibility gr
 - Built (2026-11-24): while a later stage such as the Ability pick runs, the banners are compact (icon slot and a one-line name that scrolls when too long), so they fit beside the pick header. They are full during the Round title and countdown.
 - The player HUD (timer, leaderboard, hype ring, cargo bars, pointers, session guide, arena arrows, action bar) is hidden from scene load until "GO" (`PlayerHudVisibility`).
 
-In-Round reminder: being tried (2026-11-24): the compact banners stay through the Round and fade out at its end ("Keep Compact During Round" on the banner presenter). Off: they fade out at "GO".
+In-Round reminder: decided (2026-11-25): the compact banners stay through the Round and fade out at its end ("Keep Compact During Round" on the banner presenter, on). Off: they fade out at "GO".
 
 ## Announcer
 
 A store announcer is planned as its own system, for the pre-round ("Attention shoppers...": Policies, Section updates, Sample time) and during the Round. It is not part of this work. This work leaves empty hooks for it: events on the reveal and on each Policy (for example "rain incoming", "lights out"), and a line slot on each Policy definition.
+
+Hooks (built 2026-11-25). Wire sound or VFX in the Inspector, for example to `SfxManager.PlaySFX`:
+- `PolicyRevealUnityEventRelay` on `Meta Game Controller/Policy Reveal` has four hooks: reveal started, any card revealed, collapse started, and reveal finished (not called when the reveal is skipped). Give it an Announcer Source and each revealed Policy's Announcer Clip plays on it as its card flips.
+- `PolicyUnityEventRelay` on each Policy's object (`Meta Game Controller/Marmart Policies/<Policy>`), filtered to that Policy:
+  - Its card revealed, Round started with it, and its Round ended.
+  - Cue hooks by name. Blackout: `lights-warning`, `lights-out`, `lights-on`. Tomato Rain: `rain-warning`, `rain-start`, `rain-end`. Cart Over-stock has no cues.
+  - The console logs every cue as `[Policy] Cue: <name> '<cue>'`.
+- Code (the future announcer system) subscribes to `MarmartPolicyDirector` (`PolicyStarted`, `PolicyStopped`, `PolicyCue`) and `PolicyRevealStage` instead.
 
 ## System shape
 
@@ -96,5 +104,4 @@ If time runs short, Tomato Rain is dropped first; Round 3 then runs Blackout alo
 
 ## Open
 
-- The in-Round reminder.
 - More Policies. Ideas held for later: Private Checkout, Hot Potato, Golden Burger, Absolute Chaos.
