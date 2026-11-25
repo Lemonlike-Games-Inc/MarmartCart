@@ -68,8 +68,19 @@ public sealed class PolicyBannerView : MonoBehaviour
     private float compact01;
     private bool compactTarget;
     private Vector2 contentPosition;
+    private float darknessAlpha = 1f;
 
     public bool IsShown => shownTarget;
+
+    /// <summary>Extra fade while the player's view is dark (PlayerViewDarkness), on top of the show/hide fade.</summary>
+    public void SetDarknessAlpha(float alpha01)
+    {
+        alpha01 = Mathf.Clamp01(alpha01);
+        if (Mathf.Approximately(alpha01, darknessAlpha)) return;
+
+        darknessAlpha = alpha01;
+        Apply();
+    }
 
     private void Awake()
     {
@@ -191,7 +202,7 @@ public sealed class PolicyBannerView : MonoBehaviour
     private void Apply()
     {
         float eased = 1f - (1f - shown01) * (1f - shown01);
-        if (canvasGroup != null) canvasGroup.alpha = eased;
+        if (canvasGroup != null) canvasGroup.alpha = eased * darknessAlpha;
 
         if (content != null)
             content.anchoredPosition = contentPosition + new Vector2(-(1f - eased) * slideDistance * content.localScale.x, 0f);

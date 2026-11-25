@@ -36,6 +36,10 @@ Round 3 is the first test of stacking. A random pool, tiers and compatibility gr
 - During a window each player sees only a small lit area around their own leading cart. Everything else is blocked to start with, the HUD included.
 - This is the extreme version on purpose. Test first, then decide what comes back (rivals as lights, the timer, rival pointers).
 - Build it per viewport and per player, with the lit radius as a per-player value. That leaves room for "see rivals a bit" and for the E.M.P. Sample, which is a personal Blackout that excludes its user. The E.M.P. Sample is not part of this work.
+- Built (2026-11-24), tuned by Liang in both scenes: first window 15 to 25 s after "GO", windows 7 to 15 s, gaps 20 to 50 s, lit radius 7 m. Each window starts with a 1 s warning of three blinks. After testing nothing comes back into view, and the rival pointers around the player's own cart (inside the lit circle) fade out with the darkness.
+- How it works: `PlayerViewDarkness` (on `Game UIs`) takes per-player handles, each with a strength (0 to 1), a lit radius in metres and HUD rules. Per player the strongest request and the smallest radius win. `PlayerDarknessView` draws the darkness in each player camera with Shapes, in its own pass after the normal HUD (`HudShapes.DarknessPass`), with a soft lit circle around the leading cart.
+- HUD While Dark (2026-11-24), on the Blackout component, one setting per part: Covered (under the darkness), Hidden (gone, also inside the lit circle) or On Top (drawn in the pass after the darkness). Parts: rival pointers (default Hidden), timer and leaderboard, rings (hype and cargo, with their icons and prompts), action bar, Policy banners (default Covered). Both scenes use Hidden for the rival pointers and On Top for every other part (Liang, after testing). Canvas UI always draws above the darkness, so the action bar and banners fade themselves; for them Covered and Hidden both fade out. The Tomato splat and the split-screen dividers always stay on top.
+- E.M.P. later: the Sample adds a darkness handle with its own HUD rules for every player except its user, so the user keeps full sight and their HUD. It stacks with Blackout with no extra code; per part the stricter setting wins. If it should flicker and fade like Blackout, move the window timing out of `BlackoutPolicyEffect` into a shared helper at that point.
 
 ### Tomato Rain
 
@@ -90,9 +94,7 @@ If time runs short, Tomato Rain is dropped first; Round 3 then runs Blackout alo
 
 ## Open
 
-- What comes back into view during a Blackout window, after testing.
-- Whether a Blackout window has a warning before it.
-- The gap between Blackout windows, and between rains.
+- The gap between rains.
 - The size of the Tomato Rain area, the fill time and the rain time.
 - The in-Round reminder.
 - More Policies. Ideas held for later: Private Checkout, Hot Potato, Golden Burger, Absolute Chaos.

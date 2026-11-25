@@ -1,5 +1,6 @@
 using Shapes;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Scene-level Shapes renderer for viewport-attached match UI.
@@ -190,10 +191,16 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
 
         DrawViewportDividers(
             cam,
-            renderDepth
+            renderDepth,
+            HudShapes.OnTopPass(localPlayerIndex)
         );
 
-        using (Draw.Command(cam))
+        if (!HudShapes.TryGetDarknessPass(localPlayerIndex, DarknessHudElement.TimerAndLeaderboard, out RenderPassEvent pass))
+        {
+            return;
+        }
+
+        using (Draw.Command(cam, pass))
         {
             HudShapes.ApplyHudDrawState();
 
@@ -226,9 +233,11 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     /// on the boundary. Works for any layout; a single full-screen view gets
     /// no divider. Width and height follow the UI scale only.
     /// </summary>
+    // The dividers stay on top of PlayerViewDarkness, so dark views stay apart.
     private void DrawViewportDividers(
         Camera cam,
-        float renderDepth)
+        float renderDepth,
+        RenderPassEvent pass)
     {
         if (!profile.SplitScreenDividersEnabled)
         {
@@ -250,19 +259,19 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
         if (halfVertical > 0f)
         {
             if (rect.xMin > EdgeTolerance)
-                DrawDividerStrip(cam, renderDepth, rect.xMin, rect.xMin + halfVertical, rect.center.y, rect.height, profile.VerticalDividerColor);
+                DrawDividerStrip(cam, renderDepth, pass, rect.xMin, rect.xMin + halfVertical, rect.center.y, rect.height, profile.VerticalDividerColor);
 
             if (rect.xMax < targetWidth - EdgeTolerance)
-                DrawDividerStrip(cam, renderDepth, rect.xMax - halfVertical, rect.xMax, rect.center.y, rect.height, profile.VerticalDividerColor);
+                DrawDividerStrip(cam, renderDepth, pass, rect.xMax - halfVertical, rect.xMax, rect.center.y, rect.height, profile.VerticalDividerColor);
         }
 
         if (halfHorizontal > 0f)
         {
             if (rect.yMin > EdgeTolerance)
-                DrawDividerStrip(cam, renderDepth, rect.xMin, rect.xMax, rect.yMin + halfHorizontal * 0.5f, halfHorizontal, profile.HorizontalDividerColor);
+                DrawDividerStrip(cam, renderDepth, pass, rect.xMin, rect.xMax, rect.yMin + halfHorizontal * 0.5f, halfHorizontal, profile.HorizontalDividerColor);
 
             if (rect.yMax < targetHeight - EdgeTolerance)
-                DrawDividerStrip(cam, renderDepth, rect.xMin, rect.xMax, rect.yMax - halfHorizontal * 0.5f, halfHorizontal, profile.HorizontalDividerColor);
+                DrawDividerStrip(cam, renderDepth, pass, rect.xMin, rect.xMax, rect.yMax - halfHorizontal * 0.5f, halfHorizontal, profile.HorizontalDividerColor);
         }
     }
 
@@ -273,13 +282,14 @@ public class MatchViewportOverlayRenderer : ImmediateModeShapeDrawer
     private static void DrawDividerStrip(
         Camera cam,
         float renderDepth,
+        RenderPassEvent pass,
         float leftX,
         float rightX,
         float centerY,
         float height,
         Color color)
     {
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, pass))
         {
             HudShapes.ApplyHudDrawState();
             DrawRoundedScreenRectangle(cam, renderDepth, leftX, rightX, centerY, height, 0f, color);

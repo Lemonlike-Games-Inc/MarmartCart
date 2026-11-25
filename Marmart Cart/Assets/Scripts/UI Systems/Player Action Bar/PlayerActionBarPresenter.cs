@@ -35,6 +35,7 @@ public class PlayerActionBarPresenter : MonoBehaviour
     private readonly PlayerAbilityController[] abilities = new PlayerAbilityController[MaxPlayerSlots];
     private readonly PlayerActionBarView[] bars = new PlayerActionBarView[MaxPlayerSlots];
     private readonly bool[] abilityCharging = new bool[MaxPlayerSlots];
+    private readonly CanvasGroup[] darknessGroups = new CanvasGroup[MaxPlayerSlots];
     private readonly bool[] missingPrefabLogged = new bool[MaxPlayerSlots];
     private readonly List<ItemDefinition> missingIconLogged = new List<ItemDefinition>(4);
 
@@ -92,6 +93,8 @@ public class PlayerActionBarPresenter : MonoBehaviour
     {
         for (int i = 0; i < MaxPlayerSlots; i++)
         {
+            ApplyDarknessAlpha(i);
+
             if (!abilityCharging[i]) continue;
 
             PlayerAbilityController ability = abilities[i];
@@ -100,6 +103,16 @@ public class PlayerActionBarPresenter : MonoBehaviour
 
             bar.SetAbilityCharge(ability.ChargeProgress01, ability.RemainingChargeSeconds);
         }
+    }
+
+    // Canvas UI draws above PlayerViewDarkness, so the bar fades itself per its HUD rules.
+    private void ApplyDarknessAlpha(int slot)
+    {
+        CanvasGroup group = darknessGroups[slot];
+        if (group == null || !group.gameObject.activeSelf) return;
+
+        float alpha = PlayerViewDarkness.CanvasAlpha(slot + 1, DarknessHudElement.ActionBar);
+        if (!Mathf.Approximately(group.alpha, alpha)) group.alpha = alpha;
     }
 
     private void BindEverything()
@@ -333,6 +346,9 @@ public class PlayerActionBarPresenter : MonoBehaviour
             bar.name = $"P{i + 1} Action Bar";
             bar.gameObject.SetActive(false);
             bars[i] = bar;
+
+            if (!bar.TryGetComponent(out CanvasGroup group)) group = bar.gameObject.AddComponent<CanvasGroup>();
+            darknessGroups[i] = group;
         }
     }
 

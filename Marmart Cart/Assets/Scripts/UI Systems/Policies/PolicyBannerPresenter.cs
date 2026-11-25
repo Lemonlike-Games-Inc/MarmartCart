@@ -94,6 +94,19 @@ public sealed class PolicyBannerPresenter : MonoBehaviour
         }
     }
 
+    // Canvas UI draws above PlayerViewDarkness, so the banners fade themselves per its HUD rules.
+    private void LateUpdate()
+    {
+        if (!showing) return;
+
+        for (int i = 0; i < views.Length; i++)
+        {
+            PolicyBannerView view = views[i];
+            if (view != null && view.gameObject.activeSelf)
+                view.SetDarknessAlpha(PlayerViewDarkness.CanvasAlpha(i + 1, DarknessHudElement.PolicyBanners));
+        }
+    }
+
     private void HandleCollapseStarted()
     {
         showing = true;

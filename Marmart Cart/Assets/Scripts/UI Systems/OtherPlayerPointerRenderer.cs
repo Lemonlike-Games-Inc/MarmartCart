@@ -1,5 +1,6 @@
 using Shapes;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Scene-level Shapes renderer for pointing from each local player toward every
@@ -47,6 +48,14 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
 
         if (!HudShapes.TryGetViewPlayer(cam, out int ownerPlayerIndex)) return;
         if (!PlayerHudVisibility.IsShown(ownerPlayerIndex)) return;
+
+        // Pointers sit inside the lit circle, so Hidden fades them out with the viewer's darkness.
+        DarknessHudMode darkMode = PlayerViewDarkness.GetHudMode(ownerPlayerIndex, DarknessHudElement.RivalPointers, out float darkStrength);
+        float alpha = darkMode == DarknessHudMode.Hidden ? 1f - darkStrength : 1f;
+        if (alpha <= 0f) return;
+
+        RenderPassEvent pass = darkMode == DarknessHudMode.OnTop && darkStrength > 0f ? HudShapes.AboveDarknessPass : HudShapes.HudPass;
+
         if (!hudSystem.TryGetRenderableAnchor(ownerPlayerIndex, out Transform ownerHUDAnchor)) return;
 
         GameObject ownerRoot = hudSystem.GetPlayerRoot(ownerPlayerIndex);
@@ -59,7 +68,7 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         float renderDepth = HudShapes.RenderDepth(cam, profile.NearCameraRenderDistance, profile.NearClipSafetyPadding);
         Vector2 orbitCenter = (Vector2)ownerAnchorScreen + profile.OrbitCenterOffsetPixels * scale;
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, pass))
         {
             HudShapes.ApplyHudDrawState();
 
@@ -77,7 +86,8 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
                     orbitCenter,
                     ownerRoot.transform,
                     targetRoot.transform,
-                    targetPlayerIndex
+                    targetPlayerIndex,
+                    alpha
                 );
             }
         }
@@ -94,7 +104,8 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         Vector2 orbitCenter,
         Transform owner,
         Transform target,
-        int targetPlayerIndex)
+        int targetPlayerIndex,
+        float alpha)
     {
         Vector3 worldDirection = target.position - owner.position;
 
@@ -118,13 +129,16 @@ public class OtherPlayerPointerRenderer : ImmediateModeShapeDrawer
         Vector2 pointerCenter = orbitCenter + screenDirection * (profile.OrbitRadiusPixels * scale);
         float pointerAngleRadians = Mathf.Atan2(screenDirection.y, screenDirection.x);
 
+        Color color = playerIdentity.GetColor(targetPlayerIndex);
+        color.a *= alpha;
+
         DrawRoundedPointerBody(
             cam,
             renderDepth,
             scale,
             pointerCenter,
             pointerAngleRadians,
-            playerIdentity.GetColor(targetPlayerIndex)
+            color
         );
     }
 

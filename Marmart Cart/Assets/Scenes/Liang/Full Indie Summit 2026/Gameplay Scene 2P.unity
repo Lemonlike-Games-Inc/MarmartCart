@@ -20289,6 +20289,70 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1188682957
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1188682958}
+  - component: {fileID: 1188682960}
+  - component: {fileID: 1188682959}
+  m_Layer: 0
+  m_Name: Player View Darkness
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1188682958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188682957}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1694541254}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1188682959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188682957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab69fb295ccf4d459440677214aac6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useCullingMasks: 0
+  darkness: {fileID: 1188682960}
+  hudSystem: {fileID: 0}
+  darknessColor: {r: 0.01, g: 0.01, b: 0.03, a: 0.99607843}
+  edgeSoftness: 0.8
+  renderDistance: 0.5
+  nearClipPadding: 0.03
+--- !u!114 &1188682960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188682957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0136ac78b0e71b8449096f520521b812, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1201604880
 GameObject:
   m_ObjectHideFlags: 0
@@ -137113,6 +137177,7 @@ Transform:
   - {fileID: 2078227692}
   - {fileID: 649067656}
   - {fileID: 2097850453}
+  - {fileID: 1188682958}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1695939561
@@ -140220,6 +140285,70 @@ MonoBehaviour:
   randomizeYaw: 1
   validPrefabCount: 0
   totalSpawned: 0
+--- !u!1 &1845305654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1845305655}
+  - component: {fileID: 1845305656}
+  m_Layer: 0
+  m_Name: Blackout
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1845305655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845305654}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2089150444}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1845305656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845305654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64215d154d14df547b502ff26c8fbf89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: de6be8e3035d53947b80209c7ee41674, type: 2}
+  darkness: {fileID: 1188682960}
+  firstWindowDelay: {x: 15, y: 25}
+  windowSeconds: {x: 7, y: 15}
+  gapSeconds: {x: 20, y: 50}
+  warningSeconds: 1
+  warningBlinks: 3
+  warningStrength: 0.9
+  litRadius: 7
+  fadeInSeconds: 0.2
+  fadeOutSeconds: 0.6
+  hudWhileDark:
+    rivalPointers: 1
+    timerAndLeaderboard: 2
+    playerRings: 2
+    actionBar: 2
+    policyBanners: 2
+  phase: 0
+  phaseTime: 0
+  phaseDuration: 0
 --- !u!1001 &1849658694
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -142021,7 +142150,9 @@ MonoBehaviour:
   revealStage: {fileID: 1531873494}
   roundController: {fileID: 494344406}
   viewportCanvas: {fileID: 0}
+  gameTimeManager: {fileID: 0}
   profile: {fileID: 11400000, guid: cba17617b6d9f8f4cb497dcf6a34ae3b, type: 2}
+  keepCompactDuringRound: 1
 --- !u!1 &1955558276
 GameObject:
   m_ObjectHideFlags: 0
@@ -143573,6 +143704,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1164532627}
+  - {fileID: 1845305655}
   m_Father: {fileID: 494344407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2089150445

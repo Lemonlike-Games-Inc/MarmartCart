@@ -26,7 +26,7 @@ The coming meta UI (Round banner, Ability pick, Policy pop, results) needs icons
 ## Draw order, bottom to top
 
 1. World: 3D scene and world-space TMP signs.
-2. Shapes HUD, inside each player camera.
+2. Shapes HUD, inside each player camera, in three passes (`HudShapes`): the normal HUD (`HudPass`, Draw.Command's default), then the Blackout darkness (`DarknessPass`, `PlayerDarknessView`), then HUD set to draw on top of it (`AboveDarknessPass`). HUD parts pick their pass through `HudShapes.TryGetDarknessPass`.
 3. Per-player canvas: one root per player, clipped to that player's viewport. Inside it: effects, then HUD, then banner.
 4. Full-screen canvas: fades, transitions, staff and debug UI.
 

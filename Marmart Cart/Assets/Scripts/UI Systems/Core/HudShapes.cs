@@ -1,5 +1,6 @@
 using Shapes;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Shared helpers for Shapes HUD drawers. See Docs/Design/ui-architecture.md.
@@ -11,6 +12,36 @@ using UnityEngine;
 /// </summary>
 public static class HudShapes
 {
+    /// <summary>
+    /// Passes in each player camera: the normal HUD (Draw.Command's default), then the
+    /// PlayerViewDarkness overlay, then HUD set to draw on top of it. All are before
+    /// post-processing, so HUD looks the same in either pass.
+    /// </summary>
+    public const RenderPassEvent HudPass = RenderPassEvent.BeforeRenderingPostProcessing;
+    public const RenderPassEvent DarknessPass = HudPass + 1;
+    public const RenderPassEvent AboveDarknessPass = HudPass + 2;
+
+    /// <summary>Darkness strength at which a Hidden part stops drawing, for drawers that cannot fade.</summary>
+    public const float HiddenAtStrength = 0.5f;
+
+    /// <summary>
+    /// The pass a HUD part draws in for this viewer: Above Darkness Pass when its darkness
+    /// setting is On Top and the view is dark, else Hud Pass. False when its setting is
+    /// Hidden and the view is dark enough to hide it.
+    /// </summary>
+    public static bool TryGetDarknessPass(int playerIndex, DarknessHudElement element, out RenderPassEvent pass)
+    {
+        DarknessHudMode mode = PlayerViewDarkness.GetHudMode(playerIndex, element, out float strength);
+        pass = mode == DarknessHudMode.OnTop && strength > 0f ? AboveDarknessPass : HudPass;
+        return mode != DarknessHudMode.Hidden || strength < HiddenAtStrength;
+    }
+
+    /// <summary>Above Darkness Pass while this viewer is dark at all, else Hud Pass. For parts that always stay on top, like the split-screen dividers.</summary>
+    public static RenderPassEvent OnTopPass(int playerIndex)
+    {
+        return PlayerViewDarkness.StrengthFor(playerIndex) > 0f ? AboveDarknessPass : HudPass;
+    }
+
     /// <summary>The player whose view this camera renders.</summary>
     public static bool TryGetViewPlayer(Camera cam, out int playerIndex)
     {

@@ -1,5 +1,6 @@
 using Shapes;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Step 5G.1.2 renderer - simplified low-speed warning cart/weight icon.
@@ -75,6 +76,9 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
     // Every profile pixel value is multiplied by it.
     private float drawScale = 1f;
 
+    // Hud Pass, or Above Darkness Pass when the rings are set On Top in the dark (DarknessHudRules).
+    private RenderPassEvent drawPass = HudShapes.HudPass;
+
     #endregion
 
     #region Unity
@@ -100,6 +104,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         if (!HudShapes.TryGetViewPlayer(cam, out int playerIndex)) return;
         if (!PlayerHudVisibility.IsShown(playerIndex)) return;
+        if (!HudShapes.TryGetDarknessPass(playerIndex, DarknessHudElement.PlayerRings, out drawPass)) return;
 
         // During checkout the normal meters are suppressed and only the checkout prompt draws.
         bool checkoutPromptOnly = hudSystem.TryGetCheckoutAnchor(playerIndex, out Transform hudAnchor);
@@ -182,7 +187,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         Quaternion screenPlaneRotation = cam.transform.rotation;
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
 
@@ -235,7 +240,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             ) +
             (layoutProfile.CheckoutPromptOffsetPixels * drawScale);
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             HudShapes.DrawRoundedScreenRectangle(
@@ -248,7 +253,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawPromptCircle(
@@ -260,7 +265,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             HudShapes.DrawCenteredScreenText(
@@ -302,7 +307,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             ) +
             (layoutProfile.MoveBackwardPromptOffsetPixels * drawScale);
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             HudShapes.DrawRoundedScreenRectangle(
@@ -315,7 +320,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawPromptCircle(
@@ -327,7 +332,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             HudShapes.DrawCenteredScreenText(
@@ -374,7 +379,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         int currentLoadCount,
         int overloadCount)
     {
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawFullRoundedArc(
@@ -465,7 +470,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         );
 
         // Capsule lines stay together, before the separate tick/text passes.
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             for (int i = 0; i < visibleSlotCount; i++)
@@ -905,7 +910,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 centerScreen.z
             );
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             Draw.Line(
@@ -930,7 +935,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector3 labelWorld =
             cam.ScreenToWorldPoint(labelScreen3);
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             Draw.FontSize = HudShapes.PixelsToWorldSize(
@@ -1210,7 +1215,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
                 state.HypeBurnMultiplier
             );
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawWarningBackgroundCircle(
@@ -1222,13 +1227,13 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawHypeBurnWarningRing(cam, anchorScreen.z, iconCenter, warningColor);
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawHypeBurnWarningArrowShaft(cam, anchorScreen.z, iconCenter, warningColor);
@@ -1236,7 +1241,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         // Mesh polygons bypass Draw.Triangle for the arrowhead and both bolt
         // pieces while preserving their original profile-authored vertices.
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawHypeBurnWarningArrowHead(cam, anchorScreen.z, iconCenter, warningColor);
@@ -1448,7 +1453,7 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
         Vector2 weightCenter = iconCenter + (layoutProfile.LowSpeedWarningWeightOffsetPixels * drawScale);
         Vector2 arrowCenter = iconCenter + (layoutProfile.LowSpeedWarningArrowOffsetPixels * drawScale);
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawWarningBackgroundCircle(
@@ -1460,14 +1465,14 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
             );
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningCart(cam, anchorScreen.z, cartCenter, warningColor);
             DrawLowSpeedWarningArrowShaft(cam, anchorScreen.z, arrowCenter, warningColor);
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningWheels(cam, anchorScreen.z, cartCenter, warningColor);
@@ -1475,20 +1480,20 @@ public class PlayerWorldHUDRenderer : ImmediateModeShapeDrawer
 
         // Only the missing weight body switches to a polygon. Keep the
         // working low-speed arrowhead on its original Triangle draw path.
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningWeight(cam, anchorScreen.z, weightCenter, warningColor);
         }
 
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningArrowHead(cam, anchorScreen.z, arrowCenter, warningColor);
         }
 
         // Keep the handle above the filled weight body if they overlap.
-        using (Draw.Command(cam))
+        using (Draw.Command(cam, drawPass))
         {
             HudShapes.ApplyHudDrawState();
             DrawLowSpeedWarningWeightHandle(cam, anchorScreen.z, weightCenter, warningColor);
