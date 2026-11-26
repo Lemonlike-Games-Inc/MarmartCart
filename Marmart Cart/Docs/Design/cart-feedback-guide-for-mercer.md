@@ -1,43 +1,44 @@
-# Cart feedback: guide for Mercer's Claude (draft)
+# Cart feedback: quick guide for Mercer
 
-Draft of 2026-11-25. The names marked (proposed) are replaced with the real ones once the hooks are built. Paste the block below into your Claude session, or save it as `CLAUDE.local.md` in the project root. It adds to the project `CLAUDE.md`; it does not replace it.
+Short version for you. Give your Claude the detailed version: `cart-feedback-guide-for-mercer-claude.md` (save its block as `CLAUDE.local.md` in the project root).
 
-```markdown
-# Cart feedback work (Mercer)
-
-You are helping Mercer, the technical artist, improve three feedbacks on the leading cart:
-1. Crash: hit splash VFX and a screen effect such as camera shake.
-2. Speedup: a new speedup VFX, plus screen effects such as zoom or speed lines.
-3. Drift: keep the line effect (`CartWheelTrackRenderer`), add sparkles on the rear tires.
+## Your job
+- **Crash:** hit splash, plus a screen effect such as camera shake.
+- **Speedup:** a new speedup effect, plus zoom or speed lines. The old ice trail and its sound are gone; speedup is silent until you add one.
+- **Drift:** keep the existing lines, add sparkles on the rear tyres.
 
 ## Where you work
-- The `Cart Feedback` prefab (proposed), nested under `Leading Cart Base`. Put every effect here.
-- New particle systems, materials, textures, shaders and Feel feedbacks, in Mercer's own folders.
-- New scripts only in the cart feedback script folder (proposed). Keep them small and presentation only.
+- Open `Assets/Prefabs/Cart Feedback/Cart Feedback.prefab`. Every effect goes in here.
+- It sits on every player's cart, so one change covers P1 to P4.
+- Your scripts go in `Assets/Scripts/CartFeedback/`. Your art goes in the folder you agree with Liang.
 
-## How effects are triggered
-- `LeadingCartFeedbackRelay` (proposed) on `Leading Cart Base` raises every moment you need: crashed (with cause, hit point, direction, other player), speedup started and stopped, drift started and stopped (with side and rear-wheel anchors).
-- Wire effects to its Inspector events. For data, subscribe to its C# events from your own script.
-- Camera zoom and shake go through the per-player camera calls (proposed). Never write a camera's size or position directly.
-- Screen-space effects such as speed lines go in the player's Effects layer of the Viewport Canvas System.
+## What is already in the prefab
+- **Hit Anchor:** jumps to the hit point and faces the crash direction, just before a crash event.
+- **Rear Left Anchor / Rear Right Anchor:** follow the rear tyres all the time.
+- **Screen Effects:** a slot for a screen-space effect (UI) that shows only in that player's view.
+- **Coloured placeholders:** proof that each event fires. Untick **Show Placeholders** on the root to hide all of them, or **Show** on one to hide just that one. Delete a placeholder when your effect replaces it.
 
-## Do not edit
-- Any existing script under `Assets/Scripts/`. This includes `LeadingCartBattleController`, `CartControlScript`, `CartDriftController`, `LeadingCartBehaviour`, `SnakeCartManager`, `ChainedCartManager`, `CameraManager` and the relay itself.
-- `Leading Cart Base.prefab`, the `Chain of Carts` prefabs, and the gameplay and tutorial scenes.
-- Third-party plugins, as the project `CLAUDE.md` says.
+## How to trigger an effect without code
+- Select the `Cart Feedback` root, find **Cart Feedback Events**, and add your effect to an event.
+- Crash: On Crashed, On Crashed Into Own Chain, On Crashed Into Rival.
+- Hit someone else: On Caused Crash (the player whose cart or chain was hit).
+- Speedup: On Speedup Started / Stopped. Cola item boost: On Cola Boost Started / Stopped.
+- Drift: On Drift Started / Stopped, or per side: On Drift Left / Right Started / Stopped.
+- In a left drift the back of the cart slides out to the right, so the outer tyre is the **rear right**. The placeholders already work this way.
 
-## If a hook is missing
-Stop and tell Mercer what you need: the moment, and the data. Mercer asks Liang, and the hook is added on Liang's side. Do not add it yourself, and do not work around it by polling or by `Find` calls.
+## Camera and screen
+- Shake and zoom go through the cart's feedback relay, and only affect that player's view. Your Claude knows the calls.
+- Never move or resize a camera directly.
 
-## Rules for every effect
-- It works in 2P and 4P split-screen, and in the tutorial scenes.
-- It affects only the player it belongs to. No global time scale change (hit-stop), no effect on another player's view.
-- It never changes gameplay: no forces, no speed, no colliders, no input.
-- It stops cleanly when the Round ends. Start no coroutine while the scene unloads.
-- No per-frame `Find`, `GetComponent` or allocation. Pool or reuse particle objects.
+## Rules
+- Test in 2P and 4P, and in a tutorial scene.
+- Affect only your own player's view. No slow motion or freeze (it would freeze everyone).
+- Effects never change gameplay: no forces, speed, colliders or input.
+- Effects must switch off cleanly when the cart or match ends.
+- Do not edit: `Leading Cart Base`, the `Chain of Carts` prefabs, the scenes, or any existing script.
+
+## Missing something?
+- Tell Liang which moment and which data you need. He adds the hook; you don't.
 
 ## Git
-- Work on your own branch, created from `cl_VGX_demo`.
-- Commit only when Mercer says so. Liang reviews the branch before it merges.
-- After each change, list the files and prefabs you touched and what changed in each.
-```
+- Your own branch from `cl_VGX_demo`. Commit when you decide. Liang reviews before it merges.

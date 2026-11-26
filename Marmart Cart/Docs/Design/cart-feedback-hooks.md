@@ -1,80 +1,44 @@
 # Cart feedback hooks
 
-Agreed with Liang on 2026-11-25, except the items marked Proposed. Design only; no code exists yet. Class, prefab and folder names are proposals.
+Planned with Liang on 2026-11-25, built 2026-11-25/26 on `cl_feature_CartFeedbackHooks` (Steps 2-3: `acebeabf`, `3f3aaf9d`). This describes what exists. Guides: `cart-feedback-guide-for-mercer.md` (short, for Mercer) and `cart-feedback-guide-for-mercer-claude.md` (detailed, for his Claude).
 
 ## Goal
 
-Mercer, working with his own Claude, improves three feedbacks: the crash, the speedup and the drift. He should not need to edit the core cart scripts. We build the hooks and wired placeholders first; he designs the look on top of them.
+Mercer, working with his own Claude, improves three feedbacks: the crash, the speedup and the drift, without editing core cart scripts, `Leading Cart Base` or scenes. He edits only the `Cart Feedback` prefab and his own scripts in `Assets/Scripts/CartFeedback/`.
 
-## What exists today (read on 2026-11-25)
+## Gameplay additions (additive only)
 
-- **Crash:** `LeadingCartBattleController.LoseBattle()` raises `OnBattleLost` with no data. `OnVulnerableCartHit(cart, detachedCount)` is raised for the attacker who cuts a stalled chain.
-- **Speedup:** `CartControlScript.OnSpeedupHeld(bool)` is raised every frame, not on change. `CartSpeedupVFXController` uses it to switch one object on and off. Speedup stops by itself when Hype runs out.
-- **Drift:** `CartDriftController.IsDrifting` is polled. There is no start or stop event. `CartWheelTrackRenderer` draws the drift lines and stays.
-- **Camera:** `CameraManager.ApplyPlayerLens` writes each player camera's orthographic size from the follower cart count. There is no shake.
+- `LeadingCartBattleController`: `CartCrashInfo` (`CartCrashInfo.cs`: `Cause` OwnChain/RivalChain/RivalLeadingCart/Other, `CrashedPlayerIndex`, `OtherPlayerIndex`, `HitPoint`, `HitDirection`, `SpeedBeforeHit`, `CartsLost`). New events `OnCrashed` (the crasher, right after `OnBattleLost`) and `OnCausedCrash` (the rival whose cart or chain was hit), and `PlayerIndex`. `OnBattleLost` and the public `LoseBattle()` (cause Other) are unchanged. `OnCausedCrash` is gameplay-side on purpose, so a later reward (for example Hype for a block) can listen to it.
+- `CartDriftController`: `OnDriftSideChanged(newSign)`, because a drift can switch side mid-drift.
+- `CameraManager`: per-player zoom offsets (`AddZoomOffset` / `RemoveZoomOffset`, returning a `CameraZoomHandle` whose `SizeOffset` can change every frame), added on top of the cart-count size; `ShakePlayerCamera(player, amplitude, duration)` and `StopAllCameraShakes()`; scene-local `Instance`. All cleared when `CameraManager` is disabled.
+- `PlayerCameraShake`: Cinemachine extension, added at runtime by `CameraManager` to each active player camera. No scene setup.
 
-## The relay
+## Presentation hooks (`Assets/Scripts/Carts Related/Cart Feedback Hooks/`)
 
-One component on `Leading Cart Base` (proposed name `LeadingCartFeedbackRelay`). It only reports; it never changes gameplay. It offers Inspector events for wiring without code, and C# events with data for scripts.
+- `LeadingCartFeedbackRelay` on the `Leading Cart Base` root. C# events, once per change: `Crashed`, `CausedCrash`, `SpeedupStarted/Stopped` (edge-detected from the per-frame `OnSpeedupHeld`), `ColaBoostStarted/Stopped`, `DriftStarted(side)`, `DriftSideChanged(side)`, `DriftStopped(side, interrupted)`. State: `PlayerIndex`, `IsSpeedingUp`, `IsColaBoostActive`, `IsDrifting`, `DriftSide`, `DriftTightness`, rear wheel and visual root Transforms. Camera calls for its own player: `ShakeCamera`, `AddCameraZoom`, `RemoveCameraZoom`. On disable it raises Stopped for anything running. Logs `[CartFeedback]` per event (`Log Events` box).
+- `CartFeedbackEvents` on the `Cart Feedback` root: the Inspector events (kept in Mercer's prefab so wiring never touches `Leading Cart Base`), `Hit Anchor` (moved to the hit point and turned along the hit direction before crash events), `Rear Left/Right Anchor` (follow `wheel_BL`/`wheel_BR` every LateUpdate with the `Cart Model` rotation).
+- `PlayerScreenEffectMount` on `Cart Feedback/Screen Effects`: instantiates a UI prefab into the player's Effects layer of `ViewportCanvasSystem`; `Show/Hide/Instance`. Empty for now.
+- Temporary: `CartFeedbackPlaceholder` (8 coloured primitives, one per event group) and `CartFeedbackPlaceholderSwitch` (master Show Placeholders; each placeholder also has Show). Drift placeholders sit on the outer tyre (left drift on the rear right).
 
-### Crash
+## Prefabs
 
-- **Crashed**, for the player who lost. Data:
-  - Cause: own chain, rival chain, rival leading cart, or other.
-  - The other player's index, or 0 when there is none.
-  - Hit point and hit direction.
-  - Speed just before the hit.
-  - Number of carts lost.
-- **Inspector events per cause**, with no parameter: Crashed, Crashed Into Own Chain, Crashed Into Rival.
-- **Hit point anchor:** before the events fire, the relay moves a child Transform to the hit point and turns it along the hit direction. An effect placed under it plays at the right spot with no code.
-- Proposed: **Caused a crash**, for the rival whose cart or chain was hit, with the same data.
-- Proposed: **Cut a chain** for the attacker and **Chain was cut** for the defender, with the number of carts.
+- `Assets/Prefabs/Cart Feedback/Cart Feedback.prefab`, nested once under the `Leading Cart Base` root (not under `Cart Model`: QuickOutline grabs child renderers there and the model yaws).
+- `Leading Cart Base`: relay added; the old `VFXs/SpeedUp_Vfx` (Vefects ice trails, which also played the trail sound) and `CartSpeedupVFXController` removed so the speedup starts fresh. `CartSpeedupVFXController.cs` stays in the project, unused. Drift lines (`CartWheelTrackRenderer`) kept.
 
-### Speedup
+## Decisions
 
-- **Speedup started** and **Speedup stopped**, raised once each. There is no intensity.
-- Open: whether the Cola with Mentos boost shows the same effect or its own.
-
-### Drift
-
-- **Drift started**, with the side, and **Drift stopped**.
-- Anchors for the rear-left and rear-right wheels.
-- Proposed: a drift tightness value from 0 to 1, read while drifting.
-
-## Mercer's prefab
-
-- A nested prefab (proposed `Cart Feedback`) sits once under `Leading Cart Base`. Mercer owns it and edits only it, so `Leading Cart Base.prefab` and the scenes stay out of his changes.
-- It ships with empty placeholders already wired to the relay: Crash, Speedup, Drift Left, Drift Right.
-- The old speedup object and `CartSpeedupVFXController` are retired once his speedup effect is in.
-
-## Camera (Proposed)
-
-The camera is simple, but two write points are shared, so we add those and Mercer builds on them:
-
-- **Zoom offset:** `CameraManager` gets an add/remove handle for a per-player zoom offset, added to the cart-count size. Without it, a zoom effect and the cart-count zoom overwrite each other.
-- **Shake:** one call that shakes one player's camera only. It needs a per-player setup on the Cinemachine cameras in the gameplay and tutorial scenes.
-- **Screen-space effects** such as speed lines go in the player's Effects layer of the `ViewportCanvasSystem`, through one slot per player.
-- **Post-processing effects** such as a lens stretch are not per player by default. Discuss before building one.
-
-Mercer owns everything above these entries: curves, shake strength, timing, art.
+- Kept: Caused a crash (simple version), drift tightness, Cola boost events, zoom offset, single-player shake (runtime-added), screen-effects mount.
+- Cut: Cut a chain / Chain was cut (stalled-chain hits fire no feedback event), post-processing effects (not per player; discuss first), controller rumble, hit-stop.
+- Mercer's scripts: `Assets/Scripts/CartFeedback/`.
 
 ## Rules for any feedback
 
 - It works in 2P and 4P, and in the tutorial scenes.
-- It affects only the player it belongs to. No global time scale change (hit-stop): it would freeze every player.
-- It stops cleanly when the Round ends and starts no coroutine during teardown.
+- It affects only the player it belongs to. No global time scale change.
+- It stops cleanly when the cart or Round ends and starts no coroutine during teardown.
 
-## Build order
+## Known
 
-Each step ends with a stop for Liang to test.
-
-1. Read the code and propose. Find every caller of `LoseBattle` and every user of `OnSpeedupHeld`.
-2. The relay with crash, speedup and drift events, and the `Cart Feedback` prefab with placeholders.
-3. The camera entries.
-4. The guide for Mercer with the real names. Merge to `cl_VGX_demo`; Mercer branches from there.
-
-## Open
-
-- Who builds the camera entries.
-- Where Mercer's own scripts live.
-- Controller rumble for a crash.
+- Nothing calls `CameraManager.SetPlayerCartCount`, so the cart-count zoom is not driven; the base size (30 in 2P, 20 in 4P) stays constant.
+- Shake and zoom act on the follow cameras only; not visible while a checkout or results camera is live.
+- Mercer's art folder is still to agree with Liang.
