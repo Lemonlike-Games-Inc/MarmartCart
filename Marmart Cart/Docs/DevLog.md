@@ -3,6 +3,35 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-25 22:41 (UTC-7): Cart feedback hooks for Mercer (crash, speedup, drift, camera)
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort low
+- Summary: Mercer can now build the crash, speedup and drift feedbacks without touching core cart scripts, `Leading Cart Base` or scenes. A relay reports each moment once, his `Cart Feedback` prefab holds the Inspector events, anchors and coloured placeholders, and each player's camera can shake and zoom on its own. Liang tested Steps 2 and 3 in Play Mode.
+- Changed (branch `cl_feature_CartFeedbackHooks`):
+  - Step 2 (acebeabf):
+    - `LeadingCartBattleController`: `CartCrashInfo` (cause, players, hit point and direction, speed before the hit, carts lost), new `OnCrashed` and `OnCausedCrash` events. `OnBattleLost` and `LoseBattle()` unchanged.
+    - `CartDriftController`: `OnDriftSideChanged`.
+    - `LeadingCartFeedbackRelay` on the `Leading Cart Base` root: crash, caused crash, speedup, Cola boost and drift events, once per change.
+    - New nested prefab `Prefabs/Cart Feedback/Cart Feedback` under the `Leading Cart Base` root: `CartFeedbackEvents` (Inspector events, Hit Anchor, rear tyre anchors), 8 temporary placeholders with a master Show Placeholders box and a Show box each.
+  - Step 3 (3f3aaf9d):
+    - `CameraManager`: per-player zoom offset handles (`AddZoomOffset`/`RemoveZoomOffset`) on top of the cart-count size, `ShakePlayerCamera`, scene-local `Instance`.
+    - `PlayerCameraShake`: Cinemachine extension that `CameraManager` adds at runtime; no scene edits.
+    - `PlayerScreenEffectMount` on `Cart Feedback/Screen Effects` (empty), for a UI effect in the player's Effects layer.
+    - Removed the old `VFXs/SpeedUp_Vfx` (and its trail sound) and `CartSpeedupVFXController` from `Leading Cart Base`. Drift lines kept.
+  - Step 4 (f20ac156): `Docs/Design/cart-feedback-guide-for-mercer.md` (short), `cart-feedback-guide-for-mercer-claude.md` (detailed, to copy as `CLAUDE.local.md`), `cart-feedback-hooks.md` updated, `CLAUDE.md` architecture line.
+- Why:
+  - Mercer's Claude should not edit core cart scripts. Hooks and placeholders first; he designs on top.
+- Decisions:
+  - Inspector events live in Mercer's prefab, not on `Leading Cart Base`, so his wiring never touches the base prefab.
+  - `OnCausedCrash` sits on the battle controller, so a later gameplay reward (for example Hype for a block) can use it.
+  - Drift effects go on the outer tyre: left drift shows on the rear right.
+  - Cut for now: cut-chain feedback, post-processing effects, rumble, hit-stop.
+  - Mercer's scripts go in `Assets/Scripts/CartFeedback/`.
+- Open questions:
+  - Mercer's art folder.
+  - Delete the unused `CartSpeedupVFXController.cs`?
+  - Nothing calls `CameraManager.SetPlayerCartCount`, so the cart-count zoom is not driven.
+  - Merge `cl_feature_CartFeedbackHooks` into `cl_VGX_demo` (Liang).
+
 ## 2026-11-25 16:48 (UTC-7): Marmart Policies Step 6: stacking check, sound and announcer hooks
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: The last Policies step. Liang tested Round 3 with Blackout and Tomato Rain together in 2P and 4P; they work side by side. The reveal and each Policy now have empty Inspector hooks for sound, VFX and announcer lines.
