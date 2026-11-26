@@ -92,6 +92,34 @@ public class LeadingCartFeedbackRelay : MonoBehaviour
 
     #endregion
 
+    #region Camera (this player only)
+
+    /// <summary>Shakes this player's camera. Amplitude in world units.</summary>
+    public void ShakeCamera(float amplitude, float duration)
+    {
+        CameraManager cameraManager = CameraManager.Instance;
+        if (cameraManager != null) cameraManager.ShakePlayerCamera(PlayerIndex, amplitude, duration);
+    }
+
+    /// <summary>
+    /// Adds a zoom offset (orthographic size, positive = zoom out) to this
+    /// player's camera. Change handle.SizeOffset to animate it; always remove it.
+    /// Returns null outside a gameplay scene.
+    /// </summary>
+    public CameraZoomHandle AddCameraZoom(float sizeOffset)
+    {
+        CameraManager cameraManager = CameraManager.Instance;
+        return cameraManager != null ? cameraManager.AddZoomOffset(PlayerIndex, sizeOffset) : null;
+    }
+
+    public void RemoveCameraZoom(CameraZoomHandle handle)
+    {
+        CameraManager cameraManager = CameraManager.Instance;
+        if (cameraManager != null) cameraManager.RemoveZoomOffset(handle);
+    }
+
+    #endregion
+
     #region Unity Lifecycle
 
     private void Awake()

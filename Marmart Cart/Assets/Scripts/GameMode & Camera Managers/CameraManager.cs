@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Cinemachine;
 
@@ -62,6 +63,41 @@ public class CameraManager : MonoBehaviour
 
     private readonly int[] playerFollowerCartCounts = new int[MaxPlayers];
     private MatchSceneModeProfile activeProfile;
+
+    private const float MinOrthographicSize = 0.5f;
+
+    private readonly List<CameraZoomHandle>[] zoomHandles =
+    {
+        new List<CameraZoomHandle>(),
+        new List<CameraZoomHandle>(),
+        new List<CameraZoomHandle>(),
+        new List<CameraZoomHandle>()
+    };
+
+    private readonly PlayerCameraShake[] cameraShakes = new PlayerCameraShake[MaxPlayers];
+
+    #endregion
+
+    #region Instance
+
+    /// <summary>Scene-local; null outside gameplay scenes.</summary>
+    public static CameraManager Instance { get; private set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        Instance = null;
+    }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
 
     #endregion
 
@@ -176,6 +212,7 @@ public class CameraManager : MonoBehaviour
                 {
                     CameraSwitcher.Register(cinemachineCamera);
                     cameraSwitcherRegistered[playerIndex - 1] = true;
+                    EnsureCameraShake(playerIndex);
                 }
             }
             else if (active)
@@ -309,9 +346,121 @@ public class CameraManager : MonoBehaviour
             followerCartCount
         );
 
+        size = Mathf.Max(MinOrthographicSize, size + GetZoomOffset(playerIndex));
+
         camera.Lens.OrthographicSize = size;
         SetRuntimeOrthographicSize(playerIndex, size);
     }
+
+    #endregion
+
+    #region Zoom Offsets (feedback)
+
+    /// <summary>
+    /// Adds a temporary orthographic size offset (positive = zoom out) on top
+    /// of the cart-count size. Several offsets add up. Keep the handle and
+    /// pass it to RemoveZoomOffset when the effect ends.
+    /// </summary>
+    public CameraZoomHandle AddZoomOffset(int playerIndex, float sizeOffset)
+    {
+        if (playerIndex < 1 || playerIndex > MaxPlayers) return null;
+
+        CameraZoomHandle handle = new CameraZoomHandle(this, playerIndex, sizeOffset);
+        zoomHandles[playerIndex - 1].Add(handle);
+
+        RefreshPlayerLens(playerIndex);
+        return handle;
+    }
+
+    public void RemoveZoomOffset(CameraZoomHandle handle)
+    {
+        if (handle == null || !handle.IsActive) return;
+
+        int playerIndex = handle.PlayerIndex;
+
+        zoomHandles[playerIndex - 1].Remove(handle);
+        handle.Release();
+
+        RefreshPlayerLens(playerIndex);
+    }
+
+    internal void RefreshPlayerLens(int playerIndex)
+    {
+        if (playerIndex >= 1 && playerIndex <= configuredPlayerCount)
+        {
+            ApplyPlayerLens(playerIndex);
+        }
+    }
+
+    private float GetZoomOffset(int playerIndex)
+    {
+        List<CameraZoomHandle> handles = zoomHandles[playerIndex - 1];
+        float total = 0f;
+
+        for (int i = 0; i < handles.Count; i++) total += handles[i].SizeOffset;
+
+        return total;
+    }
+
+    private void ReleaseAllZoomOffsets()
+    {
+        for (int slot = 0; slot < MaxPlayers; slot++)
+        {
+            List<CameraZoomHandle> handles = zoomHandles[slot];
+
+            for (int i = 0; i < handles.Count; i++) handles[i].Release();
+
+            handles.Clear();
+        }
+    }
+
+    #endregion
+
+    #region Camera Shake (feedback)
+
+    /// <summary>
+    /// Shakes one player's follow camera only. A weaker shake does not cut a
+    /// stronger one short. Amplitude is in world units.
+    /// </summary>
+    public void ShakePlayerCamera(int playerIndex, float amplitude, float duration)
+    {
+        if (playerIndex < 1 || playerIndex > configuredPlayerCount) return;
+
+        PlayerCameraShake shake = EnsureCameraShake(playerIndex);
+
+        if (shake != null) shake.Shake(amplitude, duration);
+    }
+
+    public void StopAllCameraShakes()
+    {
+        for (int slot = 0; slot < MaxPlayers; slot++)
+        {
+            if (cameraShakes[slot] != null) cameraShakes[slot].StopShake();
+        }
+    }
+
+    // Added at runtime so no scene setup is needed; GetComponent runs once per camera.
+    private PlayerCameraShake EnsureCameraShake(int playerIndex)
+    {
+        int slot = playerIndex - 1;
+
+        if (cameraShakes[slot] != null) return cameraShakes[slot];
+
+        CinemachineCamera camera = GetCinemachineCamera(playerIndex);
+        if (camera == null) return null;
+
+        if (!camera.TryGetComponent(out PlayerCameraShake shake))
+        {
+            shake = camera.gameObject.AddComponent<PlayerCameraShake>();
+        }
+
+        cameraShakes[slot] = shake;
+        return shake;
+    }
+
+    #endregion
+
+    #region Camera Lens Runtime
 
     private void SetRuntimeOrthographicSize(int playerIndex, float size)
     {
@@ -538,6 +687,8 @@ public class CameraManager : MonoBehaviour
     {
         StopFocusBindingRoutine();
         UnregisterAllFromCameraSwitcher();
+        ReleaseAllZoomOffsets();
+        StopAllCameraShakes();
     }
 
     private void UnregisterAllFromCameraSwitcher()
