@@ -202,6 +202,9 @@ public class CartDriftController : MonoBehaviour
     public System.Action<string> OnDriftEndedClean;
     public System.Action<string> OnDriftInterrupted;
 
+    /// <summary>Raised when an active drift switches side. Argument: new DriftSign (-1 left, +1 right).</summary>
+    public event System.Action<float> OnDriftSideChanged;
+
     #endregion
 
     #region Unity Lifecycle
@@ -416,6 +419,8 @@ public class CartDriftController : MonoBehaviour
         string newSide = driftSign > 0f ? "Right" : "Left";
 
         LogDebug($"[Drift] SIDE SWITCH {oldSide} -> {newSide} | inputAngle:{currentInputAngle:F1} | switches:{sideSwitchCount}");
+
+        OnDriftSideChanged?.Invoke(driftSign);
     }
 
     #endregion

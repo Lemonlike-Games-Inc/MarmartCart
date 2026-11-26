@@ -83,6 +83,14 @@ public class LeadingCartBattleController : MonoBehaviour
     public System.Action OnBattleLost;
     public System.Action<ChainedCartManager, int> OnVulnerableCartHit;
 
+    /// <summary>Raised right after OnBattleLost, with the crash data.</summary>
+    public event System.Action<CartCrashInfo> OnCrashed;
+
+    /// <summary>Raised on the rival whose leading cart or chain a crashing cart hit.</summary>
+    public event System.Action<CartCrashInfo> OnCausedCrash;
+
+    public int PlayerIndex => snakeCartManager != null ? snakeCartManager.GetPlayerId() : 0;
+
     #endregion
 
     #region Unity Lifecycle
@@ -152,20 +160,38 @@ public class LeadingCartBattleController : MonoBehaviour
                 return;
             }
 
-            LoseBattle();
+            SnakeCartManager chainOwner = contactedCart.GetComponentInParent<SnakeCartManager>();
+            bool ownChain = chainOwner != null && chainOwner == snakeCartManager;
+
+            ResolveCrash(
+                ownChain ? CartCrashCause.OwnChain : CartCrashCause.RivalChain,
+                other,
+                ownChain ? null : chainOwner,
+                null
+            );
             return;
         }
 
-        if (IsOtherLeadingCart(other)) LoseBattle();
+        if (TryGetOtherLeadingCart(other, out LeadingCartBattleController otherBattleController))
+        {
+            ResolveCrash(
+                CartCrashCause.RivalLeadingCart,
+                other,
+                otherBattleController.snakeCartManager,
+                otherBattleController
+            );
+        }
     }
 
-    private bool IsOtherLeadingCart(Collider other)
+    private bool TryGetOtherLeadingCart(Collider other, out LeadingCartBattleController otherBattleController)
     {
+        otherBattleController = null;
+
         Rigidbody otherBody = other.attachedRigidbody;
 
         if (otherBody == null || otherBody == cartBody) return false;
 
-        LeadingCartBattleController otherBattleController = otherBody.GetComponentInChildren<LeadingCartBattleController>(true);
+        otherBattleController = otherBody.GetComponentInChildren<LeadingCartBattleController>(true);
 
         return otherBattleController != null && otherBattleController != this;
     }
@@ -202,18 +228,92 @@ public class LeadingCartBattleController : MonoBehaviour
     {
         if (IsInGhostMode) return;
 
+        CartCrashInfo info = BuildCrashInfo(CartCrashCause.Other, null, null);
+        TryLoseBattle(ref info);
+    }
+
+    private void ResolveCrash(
+        CartCrashCause cause,
+        Collider hitCollider,
+        SnakeCartManager otherOwner,
+        LeadingCartBattleController otherBattleController)
+    {
+        if (IsInGhostMode) return;
+
+        CartCrashInfo info = BuildCrashInfo(cause, hitCollider, otherOwner);
+
+        if (!TryLoseBattle(ref info)) return;
+        if (otherOwner == null) return;
+
+        // Event-time lookup only; a chain hit knows the owner but not its leader.
+        if (otherBattleController == null)
+        {
+            otherBattleController = otherOwner.GetComponentInChildren<LeadingCartBattleController>(true);
+        }
+
+        if (otherBattleController != null && otherBattleController != this)
+        {
+            otherBattleController.OnCausedCrash?.Invoke(info);
+        }
+    }
+
+    private bool TryLoseBattle(ref CartCrashInfo info)
+    {
+        if (IsInGhostMode) return false;
+
         EnterGhostMode(ghostDuration);
-        DetachOwnChain();
+        info.CartsLost = DetachOwnChain();
         StopAndKnockBackCart();
 
         OnBattleLost?.Invoke();
+        OnCrashed?.Invoke(info);
+
+        return true;
     }
 
-    private void DetachOwnChain()
+    /// <summary>Must run before StopAndKnockBackCart, which zeroes the velocity.</summary>
+    private CartCrashInfo BuildCrashInfo(CartCrashCause cause, Collider hitCollider, SnakeCartManager otherOwner)
     {
-        if (snakeCartManager == null) return;
+        Vector3 planarVelocity = cartBody != null
+            ? Vector3.ProjectOnPlane(cartBody.linearVelocity, Vector3.up)
+            : Vector3.zero;
 
-        snakeCartManager.DetachAllFollowers();
+        Vector3 direction = planarVelocity.sqrMagnitude > 0.001f
+            ? planarVelocity.normalized
+            : Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+
+        return new CartCrashInfo
+        {
+            Cause = cause,
+            CrashedPlayerIndex = PlayerIndex,
+            OtherPlayerIndex = otherOwner != null ? otherOwner.GetPlayerId() : 0,
+            HitPoint = GetHitPoint(hitCollider),
+            HitDirection = direction,
+            SpeedBeforeHit = planarVelocity.magnitude,
+            CartsLost = 0
+        };
+    }
+
+    private Vector3 GetHitPoint(Collider hitCollider)
+    {
+        Vector3 origin = transform.position;
+
+        if (hitCollider == null) return origin;
+
+        // Physics.ClosestPoint does not support non-convex mesh colliders.
+        if (hitCollider is MeshCollider meshCollider && !meshCollider.convex)
+        {
+            return hitCollider.bounds.ClosestPoint(origin);
+        }
+
+        return hitCollider.ClosestPoint(origin);
+    }
+
+    private int DetachOwnChain()
+    {
+        if (snakeCartManager == null) return 0;
+
+        return snakeCartManager.DetachAllFollowers();
     }
 
     private void StopAndKnockBackCart()
