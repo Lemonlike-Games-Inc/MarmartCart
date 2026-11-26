@@ -3,6 +3,24 @@
 Newest entries at the top. Keep entries brief; never rewrite old ones.
 Entry header: `## YYYY-MM-DD HH:MM (UTC offset): title`, then `Model` and `Summary` lines.
 
+## 2026-11-25 16:48 (UTC-7): Marmart Policies Step 6: stacking check, sound and announcer hooks
+- Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
+- Summary: The last Policies step. Liang tested Round 3 with Blackout and Tomato Rain together in 2P and 4P; they work side by side. The reveal and each Policy now have empty Inspector hooks for sound, VFX and announcer lines.
+- Changed (f1c0d686):
+  - `PolicyRevealUnityEventRelay` on `Meta Game Controller/Policy Reveal`: hooks for reveal started, card revealed, collapse started and reveal finished, plus an optional Announcer Source that plays each Policy's Announcer Clip as its card flips.
+  - `PolicyUnityEventRelay` on each Policy object under `Meta Game Controller/Marmart Policies` (Cart Over-stock, Blackout, Tomato Rain): its card revealed, Round started, Round ended, and named cue hooks. Blackout cues: `lights-warning`, `lights-out`, `lights-on`. Tomato Rain cues: `rain-warning`, `rain-start`, `rain-end`.
+  - `PolicyRevealStage.WasCancelled`: "reveal finished" is not called after a skip, load or teardown.
+  - `Docs/Design/marmart-policies.md`: Hooks section.
+- Why:
+  - Liang wires sounds in the Inspector, the same way as other SFX (`SfxManager.PlaySFX`). The planned announcer system can subscribe to `MarmartPolicyDirector` and `PolicyRevealStage` in code instead.
+- Decisions:
+  - In-Round reminder: the compact banners stay through the Round and fade out at its end.
+  - The hooks fire only on a real Round end or a finished reveal, so teardown never calls sound targets that may be gone.
+  - Editor writes to `Camera P1` (and `Camera P2`) in Gameplay Scene 2P are discarded on sight.
+- Open questions:
+  - The random Policy pool is not built; "Use Fixed Schedule" stays on.
+  - More Policies (Private Checkout, Hot Potato, Golden Burger, Absolute Chaos) are held for later.
+
 ## 2026-11-25 11:25 (UTC-7): Marmart Policies Steps 4-5: Blackout and Tomato Rain
 - Model: Claude Opus 5.5 (`claude-opus-5-5`), effort xhigh
 - Summary: Round 3's two Policies work. Blackout darkens each view in short windows, except a lit circle around the player's own cart, with a setting per HUD part. Tomato Rain marks a red circle near the players and rains Tomatoes into it. Liang tested both in 2P and 4P.
