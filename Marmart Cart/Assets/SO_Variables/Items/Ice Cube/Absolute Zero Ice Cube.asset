@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4d3146e8b87a4c4eb883e6850b618f4, type: 3}
-  m_Name: Really Really Cold Ice Cube
+  m_Name: Absolute Zero Ice Cube
   m_EditorClassIdentifier: 
   displayName: Really Really Cold Ice Cube
   use: {fileID: 11400000, guid: dd075661d86fcf845a0e538645ac8db9, type: 2}
